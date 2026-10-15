@@ -1,8 +1,24 @@
 # Reminders
 
-A website cannot wake your phone when it is closed. That is a limit of how browsers work, and Expenity does not hide it. So there are two kinds of reminder, and they work together.
+Expenity can remind you in three ways. The first one works like a normal app: a notification arrives even when Expenity is closed.
 
-## 1. Your calendar (works when Expenity is closed)
+## 1. Notifications when the app is closed
+
+With an account, Expenity sends you **one summary a day** at the hour you choose, listing the bills that are due soon or overdue. It arrives like any app notification, on the lock screen, even if Expenity is not open.
+
+1. Sign in (an account is needed, because Expenity has to know which bills are due).
+2. Open **More → Reminders and calendar → Notifications on this device** and press **Turn on**. Allow notifications when your browser asks.
+3. Choose the time you want it. **Send a test** shows you what it looks like.
+
+Things to know:
+
+- **iPhone and iPad:** Apple only allows this for apps added to the Home Screen. Add Expenity first ([Install on your device](install-on-your-device.md)), open it from there, then turn notifications on.
+- **Each device is separate.** Turn it on on every phone or computer where you want it.
+- Bills you marked as paid or snoozed are left out, and so are bills outside their reminder window (**Default reminder**, or the **Remind me** field on a bill). Bills in a [shared wallet](shared-wallets.md) are included.
+- To stop, press **Turn off**, or block notifications for the site in your browser settings.
+- Expenity stores the address your browser gives it for sending notifications, your time zone and the chosen hour. See [Privacy and your data](privacy-and-your-data.md).
+
+## 2. Your calendar (works without an account)
 
 This is the reminder to rely on.
 
@@ -24,11 +40,11 @@ Things to know:
 - Marking a bill paid in Expenity does not change the calendar. For a repeating bill that is fine, because the next due date is already in the repeat.
 - Reminders arrive however your calendar delivers them: notification, sound or email, as you set it up there.
 
-## 2. Notifications while Expenity is open
+## 3. Notifications while Expenity is open
 
 In **More → Reminders and calendar → Notifications while Expenity is open**, press **Turn on** and allow notifications when your browser asks. When you open Expenity or keep it in a tab, you get one notification a day for bills that are due within their reminder window and are not snoozed.
 
-This does not work when the app is fully closed. For that, use the calendar file.
+This does not work when the app is fully closed. For that, use notifications when the app is closed (above) or the calendar file.
 
 ## Choose how early
 
@@ -40,4 +56,4 @@ In a bill's **⋯** menu, **Snooze to tomorrow** or **Snooze 3 days** stops its 
 
 ## What is coming
 
-Push notifications and email reminders when the app is closed need a way to send email and push from a server. Your account and sync are built; sending is planned, and email needs a sending domain first. See the [roadmap](specs/06-roadmap-business.md).
+Email reminders need a sending domain and are planned. Notifications on the lock screen and the calendar file cover the same need today.

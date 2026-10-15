@@ -47,7 +47,7 @@ writeFileSync( join( OUT, '.nojekyll' ), '' );
 
 // The app itself is the live demo: the same files, served from app/.
 mkdirSync( join( OUT, 'app' ), { recursive: true } );
-for ( const f of [ 'index.html', 'icons.js', 'ui.js', 'views.js', 'forms.js', 'reports.js', 'plan.js', 'insights.js', 'share.js', 'flow.js', 'themes.js', 'core.js', 'sync.js', 'theme.js', 'app.js', 'i18n.js', 'style.css', 'themes.css', 'favicon.svg', 'manifest.webmanifest', 'sw.js', 'icon-192.png', 'icon-512.png' ] ) cpSync( join( ROOT, f ), join( OUT, 'app', f ) );
+for ( const f of [ 'index.html', 'icons.js', 'ui.js', 'views.js', 'forms.js', 'reports.js', 'plan.js', 'insights.js', 'share.js', 'push.js', 'flow.js', 'themes.js', 'core.js', 'sync.js', 'theme.js', 'app.js', 'i18n.js', 'style.css', 'themes.css', 'favicon.svg', 'manifest.webmanifest', 'sw.js', 'icon-192.png', 'icon-512.png' ] ) cpSync( join( ROOT, f ), join( OUT, 'app', f ) );
 
 /* ------------------------------------------------------------------ Images */
 

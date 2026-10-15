@@ -9,13 +9,16 @@ import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { SoftPasskey } from './webauthn-soft.mjs';
+import { webcrypto as wc, createPublicKey, createVerify, createECDH, hkdfSync, createDecipheriv, randomBytes } from 'node:crypto';
+import { createServer as createHttp } from 'node:http';
 
 const WORKER = join( process.cwd(), 'worker' );
 const PERSIST = mkdtempSync( join( tmpdir(), 'expenity-d1-' ) );
 const PORT = 8791;
 const API = `http://127.0.0.1:${ PORT }`;
 const ORIGIN = 'http://localhost:8766';
-const VARS = [ '--var', 'RP_ID:localhost', '--var', `RP_ORIGINS:${ ORIGIN }`, '--var', 'TEST_MODE:1' ];
+const VAPID = await ( async () => { const k = await wc.subtle.generateKey( { name: 'ECDH', namedCurve: 'P-256' }, true, [ 'deriveBits' ] ); return { pub: Buffer.from( await wc.subtle.exportKey( 'raw', k.publicKey ) ).toString( 'base64url' ), jwk: await wc.subtle.exportKey( 'jwk', k.privateKey ) }; } )();
+const VARS = [ '--var', 'RP_ID:localhost', '--var', `RP_ORIGINS:${ ORIGIN }`, '--var', 'TEST_MODE:1', '--var', `VAPID_PUBLIC:${ VAPID.pub }`, '--var', `VAPID_PRIVATE_JWK:${ JSON.stringify( VAPID.jwk ) }` ];
 execFileSync( 'npx', [ 'wrangler', 'd1', 'execute', 'expenity', '--local', '--persist-to', PERSIST, '--file=schema.sql' ], { cwd: WORKER, stdio: 'ignore' } );
 const dev = spawn( 'npx', [ 'wrangler', 'dev', '--local', '--persist-to', PERSIST, '--port', String( PORT ), ...VARS ], { cwd: WORKER, stdio: 'ignore' } );
 const stop = () => { dev.kill(); try { rmSync( PERSIST, { recursive: true, force: true } ); } catch ( e ) { /* ignore */ } };
@@ -151,6 +154,43 @@ ok( ( await call( 'GET', '/api/export', null, A ) ).json.records.some( ( r ) => 
 	const oid = ( await call( 'GET', `/api/spaces/${ sid }/members`, null, other ) ).json.members.find( ( m ) => m.you ).id;
 	ok( ( await call( 'DELETE', `/api/spaces/${ sid }/members/${ oid }`, null, other ) ).status === 200, 'a member can leave' );
 	ok( ( await call( 'DELETE', `/api/spaces/${ sid }`, null, A ) ).status === 200 && ( await call( 'GET', '/api/spaces', null, A ) ).json.spaces.length === 0, 'the owner deletes the space' );
+}
+
+// Push notifications: subscribe, an hourly pass, encrypted delivery that a device can read, once a day only.
+{
+	const received = [];
+	const fake = createHttp( ( rq, rs ) => { const chunks = []; rq.on( 'data', ( c ) => chunks.push( c ) ); rq.on( 'end', () => { received.push( { headers: rq.headers, body: Buffer.concat( chunks ), url: rq.url } ); rs.writeHead( 201 ).end(); } ); } ).listen( 0 );
+	const base = `http://127.0.0.1:${ fake.address().port }`;
+	const ua = createECDH( 'prime256v1' ); ua.generateKeys(); const authSecret = randomBytes( 16 );
+	const subscription = ( n ) => ( { endpoint: `${ base }/push/${ n }`, keys: { p256dh: ua.getPublicKey().toString( 'base64url' ), auth: authSecret.toString( 'base64url' ) } } );
+	ok( ( await call( 'GET', '/api/push/key' ) ).json.publicKey === VAPID.pub, 'the public push key is served without signing in' );
+	ok( ( await call( 'POST', '/api/push/subscribe', { subscription: subscription( 1 ), tz: 'UTC', hour: 0, lang: 'en' } ) ).status === 401, 'subscribing needs an account' );
+	ok( ( await call( 'POST', '/api/push/subscribe', { subscription: { endpoint: 'https://evil.example/x', keys: { p256dh: 'a', auth: 'b' } }, tz: 'UTC', hour: 9 }, A ) ).status === 400, 'an endpoint that is not a known push service is refused' );
+	ok( ( await call( 'POST', '/api/push/subscribe', { subscription: subscription( 1 ), tz: 'UTC', hour: 0, lang: 'en' }, A ) ).status === 200, 'a device subscribes' );
+	const today = new Date().toISOString().slice( 0, 10 );
+	await call( 'POST', '/api/sync', { since: 0, changes: [ { id: 'pbill', kind: 'bill', data: { id: 'pbill', name: 'Rent', next: today, repeat: 'monthly' }, updatedAt: Date.now() } ] }, A );
+	const run1 = await fetch( `${ API }/api/test/push-run?now=${ Date.now() }` ).then( ( r ) => r.json() );
+	ok( run1.sent === 1 && received.length === 1, 'the hourly pass sends one notification for a bill due today', JSON.stringify( run1 ) );
+	// Decrypt the way a browser would (RFC 8291) and read the message.
+	const body = received[ 0 ].body, salt = body.subarray( 0, 16 ), idlen = body[ 20 ], asPub = body.subarray( 21, 21 + idlen ), cipher = body.subarray( 21 + idlen );
+	const ikm = Buffer.from( hkdfSync( 'sha256', ua.computeSecret( asPub ), authSecret, Buffer.concat( [ Buffer.from( 'WebPush: info\0' ), ua.getPublicKey(), asPub ] ), 32 ) );
+	const cek = Buffer.from( hkdfSync( 'sha256', ikm, salt, Buffer.from( 'Content-Encoding: aes128gcm\0' ), 16 ) ), nonce = Buffer.from( hkdfSync( 'sha256', ikm, salt, Buffer.from( 'Content-Encoding: nonce\0' ), 12 ) );
+	const dec = createDecipheriv( 'aes-128-gcm', cek, nonce ); dec.setAuthTag( cipher.subarray( cipher.length - 16 ) );
+	const plain = Buffer.concat( [ dec.update( cipher.subarray( 0, cipher.length - 16 ) ), dec.final() ] ).toString().replace( /\u0002$/, '' );
+	const msg = JSON.parse( plain );
+	ok( msg.title === 'A bill is due soon' && /Rent: today/.test( msg.body ), 'the notification is encrypted for the device and says which bill is due', plain );
+	const auth = received[ 0 ].headers.authorization, m = /^vapid t=([^,]+), k=(.+)$/.exec( auth || '' );
+	const [ h, c, sig ] = ( m ? m[ 1 ] : '..' ).split( '.' );
+	const verify = createVerify( 'SHA256' ).update( `${ h }.${ c }` );
+	const pubKey = createPublicKey( { key: { kty: 'EC', crv: 'P-256', x: Buffer.from( VAPID.pub, 'base64url' ).subarray( 1, 33 ).toString( 'base64url' ), y: Buffer.from( VAPID.pub, 'base64url' ).subarray( 33 ).toString( 'base64url' ) }, format: 'jwk' } );
+	ok( m && m[ 2 ] === VAPID.pub && verify.verify( { key: pubKey, dsaEncoding: 'ieee-p1363' }, Buffer.from( sig, 'base64url' ) ), 'the request is signed with the application key (VAPID)' );
+	ok( ( await fetch( `${ API }/api/test/push-run?now=${ Date.now() }` ).then( ( r ) => r.json() ) ).sent === 0, 'the same day sends nothing more' );
+	ok( ( await call( 'POST', '/api/push/test', {}, A ) ).json.sent === 1 && received.length === 2, 'a test notification can be sent on demand' );
+	ok( ( await call( 'POST', '/api/push/unsubscribe', { endpoint: subscription( 1 ).endpoint }, other ) ).status === 200, 'another account cannot remove it (nothing happens)' );
+	ok( ( await call( 'POST', '/api/push/test', {}, A ) ).json.devices === 1, '...so the device is still subscribed' );
+	await call( 'POST', '/api/push/unsubscribe', { endpoint: subscription( 1 ).endpoint }, A );
+	ok( ( await call( 'POST', '/api/push/test', {}, A ) ).json.devices === 0, 'unsubscribing removes the device' );
+	fake.close();
 }
 
 // Devices, step-up and passkeys.

@@ -6,6 +6,8 @@
 
 **On Expenity's server, if you create an account.** To sync between your devices, your email address and your data (wallets, transactions, bills, budgets, goals, categories, recurring income and some settings) are stored on a Cloudflare Worker and database (D1). The connection is encrypted, and access needs your passkey. Expenity does not look at your data, sell it, share it or use it for advertising. As with most online services, it is not end-to-end encrypted.
 
+**Notifications.** If you turn on notifications when the app is closed, the server keeps the address your browser gives it for sending them, your time zone and the hour you chose, and looks at which of your bills are due to build the daily summary. Turning them off removes it.
+
 **Passkeys.** The server stores only the public part of each passkey. Recovery codes are stored hashed.
 
 **Shared wallets.** If you share a wallet, the people you invite can see that wallet's transactions and each other's email address. Nothing else of yours.
@@ -31,9 +33,9 @@ Without an account, clearing the site's data (or losing the device) removes your
 - **Delete all my data** (More → Data and backup) removes everything from this browser. If you are signed in, your data comes back from your account at the next sync, so it only clears this device.
 - **Delete my account** (More → Account and sync) deletes your account and everything stored on the server. It asks for your passkey and cannot be undone. Wallets you own and share are deleted for everyone.
 
-## Notifications
+## Notifications while the app is open
 
-If you turn notifications on, your browser asks permission and shows them locally. Nothing is sent anywhere.
+The in-app option shows them locally. Nothing is sent anywhere.
 
 ## The calendar file
 

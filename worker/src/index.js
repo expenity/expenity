@@ -24,6 +24,7 @@
  * record (last writer wins), numbers every accepted change, and returns what changed since.
  * Sessions are random bearer tokens, stored hashed.
  */
+import { validEndpoint, sendPush, runPush, testMessage } from './push.js';
 import {
 	generateRegistrationOptions, verifyRegistrationResponse,
 	generateAuthenticationOptions, verifyAuthenticationResponse,
@@ -372,7 +373,7 @@ async function deleteAccount( req, env, user ) {
 	const owned = await env.DB.prepare( 'SELECT id FROM spaces WHERE owner_id = ?' ).bind( user.id ).all();
 	for ( const sp of owned.results || [] ) await removeSpaceData( env, sp.id );
 	await env.DB.prepare( 'DELETE FROM space_members WHERE user_id = ?' ).bind( user.id ).run();
-	await env.DB.batch( [ 'records', 'sessions', 'credentials', 'recovery_codes', 'step_ups', 'email_codes', 'challenges' ].map( ( t ) => env.DB.prepare( `DELETE FROM ${ t } WHERE user_id = ?` ).bind( user.id ) )
+	await env.DB.batch( [ 'records', 'sessions', 'credentials', 'recovery_codes', 'step_ups', 'email_codes', 'challenges', 'push_subs' ].map( ( t ) => env.DB.prepare( `DELETE FROM ${ t } WHERE user_id = ?` ).bind( user.id ) )
 		.concat( [ env.DB.prepare( 'DELETE FROM users WHERE id = ?' ).bind( user.id ) ] ) );
 	return reply( req, env, { ok: true } );
 }
@@ -542,6 +543,33 @@ async function deleteSpace( req, env, user, id ) {
 	return reply( req, env, { ok: true } );
 }
 
+/* ------------------------------------------------------------------ Push notifications */
+
+const MAX_PUSH_SUBS = 5;
+const goodTz = ( tz ) => { try { new Intl.DateTimeFormat( 'en', { timeZone: tz } ); return typeof tz === 'string' && tz.length <= 64; } catch ( e ) { return false; } };
+async function pushSubscribe( req, env, user, body ) {
+	const sub = body.subscription || {}, keys = sub.keys || {};
+	if ( typeof sub.endpoint !== 'string' || ! validEndpoint( sub.endpoint, env ) || typeof keys.p256dh !== 'string' || typeof keys.auth !== 'string' || keys.p256dh.length > 200 || keys.auth.length > 100 ) return fail( req, env, 'bad_request' );
+	const tz = goodTz( body.tz ) ? body.tz : 'UTC', hour = Number.isInteger( body.hour ) && body.hour >= 0 && body.hour <= 23 ? body.hour : 9, lang = body.lang === 'el' ? 'el' : 'en';
+	const have = await env.DB.prepare( 'SELECT endpoint FROM push_subs WHERE user_id = ? ORDER BY created_at' ).bind( user.id ).all();
+	const list = have.results || [];
+	if ( ! list.some( ( x ) => x.endpoint === sub.endpoint ) && list.length >= MAX_PUSH_SUBS ) await env.DB.prepare( 'DELETE FROM push_subs WHERE endpoint = ?' ).bind( list[ 0 ].endpoint ).run();
+	await env.DB.prepare( `INSERT INTO push_subs (endpoint, user_id, p256dh, auth, tz, hour, lang, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+		ON CONFLICT (endpoint) DO UPDATE SET user_id = excluded.user_id, p256dh = excluded.p256dh, auth = excluded.auth, tz = excluded.tz, hour = excluded.hour, lang = excluded.lang, fails = 0` ).bind( sub.endpoint, user.id, keys.p256dh, keys.auth, tz, hour, lang, now() ).run();
+	return reply( req, env, { ok: true } );
+}
+async function pushUnsubscribe( req, env, user, body ) {
+	if ( typeof body.endpoint !== 'string' ) return fail( req, env, 'bad_request' );
+	await env.DB.prepare( 'DELETE FROM push_subs WHERE endpoint = ? AND user_id = ?' ).bind( body.endpoint, user.id ).run();
+	return reply( req, env, { ok: true } );
+}
+async function pushTest( req, env, user ) {
+	const rows = await env.DB.prepare( 'SELECT endpoint, p256dh, auth, lang FROM push_subs WHERE user_id = ?' ).bind( user.id ).all();
+	let ok = 0;
+	for ( const s of rows.results || [] ) { const r = await sendPush( env, s, testMessage( s.lang ) ); if ( r === 'ok' ) ok++; else if ( r === 'gone' ) await env.DB.prepare( 'DELETE FROM push_subs WHERE endpoint = ?' ).bind( s.endpoint ).run(); }
+	return reply( req, env, { ok: true, sent: ok, devices: ( rows.results || [] ).length } );
+}
+
 /* ------------------------------------------------------------------ Exchange rates */
 
 // Public and cheap: one cached row, refreshed at most every 12 hours from the ECB reference rates (units of a currency per 1 EUR).
@@ -571,17 +599,20 @@ const PUBLIC_POST = {
 };
 
 export default {
+	async scheduled( event, env, ctx ) { ctx.waitUntil( runPush( env ) ); },
 	async fetch( req, env ) {
 		const url = new URL( req.url );
 		if ( req.method === 'OPTIONS' ) return new Response( null, { status: 204, headers: corsHeaders( req, env ) } );
 		const path = url.pathname.replace( /\/+$/, '' );
 		if ( path === '' || path === '/api/health' ) return reply( req, env, { ok: true, service: 'expenity-api' } );
+		if ( env.TEST_MODE === '1' && path === '/api/test/push-run' ) return reply( req, env, { sent: await runPush( env, Number( url.searchParams.get( 'now' ) ) || Date.now() ) } );
 		if ( env.TEST_MODE === '1' && path === '/api/test/outbox' ) {
 			const rows = await env.DB.prepare( 'SELECT to_addr, subject, body FROM outbox WHERE to_addr = ? ORDER BY id DESC LIMIT 5' ).bind( url.searchParams.get( 'to' ) || '' ).all();
 			return reply( req, env, { mails: rows.results || [] } );
 		}
 		if ( ! path.startsWith( '/api/' ) ) return fail( req, env, 'not_found', 404 );
 		if ( path === '/api/rates' && req.method === 'GET' ) return rates( req, env );
+		if ( path === '/api/push/key' && req.method === 'GET' ) return reply( req, env, { publicKey: env.VAPID_PUBLIC || '' } );
 
 		const ip = req.headers.get( 'CF-Connecting-IP' ) || 'local';
 		if ( PUBLIC_POST[ path ] ) {
@@ -617,6 +648,9 @@ export default {
 			const b = r.body;
 			if ( path === '/api/sync' && M === 'POST' ) return sync( req, env, user, b );
 			if ( path === '/api/spaces' && M === 'POST' ) return createSpace( req, env, user, b );
+			if ( path === '/api/push/subscribe' && M === 'POST' ) return pushSubscribe( req, env, user, b );
+			if ( path === '/api/push/unsubscribe' && M === 'POST' ) return pushUnsubscribe( req, env, user, b );
+			if ( path === '/api/push/test' && M === 'POST' ) return pushTest( req, env, user );
 			if ( path === '/api/invites/accept' && M === 'POST' ) {
 				if ( await limited( env, 'AUTH_LIMITER', `invite:${ user.id }` ) ) return fail( req, env, 'rate_limited', 429 );
 				return acceptInvite( req, env, user, b );

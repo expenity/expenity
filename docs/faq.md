@@ -22,7 +22,7 @@ Email verification is not switched on yet, so there is no other way in. This is 
 
 ## Will it remind me when the app is closed?
 
-Through your calendar, yes: download the calendar file from More → Reminders and calendar and import it. Expenity itself can only notify you while it is open, because a website cannot wake a phone on its own. Push and email reminders are planned. See [Reminders](reminders.md).
+Yes. With an account, turn on notifications in More → Reminders and calendar and Expenity sends one summary a day, at the hour you choose, even when the app is closed. On iPhone and iPad it needs the app added to the Home Screen. Without an account, download the calendar file and import it into your calendar. See [Reminders](reminders.md).
 
 ## Why not just connect to my bank?
 

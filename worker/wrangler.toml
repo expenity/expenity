@@ -26,12 +26,19 @@ namespace_id = "1102"
   limit = 60
   period = 60
 
+# Once an hour: send each person's due-bill summary at their chosen local hour (push.js).
+[triggers]
+crons = [ "0 * * * *" ]
+
 [vars]
 # WebAuthn relying party. RP_ID is the domain passkeys are bound to; RP_ORIGINS are the origins allowed to use it.
 # Keep these in configuration only: moving them later invalidates passkeys (see docs/specs/07, risks R1 and R2).
 RP_ID = "expenity.github.io"
 RP_NAME = "Expenity"
 RP_ORIGINS = "https://expenity.github.io"
+# Web Push (VAPID) public key. The private key is a secret: wrangler secret put VAPID_PRIVATE_JWK
+VAPID_PUBLIC = "BCfUDXBzyqy1ZIvu4iI-hVjhw-KeI0sgE9iqutYnsLFcN03-7IbYaZteX1ys9AKgUW0q5oXNRmFM3gJzoJh5kxM"
+VAPID_SUBJECT = "https://expenity.github.io/expenity/"
 APP_URL = "https://expenity.github.io/expenity/app/"
 # Email (verification and recovery codes). Off until a sending domain exists (spec 07, risk R3).
 # To switch on: verify a domain at resend.com, set EMAIL_FROM, run `wrangler secret put RESEND_API_KEY`, set EMAIL_ENABLED = "1".

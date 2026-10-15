@@ -127,3 +127,18 @@ CREATE TABLE IF NOT EXISTS space_invites (
   used_at     INTEGER
 );
 CREATE INDEX IF NOT EXISTS space_invites_space ON space_invites(space_id);
+
+-- Web Push subscriptions (one per browser or installed app). last_day is the last local day a summary was sent.
+CREATE TABLE IF NOT EXISTS push_subs (
+  endpoint    TEXT PRIMARY KEY,
+  user_id     TEXT NOT NULL,
+  p256dh      TEXT NOT NULL,
+  auth        TEXT NOT NULL,
+  tz          TEXT NOT NULL DEFAULT 'UTC',
+  hour        INTEGER NOT NULL DEFAULT 9,
+  lang        TEXT NOT NULL DEFAULT 'en',
+  last_day    TEXT,
+  fails       INTEGER NOT NULL DEFAULT 0,
+  created_at  INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS push_subs_user ON push_subs(user_id);

@@ -408,6 +408,19 @@ for ( const w of [ 320, 360, 390, 430 ] ) {
 	await c.close();
 }
 
+/* ---- Notifications when the app is closed (push): the card tells the truth in each situation */
+{
+	const { context: c, page: p } = await newPage( { viewport: { width: 390, height: 844 } } );
+	await p.evaluate( () => { window.EXA.skipFlow(); window.EXA.go( 'more', 'reminders' ); } );
+	ok( ( await p.locator( '.card', { hasText: 'Notifications on this device' } ).innerText() ).includes( 'Create an account' ), 'push: without an account the card says an account is needed' );
+	ok( await p.locator( '#notifyBtn' ).count() === 1, 'push: guests still get notifications while the app is open' );
+	await p.evaluate( () => { window.EX.auth.isSignedIn = () => true; window.EXA.render(); } );
+	ok( await p.locator( '[data-push=on]' ).count() === 1 && await p.locator( '#notifyBtn' ).count() === 1, 'push: signed in, the card offers to turn notifications on' );
+	await p.evaluate( () => { window.EX.state().device.push = { hour: 9 }; window.EX.state().device.notify = false; window.EXA.render(); } );
+	ok( await p.locator( '#pushHour' ).count() === 1 && await p.locator( '[data-push=test]' ).count() === 1 && await p.locator( '#notifyBtn' ).count() === 0, 'push: when on, it shows the time, a test button and hides the in-app option' );
+	await c.close();
+}
+
 /* ---- Migration from version 0.1 */
 {
 	const ctx2 = await browser.newContext( { locale: 'en-US' } );

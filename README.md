@@ -18,12 +18,12 @@ Started as a bill reminder and grew into a money app for expenses, income, bills
 - **Reports:** overview, spending, cash flow, trends, forecast, subscriptions and a sortable table, with filters, CSV export and a table view for every chart.
 - **Shared wallets:** invite codes and links, roles (owner, editor, viewer) enforced by the server, "added by" on every item.
 - **Look:** twelve themes, light and dark, an animations setting, tablet and desktop layouts.
-- Calendar file with alarms, notifications while open, backup and restore, CSV export, installable PWA.
+- Push notifications when the app is closed (a daily summary at your chosen hour; on iPhone for the home-screen app), calendar file with alarms, backup and restore, CSV export, installable PWA.
 
 ## Honest limits
 
 - With an account, your data is stored on the Expenity server (Cloudflare) so it can sync. The connection is encrypted and access needs your passkey. It is not end-to-end encrypted, as with most online services.
-- Email (verification, reminders, invites) is off until a sending domain exists. Push and email reminders when the app is closed are planned; the calendar file covers that today.
+- Email (verification, reminders, invites) is off until a sending domain exists. Email reminders wait for a sending domain.
 - Tested with Playwright in Chrome (including virtual passkeys and two simulated people), not on every device. The Greek is awaiting review by a native speaker: see [docs/greek-review.html](docs/greek-review.html).
 
 ## Run it
