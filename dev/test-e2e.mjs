@@ -183,6 +183,29 @@ await D.page.click( '#authLogin' );
 await D.page.waitForSelector( '#authErr:not([hidden])', { timeout: 15000 } );
 ok( true, 'a deleted account cannot be signed into any more' );
 
+// 10. Signing out and back in does not repeat the first-run flow and keeps the name and the data.
+{
+	const R = await device( 'R' );
+	await R.page.goto( APP ); await R.page.waitForSelector( '#flowRegister', { timeout: 20000 } );
+	await R.page.fill( '#flowRegister [name=email]', `again${ Date.now() }@example.com` ); await R.page.click( '#flowRegister [type=submit]' );
+	await R.page.waitForSelector( '#codesDone', { timeout: 20000 } ); await R.page.check( '#codesSaved' ); await R.page.click( '#codesDone' );
+	await R.page.click( '[data-flow=install-skip]' );
+	await R.page.fill( '#setupForm [name=name]', 'Maria' ); await R.page.click( '[data-flow=next]' );
+	for ( let i = 0; i < 6 && await R.page.locator( '[data-flow=start]' ).count() === 0; i++ ) await R.page.click( '[data-flow=next]' );
+	await R.page.click( '[data-flow=start]' );
+	await addTx( R, 'expense', '9', 'Bread' ); await runSync( R );
+	await R.page.evaluate( () => window.EXA.go( 'more', 'account' ) ); await R.page.click( '[data-act=sign-out]' );
+	await R.page.click( '#confirmYes' ).catch( () => {} );
+	await R.page.waitForSelector( '#flow [data-flow=signin]', { timeout: 20000 } );
+	await R.page.click( '[data-flow=signin]' );
+	await R.page.waitForFunction( () => window.EX.auth.isSignedIn() && document.getElementById( 'flow' ).hidden, null, { timeout: 30000 } );
+	ok( await R.page.locator( '#flow' ).isHidden(), 'signing back in goes straight to the app (no install guide, no setup)' );
+	await runSync( R );
+	ok( await R.page.evaluate( () => window.EX.state().settings.name === 'Maria' && window.EX.state().settings.setupDone === true ), 'the name and the finished setup come back from the account' );
+	ok( ( await txs( R ) ).some( ( x ) => x.n === 'Bread' ), 'the data comes back too' );
+	await R.context.close();
+}
+
 // 9. Shared wallets: two people, one wallet.
 {
 	const signup = async ( d, mail ) => {
