@@ -1,46 +1,56 @@
 # Getting started
 
-Expenity keeps your bills and subscriptions in one place and tells you what is coming up. This guide takes about two minutes.
+Expenity keeps your money, bills and goals in one place, on every device you use. This guide takes about five minutes, and every step after the account can be skipped.
 
-## Open Expenity
+## 1. Create an account (or sign in)
 
-Open the app at [expenity.github.io/expenity/app/](https://expenity.github.io/expenity/app/). There is nothing to install and no account to create. It works in any modern browser on a phone, tablet or computer. To keep it on your home screen like an app, see [Install on your device](install-on-your-device.md).
+Open the app at [expenity.github.io/expenity/app/](https://expenity.github.io/expenity/app/). The first screen asks you to create an account or sign in. You use a **passkey**, which is your fingerprint, face or device PIN, so there is no password to remember or lose. Type your email, press **Create account**, and your device asks you to confirm.
 
-![The first screen, with templates to start from.](images/empty.png)
+![The welcome screen.](images/welcome.png)
 
-## Add your first bill
+Expenity then shows ten **recovery codes**. Save them somewhere safe. They are how you get back in if you lose your passkeys, and they are shown only once. See [Account and sync](account-and-sync.md).
 
-Press **Add bill**. You have three ways to start:
+Not ready for an account? Press **Try without an account**. Your data then stays in this browser only, and you can create an account later from **More**.
 
-- **Type a sentence**, for example `Netflix 15.99 monthly on the 3rd`. The form below fills itself and the chips show what Expenity understood. [More examples](add-bills.md#type-a-sentence).
-- **Pick a template** such as Rent, Electricity or Car insurance. It sets the name, category and how often it repeats. You add the amount.
-- **Fill in the form** yourself.
+## 2. Add Expenity to your home screen
 
-Check the form and press **Save bill**. The bill appears on the Today screen.
+The next screen shows, with a short animation, how to add Expenity to your home screen on iPhone, Android or a computer, so it opens like an app. Choose your device, follow the four steps, then press **I added it**, or **Skip for now**. More in [Install on your device](install-on-your-device.md).
 
-![Adding a bill by typing a sentence.](images/add-bill.png)
+![The install guide.](images/install.png)
 
-If you want to look around first, press **Load sample bills** on the empty screen. You can delete them later with **Settings → Delete all my data**.
+## 3. Set it up
 
-## The Today screen
+A short setup asks a few questions. Each one can be skipped, and you can change every answer later.
 
-Today shows three totals (overdue, the next 7 days, the rest of the month) and your bills grouped by when they are due. Overdue bills are red and come first.
+- **Your name**, used in the greeting.
+- **Your main currency**. Totals and reports use it.
+- **What you want help with**, such as tracking spending, saving for a trip, or cutting subscriptions. Expenity uses this to suggest things that fit you. See [Budgets, goals and income](budgets-goals-income.md#ideas-for-you).
+- **A first goal**, if you chose to save for something.
+- **Your wallets**: cash, bank account, card, savings, with what is in each.
+- **How it looks**: a theme and whether animations are on. See [Themes and animations](themes-and-look.md).
 
-![The Today screen.](images/today.png)
+![Choosing what you want help with.](images/setup-aims.png)
 
-On each bill:
+Until the setup is finished or skipped, the app does not let you add data, so nothing ends up in a wallet you did not choose.
 
-- **Paid** records the payment and moves a repeating bill to its next date. [Mark paid](add-bills.md#mark-a-bill-paid).
-- **⋯** opens snooze, skip, payment link, copy reference, edit and delete.
-- Tapping the bill opens it for editing.
+## 4. Add your first expense
 
-## Get reminded
+Press the green **+** button, choose **Expense**, type the amount on the keypad, add a description, pick a category and a wallet, and press the check mark. [More about adding money](add-money.md).
 
-Expenity reminds you in two ways, and it is worth setting up the second one: see [Reminders](reminders.md).
+![The Home screen.](images/home.png)
+
+## Find your way around
+
+- **Home**: your total balance, income and expenses this month, ideas for you, wallets, what is due soon.
+- **Activity**: every transaction, by month, with search and filters.
+- **Bills**: what is coming, as a list or a calendar.
+- **Reports**: charts and tables. See [Reports](reports.md).
+- **Plan** (tablet and computer side bar, or from Home and **More**): budgets, goals, income and ideas.
+- **More**: wallets, categories, reminders, backup, themes, your account.
 
 ## Where to go next
 
-- [Add bills](add-bills.md): sentences, templates, repeats and variable amounts
-- [Reminders](reminders.md): notifications and the calendar file
-- [Calendar and insights](calendar-and-insights.md): what is due, and what is coming
-- [Privacy and your data](privacy-and-your-data.md): where your bills live and how to back them up
+- [Add expenses, income and bills](add-money.md)
+- [Wallets and currencies](wallets-and-currencies.md)
+- [Budgets, goals and income](budgets-goals-income.md)
+- [Shared wallets](shared-wallets.md)

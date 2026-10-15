@@ -34,8 +34,8 @@ async function visit( path, name, { width = 1360, height = 900, full = true } = 
 await visit( '', 'home-en' );
 await visit( 'el/', 'home-el' );
 await visit( '', 'home-en-phone', { width: 390, height: 844 } );
-await visit( 'docs/add-bills/', 'doc-en', { full: false } );
-await visit( 'el/docs/add-bills/', 'doc-el', { full: false } );
+await visit( 'docs/add-money/', 'doc-en', { full: false } );
+await visit( 'el/docs/add-money/', 'doc-el', { full: false } );
 await visit( 'docs/', 'docs-home', { full: false } );
 await visit( 'el/docs/', 'docs-home-el', { full: false } );
 await visit( 'app/', 'app', { full: false } );

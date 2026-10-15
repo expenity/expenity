@@ -2,43 +2,55 @@
 
 ## Is Expenity free?
 
-Yes, and it is open source. There are no accounts, ads or paid tiers today.
+Yes, and it is open source. There are no ads and no paid tiers today.
 
-## Does it work on my iPhone, Android phone and computer?
+## Does it work on my iPhone, Android phone, tablet and computer?
 
-Yes. It is a web app that runs in any modern browser, and you can install it: see [Install on your device](install-on-your-device.md). Your data is stored per device, though.
+Yes. It is a web app that runs in any modern browser, and you can add it to your home screen like an app: see [Install on your device](install-on-your-device.md). Sign in with the same account on each device and your data follows you.
 
-## Can I see my bills on my phone and my laptop?
+## Do I need an account?
 
-Not automatically yet. Syncing needs a server and is planned. For now, download a backup on one device and restore it on the other, and use the [calendar file](reminders.md) for reminders everywhere.
+You can try Expenity without one, and your data then stays in that browser only. An account (created with a passkey, no password) gives you sync between devices, a backup in case you lose a device, and shared wallets. See [Account and sync](account-and-sync.md).
+
+## What is a passkey?
+
+Your fingerprint, face or device PIN, used instead of a password. Your device keeps the secret; Expenity only stores a public key. If you lose your passkeys, the recovery codes you saved at sign-up get you back in.
+
+## I lost my passkey and my recovery codes.
+
+Email verification is not switched on yet, so there is no other way in. This is the trade-off of having no passwords. Save your recovery codes when you create the account, and add a second passkey on another device in More → Account and sync.
 
 ## Will it remind me when the app is closed?
 
-Through your calendar, yes: download the calendar file from Settings and import it. Expenity itself can only notify you while it is open, because a website cannot wake a phone on its own. Push and email reminders are planned. See [Reminders](reminders.md).
+Through your calendar, yes: download the calendar file from More → Reminders and calendar and import it. Expenity itself can only notify you while it is open, because a website cannot wake a phone on its own. Push and email reminders are planned. See [Reminders](reminders.md).
 
 ## Why not just connect to my bank?
 
-Reading a bank account would make Expenity handle credentials and sensitive data, which we would rather avoid. You tell it what you pay, it tells you when.
+Reading a bank account would make Expenity handle bank credentials and sensitive data, which we would rather avoid. You tell it what you spend and earn; it tells you where it goes.
 
-## Where are my bills stored? What if I clear my browser?
+## Where is my data stored? Can you read it?
 
-In your browser on this device. Clearing site data removes them, so use **Settings → Download backup** regularly.
+On your device, and, if you have an account, on Expenity's server (Cloudflare) so it can sync. It is protected by your account, but it is **not end-to-end encrypted**, so treat it like any online service. Expenity does not sell or share it. See [Privacy and your data](privacy-and-your-data.md).
 
-## Can several people share the bills?
+## Can several people share a wallet?
 
-Not yet. Shared households are planned.
+Yes. Share a wallet with an invite code or link and choose whether people can edit or only view. See [Shared wallets](shared-wallets.md).
 
 ## Does it support Greek?
 
-Yes. Press ΕΛ at the top, or choose the language in Settings. The app, this help center and the website are in English and Greek, and the sentence box understands both.
+Yes. Choose the language on the welcome screen, or in More → Appearance and language. The app, this help center and the website are in English and Greek, and the sentence box understands both. The Greek text is still being reviewed by a native speaker: please tell us what to improve.
 
 ## Which currencies?
 
-Any currency by its three-letter code. Totals are shown per currency; there is no conversion.
+Any currency by its three-letter code. A wallet has one currency, and totals are converted to your main currency with daily European Central Bank rates, marked with ≈. See [Wallets and currencies](wallets-and-currencies.md).
+
+## Is the advice in "Ideas" financial advice?
+
+No. Ideas are simple observations about your own data, such as "this subscription costs €192 a year". Decide for yourself.
 
 ## The sentence box got something wrong.
 
-It is a helper. Correct the field in the form below it. If you have a sentence that should work, please [open an issue](https://github.com/expenity/expenity/issues) with the exact text.
+It is a helper. Correct the fields below it. If you have a sentence that should work, please [open an issue](https://github.com/expenity/expenity/issues) with the exact text.
 
 ## How do I report a bug or suggest something?
 

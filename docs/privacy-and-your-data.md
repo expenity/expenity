@@ -1,28 +1,35 @@
 # Privacy and your data
 
-## Your data stays on your device
+## What is stored, and where
 
-Your bills and payments are saved in your browser's local storage on the device you are using. They are not sent to a server, because Expenity has no server that stores them. There is no account, no sign-in and no profile.
+**On your device.** Expenity saves everything in your browser first, so it works offline. Without an account, that is the only place your data lives.
 
-The website and the app count visits anonymously with Cloudflare Web Analytics: no cookies and no personal data, and never the contents of your bills.
+**On Expenity's server, if you create an account.** To sync between your devices, your email address and your data (wallets, transactions, bills, budgets, goals, categories, recurring income and some settings) are stored on a Cloudflare Worker and database (D1). The server is operated by the author of Expenity. The data is protected by your account, the connection is encrypted in transit, and access needs your passkey. It is **not end-to-end encrypted**: the server can technically read it, like most online services. It is not sold, shared, or used for advertising.
 
-Expenity never asks for bank details, never connects to a bank and never moves money. The payment link on a bill just opens the page you saved.
+**Passkeys.** The server stores only the public part of each passkey. Recovery codes are stored hashed.
+
+**Shared wallets.** If you share a wallet, the people you invite can see that wallet's transactions and each other's email address. Nothing else of yours.
+
+**Exchange rates.** The app asks the Expenity server for public currency rates once a day. No personal data is sent with that request.
+
+**Analytics.** The website and the app count visits anonymously with Cloudflare Web Analytics: no cookies, no personal data, never the contents of your wallets.
+
+**Bank details.** Expenity never asks for bank details, never connects to a bank and never moves money. A payment link on a bill just opens the page you saved.
 
 ## Back up and restore
 
-Because the data is in your browser, clearing the site's data (or losing the device) removes it. Keep a backup.
+Even with an account, you can keep your own copy. In **More → Data and backup**:
 
-In **Settings → Your data**:
+- **Download backup (JSON)** saves your wallets, transactions, bills, budgets, goals and income schedules.
+- **Restore a backup** reads such a file and replaces the current data after you confirm. This is also how you move data from the guest mode of one browser to another.
+- **Transactions as CSV** exports your history for a spreadsheet.
 
-- **Download backup (JSON)** saves everything: bills, payments and settings.
-- **Restore a backup** reads such a file and replaces the current data (after you confirm). This is also how you move your bills to another device.
-- **Payments as CSV** exports your payment history for a spreadsheet.
-
-![The settings page.](images/settings.png)
+Without an account, clearing the site's data (or losing the device) removes your data, so back up regularly.
 
 ## Delete everything
 
-**Settings → Delete all my data** removes all bills and payments from this browser. It cannot be undone, so download a backup first if you might want them back.
+- **Delete all my data** (More → Data and backup) removes everything from this browser. If you are signed in, your data comes back from your account at the next sync, so it only clears this device.
+- **Delete my account** (More → Account and sync) deletes your account and everything stored on the server. It asks for your passkey and cannot be undone. Wallets you own and share are deleted for everyone.
 
 ## Notifications
 
@@ -30,8 +37,8 @@ If you turn notifications on, your browser asks permission and shows them locall
 
 ## The calendar file
 
-The calendar file you download contains your bill names, amounts and notes. When you import it into Google, Apple or Outlook calendar, it is stored by that service under its own privacy rules. Do not put sensitive details in notes if that matters to you.
+The calendar file you download contains your bill names, amounts and notes. When you import it into Google, Apple or Outlook calendar, it is stored by that service under its own privacy rules. Avoid sensitive details in notes if that matters to you.
 
 ## Open source
 
-The code is public, so you can check all of this: [github.com/expenity/expenity](https://github.com/expenity/expenity).
+The app and the server are public, so you can check all of this: [github.com/expenity/expenity](https://github.com/expenity/expenity).
