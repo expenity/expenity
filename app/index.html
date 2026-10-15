@@ -2,88 +2,58 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Expenity: your bills and subscriptions, calmly in one place</title>
-<meta name="description" content="Track bills and subscriptions, get reminders before they are due, see what is coming up. Free, private, works on every device.">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://static.cloudflareinsights.com; connect-src 'self' https://expenity-api.george-stathopoulos.workers.dev https://cloudflareinsights.com http://localhost:* http://127.0.0.1:*; img-src 'self' data:; style-src 'self' 'unsafe-inline'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<title>Expenity: your money, calmly in one place</title>
+<meta name="description" content="Track expenses, income, bills and subscriptions. Sign in with a passkey and use it on every device. Free, English and Greek.">
 <meta name="theme-color" content="#0a8f6a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Expenity">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="format-detection" content="telephone=no">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-192.png">
 <!-- Cloudflare Web Analytics: counts visits anonymously, no cookies --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "64332b427a604e879f82853393ebdb0d"}'></script><!-- End Cloudflare Web Analytics -->
 <link rel="stylesheet" href="style.css">
-<script>try{var t=localStorage.getItem('expenity.theme');if(t==='dark'||t==='light')document.documentElement.dataset.theme=t;}catch(e){}</script>
+<link rel="stylesheet" href="themes.css">
+<script src="theme.js"></script>
 </head>
 <body>
-<a class="skip" href="#view" data-i18n="skip">Skip to content</a>
-<header class="top">
-	<a class="brand" href="./" aria-label="Expenity"><span id="logo"></span><span class="brand-name">Expen<b>ity</b></span></a>
-	<nav class="tabs" id="tabs" data-i18n-aria="tabsAria" aria-label="Views">
-		<button type="button" data-tab="today" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7v5l3 2"/><circle cx="12" cy="12" r="9"/></svg><span data-i18n="tabToday">Today</span></button>
-		<button type="button" data-tab="calendar"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><span data-i18n="tabCalendar">Calendar</span></button>
-		<button type="button" data-tab="insights"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V4M4 20h16M8 16v-5M12 16V8M16 16v-3"/></svg><span data-i18n="tabInsights">Insights</span></button>
-		<button type="button" data-tab="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></svg><span data-i18n="tabSettings">Settings</span></button>
-	</nav>
-	<button type="button" class="lang-btn" id="langBtn" lang="el" aria-label="Ελληνικά">ΕΛ</button>
-	<button type="button" class="btn btn-primary add-btn" id="addBtn" data-i18n-aria="addBillAria" aria-label="Add a bill"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span data-i18n="addBill">Add bill</span></button>
-</header>
+<div class="app" id="app">
+	<nav class="rail" id="rail" aria-label="Main"></nav>
+	<div class="col">
+		<header class="appbar" id="appbar"></header>
+		<div class="ptr" id="ptr" aria-hidden="true"><span></span></div>
+		<main id="view" tabindex="-1"></main>
+		<nav class="tabbar" id="tabbar" aria-label="Main"></nav>
+	</div>
+	<aside class="pane" id="pane" aria-label="Details"></aside>
+</div>
 
-<main id="view" tabindex="-1"></main>
-
-<footer class="credits" id="credits">
-	<span data-i18n="footerNote">Expenity is free and open source. Your data stays in this browser.</span>
-	<span class="credit-links"><a href="https://george-stathopoulos.github.io/expenity/docs/" data-i18n="help">Help</a> · <a href="https://george-stathopoulos.github.io/">George Stathopoulos</a> · <a href="https://george-stathopoulos.github.io/blog/" data-i18n="blog">Blog</a> · <span data-i18n="projects">Projects</span>: <a href="https://george-stathopoulos.github.io/gatehouse/">Gatehouse</a>, <a href="https://george-stathopoulos.github.io/helpdesk-hero/">Helpdesk Hero</a>, <a href="https://george-stathopoulos.github.io/fixpass/">Fixpass</a>, <a href="https://george-stathopoulos.github.io/sheetpilot/">SheetPilot</a></span>
-</footer>
-
-<dialog id="billDlg" aria-labelledby="billTitle">
-	<form method="dialog" id="billForm" novalidate>
-		<div class="dlg-head"><h2 id="billTitle">Add a bill</h2><button type="button" class="icon" data-close data-i18n-aria="close" aria-label="Close">×</button></div>
-		<div class="quick" id="quickWrap">
-			<label for="quick" data-i18n="quickLabel">Type it in a sentence</label>
-			<input id="quick" type="text" autocomplete="off" data-i18n-ph="quickPh" placeholder="Netflix 15.99 monthly on the 3rd" spellcheck="false">
-			<div class="chips" id="chips" aria-live="polite"></div>
-			<div class="tpls" id="tpls" data-i18n-aria="templatesAria" aria-label="Templates"></div>
-		</div>
-		<div class="grid2">
-			<label class="f full"><span data-i18n="fName">Name</span><input name="name" required maxlength="80" autocomplete="off"></label>
-			<label class="f"><span data-i18n="fAmount">Amount</span><input name="amount" inputmode="decimal" placeholder="0.00" autocomplete="off"></label>
-			<label class="f"><span data-i18n="fCurrency">Currency</span><input name="currency" list="curList" maxlength="3" autocomplete="off"><datalist id="curList"><option>EUR</option><option>USD</option><option>GBP</option><option>CHF</option><option>CAD</option><option>AUD</option><option>SEK</option><option>NOK</option><option>DKK</option><option>PLN</option><option>TRY</option></datalist></label>
-			<label class="f"><span data-i18n="fNext">Next due date</span><input name="next" type="date" required></label>
-			<label class="f"><span data-i18n="fRepeats">Repeats</span><select name="repeat">
-				<option value="once" data-i18n="rOnce">Once</option><option value="weekly" data-i18n="rWeekly">Every week</option><option value="biweekly" data-i18n="rBiweekly">Every 2 weeks</option><option value="monthly" data-i18n="rMonthly">Every month</option><option value="quarterly" data-i18n="rQuarterly">Every 3 months</option><option value="yearly" data-i18n="rYearly">Every year</option>
-			</select></label>
-			<label class="f"><span data-i18n="fCategory">Category</span><select name="category" id="catSel"></select></label>
-			<label class="f"><span data-i18n="fRemind">Remind me</span><select name="lead" id="leadSel"></select></label>
-			<label class="f full chk"><input type="checkbox" name="variable"> <span data-i18n="fVariable">The amount changes each time (treat it as an estimate)</span></label>
-			<label class="f full chk"><input type="checkbox" name="autopay"> <span data-i18n="fAutopay">Paid automatically (remind me to check it went through)</span></label>
-			<label class="f"><span data-i18n="fEnd">Ends on (optional)</span><input name="end" type="date"></label>
-			<label class="f"><span data-i18n="fRef">Payment reference</span><input name="reference" maxlength="80" autocomplete="off" data-i18n-ph="fRefPh" placeholder="IBAN, RF code, account no."></label>
-			<label class="f full"><span data-i18n="fUrl">Payment link (optional)</span><input name="payUrl" type="url" placeholder="https://" autocomplete="off"></label>
-			<label class="f full"><span data-i18n="fNotes">Notes</span><textarea name="notes" rows="2" maxlength="400"></textarea></label>
-		</div>
-		<p class="err" id="formErr" role="alert" hidden></p>
-		<div class="dlg-foot">
-			<button type="button" class="btn btn-danger" id="delBtn" data-i18n="del" hidden>Delete</button>
-			<span class="sp"></span>
-			<button type="button" class="btn btn-ghost" data-close data-i18n="cancel">Cancel</button>
-			<button type="submit" class="btn btn-primary" id="saveBtn" data-i18n="saveBill">Save bill</button>
-		</div>
-	</form>
+<dialog id="sheet" class="sheet" aria-labelledby="sheetTitle">
+	<div class="sheet-grab" aria-hidden="true"><i></i></div>
+	<div class="sheet-scroll"><div class="sheet-body" tabindex="-1"></div></div>
 </dialog>
 
-<dialog id="payDlg" aria-labelledby="payTitle">
-	<form method="dialog" id="payForm">
-		<div class="dlg-head"><h2 id="payTitle" data-i18n="payTitle">Mark as paid</h2><button type="button" class="icon" data-close data-i18n-aria="close" aria-label="Close">×</button></div>
-		<p class="muted" id="payFor"></p>
-		<div class="grid2">
-			<label class="f"><span data-i18n="payAmount">Amount paid</span><input name="amount" inputmode="decimal" autocomplete="off"></label>
-			<label class="f"><span data-i18n="payOn">Paid on</span><input name="paidOn" type="date" required></label>
-		</div>
-		<div class="dlg-foot"><span class="sp"></span><button type="button" class="btn btn-ghost" data-close data-i18n="cancel">Cancel</button><button type="submit" class="btn btn-primary" data-i18n="markPaid">Mark paid</button></div>
-	</form>
-</dialog>
-
+<div class="flow" id="flow" hidden></div>
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+<datalist id="curList"><option>EUR</option><option>USD</option><option>GBP</option><option>CHF</option><option>CAD</option><option>AUD</option><option>SEK</option><option>NOK</option><option>DKK</option><option>PLN</option><option>TRY</option></datalist>
+
+<script src="icons.js"></script>
 <script src="i18n.js"></script>
+<script src="core.js"></script>
+<script src="sync.js"></script>
+<script src="ui.js"></script>
+<script src="views.js"></script>
+<script src="forms.js"></script>
+<script src="themes.js"></script>
+<script src="reports.js"></script>
+<script src="plan.js"></script>
+<script src="insights.js"></script>
+<script src="share.js"></script>
+<script src="flow.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

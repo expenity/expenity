@@ -1,3 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: https://george-stathopoulos.github.io/expenity/sitemap.xml
+Sitemap: https://expenity.github.io/expenity/sitemap.xml
