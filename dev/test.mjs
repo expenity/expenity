@@ -421,6 +421,20 @@ for ( const w of [ 320, 360, 390, 430 ] ) {
 	await c.close();
 }
 
+/* ---- Home order, and Reports: an "All" view and icons on the tabs */
+{
+	const { context: c, page: p } = await newPage( { viewport: { width: 390, height: 844 } } );
+	await p.evaluate( () => { window.EXA.skipFlow(); const X = window.EX, S = X.state(), td = X.today(); S.settings.aims = [ 'save' ]; S.bills.push( { id: 'hb', name: 'Rent', amount: '500', currency: 'EUR', category: 'housing', repeat: 'monthly', next: X.addDays( td, 2 ), day: 1, account: S.accounts[ 0 ].id } ); S.txs.push( { id: 'ht', type: 'income', amount: '1000', category: 'salary', date: td, name: 'Salary', account: S.accounts[ 0 ].id } ); S.goals = []; X.save(); window.EXA.go( 'home' ); } );
+	const order = await p.evaluate( () => [ ...document.querySelectorAll( '#view .sec-head h2' ) ].map( ( h ) => h.textContent ) );
+	ok( order.indexOf( 'Due soon' ) >= 0 && ( order.indexOf( 'Ideas for you' ) < 0 || order.indexOf( 'Due soon' ) < order.indexOf( 'Ideas for you' ) ), 'home: Due soon comes before Ideas for you', order.join( ' | ' ) );
+	await p.evaluate( () => window.EXA.go( 'reports' ) );
+	ok( await p.locator( '.tabs2 .chip.on' ).innerText().then( ( s ) => /All/.test( s ) ), 'reports: opens on All' );
+	ok( await p.locator( '.tabs2 .chip svg' ).count() === 8, 'reports: every tab has an icon' );
+	ok( await p.locator( '.rep-sec' ).count() === 6, 'reports: All shows every report with a heading and an Open link' );
+	await p.click( '.rep-sec [data-tab=forecast]' ); ok( await p.locator( '.tabs2 .chip.on' ).innerText().then( ( s ) => /Forecast/.test( s ) ), 'reports: Open goes to that report' );
+	await c.close();
+}
+
 /* ---- Migration from version 0.1 */
 {
 	const ctx2 = await browser.newContext( { locale: 'en-US' } );

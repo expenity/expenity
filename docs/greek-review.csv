@@ -332,6 +332,8 @@
 "cashFlow","Reports","Income and expenses, month by month","Έσοδα και έξοδα, μήνα με μήνα",""
 "repSpent","Reports","Spent","Έξοδα",""
 "repForecast","Reports","Bills coming up","Λογαριασμοί που έρχονται",""
+"repAll","Reports","All","Όλα",""
+"repOpen","Reports","Open","Άνοιγμα",""
 "repFlowTab","Reports","Cash flow","Ταμειακή ροή",""
 "repForecastTab","Reports","Forecast","Πρόβλεψη",""
 "repSubsTab","Reports","Subscriptions","Συνδρομές",""

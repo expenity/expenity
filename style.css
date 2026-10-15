@@ -345,3 +345,6 @@ body, .card, .list, .hero, .wc, .promo, .tabbar, .appbar, .rail, .chip, .theme-c
 /* Category icon and colour picker */
 .cat-prev { display: flex; justify-content: center; margin: 4px 0 12px; } .cat-icons { grid-template-columns: repeat(5, minmax(0, 1fr)); } @media (min-width: 420px) { .cat-icons { grid-template-columns: repeat(8, minmax(0, 1fr)); } }
 .color-pick { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 8px; margin-bottom: 12px; } .cpick { display: grid; place-items: center; min-height: 44px; border: 2px solid transparent; border-radius: 50%; background: none; } .cpick i { display: block; width: 30px; height: 30px; border-radius: 50%; background: var(--tfg); } .cpick.on { border-color: var(--ink); }
+
+.rep-sec { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 22px 0 8px; padding-top: 4px; border-top: 1px solid var(--line); } .rep-sec h3 { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 17px; font-family: var(--font-head); color: var(--accent-2); } .rep-sec:first-child { border-top: 0; margin-top: 6px; }
+.tabs2 .chip { gap: 6px; padding: 0 12px; }

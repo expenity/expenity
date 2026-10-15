@@ -147,11 +147,11 @@
 		return `<section class="hero" aria-label="${ esc( t( 'balanceAria' ) ) }"><small>${ esc( t( 'ovBalance' ) ) }</small><b>${ esc( total ) }</b>
 				<div class="hero-tiles"><div><span class="k">${ UI.icon( 'arrow-down-left', 18 ) } ${ esc( t( 'ovIncome' ) ) }</span><b>${ esc( inc ) }</b></div><div><span class="k">${ UI.icon( 'arrow-up-right', 18 ) } ${ esc( t( 'ovExpenses' ) ) }</span><b>${ esc( exp ) }</b></div></div></section>
 			${ promos() }
+			<div class="sec-head"><h2>${ esc( t( 'dueSoon' ) ) }</h2><button type="button" class="link" data-go="bills">${ esc( t( 'seeAll' ) ) }</button></div>
+			${ upcoming.length ? `<ul class="list">${ upcoming.map( ( b ) => billItem( b ) ).join( '' ) }</ul>` : `<p class="muted pad">${ esc( t( 'noDue' ) ) }</p>` }
 			${ EXA.ideasHome() }
 			<div class="sec-head"><h2>${ esc( t( 'wallets' ) ) }</h2><button type="button" class="link" data-more="wallets">${ esc( t( 'ovManage' ) ) }</button></div>
 			<div class="wallets">${ wallets.map( ( a ) => `<button type="button" class="wc" data-act="edit-wallet" data-id="${ esc( a.id ) }">${ UI.walletCi( a, 36 ) }<span>${ a.space ? UI.icon( 'users', 14 ) + ' ' : '' }${ esc( a.name ) }</span><b>${ esc( money( EX.balance( a ) / 100, a.currency ) ) }</b></button>` ).join( '' ) }<button type="button" class="wc add" data-act="add-wallet">${ UI.icon( 'plus', 26 ) }<span>${ esc( t( 'newWallet' ) ) }</span></button></div>
-			<div class="sec-head"><h2>${ esc( t( 'dueSoon' ) ) }</h2><button type="button" class="link" data-go="bills">${ esc( t( 'seeAll' ) ) }</button></div>
-			${ upcoming.length ? `<ul class="list">${ upcoming.map( ( b ) => billItem( b ) ).join( '' ) }</ul>` : `<p class="muted pad">${ esc( t( 'noDue' ) ) }</p>` }
 			${ EXA.planHome() }
 			<div class="sec-head"><h2>${ esc( t( 'ovRecent' ) ) }</h2><button type="button" class="link" data-go="activity">${ esc( t( 'seeAll' ) ) }</button></div>
 			${ recent.length ? `<ul class="list">${ recent.map( txItem ).join( '' ) }</ul>` : `<p class="muted pad">${ esc( t( 'txNoneHint' ) ) }</p>` }`;

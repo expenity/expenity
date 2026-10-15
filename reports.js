@@ -12,7 +12,7 @@
 	const st = EXA.st;
 	const $ = ( s, r = document ) => r.querySelector( s );
 	const R = ( EXA.rep = {} );
-	st.rep = { tab: 'overview', period: 'month', from: '', to: '', wallet: '', cat: '', type: 'all', q: '', sort: 'date', dir: -1, group: 'none' };
+	st.rep = { tab: 'all', period: 'month', from: '', to: '', wallet: '', cat: '', type: 'all', q: '', sort: 'date', dir: -1, group: 'none' };
 	const f = () => st.rep;
 	const main = () => S().settings.currency;
 	const num = ( v ) => Number( String( v == null ? '' : v ).replace( ',', '.' ) ) || 0;
@@ -99,13 +99,14 @@
 	/* ------------------------------------------------------------------ Filter bar */
 
 	const PERIODS = [ [ 'month', 'periodMonth' ], [ 'last', 'repLast' ], [ '3m', 'period3' ], [ 'ytd', 'periodYear' ], [ '12m', 'rep12' ], [ 'custom', 'repCustom' ] ];
-	const TABS = [ [ 'overview', 'repOverview' ], [ 'spending', 'repSpending' ], [ 'flow', 'repFlowTab' ], [ 'trends', 'repTrends' ], [ 'forecast', 'repForecastTab' ], [ 'subs', 'repSubsTab' ], [ 'table', 'repTable' ] ];
+	const TAB_ICON = { all: 'list-details', overview: 'layout-dashboard', spending: 'chart-donut', flow: 'chart-bar', trends: 'chart-line', forecast: 'trending-up', subs: 'repeat', table: 'table' };
+	const TABS = [ [ 'all', 'repAll' ], [ 'overview', 'repOverview' ], [ 'spending', 'repSpending' ], [ 'flow', 'repFlowTab' ], [ 'trends', 'repTrends' ], [ 'forecast', 'repForecastTab' ], [ 'subs', 'repSubsTab' ], [ 'table', 'repTable' ] ];
 	function filterBar() {
 		const r = R.range(), n = [ f().wallet, f().cat, f().type !== 'all' ? 1 : '', f().q ].filter( Boolean ).length;
 		return `<div class="repbar"><label class="f"><span class="sr">${ esc( t( 'repPeriod' ) ) }</span><select id="repPeriod" aria-label="${ esc( t( 'repPeriod' ) ) }">${ PERIODS.map( ( [ id, k ] ) => `<option value="${ id }"${ f().period === id ? ' selected' : '' }>${ esc( t( k ) ) }</option>` ).join( '' ) }</select></label>
 			${ f().period === 'custom' ? `<div class="grid2"><label class="f"><span>${ esc( t( 'repFrom' ) ) }</span><input type="date" id="repFrom" value="${ esc( f().from || r.from ) }"></label><label class="f"><span>${ esc( t( 'repTo' ) ) }</span><input type="date" id="repTo" value="${ esc( f().to || r.to ) }"></label></div>` : '' }
 			<div class="repline"><span class="muted small">${ esc( short( r.from ) ) } – ${ esc( short( r.to ) ) }</span><button type="button" class="btn btn-ghost sm" data-rep="filters">${ UI.icon( 'filter', 18 ) } ${ esc( t( 'repFilters' ) ) }${ n ? ` (${ n })` : '' }</button></div>
-			<div class="chips tabs2" role="tablist">${ TABS.map( ( [ id, k ] ) => `<button type="button" class="chip${ f().tab === id ? ' on' : '' }" role="tab" aria-selected="${ f().tab === id }" data-rep="tab" data-tab="${ id }">${ esc( t( k ) ) }</button>` ).join( '' ) }</div></div>`;
+			<div class="chips tabs2" role="tablist">${ TABS.map( ( [ id, k ] ) => `<button type="button" class="chip${ f().tab === id ? ' on' : '' }" role="tab" aria-selected="${ f().tab === id }" data-rep="tab" data-tab="${ id }">${ UI.icon( TAB_ICON[ id ], 18 ) } ${ esc( t( k ) ) }</button>` ).join( '' ) }</div></div>`;
 	}
 	function openFilters() {
 		const wallets = EX.activeAccounts(), cats = EX.catList( 'expense' ).concat( EX.catList( 'income' ) );
@@ -213,10 +214,17 @@
 
 	/* ------------------------------------------------------------------ Screen and events */
 
+	/** Every report one after the other, each with a heading and a link to open it on its own (the table is only linked: it is long). */
+	function all( r, list ) {
+		const sec = ( id, label, html ) => `<div class="rep-sec"><h3>${ UI.icon( TAB_ICON[ id ], 20 ) } ${ esc( label ) }</h3><button type="button" class="link" data-rep="tab" data-tab="${ id }">${ esc( t( 'repOpen' ) ) }</button></div>${ html }`;
+		const noDonut = ( h ) => h.replace( /^<section class="card">[\s\S]*?<\/section>\s*/, '' ); // the overview already shows the donut
+		return sec( 'overview', t( 'repOverview' ), overview( r, list ) ) + sec( 'spending', t( 'repSpending' ), noDonut( spending( r, list ) ) ) + sec( 'flow', t( 'repFlowTab' ), flow( r, list ) ) + sec( 'trends', t( 'repTrends' ), trends( r, list ) )
+			+ sec( 'forecast', t( 'repForecastTab' ), forecast() ) + sec( 'subs', t( 'repSubsTab' ), subs() ) + `<div class="btn-row"><button type="button" class="btn btn-ghost" data-rep="tab" data-tab="table">${ UI.icon( 'table', 20 ) } ${ esc( t( 'repTable' ) ) }</button></div>`;
+	}
 	EXA.reports = () => {
 		if ( ! S().bills.length && ! S().txs.length && ! S().incomes.length ) return `<div class="empty">${ UI.ci( 'chart-pie', 'purple', 80 ) }<h2>${ esc( t( 'tabReports' ) ) }</h2><p class="muted">${ esc( t( 'emptyIns' ) ) }</p></div>`;
 		const r = R.range(), list = pick( r.from, r.to );
-		const body = { overview: () => overview( r, list ), spending: () => spending( r, list ), flow: () => flow( r, list ), trends: () => trends( r, list ), forecast: forecast, subs, table: () => table( r ) }[ f().tab ]();
+		const body = { all: () => all( r, list ), overview: () => overview( r, list ), spending: () => spending( r, list ), flow: () => flow( r, list ), trends: () => trends( r, list ), forecast: forecast, subs, table: () => table( r ) }[ f().tab ]();
 		return `${ filterBar() }<div class="rep-body" id="repBody">${ body }</div>`;
 	};
 	const csvCell = ( v ) => `"${ String( v ).replace( /"/g, '""' ) }"`;
