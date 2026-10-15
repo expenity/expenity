@@ -192,8 +192,10 @@
 	} );
 
 	function wipeLocal() {
+		const dev = S().device;
 		setAuth( null, null );
 		EX.resetState();
+		Object.assign( S().device, { installDismissed: dev.installDismissed, motion: dev.motion } ); // what this device chose stays; the person's data goes
 		EX.persist();
 		setStatus( 'off' );
 		EX.emit( 'remote' );
@@ -276,6 +278,22 @@
 		const path = scope ? `/api/spaces/${ scope }/sync` : '/api/sync';
 		const meta = scope ? spaces()[ scope ] : S().sync;
 		let rounds = 0, changed = false;
+		// A device that has never synced with this store (just signed in) pulls first and pushes second. Otherwise its blank
+		// defaults (an empty name, "setup not done") would be sent as the newest copy and overwrite the person's real ones.
+		if ( meta.rev === 0 ) {
+			let res = await api( 'POST', path, { since: 0, changes: [] } );
+			if ( scope && res.status === 404 ) return 'gone';
+			if ( ! res.ok ) { setStatus( res.status === 0 ? 'offline' : res.status === 401 ? 'off' : 'error' ); scheduleRetry(); return 'fail'; }
+			if ( applyRemote( res.json.changes, {}, scope ) ) changed = true;
+			meta.rev = res.json.rev;
+			while ( res.json.more ) {
+				res = await api( 'POST', path, { since: meta.rev, changes: [] } );
+				if ( ! res.ok ) break;
+				if ( applyRemote( res.json.changes, {}, scope ) ) changed = true;
+				meta.rev = res.json.rev;
+			}
+			EX.persist();
+		}
 		do {
 			again = false;
 			const { changes, sent } = collect( true, scope );
