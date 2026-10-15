@@ -1,8 +1,8 @@
 # Reminders
 
-A website cannot wake your phone when it is closed. That is a limit of how browsers work, and Duenest does not hide it. So there are two kinds of reminder, and they work together.
+A website cannot wake your phone when it is closed. That is a limit of how browsers work, and Expenity does not hide it. So there are two kinds of reminder, and they work together.
 
-## 1. Your calendar (works when Duenest is closed)
+## 1. Your calendar (works when Expenity is closed)
 
 This is the reminder to rely on.
 
@@ -21,12 +21,12 @@ How to import:
 Things to know:
 
 - The file is a snapshot. When you add or change bills, download it again. Importing again may create duplicates of events, so remove the earlier import first.
-- Marking a bill paid in Duenest does not change the calendar. For a repeating bill that is fine, because the next due date is already in the repeat.
+- Marking a bill paid in Expenity does not change the calendar. For a repeating bill that is fine, because the next due date is already in the repeat.
 - Reminders arrive however your calendar delivers them: notification, sound or email, as you set it up there.
 
-## 2. Notifications while Duenest is open
+## 2. Notifications while Expenity is open
 
-In **Settings → Notifications while Duenest is open**, press **Turn on** and allow notifications when your browser asks. When you open Duenest or keep it in a tab, you get one notification a day for bills that are due within their reminder window and are not snoozed.
+In **Settings → Notifications while Expenity is open**, press **Turn on** and allow notifications when your browser asks. When you open Expenity or keep it in a tab, you get one notification a day for bills that are due within their reminder window and are not snoozed.
 
 This does not work when the app is fully closed. For that, use the calendar file.
 

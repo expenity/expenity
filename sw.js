@@ -1,5 +1,5 @@
-/* Duenest service worker: the app works offline. Network first, so updates arrive as soon as you are online. */
-const CACHE = 'duenest-v1';
+/* Expenity service worker: the app works offline. Network first, so updates arrive as soon as you are online. */
+const CACHE = 'expenity-v1';
 const FILES = [ './', 'index.html', 'app.js', 'i18n.js', 'style.css', 'favicon.svg', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png' ];
 
 self.addEventListener( 'install', ( e ) => {

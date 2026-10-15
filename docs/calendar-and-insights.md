@@ -24,11 +24,11 @@ Thirteen columns, one per week, starting today. The height is the amount due tha
 
 ### Price changes
 
-When the last two payments you recorded for a bill differ by 5% or more, Duenest says so, for example "Electricity went from €58 to €64 (+10%)". This only works if you record the real amount when you mark a bill paid.
+When the last two payments you recorded for a bill differ by 5% or more, Expenity says so, for example "Electricity went from €58 to €64 (+10%)". This only works if you record the real amount when you mark a bill paid.
 
 ### Paid this year, by category
 
-How much you paid this year in each category, as bars with percentages. It counts the payments you marked paid in Duenest, so it grows as you use the app.
+How much you paid this year in each category, as bars with percentages. It counts the payments you marked paid in Expenity, so it grows as you use the app.
 
 ### Subscriptions
 
@@ -36,4 +36,4 @@ Bills in the **Subscriptions** category that repeat are shown with what they cos
 
 ## Currencies
 
-Each bill has its own currency. Totals are shown per currency (for example "€120 + $15"). Duenest does not convert between currencies.
+Each bill has its own currency. Totals are shown per currency (for example "€120 + $15"). Expenity does not convert between currencies.

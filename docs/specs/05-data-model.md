@@ -49,7 +49,7 @@ users ──< notification_channels
 
 **activity_log**: id, household_id, actor_user_id, action, entity_type, entity_id, diff (JSON).
 
-**subscriptions_billing** (for Duenest's own plans): household_id, stripe_customer_id, stripe_subscription_id, status.
+**subscriptions_billing** (for Expenity's own plans): household_id, stripe_customer_id, stripe_subscription_id, status.
 
 ## Derived concepts
 

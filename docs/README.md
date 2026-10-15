@@ -1,8 +1,8 @@
-# Duenest documentation
+# Expenity documentation
 
-The same guides as the [help center on the website](https://george-stathopoulos.github.io/duenest/docs/). Ελληνικά: [οδηγοί στα ελληνικά](el/README.md).
+The same guides as the [help center on the website](https://george-stathopoulos.github.io/expenity/docs/). Ελληνικά: [οδηγοί στα ελληνικά](el/README.md).
 
-## Using Duenest
+## Using Expenity
 
 | Guide | What it covers |
 |---|---|

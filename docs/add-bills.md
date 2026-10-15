@@ -4,7 +4,7 @@ Every bill has a name, an optional amount, a next due date and how often it repe
 
 ## Type a sentence
 
-At the top of the Add dialog, type what you pay in your own words. Duenest picks out the name, the amount, the currency, how often it repeats and the date, in English or in Greek. The chips under the box show what it understood, and the form fills as you type. Press Enter to jump to the form and check it.
+At the top of the Add dialog, type what you pay in your own words. Expenity picks out the name, the amount, the currency, how often it repeats and the date, in English or in Greek. The chips under the box show what it understood, and the form fills as you type. Press Enter to jump to the form and check it.
 
 | You type | You get |
 |---|---|
@@ -38,7 +38,7 @@ Under the sentence box there are templates: Rent, Electricity, Water, Internet, 
 | Paid automatically | For direct debits. The button says "Checked" and the point is to confirm the payment went through. |
 | Ends on | The last date a repeating bill is due, for example the end of a loan. |
 | Payment reference | IBAN, RF code or account number. Copy it from the ⋯ menu. |
-| Payment link | Opens your bank's or provider's payment page from the ⋯ menu. Duenest never pays for you. |
+| Payment link | Opens your bank's or provider's payment page from the ⋯ menu. Expenity never pays for you. |
 
 ## Mark a bill paid
 

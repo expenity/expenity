@@ -2,11 +2,11 @@
 
 ## Your data stays on your device
 
-Your bills and payments are saved in your browser's local storage on the device you are using. They are not sent to a server, because Duenest has no server that stores them. There is no account, no sign-in and no profile.
+Your bills and payments are saved in your browser's local storage on the device you are using. They are not sent to a server, because Expenity has no server that stores them. There is no account, no sign-in and no profile.
 
 The website and the app count visits anonymously with Cloudflare Web Analytics: no cookies and no personal data, and never the contents of your bills.
 
-Duenest never asks for bank details, never connects to a bank and never moves money. The payment link on a bill just opens the page you saved.
+Expenity never asks for bank details, never connects to a bank and never moves money. The payment link on a bill just opens the page you saved.
 
 ## Back up and restore
 
@@ -34,4 +34,4 @@ The calendar file you download contains your bill names, amounts and notes. When
 
 ## Open source
 
-The code is public, so you can check all of this: [github.com/george-stathopoulos/duenest](https://github.com/george-stathopoulos/duenest).
+The code is public, so you can check all of this: [github.com/george-stathopoulos/expenity](https://github.com/george-stathopoulos/expenity).

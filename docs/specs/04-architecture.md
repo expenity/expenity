@@ -18,7 +18,7 @@
 | Email | Resend or Postmark; inbound email via Postmark inbound or Cloudflare Email Routing | Reminders + bill forwarding |
 | Messaging | Telegram Bot API (free); Twilio for SMS/WhatsApp (metered, Pro) | Channel choice |
 | AI | Server: Claude API for document extraction and NL quick-add. Client option: WebLLM in-browser | Accuracy plus privacy option |
-| Payments (billing) | Stripe subscriptions | For Duenest's own plans only |
+| Payments (billing) | Stripe subscriptions | For Expenity's own plans only |
 | Hosting | Vercel or Cloudflare Pages; Supabase cloud | Low ops |
 | Observability | Sentry, privacy-friendly analytics (Cloudflare Web Analytics) | No invasive tracking |
 

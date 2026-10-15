@@ -46,7 +46,7 @@ Priority: **P0** = MVP, **P1** = v1.x, **P2** = later.
 |---|---|---|
 | C1 | Quick add: type "Netflix 15.99 monthly on the 3rd" and natural-language parsing fills the form | P0 |
 | C2 | Upload PDF/photo of a bill, AI extracts fields, user reviews and confirms | P1 |
-| C3 | Personal forwarding address (`name@in.duenest.app`); forwarded emails create draft bills | P1 |
+| C3 | Personal forwarding address (`name@in.expenity.app`); forwarded emails create draft bills | P1 |
 | C4 | Import from CSV / bank statement export; detect recurring charges and propose bills | P1 |
 | C5 | Templates for common bills (rent, electricity, car insurance, Netflix…), localised | P0 |
 | C6 | AI processing runs locally in the browser (WebLLM) when the user chooses; otherwise server-side with a clear data note | P1 |

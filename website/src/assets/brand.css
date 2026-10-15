@@ -1,4 +1,4 @@
-/* Duenest brand: emerald green on soft mint, white cards, bold dark type. Overrides the shared tokens
+/* Expenity brand: emerald green on soft mint, white cards, bold dark type. Overrides the shared tokens
    from site.css so the header, footer and help center follow the same palette. */
 :root, :root[data-theme="light"] {
 	--bg: #f3f9f6;

@@ -1,6 +1,6 @@
 # 01 Product brief
 
-> **Name:** the working name was "Duewise". An iOS app called "Bill Organizer - DueWise" already exists (found in a web search on 2026-10-15), so the product is called **Duenest**. No other bill app named Duenest turned up, but that is a quick search, not a trademark check.
+> **Name:** earlier working names "Duewise" and "Duenest" were dropped (an iOS app called "Bill Organizer - DueWise" exists, found in a web search on 2026-10-15). The product is called **Expenity**. A web search on 2026-10-15 found no product called Expenity, but close names exist: "Expeny" (an iOS personal finance app) and "Expeni" (procurement software). That was a quick search, not a trademark check; check before any serious launch.
 > **Build status:** version 0.1 is a browser-only app (see the repository README). This spec describes the full vision, including the server-side parts (sync, push and email reminders, households, bill capture) that are not built yet.
 
 ## Reference product: RemindPayBee

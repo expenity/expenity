@@ -1,6 +1,6 @@
-# Τεκμηρίωση Duenest
+# Τεκμηρίωση Expenity
 
-Οι ίδιοι οδηγοί με το [κέντρο βοήθειας στον ιστότοπο](https://george-stathopoulos.github.io/duenest/el/docs/). English: [guides in English](../README.md).
+Οι ίδιοι οδηγοί με το [κέντρο βοήθειας στον ιστότοπο](https://george-stathopoulos.github.io/expenity/el/docs/). English: [guides in English](../README.md).
 
 | Οδηγός | Τι καλύπτει |
 |---|---|

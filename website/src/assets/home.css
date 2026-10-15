@@ -1,4 +1,4 @@
-/* Duenest home page. Fintech feel: mint hero, bold type, white cards, app screenshots in soft frames. */
+/* Expenity home page. Fintech feel: mint hero, bold type, white cards, app screenshots in soft frames. */
 .dn-kicker { display: inline-flex; align-items: center; gap: 8px; margin: 0 0 16px; padding: 6px 14px; border-radius: 999px; background: var(--surface); border: 1px solid var(--accent-line); color: var(--accent); font-size: 14px; font-weight: 700; }
 .dn-kicker i { width: 8px; height: 8px; border-radius: 50%; background: var(--amber); display: inline-block; }
 .dn-h2 { margin: 0 0 14px; font-size: clamp(30px, 4.2vw, 46px); font-weight: 800; line-height: 1.1; letter-spacing: -0.035em; }

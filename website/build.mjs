@@ -1,5 +1,5 @@
 /**
- * Builds the Duenest website into website/dist (published to GitHub Pages from the gh-pages branch).
+ * Builds the Expenity website into website/dist (published to GitHub Pages from the gh-pages branch).
  *
  * Pages, in English (root) and Greek (/el/): home, the Help center generated from docs/*.md and
  * docs/el/*.md (so the website and the docs never drift apart), plus the live app (copied to app/)
@@ -15,12 +15,12 @@ import { dirname, join } from 'node:path';
 /* ------------------------------------------------------------------ Config */
 
 const SITE = {
-	name: 'Duenest',
-	url: 'https://george-stathopoulos.github.io/duenest/',
-	base: '/duenest/', // Used only by 404.html, which GitHub Pages serves from any path.
+	name: 'Expenity',
+	url: 'https://george-stathopoulos.github.io/expenity/',
+	base: '/expenity/', // Used only by 404.html, which GitHub Pages serves from any path.
 	author: 'George Stathopoulos',
 	authorUrl: 'https://george-stathopoulos.github.io/',
-	repo: 'https://github.com/george-stathopoulos/duenest',
+	repo: 'https://github.com/george-stathopoulos/expenity',
 };
 
 // Every project site lists the others (and the personal site keeps them all). Keep this list the
@@ -30,7 +30,7 @@ const PROJECTS = [
 	{ name: 'Helpdesk Hero', url: 'https://george-stathopoulos.github.io/helpdesk-hero/', text: 'WordPress support with diagnostics and password-free access' },
 	{ name: 'Fixpass', url: 'https://george-stathopoulos.github.io/fixpass/', text: 'Spotlight the problem and give support safe, temporary access' },
 	{ name: 'SheetPilot', url: 'https://george-stathopoulos.github.io/sheetpilot/', text: 'Turn any spreadsheet into an interactive dashboard, in your browser' },
-	{ name: 'Duenest', url: 'https://george-stathopoulos.github.io/duenest/', text: 'Bills and subscriptions, calmly in one place. English and Greek' },
+	{ name: 'Expenity', url: 'https://george-stathopoulos.github.io/expenity/', text: 'Bills and subscriptions, calmly in one place. English and Greek' },
 ];
 
 const ROOT = process.cwd();
@@ -99,43 +99,43 @@ const I = {
 const LANGS = {
 	en: {
 		code: 'en', prefix: '', label: 'EN', other: 'el', switchLabel: 'ΕΛ', switchTitle: 'Ελληνικά',
-		tagline: 'Bills and subscriptions, calmly in one place', titleHome: 'Duenest: never miss a bill, never be surprised',
-		descHome: 'Duenest keeps your bills and subscriptions in one calm place, tells you what is coming before it does, and reminds you in your own calendar. Free, private, in your browser, in English and Greek.',
-		nav: { features: 'Features', how: 'How it works', app: 'Open the app', docs: 'Help center' }, openApp: 'Open app', darkTheme: 'Dark theme', skip: 'Skip to content', menu: 'Menu', homeAria: 'Duenest home',
+		tagline: 'Bills and subscriptions, calmly in one place', titleHome: 'Expenity: never miss a bill, never be surprised',
+		descHome: 'Expenity keeps your bills and subscriptions in one calm place, tells you what is coming before it does, and reminds you in your own calendar. Free, private, in your browser, in English and Greek.',
+		nav: { features: 'Features', how: 'How it works', app: 'Open the app', docs: 'Help center' }, openApp: 'Open app', darkTheme: 'Dark theme', skip: 'Skip to content', menu: 'Menu', homeAria: 'Expenity home',
 		about: 'Bills and subscriptions, calmly in one place. It tells you what is coming before it does. Free and open source.',
 		foot: { product: 'Product', help: 'Help', more: 'More projects', trust: 'Trust', allProjects: 'All projects', blog: 'Blog', blogTitle: 'The story behind every project',
 			source: 'Source on GitHub', started: 'Getting started', addBills: 'Add bills', reminders: 'Reminders', privacy: 'Privacy and your data', yourData: 'Your data stays with you', feedback: 'Feedback and ideas', faq: 'FAQ' },
 		madeBy: 'Made with', by: 'by', cookies: 'This website uses no cookies. Visits are counted anonymously, with no personal data.',
-		docs: { title: 'Help center', hero: 'How can we help?', heroP: 'Guides and answers for Duenest: adding bills, reminders, the calendar, privacy and installing.', placeholder: 'Search, e.g. “reminders”, “backup”, “Greek”', searchLabel: 'Search the help center',
+		docs: { title: 'Help center', hero: 'How can we help?', heroP: 'Guides and answers for Expenity: adding bills, reminders, the calendar, privacy and installing.', placeholder: 'Search, e.g. “reminders”, “backup”, “Greek”', searchLabel: 'Search the help center',
 			browse: 'Browse all guides', home: 'Help center home', popular: 'Popular', stuck: 'Still stuck?', stuckA: 'Check the', stuckB: 'or', stuckC: 'ask on GitHub', prev: 'Previous', next: 'Next', onPage: 'On this page', read: 'Read the guide →', crumbs: 'Help center', pagerAria: 'Previous and next guide', toc: 'On this page' },
 		str: { none: [ 'No results for “', '”. Try another word, or browse the guides below.' ], count: ' results', zoom: 'Enlarged screenshot. Press Escape to close.', enlarge: ' (enlarge)' },
-		groups: [ { label: 'Start here', pages: [ 'getting-started', 'add-bills' ] }, { label: 'Using Duenest', pages: [ 'reminders', 'calendar-and-insights', 'install-on-your-device' ] }, { label: 'Reference', pages: [ 'privacy-and-your-data', 'faq' ] } ],
+		groups: [ { label: 'Start here', pages: [ 'getting-started', 'add-bills' ] }, { label: 'Using Expenity', pages: [ 'reminders', 'calendar-and-insights', 'install-on-your-device' ] }, { label: 'Reference', pages: [ 'privacy-and-your-data', 'faq' ] } ],
 		blurb: {
 			'getting-started': 'Open the app, add your first bill and find your way around.', 'add-bills': 'Type a sentence, use templates, repeats, mark paid and snooze.',
 			reminders: 'The calendar file that reminds you when the app is closed, and notifications.', 'calendar-and-insights': 'The month view, the 30/60/90-day forecast, subscriptions and price changes.',
-			'install-on-your-device': 'Install Duenest on iPhone, Android or a computer, and use it offline.', 'privacy-and-your-data': 'Where your bills live, backup, restore and delete.', faq: 'Quick answers to the most common questions.',
+			'install-on-your-device': 'Install Expenity on iPhone, Android or a computer, and use it offline.', 'privacy-and-your-data': 'Where your bills live, backup, restore and delete.', faq: 'Quick answers to the most common questions.',
 		},
-		popular: [ [ 'getting-started', 'add-your-first-bill', 'Add your first bill' ], [ 'add-bills', 'type-a-sentence', 'Type a sentence' ], [ 'reminders', '1-your-calendar-works-when-duenest-is-closed', 'Get reminded when the app is closed' ],
+		popular: [ [ 'getting-started', 'add-your-first-bill', 'Add your first bill' ], [ 'add-bills', 'type-a-sentence', 'Type a sentence' ], [ 'reminders', '1-your-calendar-works-when-expenity-is-closed', 'Get reminded when the app is closed' ],
 			[ 'calendar-and-insights', 'next-30-60-and-90-days', 'See the next 90 days' ], [ 'privacy-and-your-data', 'back-up-and-restore', 'Back up your bills' ], [ 'faq', '', 'Quick answers' ] ],
 		page404: { h: 'This bill is not on the list', p: 'This page may have moved. Try the help center, or start from the home page.', home: 'Home', docs: 'Help center' },
 	},
 	el: {
 		code: 'el', prefix: 'el/', label: 'ΕΛ', other: 'en', switchLabel: 'EN', switchTitle: 'English',
-		tagline: 'Λογαριασμοί και συνδρομές, ήρεμα σε ένα μέρος', titleHome: 'Duenest: μην ξεχάσετε ποτέ λογαριασμό, καμία έκπληξη',
-		descHome: 'Το Duenest κρατά τους λογαριασμούς και τις συνδρομές σας σε ένα ήρεμο μέρος, σας δείχνει τι έρχεται πριν έρθει και σας υπενθυμίζει μέσα από το δικό σας ημερολόγιο. Δωρεάν, ιδιωτικό, στον browser σας, στα Ελληνικά και στα Αγγλικά.',
-		nav: { features: 'Δυνατότητες', how: 'Πώς λειτουργεί', app: 'Ανοίξτε την εφαρμογή', docs: 'Κέντρο βοήθειας' }, openApp: 'Άνοιγμα', darkTheme: 'Σκούρο θέμα', skip: 'Μετάβαση στο περιεχόμενο', menu: 'Μενού', homeAria: 'Duenest, αρχική',
+		tagline: 'Λογαριασμοί και συνδρομές, ήρεμα σε ένα μέρος', titleHome: 'Expenity: μην ξεχάσετε ποτέ λογαριασμό, καμία έκπληξη',
+		descHome: 'Το Expenity κρατά τους λογαριασμούς και τις συνδρομές σας σε ένα ήρεμο μέρος, σας δείχνει τι έρχεται πριν έρθει και σας υπενθυμίζει μέσα από το δικό σας ημερολόγιο. Δωρεάν, ιδιωτικό, στον browser σας, στα Ελληνικά και στα Αγγλικά.',
+		nav: { features: 'Δυνατότητες', how: 'Πώς λειτουργεί', app: 'Ανοίξτε την εφαρμογή', docs: 'Κέντρο βοήθειας' }, openApp: 'Άνοιγμα', darkTheme: 'Σκούρο θέμα', skip: 'Μετάβαση στο περιεχόμενο', menu: 'Μενού', homeAria: 'Expenity, αρχική',
 		about: 'Λογαριασμοί και συνδρομές, ήρεμα σε ένα μέρος. Σας λέει τι έρχεται πριν έρθει. Δωρεάν και ανοιχτού κώδικα.',
 		foot: { product: 'Προϊόν', help: 'Βοήθεια', more: 'Περισσότερα έργα', trust: 'Εμπιστοσύνη', allProjects: 'Όλα τα έργα', blog: 'Blog', blogTitle: 'Η ιστορία πίσω από κάθε έργο',
 			source: 'Κώδικας στο GitHub', started: 'Ξεκινώντας', addBills: 'Προσθήκη λογαριασμών', reminders: 'Υπενθυμίσεις', privacy: 'Ιδιωτικότητα και δεδομένα', yourData: 'Τα δεδομένα σας μένουν σε εσάς', feedback: 'Σχόλια και ιδέες', faq: 'Συχνές ερωτήσεις' },
 		madeBy: 'Φτιαγμένο με', by: 'από τον', cookies: 'Αυτός ο ιστότοπος δεν χρησιμοποιεί cookies. Οι επισκέψεις μετριούνται ανώνυμα, χωρίς προσωπικά δεδομένα.',
-		docs: { title: 'Κέντρο βοήθειας', hero: 'Πώς μπορούμε να βοηθήσουμε;', heroP: 'Οδηγοί και απαντήσεις για το Duenest: προσθήκη λογαριασμών, υπενθυμίσεις, ημερολόγιο, ιδιωτικότητα και εγκατάσταση.', placeholder: 'Αναζήτηση, π.χ. «υπενθυμίσεις», «αντίγραφο», «ημερολόγιο»', searchLabel: 'Αναζήτηση στο κέντρο βοήθειας',
+		docs: { title: 'Κέντρο βοήθειας', hero: 'Πώς μπορούμε να βοηθήσουμε;', heroP: 'Οδηγοί και απαντήσεις για το Expenity: προσθήκη λογαριασμών, υπενθυμίσεις, ημερολόγιο, ιδιωτικότητα και εγκατάσταση.', placeholder: 'Αναζήτηση, π.χ. «υπενθυμίσεις», «αντίγραφο», «ημερολόγιο»', searchLabel: 'Αναζήτηση στο κέντρο βοήθειας',
 			browse: 'Όλοι οι οδηγοί', home: 'Κέντρο βοήθειας', popular: 'Δημοφιλή', stuck: 'Χρειάζεστε ακόμα βοήθεια;', stuckA: 'Δείτε τις', stuckB: 'ή', stuckC: 'ρωτήστε στο GitHub', prev: 'Προηγούμενο', next: 'Επόμενο', onPage: 'Σε αυτή τη σελίδα', read: 'Διαβάστε τον οδηγό →', crumbs: 'Κέντρο βοήθειας', pagerAria: 'Προηγούμενος και επόμενος οδηγός', toc: 'Σε αυτή τη σελίδα' },
 		str: { none: [ 'Δεν βρέθηκε τίποτα για «', '». Δοκιμάστε άλλη λέξη ή δείτε τους οδηγούς παρακάτω.' ], count: ' αποτελέσματα', zoom: 'Μεγεθυμένο στιγμιότυπο. Πατήστε Escape για κλείσιμο.', enlarge: ' (μεγέθυνση)' },
-		groups: [ { label: 'Ξεκινήστε από εδώ', pages: [ 'getting-started', 'add-bills' ] }, { label: 'Χρήση του Duenest', pages: [ 'reminders', 'calendar-and-insights', 'install-on-your-device' ] }, { label: 'Αναφορά', pages: [ 'privacy-and-your-data', 'faq' ] } ],
+		groups: [ { label: 'Ξεκινήστε από εδώ', pages: [ 'getting-started', 'add-bills' ] }, { label: 'Χρήση του Expenity', pages: [ 'reminders', 'calendar-and-insights', 'install-on-your-device' ] }, { label: 'Αναφορά', pages: [ 'privacy-and-your-data', 'faq' ] } ],
 		blurb: {
 			'getting-started': 'Ανοίξτε την εφαρμογή, προσθέστε τον πρώτο λογαριασμό και γνωρίστε την οθόνη.', 'add-bills': 'Γράψτε μια πρόταση, χρησιμοποιήστε πρότυπα, επαναλήψεις, πληρωμή και αναβολή.',
 			reminders: 'Το αρχείο ημερολογίου που σας υπενθυμίζει όταν η εφαρμογή είναι κλειστή, και οι ειδοποιήσεις.', 'calendar-and-insights': 'Η μηνιαία προβολή, η πρόβλεψη 30/60/90 ημερών, οι συνδρομές και οι αλλαγές τιμών.',
-			'install-on-your-device': 'Εγκαταστήστε το Duenest σε iPhone, Android ή υπολογιστή και χρησιμοποιήστε το offline.', 'privacy-and-your-data': 'Πού ζουν οι λογαριασμοί σας, αντίγραφο, επαναφορά και διαγραφή.', faq: 'Σύντομες απαντήσεις στις πιο συχνές ερωτήσεις.',
+			'install-on-your-device': 'Εγκαταστήστε το Expenity σε iPhone, Android ή υπολογιστή και χρησιμοποιήστε το offline.', 'privacy-and-your-data': 'Πού ζουν οι λογαριασμοί σας, αντίγραφο, επαναφορά και διαγραφή.', faq: 'Σύντομες απαντήσεις στις πιο συχνές ερωτήσεις.',
 		},
 		popular: [ [ 'getting-started', 'προσθέστε-τον-πρώτο-σας-λογαριασμό', 'Προσθέστε τον πρώτο λογαριασμό' ], [ 'add-bills', 'γράψτε-μια-πρόταση', 'Γράψτε μια πρόταση' ], [ 'reminders', '', 'Υπενθύμιση με κλειστή εφαρμογή' ],
 			[ 'calendar-and-insights', 'επόμενες-30-60-και-90-ημέρες', 'Δείτε τις επόμενες 90 ημέρες' ], [ 'privacy-and-your-data', 'αντίγραφο-ασφαλείας-και-επαναφορά', 'Κρατήστε αντίγραφο' ], [ 'faq', '', 'Σύντομες απαντήσεις' ] ],
@@ -147,7 +147,7 @@ const LANGS = {
 
 const LOGO_RAW = readFileSync( join( SRC, 'assets/favicon.svg' ), 'utf8' ).replace( '<svg ', '<svg class="logo-mark" width="32" height="32" aria-hidden="true" ' );
 function logo( n = 1 ) {
-	return `${ LOGO_RAW.replace( /dng/g, 'dng' + n ) }<span class="logo-text">Due<b>nest</b></span>`;
+	return `${ LOGO_RAW.replace( /dng/g, 'dng' + n ) }<span class="logo-text">Expen<b>ity</b></span>`;
 }
 
 /** root: relative path to the site root; alt: path of this page in the other language, relative to the site root. */
@@ -247,7 +247,7 @@ ${ body }
 		</div>
 		<div class="foot-bottom">
 			<span>${ L.madeBy } <span class="heart" role="img" aria-label="love">♥</span> ${ L.by } <a href="${ SITE.authorUrl }">${ SITE.author }</a></span>
-			<span>Duenest ${ VERSION } · ${ L.cookies }</span>
+			<span>Expenity ${ VERSION } · ${ L.cookies }</span>
 		</div>
 	</div>
 </footer>

@@ -26,7 +26,7 @@ const browser = await chromium.launch( { channel: 'chrome' } );
 
 async function open( lang, { width = 1280, height = 860, dark = false, sample = true } = {} ) {
 	const context = await browser.newContext( { viewport: { width, height }, deviceScaleFactor: 2, locale: lang === 'el' ? 'el-GR' : 'en-IE', colorScheme: dark ? 'dark' : 'light', timezoneId: 'Europe/Athens' } );
-	await context.addInitScript( ( l ) => { try { localStorage.setItem( 'duenest.lang', l ); } catch ( e ) { /* ignore */ } }, lang );
+	await context.addInitScript( ( l ) => { try { localStorage.setItem( 'expenity.lang', l ); } catch ( e ) { /* ignore */ } }, lang );
 	const page = await context.newPage();
 	await page.goto( BASE );
 	await page.waitForSelector( '.empty' );

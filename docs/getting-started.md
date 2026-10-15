@@ -1,10 +1,10 @@
 # Getting started
 
-Duenest keeps your bills and subscriptions in one place and tells you what is coming up. This guide takes about two minutes.
+Expenity keeps your bills and subscriptions in one place and tells you what is coming up. This guide takes about two minutes.
 
-## Open Duenest
+## Open Expenity
 
-Open the app at [george-stathopoulos.github.io/duenest/app/](https://george-stathopoulos.github.io/duenest/app/). There is nothing to install and no account to create. It works in any modern browser on a phone, tablet or computer. To keep it on your home screen like an app, see [Install on your device](install-on-your-device.md).
+Open the app at [george-stathopoulos.github.io/expenity/app/](https://george-stathopoulos.github.io/expenity/app/). There is nothing to install and no account to create. It works in any modern browser on a phone, tablet or computer. To keep it on your home screen like an app, see [Install on your device](install-on-your-device.md).
 
 ![The first screen, with templates to start from.](images/empty.png)
 
@@ -12,7 +12,7 @@ Open the app at [george-stathopoulos.github.io/duenest/app/](https://george-stat
 
 Press **Add bill**. You have three ways to start:
 
-- **Type a sentence**, for example `Netflix 15.99 monthly on the 3rd`. The form below fills itself and the chips show what Duenest understood. [More examples](add-bills.md#type-a-sentence).
+- **Type a sentence**, for example `Netflix 15.99 monthly on the 3rd`. The form below fills itself and the chips show what Expenity understood. [More examples](add-bills.md#type-a-sentence).
 - **Pick a template** such as Rent, Electricity or Car insurance. It sets the name, category and how often it repeats. You add the amount.
 - **Fill in the form** yourself.
 
@@ -36,7 +36,7 @@ On each bill:
 
 ## Get reminded
 
-Duenest reminds you in two ways, and it is worth setting up the second one: see [Reminders](reminders.md).
+Expenity reminds you in two ways, and it is worth setting up the second one: see [Reminders](reminders.md).
 
 ## Where to go next
 

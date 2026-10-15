@@ -44,7 +44,7 @@ No ads, ever. Free tier must remain genuinely useful (it is the growth engine).
 
 ## Open questions for George
 
-1. **Name:** keep "Duenest" as a working name, or choose another (domain/handle check needed)?
+1. **Name:** keep "Expenity" as a working name, or choose another (domain/handle check needed)?
 2. **Audience & market:** global English first, or Greece/EU first (EL + EN launch, local bill templates and payment-code formats like Greek IRIS/RF references)?
 3. **Local-first vs account-first:** spec assumes accounts with sync plus guest mode; is "no account ever" a must?
 4. **Monetisation:** free + Pro as above, or fully free/open-source with donations?

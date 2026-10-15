@@ -1,9 +1,9 @@
 /**
- * Duenest: a calm place for bills and subscriptions.
+ * Expenity: a calm place for bills and subscriptions.
  *
  * Runs entirely in the browser. Data lives in localStorage on this device (export a backup from
  * Settings). Reminders: browser notifications while the app is open, plus a calendar file (.ics)
- * with alarms that any phone or computer calendar delivers even when Duenest is closed. Syncing
+ * with alarms that any phone or computer calendar delivers even when Expenity is closed. Syncing
  * between devices and push reminders with the app closed need a server and are on the roadmap.
  * Languages: English (default) and Greek, see i18n.js.
  */
@@ -12,12 +12,12 @@
 
 	/* ------------------------------------------------------------------ Language */
 
-	const I18N = window.DUENEST_I18N;
+	const I18N = window.EXPENITY_I18N;
 	let lang = I18N.default;
 	try {
 		const q = new URLSearchParams( location.search ).get( 'lang' ); // The website links to ?lang=el
-		const s = q && I18N.langs[ q ] ? q : localStorage.getItem( 'duenest.lang' );
-		if ( s && I18N.langs[ s ] ) { lang = s; if ( q ) localStorage.setItem( 'duenest.lang', s ); }
+		const s = q && I18N.langs[ q ] ? q : localStorage.getItem( 'expenity.lang' );
+		if ( s && I18N.langs[ s ] ) { lang = s; if ( q ) localStorage.setItem( 'expenity.lang', s ); }
 	} catch ( e ) { /* ignore */ }
 	function t( key, vars ) {
 		const v = I18N.langs[ lang ][ key ] !== undefined ? I18N.langs[ lang ][ key ] : I18N.langs.en[ key ];
@@ -70,7 +70,7 @@
 
 	/* ------------------------------------------------------------------ Data */
 
-	const KEY = 'duenest.v1';
+	const KEY = 'expenity.v1';
 	const CATS = [
 		[ 'housing', '🏠' ], [ 'utilities', '💡' ], [ 'subscriptions', '📺' ], [ 'insurance', '🛡️' ], [ 'loans', '💳' ],
 		[ 'transport', '🚗' ], [ 'health', '🩺' ], [ 'education', '🎓' ], [ 'taxes', '🏛️' ], [ 'other', '📌' ],
@@ -479,7 +479,7 @@
 	function setLang( k ) {
 		if ( ! I18N.langs[ k ] ) return;
 		lang = k;
-		try { localStorage.setItem( 'duenest.lang', k ); } catch ( e ) { /* ignore */ }
+		try { localStorage.setItem( 'expenity.lang', k ); } catch ( e ) { /* ignore */ }
 		applyStatic(); render();
 	}
 
@@ -574,11 +574,11 @@
 	const icsEscape = ( s ) => String( s ).replace( /\\/g, '\\\\' ).replace( /;/g, '\\;' ).replace( /,/g, '\\,' ).replace( /\n/g, '\\n' );
 	function buildIcs() {
 		const stamp = new Date().toISOString().replace( /[-:]/g, '' ).replace( /\.\d+/, '' );
-		const L = [ 'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Duenest//Bills//EN', 'CALSCALE:GREGORIAN', 'X-WR-CALNAME:' + icsEscape( t( 'icsCal' ) ) ];
+		const L = [ 'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Expenity//Bills//EN', 'CALSCALE:GREGORIAN', 'X-WR-CALNAME:' + icsEscape( t( 'icsCal' ) ) ];
 		const rule = { weekly: 'FREQ=WEEKLY', biweekly: 'FREQ=WEEKLY;INTERVAL=2', monthly: 'FREQ=MONTHLY', quarterly: 'FREQ=MONTHLY;INTERVAL=3', yearly: 'FREQ=YEARLY' };
 		active().forEach( ( b ) => {
 			const amt = b.amount !== '' && b.amount != null ? ` (${ amountText( b ) })` : '';
-			L.push( 'BEGIN:VEVENT', `UID:${ b.id }@duenest`, `DTSTAMP:${ stamp }`, `DTSTART;VALUE=DATE:${ b.next.replace( /-/g, '' ) }`, `SUMMARY:${ icsEscape( t( 'icsPay', { name: b.name, amt } ) ) }` );
+			L.push( 'BEGIN:VEVENT', `UID:${ b.id }@expenity`, `DTSTAMP:${ stamp }`, `DTSTART;VALUE=DATE:${ b.next.replace( /-/g, '' ) }`, `SUMMARY:${ icsEscape( t( 'icsPay', { name: b.name, amt } ) ) }` );
 			if ( rule[ b.repeat ] ) L.push( 'RRULE:' + rule[ b.repeat ] + ( b.end ? ';UNTIL=' + b.end.replace( /-/g, '' ) : '' ) );
 			const desc = [ b.reference && t( 'icsRef' ) + ': ' + b.reference, b.payUrl && t( 'icsPayLink' ) + ': ' + b.payUrl, b.notes ].filter( Boolean ).join( '\n' );
 			if ( desc ) L.push( 'DESCRIPTION:' + icsEscape( desc ) );
@@ -608,7 +608,7 @@
 		const body = due.slice( 0, 4 ).map( ( b ) => `${ b.name }: ${ rel( b.next ).toLowerCase() }` ).join( '\n' ) + ( due.length > 4 ? '\n' + t( 'nMore', { n: due.length - 4 } ) : '' );
 		const title = due.length === 1 ? t( 'nTitle1' ) : t( 'nTitleN', { n: due.length } );
 		try {
-			if ( navigator.serviceWorker && navigator.serviceWorker.ready ) navigator.serviceWorker.ready.then( ( r ) => r.showNotification( title, { body, icon: 'icon-192.png', tag: 'duenest-due' } ) ).catch( () => new Notification( title, { body } ) );
+			if ( navigator.serviceWorker && navigator.serviceWorker.ready ) navigator.serviceWorker.ready.then( ( r ) => r.showNotification( title, { body, icon: 'icon-192.png', tag: 'expenity-due' } ) ).catch( () => new Notification( title, { body } ) );
 			else new Notification( title, { body } );
 		} catch ( e ) { /* notifications unavailable */ }
 	}
@@ -653,7 +653,7 @@
 			const day = e.target.closest( '[data-day]' );
 			if ( day ) { calDay = day.dataset.day; render(); return; }
 			const th = e.target.closest( '[data-theme-set]' );
-			if ( th ) { const v = th.dataset.themeSet; try { if ( v === 'auto' ) localStorage.removeItem( 'duenest.theme' ); else localStorage.setItem( 'duenest.theme', v ); } catch ( err ) { /* ignore */ } if ( v === 'auto' ) delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = v; return; }
+			if ( th ) { const v = th.dataset.themeSet; try { if ( v === 'auto' ) localStorage.removeItem( 'expenity.theme' ); else localStorage.setItem( 'expenity.theme', v ); } catch ( err ) { /* ignore */ } if ( v === 'auto' ) delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = v; return; }
 			const act = e.target.closest( '[data-act]' );
 			if ( ! act ) { $$( 'details.more[open]' ).forEach( ( d ) => { if ( ! d.contains( e.target ) ) d.open = false; } ); return; }
 			const row = act.closest( '.row' );
@@ -702,11 +702,11 @@
 		} );
 		$( '#view' ).addEventListener( 'click', async ( e ) => {
 			const id = e.target.id;
-			if ( id === 'icsBtn' ) { if ( ! active().length ) { toast( t( 'tNeedBill' ) ); return; } download( 'duenest-bills.ics', buildIcs(), 'text/calendar' ); toast( t( 'tIcs' ) ); }
-			if ( id === 'expJson' ) download( 'duenest-backup-' + today() + '.json', JSON.stringify( S, null, 1 ), 'application/json' );
+			if ( id === 'icsBtn' ) { if ( ! active().length ) { toast( t( 'tNeedBill' ) ); return; } download( 'expenity-bills.ics', buildIcs(), 'text/calendar' ); toast( t( 'tIcs' ) ); }
+			if ( id === 'expJson' ) download( 'expenity-backup-' + today() + '.json', JSON.stringify( S, null, 1 ), 'application/json' );
 			if ( id === 'expCsv' ) {
 				const rows = [ t( 'csvHead' ) ].concat( S.payments.map( ( p ) => [ p.paidOn, p.name, catName( p.category ), p.due, p.amount, p.currency ] ) );
-				download( 'duenest-payments.csv', '﻿' + rows.map( ( r ) => r.map( csvCell ).join( ',' ) ).join( '\n' ), 'text/csv;charset=utf-8' );
+				download( 'expenity-payments.csv', '﻿' + rows.map( ( r ) => r.map( csvCell ).join( ',' ) ).join( '\n' ), 'text/csv;charset=utf-8' );
 			}
 			if ( id === 'notifyBtn' ) {
 				if ( S.settings.notify && Notification.permission === 'granted' ) { S.settings.notify = false; save(); render(); return; }
@@ -719,6 +719,6 @@
 		if ( 'serviceWorker' in navigator && location.protocol.startsWith( 'http' ) ) navigator.serviceWorker.register( 'sw.js' ).catch( () => {} );
 	}
 
-	window.Duenest = { parseQuick, nextAfter, occurrences, addMonths, buildIcs, setLang, state: () => S };
+	window.Expenity = { parseQuick, nextAfter, occurrences, addMonths, buildIcs, setLang, state: () => S };
 	init();
 } )();

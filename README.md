@@ -1,20 +1,20 @@
-# Duenest
+# Expenity
 
 Your bills and subscriptions, calmly in one place. A free, open-source web app that works on every device, keeps your data in your browser, and speaks **English and Greek (Ελληνικά)**.
 
-- **App:** https://george-stathopoulos.github.io/duenest/app/ (installable, works offline)
-- **Website:** https://george-stathopoulos.github.io/duenest/ ([Ελληνικά](https://george-stathopoulos.github.io/duenest/el/))
+- **App:** https://george-stathopoulos.github.io/expenity/app/ (installable, works offline)
+- **Website:** https://george-stathopoulos.github.io/expenity/ ([Ελληνικά](https://george-stathopoulos.github.io/expenity/el/))
 - **Help center:** [docs/](docs/README.md) ([Ελληνικά](docs/el/README.md))
 - **Blog post:** https://george-stathopoulos.github.io/blog/
 
-Inspired by [RemindPayBee](https://remindpaybee.com/), an Android bill reminder that keeps data on one device. Duenest is a web app, so it runs everywhere, and adds sentence-style quick add, a calendar of what is due, a 90-day forecast and subscription costs.
+Inspired by [RemindPayBee](https://remindpaybee.com/), an Android bill reminder that keeps data on one device. Expenity is a web app, so it runs everywhere, and adds sentence-style quick add, a calendar of what is due, a 90-day forecast and subscription costs.
 
 ## What works today (version 0.1)
 
 - Bills with repeats (weekly to yearly), categories, notes, payment link and reference
 - Quick add from a sentence in English or Greek (`Netflix 15.99 monthly on the 3rd`, `Ενοίκιο 850€ κάθε μήνα στις 1`) and templates, including Greek ones (ΔΕΗ, ΕΥΔΑΠ, ΕΝΦΙΑ)
 - Today, Calendar and Insights views; mark paid, undo, snooze, skip
-- Notifications while the app is open, and a **calendar file (.ics) with alarms** that your calendar app delivers even when Duenest is closed
+- Notifications while the app is open, and a **calendar file (.ics) with alarms** that your calendar app delivers even when Expenity is closed
 - Backup, restore, CSV export, delete everything; light and dark; installable PWA
 
 ## Honest limits

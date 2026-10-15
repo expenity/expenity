@@ -29,7 +29,7 @@ await page.waitForSelector( '.empty' );
 let fail = 0;
 const ok = ( cond, label, extra = '' ) => { if ( ! cond ) { fail++; console.log( 'FAIL', label, extra ); } else console.log( 'ok  ', label ); };
 
-const q = ( text ) => page.evaluate( ( x ) => window.Duenest.parseQuick( x ), text );
+const q = ( text ) => page.evaluate( ( x ) => window.Expenity.parseQuick( x ), text );
 const eq = async ( text, want ) => {
 	const got = await q( text );
 	const bad = Object.entries( want ).filter( ( [ k, v ] ) => got[ k ] !== v );
@@ -51,7 +51,7 @@ await eq( 'ΕΝΦΙΑ 300 τριμηνιαία 28 Φεβρουαρίου', { nam
 
 // Recurrence: a bill due on the 31st keeps its day across short months.
 const rec = await page.evaluate( () => {
-	const D = window.Duenest, b = { repeat: 'monthly', day: 31 };
+	const D = window.Expenity, b = { repeat: 'monthly', day: 31 };
 	const a = D.nextAfter( b, '2026-01-31' ), c = D.nextAfter( b, a ), d = D.nextAfter( b, c );
 	return [ a, c, d, D.nextAfter( { repeat: 'yearly', day: 29 }, '2028-02-29' ), D.nextAfter( { repeat: 'once' }, '2026-01-01' ) ];
 } );
@@ -67,17 +67,17 @@ await page.waitForSelector( '.row' );
 ok( ( await page.locator( '.row' ).count() ) === 1, 'bill appears in the list' );
 await page.click( '[data-act=paid]' );
 await page.click( '#payDlg [type=submit]' );
-ok( ( await page.evaluate( () => window.Duenest.state().payments.length ) ) === 1, 'mark paid records a payment' );
+ok( ( await page.evaluate( () => window.Expenity.state().payments.length ) ) === 1, 'mark paid records a payment' );
 await page.click( '#toast .link' );
-ok( ( await page.evaluate( () => window.Duenest.state().payments.length ) ) === 0, 'undo removes the payment' );
-const ics = await page.evaluate( () => window.Duenest.buildIcs() );
+ok( ( await page.evaluate( () => window.Expenity.state().payments.length ) ) === 0, 'undo removes the payment' );
+const ics = await page.evaluate( () => window.Expenity.buildIcs() );
 ok( /BEGIN:VEVENT/.test( ics ) && /RRULE:FREQ=MONTHLY/.test( ics ) && /TRIGGER:-PT63H/.test( ics ) && /\r\n/.test( ics ), 'calendar file has event, rule and 3-day alarm' );
 
 // Greek.
 await page.click( '#langBtn' );
 ok( ( await page.locator( '#tabs button' ).first().innerText() ) === 'Σήμερα' && ( await page.getAttribute( 'html', 'lang' ) ) === 'el', 'switching to Greek translates the app' );
-ok( /^Πληρωμή: Netflix/.test( ( await page.evaluate( () => window.Duenest.buildIcs() ).then( ( s ) => /SUMMARY:(.*)/.exec( s )[ 1 ] ) ) ), 'calendar file follows the language' );
-ok( ( await page.evaluate( () => localStorage.getItem( 'duenest.lang' ) ) ) === 'el', 'language is remembered' );
+ok( /^Πληρωμή: Netflix/.test( ( await page.evaluate( () => window.Expenity.buildIcs() ).then( ( s ) => /SUMMARY:(.*)/.exec( s )[ 1 ] ) ) ), 'calendar file follows the language' );
+ok( ( await page.evaluate( () => localStorage.getItem( 'expenity.lang' ) ) ) === 'el', 'language is remembered' );
 for ( const tab of [ 'calendar', 'insights', 'settings' ] ) { await page.click( `[data-tab=${ tab }]` ); ok( ( await page.locator( '#view' ).innerText() ).length > 20, `Greek ${ tab } view renders` ); }
 await page.click( '[data-lang=en]' );
 ok( ( await page.getAttribute( 'html', 'lang' ) ) === 'en', 'back to English' );

@@ -8,11 +8,11 @@ const html = `<body style="margin:0;width:1200px;height:630px;overflow:hidden;fo
 <div style="position:absolute;left:70px;top:64px">${ logo }</div>
 <div style="position:absolute;left:70px;top:176px;width:560px;font-size:68px;font-weight:800;letter-spacing:-0.045em;line-height:1.04;color:#0f1f1a">Never miss a bill. Never be <span style="color:#0a8f6a">surprised.</span></div>
 <div style="position:absolute;left:70px;top:480px;font-size:26px;color:#34463f;width:520px">Bills and subscriptions, calmly in one place. English and Ελληνικά.</div>
-<div style="position:absolute;left:70px;top:566px;font-size:24px;font-weight:800;color:#0a8f6a">Duenest · free · in your browser</div>
+<div style="position:absolute;left:70px;top:566px;font-size:24px;font-weight:800;color:#0a8f6a">Expenity · free · in your browser</div>
 <div style="position:absolute;left:650px;top:70px;width:640px;border-radius:22px;overflow:hidden;box-shadow:0 40px 80px -30px rgba(7,100,74,.6);border:1px solid #c4d9cf"><img src="${ shot }" style="display:block;width:100%"></div></body>`;
 const browser = await chromium.launch( { channel: 'chrome' } );
 const page = await browser.newPage( { viewport: { width: 1200, height: 630 } } );
 await page.setContent( html );
-await page.screenshot( { path: '/tmp/duenest-og.png' } );
+await page.screenshot( { path: '/tmp/expenity-og.png' } );
 await browser.close();
-execFileSync( 'sips', [ '-s', 'format', 'jpeg', '-s', 'formatOptions', '85', '/tmp/duenest-og.png', '--out', 'website/src/assets/og.jpg' ], { stdio: 'ignore' } );
+execFileSync( 'sips', [ '-s', 'format', 'jpeg', '-s', 'formatOptions', '85', '/tmp/expenity-og.png', '--out', 'website/src/assets/og.jpg' ], { stdio: 'ignore' } );
