@@ -314,7 +314,8 @@
 		const n = typeof Notification === 'undefined' ? null : Notification.permission, on = S().device.notify && n === 'granted';
 		return `<section class="card"><label class="f"><span>${ esc( t( 'sDefLead' ) ) }</span><select id="setLead">${ EX.LEADS.map( ( l ) => `<option value="${ l }"${ l === S().settings.lead ? ' selected' : '' }>${ esc( t( 'lead' + l ) ) }</option>` ).join( '' ) }</select></label>
 			<label class="f"><span>${ esc( t( 'sMainCur' ) ) }</span><input id="setCur" list="curList" maxlength="3" value="${ esc( S().settings.currency ) }"></label></section>
-			<section class="card"><h2>${ esc( t( 'sNotif' ) ) }</h2><p class="muted small">${ esc( n === null ? t( 'notifNone' ) : n === 'denied' ? t( 'notifDenied' ) : t( 'notifDesc' ) ) }</p><div class="btn-row"><button type="button" class="btn ${ on ? 'btn-ghost' : 'btn-primary' }" id="notifyBtn" ${ n === null || n === 'denied' ? 'disabled' : '' }>${ esc( on ? t( 'turnOff' ) : t( 'turnOn' ) ) }</button></div></section>
+			${ EXA.pushCard() }
+			${ EXA.push.state() === 'on' ? '' : `<section class="card"><h2>${ esc( t( 'sNotif' ) ) }</h2><p class="muted small">${ esc( n === null ? t( 'notifNone' ) : n === 'denied' ? t( 'notifDenied' ) : t( 'notifDesc' ) ) }</p><div class="btn-row"><button type="button" class="btn ${ on ? 'btn-ghost' : 'btn-primary' }" id="notifyBtn" ${ n === null || n === 'denied' ? 'disabled' : '' }>${ esc( on ? t( 'turnOff' ) : t( 'turnOn' ) ) }</button></div></section>` }
 			<section class="card"><h2>${ esc( t( 'sClosed' ) ) }</h2><p class="muted small">${ esc( t( 'sClosedDesc' ) ) }</p><div class="btn-row"><button type="button" class="btn btn-primary" id="icsBtn">${ UI.icon( 'calendar-plus', 20 ) } ${ esc( t( 'dlIcs' ) ) }</button></div></section>`;
 	}
 	function walletsView() {

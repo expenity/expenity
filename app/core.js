@@ -249,7 +249,7 @@
 		const b = builtIn( key );
 		if ( b ) return { key, icon: b[ 1 ], iconName: EX.CAT_STYLE[ key ][ 0 ], color: EX.CAT_STYLE[ key ][ 1 ], name: t( 'cat_' + key ) };
 		const c = S.categories.find( ( x ) => x.id === key );
-		return c ? { key, icon: c.icon || '📌', iconName: null, color: 'gray', name: c.name, custom: true } : { key: 'other', icon: '📌', iconName: 'dots', color: 'gray', name: t( 'cat_other' ) };
+		return c ? { key, icon: c.icon || '📌', iconName: c.iconName || null, color: c.color || 'gray', name: c.name, custom: true } : { key: 'other', icon: '📌', iconName: 'dots', color: 'gray', name: t( 'cat_other' ) };
 	};
 	EX.catList = ( type ) => ( type === 'income' ? EX.INCOME_CATS : EX.EXPENSE_CATS ).map( ( c ) => EX.catInfo( c[ 0 ] ) )
 		.concat( S.categories.filter( ( c ) => c.type === type ).map( ( c ) => EX.catInfo( c.id ) ) );

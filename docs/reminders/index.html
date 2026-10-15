@@ -18,11 +18,11 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
 <!-- Cloudflare Web Analytics: counts visits anonymously, no cookies --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "64332b427a604e879f82853393ebdb0d"}'></script><!-- End Cloudflare Web Analytics -->
-<link rel="stylesheet" href="../../assets/site.css?v=0.4.0.mv9yz9bu">
-<link rel="stylesheet" href="../../assets/brand.css?v=0.4.0.mv9yz9bu">
-<link rel="stylesheet" href="../../assets/home.css?v=0.4.0.mv9yz9bu">
+<link rel="stylesheet" href="../../assets/site.css?v=0.4.0.mv9zlppb">
+<link rel="stylesheet" href="../../assets/brand.css?v=0.4.0.mv9zlppb">
+<link rel="stylesheet" href="../../assets/home.css?v=0.4.0.mv9zlppb">
 <script>try{localStorage.removeItem('hdh-site-theme');var t=sessionStorage.getItem('hdh-site-theme');document.documentElement.dataset.theme=t==='dark'?'dark':'light';}catch(e){document.documentElement.dataset.theme='light';}</script>
-<script src="../../assets/search-index.js?v=0.4.0.mv9yz9bu" defer></script>
+<script src="../../assets/search-index.js?v=0.4.0.mv9zlppb" defer></script>
 </head>
 <body data-root="../../">
 <a class="skip" href="#main">Skip to content</a>
@@ -64,8 +64,23 @@
 <article class="doc">
 	<nav class="crumbs" aria-label="Breadcrumb"><a href="../">Help center</a> › Reminders</nav>
 	<h1 id="reminders">Reminders</h1>
-<p>A website cannot wake your phone when it is closed. That is a limit of how browsers work, and Expenity does not hide it. So there are two kinds of reminder, and they work together.</p>
-<h2 id="1-your-calendar-works-when-expenity-is-closed">1. Your calendar (works when Expenity is closed)<a class="anchor" href="#1-your-calendar-works-when-expenity-is-closed" aria-label="#">#</a></h2>
+<p>Expenity can remind you in three ways. The first one works like a normal app: a notification arrives even when Expenity is closed.</p>
+<h2 id="1-notifications-when-the-app-is-closed">1. Notifications when the app is closed<a class="anchor" href="#1-notifications-when-the-app-is-closed" aria-label="#">#</a></h2>
+<p>With an account, Expenity sends you <strong>one summary a day</strong> at the hour you choose, listing the bills that are due soon or overdue. It arrives like any app notification, on the lock screen, even if Expenity is not open.</p>
+<ol>
+<li>Sign in (an account is needed, because Expenity has to know which bills are due).</li>
+<li>Open <strong>More → Reminders and calendar → Notifications on this device</strong> and press <strong>Turn on</strong>. Allow notifications when your browser asks.</li>
+<li>Choose the time you want it. <strong>Send a test</strong> shows you what it looks like.</li>
+</ol>
+<p>Things to know:</p>
+<ul>
+<li><strong>iPhone and iPad:</strong> Apple only allows this for apps added to the Home Screen. Add Expenity first (<a href="../install-on-your-device/">Install on your device</a>), open it from there, then turn notifications on.</li>
+<li><strong>Each device is separate.</strong> Turn it on on every phone or computer where you want it.</li>
+<li>Bills you marked as paid or snoozed are left out, and so are bills outside their reminder window (<strong>Default reminder</strong>, or the <strong>Remind me</strong> field on a bill). Bills in a <a href="../shared-wallets/">shared wallet</a> are included.</li>
+<li>To stop, press <strong>Turn off</strong>, or block notifications for the site in your browser settings.</li>
+<li>Expenity stores the address your browser gives it for sending notifications, your time zone and the chosen hour. See <a href="../privacy-and-your-data/">Privacy and your data</a>.</li>
+</ul>
+<h2 id="2-your-calendar-works-without-an-account">2. Your calendar (works without an account)<a class="anchor" href="#2-your-calendar-works-without-an-account" aria-label="#">#</a></h2>
 <p>This is the reminder to rely on.</p>
 <ol>
 <li>Open <strong>More → Reminders and calendar</strong>.</li>
@@ -85,15 +100,15 @@
 <li>Marking a bill paid in Expenity does not change the calendar. For a repeating bill that is fine, because the next due date is already in the repeat.</li>
 <li>Reminders arrive however your calendar delivers them: notification, sound or email, as you set it up there.</li>
 </ul>
-<h2 id="2-notifications-while-expenity-is-open">2. Notifications while Expenity is open<a class="anchor" href="#2-notifications-while-expenity-is-open" aria-label="#">#</a></h2>
+<h2 id="3-notifications-while-expenity-is-open">3. Notifications while Expenity is open<a class="anchor" href="#3-notifications-while-expenity-is-open" aria-label="#">#</a></h2>
 <p>In <strong>More → Reminders and calendar → Notifications while Expenity is open</strong>, press <strong>Turn on</strong> and allow notifications when your browser asks. When you open Expenity or keep it in a tab, you get one notification a day for bills that are due within their reminder window and are not snoozed.</p>
-<p>This does not work when the app is fully closed. For that, use the calendar file.</p>
+<p>This does not work when the app is fully closed. For that, use notifications when the app is closed (above) or the calendar file.</p>
 <h2 id="choose-how-early">Choose how early<a class="anchor" href="#choose-how-early" aria-label="#">#</a></h2>
 <p>In More → Reminders and calendar choose the <strong>Default reminder</strong>, from the day itself up to two weeks before. Each bill can override it in the <strong>Remind me</strong> field.</p>
 <h2 id="snooze">Snooze<a class="anchor" href="#snooze" aria-label="#">#</a></h2>
 <p>In a bill's <strong>⋯</strong> menu, <strong>Snooze to tomorrow</strong> or <strong>Snooze 3 days</strong> stops its notifications for a while.</p>
 <h2 id="what-is-coming">What is coming<a class="anchor" href="#what-is-coming" aria-label="#">#</a></h2>
-<p>Push notifications and email reminders when the app is closed need a way to send email and push from a server. Your account and sync are built; sending is planned, and email needs a sending domain first. See the <a href="https://github.com/expenity/expenity/blob/main/docs/specs/06-roadmap-business.md">roadmap</a>.</p>
+<p>Email reminders need a sending domain and are planned. Notifications on the lock screen and the calendar file cover the same need today.</p>
 
 	<div class="help-strip"><p><strong>Still stuck?</strong> Check the <a href="../faq/">FAQ</a>, or <a href="https://github.com/expenity/expenity/issues">ask on GitHub</a>.</p></div>
 	<nav class="pager" aria-label="Previous and next guide">
@@ -101,7 +116,7 @@
 		<a class="next" href="../shared-wallets/"><small>Next</small>Shared wallets</a>
 	</nav>
 </article>
-<nav class="on-page" aria-label="On this page" data-spy><h2>On this page</h2><ul><li><a href="#1-your-calendar-works-when-expenity-is-closed">1. Your calendar (works when Expenity is closed)</a></li><li><a href="#2-notifications-while-expenity-is-open">2. Notifications while Expenity is open</a></li><li><a href="#choose-how-early">Choose how early</a></li><li><a href="#snooze">Snooze</a></li><li><a href="#what-is-coming">What is coming</a></li></ul></nav>
+<nav class="on-page" aria-label="On this page" data-spy><h2>On this page</h2><ul><li><a href="#1-notifications-when-the-app-is-closed">1. Notifications when the app is closed</a></li><li><a href="#2-your-calendar-works-without-an-account">2. Your calendar (works without an account)</a></li><li><a href="#3-notifications-while-expenity-is-open">3. Notifications while Expenity is open</a></li><li><a href="#choose-how-early">Choose how early</a></li><li><a href="#snooze">Snooze</a></li><li><a href="#what-is-coming">What is coming</a></li></ul></nav>
 </div>
 </main>
 <footer class="site-foot">
@@ -152,7 +167,7 @@
 		</div>
 	</div>
 </footer>
-<script src="../../assets/site.js?v=0.4.0.mv9yz9bu" defer></script>
+<script src="../../assets/site.js?v=0.4.0.mv9zlppb" defer></script>
 
 </body>
 </html>

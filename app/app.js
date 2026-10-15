@@ -24,8 +24,10 @@
 	function render() {
 		const view = $( '#view' );
 		const keep = view.dataset.key === st.view + ':' + st.more ? view.scrollTop : 0;
-		const focusId = document.activeElement && document.activeElement.id;
-		const caret = focusId === 'txSearch' ? document.activeElement.selectionStart : null;
+		// A redraw (a sync, a change elsewhere) must not steal the field someone is typing in: remember it and put it back.
+		const ae = document.activeElement, inView = ae && ae.id && $( '#view' ).contains( ae ) && /^(INPUT|TEXTAREA|SELECT)$/.test( ae.tagName );
+		const keep0 = inView ? { id: ae.id, value: ae.value, from: ae.selectionStart, to: ae.selectionEnd } : null;
+		const focusId = null, caret = null;
 		$( '#appbar' ).innerHTML = EXA.appbar();
 		$( '#tabbar' ).innerHTML = EXA.tabbar();
 		$( '#rail' ).innerHTML = EXA.rail();
@@ -34,7 +36,7 @@
 		view.scrollTop = keep;
 		$( '#pane' ).innerHTML = paneHtml();
 		if ( logoSvg ) $$( '#logo' ).forEach( ( l ) => { l.innerHTML = logoSvg; } );
-		if ( focusId === 'txSearch' ) { const el = $( '#txSearch' ); if ( el ) { el.focus(); if ( caret != null ) el.setSelectionRange( caret, caret ); } }
+		if ( keep0 ) { const el = document.getElementById( keep0.id ); if ( el && $( '#view' ).contains( el ) ) { if ( el.tagName !== 'SELECT' && el.value !== keep0.value ) el.value = keep0.value; el.focus(); try { if ( keep0.from != null ) el.setSelectionRange( keep0.from, keep0.to ); } catch ( err ) { /* inputs like date have no caret */ } } }
 		document.body.dataset.view = st.view;
 		document.documentElement.lang = EX.I18N.langs[ EX.lang() ].htmlLang;
 		document.title = t( 'title' );
@@ -91,7 +93,7 @@
 	};
 	const csvCell = ( v ) => { let s = String( v == null ? '' : v ); if ( /^[=+\-@]/.test( s ) ) s = "'" + s; return /[",\n]/.test( s ) ? '"' + s.replace( /"/g, '""' ) + '"' : s; };
 	function checkNotifications() {
-		if ( typeof Notification === 'undefined' || Notification.permission !== 'granted' || ! S().device.notify ) return;
+		if ( typeof Notification === 'undefined' || Notification.permission !== 'granted' || ! S().device.notify || S().device.push ) return; // with push on, the server sends them
 		const td = today();
 		const due = EXA.active().filter( ( b ) => ( ! b.snooze || b.snooze <= td ) && diffDays( b.next, td ) <= EXA.lead( b ) && S().device.lastNotified[ b.id ] !== td );
 		if ( ! due.length ) return;
@@ -185,6 +187,7 @@
 		render();
 		EXA.flow.init();
 		EXA.tryJoin();
+		EXA.push.check();
 		checkNotifications();
 		setInterval( checkNotifications, 60000 );
 
@@ -204,7 +207,7 @@
 			if ( e.target.closest( '[data-close]' ) ) { UI.closeSheet(); return; }
 			if ( UI.sheetOpen() && ( EXA.txClick( e ) || EXA.billClick( e ) || EXA.walletClick( e ) ) ) return;
 			if ( e.target.id === 'authLogin' ) { EXA.authLogin(); return; }
-			if ( EXA.flow.onClick( e ) || EXA.flow.onStepClick( e ) || EXA.ideasClick( e ) || EXA.shareClick( e ) || EXA.planClick( e ) || EXA.repClick( e ) ) return;
+			if ( EXA.flow.onClick( e ) || EXA.flow.onStepClick( e ) || EXA.pushClick( e ) || EXA.ideasClick( e ) || EXA.shareClick( e ) || EXA.planClick( e ) || EXA.repClick( e ) ) return;
 			let el;
 			if ( ( el = e.target.closest( '[data-go]' ) ) ) { UI.closeSheet(); go( el.dataset.go ); return; }
 			if ( ( el = e.target.closest( '[data-more]' ) ) ) { st.view = 'more'; st.more = el.dataset.more; render(); $( '#view' ).scrollTop = 0; if ( st.more === 'account' ) loadDevices(); return; }
@@ -249,12 +252,13 @@
 		} );
 		document.addEventListener( 'input', ( e ) => {
 			if ( EXA.flow.onInput( e ) ) return;
-			if ( e.target.id === 'txSearch' ) { st.txFilter.q = e.target.value; render(); return; }
+			if ( e.target.id === 'txSearch' ) { st.txFilter.q = e.target.value; if ( ! e.isComposing ) render(); return; }
 			if ( EXA.txInput( e ) ) return;
 			EXA.billInput( e );
 		} );
+		document.addEventListener( 'compositionend', ( e ) => { if ( e.target.id === 'txSearch' ) { st.txFilter.q = e.target.value; render(); } } );
 		document.addEventListener( 'change', ( e ) => {
-			if ( EXA.repChange( e ) || EXA.shareChange( e ) ) return;
+			if ( EXA.repChange( e ) || EXA.shareChange( e ) || EXA.pushChange( e ) ) return;
 			const id = e.target.id;
 			if ( id === 'txWalletFilter' ) { st.txFilter.account = e.target.value; render(); }
 			else if ( id === 'setLead' ) { S().settings.lead = Number( e.target.value ); EX.save(); }
