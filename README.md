@@ -1,6 +1,6 @@
 # Expenity
 
-Your money, bills and goals, calmly in one place. A free, open-source web app that works on every device, signs you in with a passkey, syncs across your devices, lets you share a wallet, and speaks **English and Greek (Ελληνικά)**.
+Know where your money goes. A free, open-source web app that works on every device, signs you in with a passkey, syncs across your devices, lets you share a wallet, and speaks **English and Greek (Ελληνικά)**.
 
 - **App:** https://expenity.github.io/expenity/app/ (installable, works offline)
 - **Website:** https://expenity.github.io/expenity/ ([Ελληνικά](https://expenity.github.io/expenity/el/))

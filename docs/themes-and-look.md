@@ -6,7 +6,7 @@ Expenity has twelve themes. A theme changes more than colour: shapes, type, bord
 
 | Theme | Look |
 |---|---|
-| **Emerald** | The default: calm green, soft cards |
+| **Emerald** | The default: fresh green, soft cards |
 | **Minimal** | Black, white and hairlines |
 | **Paper notes** | Ruled paper, handwriting, a sticky note for your balance |
 | **Ledger** | An accounting book, serif type, double rules |

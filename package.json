@@ -2,7 +2,7 @@
   "name": "expenity",
   "version": "0.4.0",
   "private": true,
-  "description": "Expenity: your bills and subscriptions, calmly in one place. Free, private, works on every device.",
+  "description": "Expenity: know where your money goes. Expenses, income, bills, budgets and goals. Free, open source, works on every device.",
   "license": "GPL-2.0-or-later",
   "type": "module",
   "scripts": {

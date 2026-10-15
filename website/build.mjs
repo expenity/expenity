@@ -30,7 +30,7 @@ const PROJECTS = [
 	{ name: 'Helpdesk Hero', url: 'https://george-stathopoulos.github.io/helpdesk-hero/', text: 'WordPress support with diagnostics and password-free access' },
 	{ name: 'Fixpass', url: 'https://george-stathopoulos.github.io/fixpass/', text: 'Spotlight the problem and give support safe, temporary access' },
 	{ name: 'SheetPilot', url: 'https://george-stathopoulos.github.io/sheetpilot/', text: 'Turn any spreadsheet into an interactive dashboard, in your browser' },
-	{ name: 'Expenity', url: 'https://expenity.github.io/expenity/', text: 'Bills and subscriptions, calmly in one place. English and Greek' },
+	{ name: 'Expenity', url: 'https://expenity.github.io/expenity/', text: 'Know where your money goes. English and Greek' },
 ];
 
 const ROOT = process.cwd();
@@ -104,10 +104,10 @@ const I = {
 const LANGS = {
 	en: {
 		code: 'en', prefix: '', label: 'EN', other: 'el', switchLabel: 'ΕΛ', switchTitle: 'Ελληνικά',
-		tagline: 'Your money, bills and goals, calmly in one place', titleHome: 'Expenity: your money, bills and goals in one calm place',
+		tagline: 'Know where your money goes', titleHome: 'Expenity: know where your money goes',
 		descHome: 'Expenity tracks your expenses, income, bills, budgets and goals on every device. Sign in with a passkey, share wallets with family, pick one of twelve themes. Free, open source, in English and Greek.',
 		nav: { features: 'Features', how: 'How it works', app: 'Open the app', docs: 'Help center' }, openApp: 'Open app', darkTheme: 'Dark theme', skip: 'Skip to content', menu: 'Menu', homeAria: 'Expenity home',
-		about: 'Your money, bills and goals, calmly in one place, on every device. Free and open source.',
+		about: 'Know where your money goes, on every device. Free and open source.',
 		foot: { product: 'Product', help: 'Help', more: 'More projects', trust: 'Trust', allProjects: 'All projects', blog: 'Blog', blogTitle: 'The story behind every project',
 			source: 'Source on GitHub', started: 'Getting started', addBills: 'Add expenses and bills', reminders: 'Reminders', privacy: 'Privacy and your data', yourData: 'Your data stays with you', feedback: 'Feedback and ideas', faq: 'FAQ' },
 		madeBy: 'Made with', by: 'by', cookies: 'This website uses no cookies. Visits are counted anonymously, with no personal data.',
@@ -127,10 +127,10 @@ const LANGS = {
 	},
 	el: {
 		code: 'el', prefix: 'el/', label: 'ΕΛ', other: 'en', switchLabel: 'EN', switchTitle: 'English',
-		tagline: 'Χρήματα, λογαριασμοί και στόχοι, ήρεμα σε ένα μέρος', titleHome: 'Expenity: χρήματα, λογαριασμοί και στόχοι σε ένα ήρεμο μέρος',
+		tagline: 'Τα οικονομικά σας, με καθαρό μυαλό', titleHome: 'Expenity: τα οικονομικά σας, με καθαρό μυαλό',
 		descHome: 'Το Expenity παρακολουθεί έξοδα, έσοδα, λογαριασμούς, προϋπολογισμούς και στόχους σε κάθε συσκευή. Σύνδεση με passkey, κοινά πορτοφόλια με την οικογένεια, δώδεκα θέματα. Δωρεάν, ανοιχτού κώδικα, στα ελληνικά και στα αγγλικά.',
 		nav: { features: 'Δυνατότητες', how: 'Πώς λειτουργεί', app: 'Ανοίξτε την εφαρμογή', docs: 'Κέντρο βοήθειας' }, openApp: 'Άνοιγμα', darkTheme: 'Σκούρο θέμα', skip: 'Μετάβαση στο περιεχόμενο', menu: 'Μενού', homeAria: 'Expenity, αρχική',
-		about: 'Χρήματα, λογαριασμοί και στόχοι, ήρεμα σε ένα μέρος, σε κάθε συσκευή. Δωρεάν και ανοιχτού κώδικα.',
+		about: 'Τα οικονομικά σας, με καθαρό μυαλό, σε κάθε συσκευή. Δωρεάν και ανοιχτού κώδικα.',
 		foot: { product: 'Προϊόν', help: 'Βοήθεια', more: 'Περισσότερα έργα', trust: 'Εμπιστοσύνη', allProjects: 'Όλα τα έργα', blog: 'Blog', blogTitle: 'Η ιστορία πίσω από κάθε έργο',
 			source: 'Κώδικας στο GitHub', started: 'Ξεκινώντας', addBills: 'Προσθήκη εξόδων και λογαριασμών', reminders: 'Υπενθυμίσεις', privacy: 'Ιδιωτικότητα και δεδομένα', yourData: 'Τα δεδομένα σας μένουν σε εσάς', feedback: 'Σχόλια και ιδέες', faq: 'Συχνές ερωτήσεις' },
 		madeBy: 'Φτιαγμένο με', by: 'από τον', cookies: 'Αυτός ο ιστότοπος δεν χρησιμοποιεί cookies. Οι επισκέψεις μετριούνται ανώνυμα, χωρίς προσωπικά δεδομένα.',
