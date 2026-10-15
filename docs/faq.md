@@ -30,7 +30,7 @@ Reading a bank account would make Expenity handle bank credentials and sensitive
 
 ## Where is my data stored? Can you read it?
 
-On your device, and, if you have an account, on Expenity's server (Cloudflare) so it can sync. It is protected by your account, but it is **not end-to-end encrypted**, so treat it like any online service. Expenity does not sell or share it. See [Privacy and your data](privacy-and-your-data.md).
+On your device, and, if you have an account, on Expenity's server (Cloudflare) so it can sync. The connection is encrypted and only your passkey opens your account. Expenity does not look at your data, sell it or share it. See [Privacy and your data](privacy-and-your-data.md).
 
 ## Can several people share a wallet?
 

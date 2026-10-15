@@ -22,7 +22,7 @@ Started as a bill reminder and grew into a money app for expenses, income, bills
 
 ## Honest limits
 
-- Your data is stored on the Expenity server when you have an account. It is protected by your passkey but **not end-to-end encrypted**.
+- With an account, your data is stored on the Expenity server (Cloudflare) so it can sync. The connection is encrypted and access needs your passkey. It is not end-to-end encrypted, as with most online services.
 - Email (verification, reminders, invites) is off until a sending domain exists. Push and email reminders when the app is closed are planned; the calendar file covers that today.
 - Tested with Playwright in Chrome (including virtual passkeys and two simulated people), not on every device. The Greek is awaiting review by a native speaker: see [docs/greek-review.html](docs/greek-review.html).
 

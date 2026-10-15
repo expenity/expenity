@@ -4,7 +4,7 @@
 
 **On your device.** Expenity saves everything in your browser first, so it works offline. Without an account, that is the only place your data lives.
 
-**On Expenity's server, if you create an account.** To sync between your devices, your email address and your data (wallets, transactions, bills, budgets, goals, categories, recurring income and some settings) are stored on a Cloudflare Worker and database (D1). The server is operated by the author of Expenity. The data is protected by your account, the connection is encrypted in transit, and access needs your passkey. It is **not end-to-end encrypted**: the server can technically read it, like most online services. It is not sold, shared, or used for advertising.
+**On Expenity's server, if you create an account.** To sync between your devices, your email address and your data (wallets, transactions, bills, budgets, goals, categories, recurring income and some settings) are stored on a Cloudflare Worker and database (D1). The connection is encrypted, and access needs your passkey. Expenity does not look at your data, sell it, share it or use it for advertising. As with most online services, it is not end-to-end encrypted.
 
 **Passkeys.** The server stores only the public part of each passkey. Recovery codes are stored hashed.
 
