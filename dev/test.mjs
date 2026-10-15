@@ -251,6 +251,8 @@ await context.close();
 	ok( await d.locator( '#pane .detail' ).count() === 1 && ! await d.locator( '#sheet[open]' ).count(), 'desktop: a tapped row shows its details in the pane, not a sheet' );
 	await d.click( '#rail [data-go=bills]' ); await d.click( '.sw[data-kind=bill]' );
 	ok( await d.locator( '#pane [data-act=pay-bill]' ).count() === 1, 'desktop: a bill shows its actions in the pane' );
+	await d.click( '#rail [data-go=bills]' ); await d.click( '.sw[data-kind=bill]' );
+	ok( await d.evaluate( () => { const p = document.querySelector( '#pane' ); return p.scrollWidth <= p.clientWidth + 1 && [ ...p.querySelectorAll( '.btn' ) ].every( ( b ) => b.getBoundingClientRect().right <= p.getBoundingClientRect().right + 1 ); } ), 'desktop: the details pane fits, with every action button inside it' );
 	await d.keyboard.press( 'n' );
 	ok( await d.locator( '#sheet[open] .tile-btn' ).count() === 4, 'desktop: the n key opens the add sheet' );
 	await d.keyboard.press( 'Escape' );
