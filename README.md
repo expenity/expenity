@@ -7,7 +7,7 @@ Know where your money goes. A free, open-source web app that works on every devi
 - **Help center:** [docs/](docs/README.md) ([Greek](docs/el/README.md))
 - **Blog post:** https://george-stathopoulos.github.io/blog/
 
-Started as a bill reminder, inspired by [RemindPayBee](https://remindpaybee.com/), and grew into a money app in the spirit of Wallet by BudgetBakers.
+Started as a bill reminder and grew into a money app for expenses, income, bills, budgets and goals.
 
 ## What works today (version 0.4)
 
