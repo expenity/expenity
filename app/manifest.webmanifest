@@ -1,7 +1,7 @@
 {
   "name": "Expenity",
   "short_name": "Expenity",
-  "description": "Your bills and subscriptions, calmly in one place.",
+  "description": "Know where your money goes.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

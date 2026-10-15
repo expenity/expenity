@@ -10,7 +10,7 @@ window.EXPENITY_I18N = ( function () {
 
 	const en = {
 		htmlLang: 'en', locale: undefined, langName: 'English', otherLang: 'ΕΛ', otherLangLabel: 'Ελληνικά',
-		title: 'Expenity: your bills and subscriptions, calmly in one place',
+		title: 'Expenity: know where your money goes',
 		skip: 'Skip to content', addBill: 'Add bill', addBillAria: 'Add a bill',
 		tabToday: 'Today', tabCalendar: 'Calendar', tabInsights: 'Insights', tabSettings: 'Settings', tabsAria: 'Views',
 		footerNote: 'Expenity is free and open source. Your data stays in this browser.', help: 'Help', blog: 'Blog', projects: 'Projects',
@@ -69,7 +69,7 @@ window.EXPENITY_I18N = ( function () {
 
 	const el = {
 		htmlLang: 'el', locale: 'el-GR', langName: 'Ελληνικά', otherLang: 'EN', otherLangLabel: 'English',
-		title: 'Expenity: οι λογαριασμοί και οι συνδρομές σας, ήρεμα σε ένα μέρος',
+		title: 'Expenity: τα οικονομικά σας, με καθαρό μυαλό',
 		skip: 'Μετάβαση στο περιεχόμενο', addBill: 'Προσθήκη', addBillAria: 'Προσθήκη λογαριασμού',
 		tabToday: 'Σήμερα', tabCalendar: 'Ημερολόγιο', tabInsights: 'Στατιστικά', tabSettings: 'Ρυθμίσεις', tabsAria: 'Προβολές',
 		footerNote: 'Το Expenity είναι δωρεάν και ανοιχτού κώδικα. Τα δεδομένα σας μένουν σε αυτό το πρόγραμμα περιήγησης.', help: 'Βοήθεια', blog: 'Blog', projects: 'Έργα',
@@ -225,7 +225,7 @@ window.EXPENITY_I18N = ( function () {
 		installTitle: 'Add Expenity to your home screen', installText: 'Open it like an app, full screen, even without a connection.', installIos: 'In Safari, tap the Share button, then “Add to Home Screen”.',
 		installAndroid: 'Open the browser menu, then choose “Install app” or “Add to Home screen”.', installDesktop: 'Click the install icon at the right end of the address bar.', installBtn: 'Install', installDone: 'You are using the installed app.', dismiss: 'Not now',
 		aboutTitle: 'About Expenity', aboutText: 'Free and open source. Made by George Stathopoulos.', aboutHelp: 'Help center', aboutBlog: 'Blog', aboutProjects: 'More projects', aboutSource: 'Source code', aboutVersion: ( v ) => `Version ${ v.v }`,
-		onbWelcomeTitle: 'Welcome to Expenity', onbWelcomeText: 'Your money, calmly in one place. Pick your language to start.', onbWalletTitle: 'Your first wallet', onbWalletText: 'Where is your money now? You can add more wallets later.',
+		onbWelcomeTitle: 'Welcome to Expenity', onbWelcomeText: 'Know where your money goes. Pick your language to start.', onbWalletTitle: 'Your first wallet', onbWalletText: 'Where is your money now? You can add more wallets later.',
 		onbWalletName: 'Wallet name', onbOpening: 'How much is in it?', onbNext: 'Next', onbSkip: 'Skip', onbAccountTitle: 'Keep it safe and in sync', onbAccountText: 'Create a free account with a passkey to use Expenity on all your devices, or carry on with this device only.', onbContinue: 'Continue without an account',
 		periodMonth: 'This month', period3: '3 months', periodYear: 'This year', repSpent: 'Spent', repForecast: 'Bills coming up',
 		syncNow: 'Sync now', syncDone: 'Synced.', balanceAria: 'Total balance', paneEmpty: 'Select an item to see its details.', paneTitle: 'Details',
@@ -244,7 +244,7 @@ window.EXPENITY_I18N = ( function () {
 		installTitle: 'Προσθέστε το Expenity στην αρχική οθόνη', installText: 'Ανοίξτε το σαν εφαρμογή, σε πλήρη οθόνη, ακόμα και χωρίς σύνδεση.', installIos: 'Στο Safari, πατήστε το κουμπί Κοινοποίηση και μετά «Προσθήκη στην οθόνη Αφετηρίας».',
 		installAndroid: 'Ανοίξτε το μενού του προγράμματος περιήγησης και επιλέξτε «Εγκατάσταση εφαρμογής» ή «Προσθήκη στην αρχική οθόνη».', installDesktop: 'Πατήστε το εικονίδιο εγκατάστασης στο δεξί άκρο της γραμμής διευθύνσεων.', installBtn: 'Εγκατάσταση', installDone: 'Χρησιμοποιείτε την εγκατεστημένη εφαρμογή.', dismiss: 'Όχι τώρα',
 		aboutTitle: 'Σχετικά με το Expenity', aboutText: 'Δωρεάν και ανοιχτού κώδικα. Δημιουργός: George Stathopoulos.', aboutHelp: 'Κέντρο βοήθειας', aboutBlog: 'Blog', aboutProjects: 'Περισσότερα έργα', aboutSource: 'Πηγαίος κώδικας', aboutVersion: ( v ) => `Έκδοση ${ v.v }`,
-		onbWelcomeTitle: 'Καλώς ήρθατε στο Expenity', onbWelcomeText: 'Τα χρήματά σας, ήρεμα σε ένα μέρος. Διαλέξτε γλώσσα για να ξεκινήσετε.', onbWalletTitle: 'Το πρώτο σας πορτοφόλι', onbWalletText: 'Πού βρίσκονται τα χρήματά σας τώρα; Μπορείτε να προσθέσετε κι άλλα αργότερα.',
+		onbWelcomeTitle: 'Καλώς ήρθατε στο Expenity', onbWelcomeText: 'Τα οικονομικά σας, με καθαρό μυαλό. Διαλέξτε γλώσσα για να ξεκινήσετε.', onbWalletTitle: 'Το πρώτο σας πορτοφόλι', onbWalletText: 'Πού βρίσκονται τα χρήματά σας τώρα; Μπορείτε να προσθέσετε κι άλλα αργότερα.',
 		onbWalletName: 'Όνομα πορτοφολιού', onbOpening: 'Πόσα έχει μέσα;', onbNext: 'Επόμενο', onbSkip: 'Παράλειψη', onbAccountTitle: 'Κρατήστε τα ασφαλή και συγχρονισμένα', onbAccountText: 'Δημιουργήστε δωρεάν λογαριασμό με passkey για να χρησιμοποιείτε το Expenity σε όλες τις συσκευές σας, ή συνεχίστε μόνο σε αυτή τη συσκευή.', onbContinue: 'Συνέχεια χωρίς λογαριασμό',
 		periodMonth: 'Αυτός ο μήνας', period3: '3 μήνες', periodYear: 'Φέτος', repSpent: 'Έξοδα', repForecast: 'Λογαριασμοί που έρχονται',
 		syncNow: 'Συγχρονισμός τώρα', syncDone: 'Συγχρονίστηκε.', balanceAria: 'Συνολικό υπόλοιπο', paneEmpty: 'Επιλέξτε κάτι για να δείτε τις λεπτομέρειες.', paneTitle: 'Λεπτομέρειες',
