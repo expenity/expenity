@@ -398,6 +398,12 @@
 			<div class="btn-row sticky-actions">${ a ? `<button type="button" class="btn btn-danger" id="walletDel">${ esc( t( 'del' ) ) }</button>` : '' }<span class="sp"></span><button type="submit" class="btn btn-primary">${ esc( t( 'saveTx' ) ) }</button></div></form>`, { cls: 'small' } );
 	};
 	EXA.walletClick = ( e ) => {
+		const pick = e.target.closest( '[data-cat-icon], [data-cat-color]' );
+		if ( pick && catSel ) {
+			if ( pick.dataset.catIcon ) catSel.icon = pick.dataset.catIcon; else catSel.color = pick.dataset.catColor;
+			$( '#catPick' ).innerHTML = catPicker(); $( '#catPrev' ).innerHTML = UI.ci( catSel.icon, catSel.color, 56 );
+			return true;
+		}
 		const el = e.target.closest( '[data-wtype]' );
 		if ( el ) { $( '#walletForm' ).elements.type.value = el.dataset.wtype; $$( '#wTypes .chip' ).forEach( ( b ) => b.classList.toggle( 'on', b === el ) ); return true; }
 		if ( e.target.closest( '#walletDel' ) ) {
@@ -422,15 +428,23 @@
 		EX.repairCurrencies();
 		UI.closeSheet(); EX.save(); toast( t( 'tWalletSaved' ) );
 	};
+	const CAT_ICONS = ['tag', 'shopping-cart', 'shopping-bag', 'home', 'car', 'bus', 'bike', 'gas-station', 'coffee', 'pizza', 'glass-full', 'heartbeat', 'pill', 'first-aid-kit', 'school', 'book', 'gift', 'plane', 'briefcase', 'heart', 'users', 'paw', 'baby-carriage', 'device-gamepad-2', 'ball-football', 'barbell', 'music', 'movie', 'shirt', 'scissors', 'tools', 'phone', 'wifi', 'bulb', 'droplet', 'flame', 'tree', 'building-store', 'receipt', 'pig-money'];
+	const CAT_COLORS = ['teal', 'blue', 'purple', 'pink', 'red', 'amber', 'green', 'gray'];
+	let catSel = null;
+	const catPicker = () => `<div class="lbl">${ esc( t( 'cIcon' ) ) }</div><div class="icon-pick cat-icons" role="radiogroup" aria-label="${ esc( t( 'cIcon' ) ) }">${ CAT_ICONS.map( ( n ) => `<button type="button" class="ipick${ catSel.icon === n ? ' on' : '' }" data-cat-icon="${ n }" role="radio" aria-checked="${ catSel.icon === n }" aria-label="${ n }">${ UI.icon( n, 24 ) }</button>` ).join( '' ) }</div>
+		<div class="lbl">${ esc( t( 'cColor' ) ) }</div><div class="color-pick" role="radiogroup" aria-label="${ esc( t( 'cColor' ) ) }">${ CAT_COLORS.map( ( c ) => `<button type="button" class="cpick tint-${ c }${ catSel.color === c ? ' on' : '' }" data-cat-color="${ c }" role="radio" aria-checked="${ catSel.color === c }" aria-label="${ c }"><i></i></button>` ).join( '' ) }</div>`;
 	EXA.openCat = () => {
-		UI.openSheet( `${ head( t( 'catAdd' ) ) }<form id="catForm" novalidate class="sheet-pad"><label class="f"><span>${ esc( t( 'cName' ) ) }</span><input name="name" required maxlength="30" autocomplete="off" autofocus></label>
-			<div class="grid2"><label class="f"><span>${ esc( t( 'cIcon' ) ) }</span><input name="icon" maxlength="4" placeholder="🐶" autocomplete="off"></label><label class="f"><span>${ esc( t( 'cType' ) ) }</span><select name="type"><option value="expense">${ esc( t( 'typeExpense' ) ) }</option><option value="income">${ esc( t( 'typeIncome' ) ) }</option></select></label></div>
+		catSel = { icon: 'tag', color: 'teal' };
+		UI.openSheet( `${ head( t( 'catAdd' ) ) }<form id="catForm" novalidate class="sheet-pad"><div class="cat-prev" id="catPrev">${ UI.ci( catSel.icon, catSel.color, 56 ) }</div>
+			<label class="f"><span>${ esc( t( 'cName' ) ) }</span><input name="name" required maxlength="30" autocomplete="off" autofocus></label>
+			<label class="f"><span>${ esc( t( 'cType' ) ) }</span><select name="type"><option value="expense">${ esc( t( 'typeExpense' ) ) }</option><option value="income">${ esc( t( 'typeIncome' ) ) }</option></select></label>
+			<div id="catPick">${ catPicker() }</div>
 			<p class="err" id="catErr" role="alert" hidden></p><div class="btn-row"><button type="submit" class="btn btn-primary wide">${ esc( t( 'saveTx' ) ) }</button></div></form>`, { cls: 'small' } );
 	};
 	EXA.catSubmit = () => {
 		const f = $( '#catForm' ).elements, name = f.name.value.trim();
 		if ( ! name ) { const e = $( '#catErr' ); e.textContent = t( 'errNameReq' ); e.hidden = false; return; }
-		S().categories.push( { id: uid(), name, icon: f.icon.value.trim() || '📌', type: f.type.value } );
+		S().categories.push( { id: uid(), name, iconName: catSel.icon, color: catSel.color, type: f.type.value } );
 		UI.closeSheet(); EX.save(); toast( t( 'tCatSaved' ) );
 	};
 

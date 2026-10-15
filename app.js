@@ -24,8 +24,10 @@
 	function render() {
 		const view = $( '#view' );
 		const keep = view.dataset.key === st.view + ':' + st.more ? view.scrollTop : 0;
-		const focusId = document.activeElement && document.activeElement.id;
-		const caret = focusId === 'txSearch' ? document.activeElement.selectionStart : null;
+		// A redraw (a sync, a change elsewhere) must not steal the field someone is typing in: remember it and put it back.
+		const ae = document.activeElement, inView = ae && ae.id && $( '#view' ).contains( ae ) && /^(INPUT|TEXTAREA|SELECT)$/.test( ae.tagName );
+		const keep0 = inView ? { id: ae.id, value: ae.value, from: ae.selectionStart, to: ae.selectionEnd } : null;
+		const focusId = null, caret = null;
 		$( '#appbar' ).innerHTML = EXA.appbar();
 		$( '#tabbar' ).innerHTML = EXA.tabbar();
 		$( '#rail' ).innerHTML = EXA.rail();
@@ -34,7 +36,7 @@
 		view.scrollTop = keep;
 		$( '#pane' ).innerHTML = paneHtml();
 		if ( logoSvg ) $$( '#logo' ).forEach( ( l ) => { l.innerHTML = logoSvg; } );
-		if ( focusId === 'txSearch' ) { const el = $( '#txSearch' ); if ( el ) { el.focus(); if ( caret != null ) el.setSelectionRange( caret, caret ); } }
+		if ( keep0 ) { const el = document.getElementById( keep0.id ); if ( el && $( '#view' ).contains( el ) ) { if ( el.tagName !== 'SELECT' && el.value !== keep0.value ) el.value = keep0.value; el.focus(); try { if ( keep0.from != null ) el.setSelectionRange( keep0.from, keep0.to ); } catch ( err ) { /* inputs like date have no caret */ } } }
 		document.body.dataset.view = st.view;
 		document.documentElement.lang = EX.I18N.langs[ EX.lang() ].htmlLang;
 		document.title = t( 'title' );
@@ -249,10 +251,11 @@
 		} );
 		document.addEventListener( 'input', ( e ) => {
 			if ( EXA.flow.onInput( e ) ) return;
-			if ( e.target.id === 'txSearch' ) { st.txFilter.q = e.target.value; render(); return; }
+			if ( e.target.id === 'txSearch' ) { st.txFilter.q = e.target.value; if ( ! e.isComposing ) render(); return; }
 			if ( EXA.txInput( e ) ) return;
 			EXA.billInput( e );
 		} );
+		document.addEventListener( 'compositionend', ( e ) => { if ( e.target.id === 'txSearch' ) { st.txFilter.q = e.target.value; render(); } } );
 		document.addEventListener( 'change', ( e ) => {
 			if ( EXA.repChange( e ) || EXA.shareChange( e ) ) return;
 			const id = e.target.id;

@@ -188,7 +188,7 @@ await page.keyboard.press( 'Escape' );
 await page.click( '.ab-avatar .avatar:visible' );
 ok( await page.locator( '.mrow' ).count() >= 6, 'More lists wallets, categories, reminders, data, appearance and about' );
 await page.click( '[data-more=categories]' ); await page.click( '[data-act=add-cat]' );
-await page.fill( '#catForm [name=name]', 'Pets' ); await page.fill( '#catForm [name=icon]', '🐶' ); await page.click( '#catForm [type=submit]' );
+await page.fill( '#catForm [name=name]', 'Pets' ); await page.click( '#catForm [data-cat-icon=paw]' ); await page.click( '#catForm [data-cat-color=pink]' ); ok( await page.locator( '#catPrev .tint-pink' ).count() === 1, 'the category preview follows the chosen icon and colour' ); await page.click( '#catForm [type=submit]' );
 ok( ( await st() ).categories.length === 1, 'a custom category can be added' );
 await page.click( '[data-act=more-back]' );
 const ics = await page.evaluate( () => window.EXApp.buildIcs() );
@@ -392,6 +392,19 @@ for ( const w of [ 320, 360, 390, 430 ] ) {
 	await p.evaluate( () => { window.EXA.st.planTab = 'ideas'; window.EXA.go( 'plan' ); } );
 	ok( await p.locator( '.aim' ).count() === 7, 'ideas: the aims can be changed from the Ideas tab' );
 	const over = await p.evaluate( () => document.documentElement.scrollWidth > innerWidth + 1 ); ok( ! over, 'ideas: no sideways scrolling' );
+	await c.close();
+}
+
+/* ---- A redraw never steals the field someone is typing in */
+{
+	const { context: c, page: p } = await newPage( { viewport: { width: 390, height: 844 } } );
+	await p.evaluate( () => { window.EXA.skipFlow(); window.EXA.go( 'more', 'reminders' ); } );
+	await p.click( '#setCur' ); await p.fill( '#setCur', 'US' );
+	await p.evaluate( () => { window.EX.emit( 'remote' ); window.EX.emit( 'syncstatus' ); } ); await p.waitForTimeout( 200 );
+	ok( await p.evaluate( () => document.activeElement.id === 'setCur' && document.activeElement.value === 'US' ), 'a sync redraw keeps the focus and the text of the field being typed in' );
+	await p.evaluate( () => window.EXA.go( 'activity' ) ); await p.evaluate( () => { window.EXA.st.searchOpen = true; window.EXA.render(); } );
+	await p.click( '#txSearch' ); await p.keyboard.type( 'cof' ); await p.evaluate( () => window.EX.emit( 'remote' ) ); await p.waitForTimeout( 200 );
+	ok( await p.evaluate( () => document.activeElement.id === 'txSearch' && document.activeElement.value === 'cof' ), 'the search box keeps its text and focus across a redraw' );
 	await c.close();
 }
 

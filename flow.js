@@ -256,6 +256,7 @@
 		W.step += 1; D().setupStep = W.step; EX.persist(); flow.show();
 	}
 	flow.onInput = ( e ) => {
+		if ( e.target.id === 'curSearch' && e.isComposing ) { W.curQuery = e.target.value; return true; }
 		if ( e.target.id === 'curSearch' ) { W.curQuery = e.target.value; const pos = e.target.selectionStart; flow.show(); const i = $( '#curSearch' ); if ( i ) { i.focus(); i.setSelectionRange( pos, pos ); } return true; }
 		return false;
 	};
