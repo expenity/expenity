@@ -1,17 +1,13 @@
 # 01 Product brief
 
-> **Name:** earlier working names "Duewise" and "Duenest" were dropped (an iOS app called "Bill Organizer - DueWise" exists, found in a web search on 2026-10-15). The product is called **Expenity**. A web search on 2026-10-15 found no product called Expenity, but close names exist: "Expeny" (an iOS personal finance app) and "Expeni" (procurement software). That was a quick search, not a trademark check; check before any serious launch.
+> **Name:** earlier working names "Duewise" and "Duenest" were dropped because of clashes with existing products. The product is called **Expenity**.
 > **Build status:** version 0.1 is a browser-only app (see the repository README). This spec describes the full vision, including the server-side parts (sync, push and email reminders, households, bill capture) that are not built yet.
 
-## Reference product: RemindPayBee
+## The problem
 
-Source: remindpaybee.com (the Play Store listing could not be fetched, so store ratings and reviews are not analysed here; do that manually before launch).
+Many bill and money trackers keep data on one device only, with no account and no sync. That is private, but it has costs.
 
-**What it does:** tracks bills, payments and subscriptions, groups them by category, sends reminders (set in days, hours or minutes before), supports recurring payments with bulk management, shows monthly/yearly spending charts, multi-currency, 17 languages, themes and icons.
-
-**What it deliberately does:** stores everything on the device only. No account, no cloud sync, no analytics.
-
-### Gaps we can exploit
+### Gaps in typical trackers
 
 | Gap | Consequence for users |
 |---|---|

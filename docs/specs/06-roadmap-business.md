@@ -2,7 +2,7 @@
 
 ## Phases
 
-**Phase 0: Validate (1–2 weeks).** Pull Play Store reviews of RemindPayBee and 3–4 rivals (Bill Reminder apps, Subby, Bobby, Mint-style trackers) and list top complaints; landing page with waitlist; 5–10 user interviews (households, subscription-heavy people).
+**Phase 0: Validate (1–2 weeks).** Read public store reviews of comparable apps and list the top complaints; landing page with waitlist; 5–10 user interviews (households, subscription-heavy people).
 
 **Phase 1: MVP (6–8 weeks).** Scope in `02-requirements.md`. Accounts + guest mode, bills/recurrence, Today + Calendar, push + email reminders with mark-paid/snooze, quick add (NL), templates, ICS feed, export/delete, EN + EL, PWA offline. Private beta with 20–50 users; measure reminder reliability.
 
