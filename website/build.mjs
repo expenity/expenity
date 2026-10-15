@@ -103,7 +103,7 @@ const I = {
 
 const LANGS = {
 	en: {
-		code: 'en', prefix: '', label: 'EN', other: 'el', switchLabel: 'ΕΛ', switchTitle: 'Ελληνικά',
+		code: 'en', prefix: '', label: 'EN', other: 'el', switchLabel: 'EL', switchTitle: 'Greek',
 		tagline: 'Know where your money goes', titleHome: 'Expenity: know where your money goes',
 		descHome: 'Expenity tracks your expenses, income, bills, budgets and goals on every device. Sign in with a passkey, share wallets with family, pick one of twelve themes. Free, open source, in English and Greek.',
 		nav: { features: 'Features', how: 'How it works', app: 'Open the app', docs: 'Help center' }, openApp: 'Open app', darkTheme: 'Dark theme', skip: 'Skip to content', menu: 'Menu', homeAria: 'Expenity home',
@@ -126,7 +126,7 @@ const LANGS = {
 		page404: { h: 'This bill is not on the list', p: 'This page may have moved. Try the help center, or start from the home page.', home: 'Home', docs: 'Help center' },
 	},
 	el: {
-		code: 'el', prefix: 'el/', label: 'ΕΛ', other: 'en', switchLabel: 'EN', switchTitle: 'English',
+		code: 'el', prefix: 'el/', label: 'ΕΛ', other: 'en', switchLabel: 'ΕΝ', switchTitle: 'Αγγλικά',
 		tagline: 'Τα οικονομικά σας, με καθαρό μυαλό', titleHome: 'Expenity: τα οικονομικά σας, με καθαρό μυαλό',
 		descHome: 'Το Expenity παρακολουθεί έξοδα, έσοδα, λογαριασμούς, προϋπολογισμούς και στόχους σε κάθε συσκευή. Σύνδεση με passkey, κοινά πορτοφόλια με την οικογένεια, δώδεκα θέματα. Δωρεάν, ανοιχτού κώδικα, στα ελληνικά και στα αγγλικά.',
 		nav: { features: 'Δυνατότητες', how: 'Πώς λειτουργεί', app: 'Ανοίξτε την εφαρμογή', docs: 'Κέντρο βοήθειας' }, openApp: 'Άνοιγμα', darkTheme: 'Σκούρο θέμα', skip: 'Μετάβαση στο περιεχόμενο', menu: 'Μενού', homeAria: 'Expenity, αρχική',

@@ -1,10 +1,10 @@
 # Expenity
 
-Know where your money goes. A free, open-source web app that works on every device, signs you in with a passkey, syncs across your devices, lets you share a wallet, and speaks **English and Greek (Ελληνικά)**.
+Know where your money goes. A free, open-source web app that works on every device, signs you in with a passkey, syncs across your devices, lets you share a wallet, and speaks **English and Greek**.
 
 - **App:** https://expenity.github.io/expenity/app/ (installable, works offline)
-- **Website:** https://expenity.github.io/expenity/ ([Ελληνικά](https://expenity.github.io/expenity/el/))
-- **Help center:** [docs/](docs/README.md) ([Ελληνικά](docs/el/README.md))
+- **Website:** https://expenity.github.io/expenity/ ([Greek](https://expenity.github.io/expenity/el/))
+- **Help center:** [docs/](docs/README.md) ([Greek](docs/el/README.md))
 - **Blog post:** https://george-stathopoulos.github.io/blog/
 
 Started as a bill reminder, inspired by [RemindPayBee](https://remindpaybee.com/), and grew into a money app in the spirit of Wallet by BudgetBakers.

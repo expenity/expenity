@@ -1,6 +1,6 @@
 # Expenity documentation
 
-The same guides as the [help center on the website](https://expenity.github.io/expenity/docs/). Ελληνικά: [οδηγοί στα ελληνικά](el/README.md).
+The same guides as the [help center on the website](https://expenity.github.io/expenity/docs/). Greek: [guides in Greek](el/README.md).
 
 ## Using Expenity
 
