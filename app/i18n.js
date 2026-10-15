@@ -1,19 +1,19 @@
 /**
- * Duenest translations. English is the default; Greek (Ελληνικά) is fully supported.
+ * Expenity translations. English is the default; Greek (Ελληνικά) is fully supported.
  * To add a language: copy the `en` block, translate the values, register it in LANGS, and add its
  * month/weekday/repeat words to the quick-add parser in app.js.
  * A value is a string with {placeholders}, or a function receiving the variables.
  */
-window.DUENEST_I18N = ( function () {
+window.EXPENITY_I18N = ( function () {
 	'use strict';
 	const plural = ( n, one, many ) => ( n === 1 ? one : many );
 
 	const en = {
 		htmlLang: 'en', locale: undefined, langName: 'English', otherLang: 'ΕΛ', otherLangLabel: 'Ελληνικά',
-		title: 'Duenest: your bills and subscriptions, calmly in one place',
+		title: 'Expenity: your bills and subscriptions, calmly in one place',
 		skip: 'Skip to content', addBill: 'Add bill', addBillAria: 'Add a bill',
 		tabToday: 'Today', tabCalendar: 'Calendar', tabInsights: 'Insights', tabSettings: 'Settings', tabsAria: 'Views',
-		footerNote: 'Duenest is free and open source. Your data stays in this browser.', help: 'Help', blog: 'Blog', projects: 'Projects',
+		footerNote: 'Expenity is free and open source. Your data stays in this browser.', help: 'Help', blog: 'Blog', projects: 'Projects',
 		addTitle: 'Add a bill', editTitle: 'Edit bill', close: 'Close', cancel: 'Cancel', saveBill: 'Save bill', del: 'Delete',
 		quickLabel: 'Type it in a sentence', quickPh: 'Netflix 15.99 monthly on the 3rd', templatesAria: 'Templates',
 		fName: 'Name', fAmount: 'Amount', fCurrency: 'Currency', fNext: 'Next due date', fRepeats: 'Repeats', fCategory: 'Category', fRemind: 'Remind me',
@@ -32,7 +32,7 @@ window.DUENEST_I18N = ( function () {
 		openLink: 'Open payment link', copyRef: 'Copy reference', edit: 'Edit', moreFor: ( v ) => `More actions for ${ v.name }`, editAria: ( v ) => `Edit ${ v.name }`,
 		tPaid: ( v ) => `${ v.name } marked paid.`, undo: 'Undo', tSkipped: ( v ) => `Skipped ${ v.name } this time.`, tSnoozed: ( v ) => `Reminders for ${ v.name } paused until ${ v.date }.`,
 		tDeleted: ( v ) => `${ v.name } deleted.`, tAdded: ( v ) => `${ v.name } added. You will be reminded ${ v.lead }.`, tSaved: 'Saved.', tRefCopied: 'Reference copied.',
-		tSample: 'Sample bills added. Delete them any time in Settings.', tRestored: 'Backup restored.', tBadBackup: 'That file is not a Duenest backup.', tNeedBill: 'Add a bill first.',
+		tSample: 'Sample bills added. Delete them any time in Settings.', tRestored: 'Backup restored.', tBadBackup: 'That file is not a Expenity backup.', tNeedBill: 'Add a bill first.',
 		tIcs: 'Import this file into your calendar app. Repeating bills repeat there too.', tWiped: 'Everything was deleted.', tSaveFail: 'Could not save in this browser. Export a backup from Settings.',
 		emptyH: 'Never miss a payment again.', emptyP: 'Add your first bill in a sentence, or start from a template. Everything stays on this device.',
 		emptySample: 'Prefer to start with data?', loadSample: 'Load sample bills', emptySample2: 'to look around, then delete them in Settings.',
@@ -49,18 +49,18 @@ window.DUENEST_I18N = ( function () {
 		paidByCat: 'Paid this year, by category', mixedNote: 'You pay in more than one currency, so these are plain numbers added together.', noPaid: 'Mark a few bills as paid and your spending shows up here.',
 		subs: 'Subscriptions', subLine: ( v ) => `<b>${ v.name }</b> costs ${ v.year } a year <span class="muted">(${ v.each } ${ v.rep })</span>`, subTotal: ( v ) => `Together: <b>${ v.total }</b> a year.`,
 		noSubs: 'Add bills in the “Subscriptions” category to see what they cost over a year.',
-		sRemind: 'Reminders', sDefLead: 'Default reminder', sMainCur: 'Main currency', sNotif: 'Notifications while Duenest is open',
+		sRemind: 'Reminders', sDefLead: 'Default reminder', sMainCur: 'Main currency', sNotif: 'Notifications while Expenity is open',
 		notifNone: 'This browser does not support notifications.', notifDenied: 'Notifications are blocked for this site in your browser settings.',
 		notifDesc: 'A notification for bills that are due soon, shown when you open the app or keep it in a tab.', turnOn: 'Turn on', turnOff: 'Turn off',
 		sClosed: 'Reminders when the app is closed', sClosedDesc: 'Add all your bills to your calendar with alarms. Your phone or computer calendar then reminds you on its own, on every device you sync it to. Import the file into Google, Apple or Outlook calendar.',
 		dlIcs: 'Download calendar file', sData: 'Your data',
 		sDataDesc: ( v ) => `${ v.b } ${ plural( v.b, 'bill', 'bills' ) } and ${ v.p } ${ plural( v.p, 'payment', 'payments' ) } are saved in this browser only. Clearing site data removes them, so keep a backup.`,
 		dlBackup: 'Download backup (JSON)', dlCsv: 'Payments as CSV', restore: 'Restore a backup', sAppearance: 'Appearance', themeAuto: 'Match device', themeLight: 'Light', themeDark: 'Dark', sLanguage: 'Language',
-		sNext: 'Coming next', sNextDesc: 'Syncing between your devices, shared households and reminders by email or push when the app is closed need a small server. They are planned, and the specifications are public in the <a href="https://github.com/george-stathopoulos/duenest/tree/main/docs">repository</a>.',
+		sNext: 'Coming next', sNextDesc: 'Syncing between your devices, shared households and reminders by email or push when the app is closed need a small server. They are planned, and the specifications are public in the <a href="https://github.com/george-stathopoulos/expenity/tree/main/docs">repository</a>.',
 		sDanger: 'Delete everything', sDangerDesc: 'Removes all bills and payments from this browser. This cannot be undone.', wipe: 'Delete all my data',
 		confirmWipe: 'Delete all bills and payments from this browser? This cannot be undone.', confirmRestore: ( v ) => `Replace your current data with this backup (${ v.n } bills)?`,
 		csvHead: [ 'Paid on', 'Bill', 'Category', 'Due date', 'Amount', 'Currency' ], numberHint: 'Enter a number, like 49.90',
-		icsPay: ( v ) => `Pay ${ v.name }${ v.amt }`, icsDueIn: ( v ) => `${ v.name } is due in ${ v.n } ${ plural( v.n, 'day', 'days' ) }`, icsToday: ( v ) => `${ v.name } is due today`, icsRef: 'Reference', icsPayLink: 'Pay', icsCal: 'Duenest bills',
+		icsPay: ( v ) => `Pay ${ v.name }${ v.amt }`, icsDueIn: ( v ) => `${ v.name } is due in ${ v.n } ${ plural( v.n, 'day', 'days' ) }`, icsToday: ( v ) => `${ v.name } is due today`, icsRef: 'Reference', icsPayLink: 'Pay', icsCal: 'Expenity bills',
 		nTitle1: 'A bill is due soon', nTitleN: ( v ) => `${ v.n } bills are due soon`, nMore: ( v ) => `+${ v.n } more`,
 		tplRent: 'Rent', tplElectricity: 'Electricity', tplWater: 'Water', tplInternet: 'Internet', tplPhone: 'Mobile phone', tplNetflix: 'Netflix', tplSpotify: 'Spotify', tplCarIns: 'Car insurance',
 		tplCard: 'Credit card', tplGym: 'Gym', tplPropTax: 'Property tax', tplSchool: 'School fees',
@@ -69,10 +69,10 @@ window.DUENEST_I18N = ( function () {
 
 	const el = {
 		htmlLang: 'el', locale: 'el-GR', langName: 'Ελληνικά', otherLang: 'EN', otherLangLabel: 'English',
-		title: 'Duenest: οι λογαριασμοί και οι συνδρομές σας, ήρεμα σε ένα μέρος',
+		title: 'Expenity: οι λογαριασμοί και οι συνδρομές σας, ήρεμα σε ένα μέρος',
 		skip: 'Μετάβαση στο περιεχόμενο', addBill: 'Προσθήκη', addBillAria: 'Προσθήκη λογαριασμού',
 		tabToday: 'Σήμερα', tabCalendar: 'Ημερολόγιο', tabInsights: 'Στατιστικά', tabSettings: 'Ρυθμίσεις', tabsAria: 'Προβολές',
-		footerNote: 'Το Duenest είναι δωρεάν και ανοιχτού κώδικα. Τα δεδομένα σας μένουν σε αυτό το πρόγραμμα περιήγησης.', help: 'Βοήθεια', blog: 'Blog', projects: 'Έργα',
+		footerNote: 'Το Expenity είναι δωρεάν και ανοιχτού κώδικα. Τα δεδομένα σας μένουν σε αυτό το πρόγραμμα περιήγησης.', help: 'Βοήθεια', blog: 'Blog', projects: 'Έργα',
 		addTitle: 'Προσθήκη λογαριασμού', editTitle: 'Επεξεργασία λογαριασμού', close: 'Κλείσιμο', cancel: 'Ακύρωση', saveBill: 'Αποθήκευση', del: 'Διαγραφή',
 		quickLabel: 'Γράψτε το με μια πρόταση', quickPh: 'Netflix 15,99 μηνιαία στις 3', templatesAria: 'Έτοιμα πρότυπα',
 		fName: 'Όνομα', fAmount: 'Ποσό', fCurrency: 'Νόμισμα', fNext: 'Επόμενη ημερομηνία πληρωμής', fRepeats: 'Επανάληψη', fCategory: 'Κατηγορία', fRemind: 'Υπενθύμιση',
@@ -91,7 +91,7 @@ window.DUENEST_I18N = ( function () {
 		openLink: 'Άνοιγμα συνδέσμου πληρωμής', copyRef: 'Αντιγραφή κωδικού πληρωμής', edit: 'Επεξεργασία', moreFor: ( v ) => `Περισσότερες ενέργειες για ${ v.name }`, editAria: ( v ) => `Επεξεργασία ${ v.name }`,
 		tPaid: ( v ) => `Το «${ v.name }» σημειώθηκε ως πληρωμένο.`, undo: 'Αναίρεση', tSkipped: ( v ) => `Παραλείφθηκε το «${ v.name }» αυτή τη φορά.`, tSnoozed: ( v ) => `Οι υπενθυμίσεις για το «${ v.name }» σταματούν έως ${ v.date }.`,
 		tDeleted: ( v ) => `Το «${ v.name }» διαγράφηκε.`, tAdded: ( v ) => `Το «${ v.name }» προστέθηκε. Θα έχετε υπενθύμιση: ${ v.lead }.`, tSaved: 'Αποθηκεύτηκε.', tRefCopied: 'Ο κωδικός αντιγράφηκε.',
-		tSample: 'Προστέθηκαν δείγματα. Διαγράψτε τα όποτε θέλετε από τις Ρυθμίσεις.', tRestored: 'Η αντιγραφή ασφαλείας επαναφέρθηκε.', tBadBackup: 'Αυτό το αρχείο δεν είναι αντίγραφο ασφαλείας του Duenest.', tNeedBill: 'Προσθέστε πρώτα έναν λογαριασμό.',
+		tSample: 'Προστέθηκαν δείγματα. Διαγράψτε τα όποτε θέλετε από τις Ρυθμίσεις.', tRestored: 'Η αντιγραφή ασφαλείας επαναφέρθηκε.', tBadBackup: 'Αυτό το αρχείο δεν είναι αντίγραφο ασφαλείας του Expenity.', tNeedBill: 'Προσθέστε πρώτα έναν λογαριασμό.',
 		tIcs: 'Εισαγάγετε το αρχείο στο ημερολόγιό σας. Οι επαναλαμβανόμενοι λογαριασμοί επαναλαμβάνονται και εκεί.', tWiped: 'Όλα διαγράφηκαν.', tSaveFail: 'Δεν ήταν δυνατή η αποθήκευση σε αυτό το πρόγραμμα περιήγησης. Κατεβάστε αντίγραφο ασφαλείας από τις Ρυθμίσεις.',
 		emptyH: 'Μην ξεχάσετε ποτέ ξανά μια πληρωμή.', emptyP: 'Προσθέστε τον πρώτο σας λογαριασμό με μια πρόταση ή ξεκινήστε από ένα πρότυπο. Όλα μένουν σε αυτή τη συσκευή.',
 		emptySample: 'Θέλετε να δείτε πρώτα πώς δουλεύει;', loadSample: 'Φορτώστε δείγματα λογαριασμών', emptySample2: 'και διαγράψτε τα μετά από τις Ρυθμίσεις.',
@@ -108,18 +108,18 @@ window.DUENEST_I18N = ( function () {
 		paidByCat: 'Πληρωμές φέτος ανά κατηγορία', mixedNote: 'Πληρώνετε σε περισσότερα από ένα νομίσματα, οπότε εμφανίζονται ως απλοί αριθμοί αθροισμένοι.', noPaid: 'Σημειώστε μερικούς λογαριασμούς ως πληρωμένους και τα έξοδά σας θα εμφανιστούν εδώ.',
 		subs: 'Συνδρομές', subLine: ( v ) => `Το <b>${ v.name }</b> κοστίζει ${ v.year } τον χρόνο <span class="muted">(${ v.each } ${ v.rep })</span>`, subTotal: ( v ) => `Όλα μαζί: <b>${ v.total }</b> τον χρόνο.`,
 		noSubs: 'Προσθέστε λογαριασμούς στην κατηγορία «Συνδρομές» για να δείτε πόσο κοστίζουν σε έναν χρόνο.',
-		sRemind: 'Υπενθυμίσεις', sDefLead: 'Προεπιλεγμένη υπενθύμιση', sMainCur: 'Κύριο νόμισμα', sNotif: 'Ειδοποιήσεις όσο το Duenest είναι ανοιχτό',
+		sRemind: 'Υπενθυμίσεις', sDefLead: 'Προεπιλεγμένη υπενθύμιση', sMainCur: 'Κύριο νόμισμα', sNotif: 'Ειδοποιήσεις όσο το Expenity είναι ανοιχτό',
 		notifNone: 'Αυτό το πρόγραμμα περιήγησης δεν υποστηρίζει ειδοποιήσεις.', notifDenied: 'Οι ειδοποιήσεις είναι αποκλεισμένες για αυτόν τον ιστότοπο στις ρυθμίσεις του προγράμματος περιήγησης.',
 		notifDesc: 'Ειδοποίηση για λογαριασμούς που λήγουν σύντομα, όταν ανοίγετε την εφαρμογή ή την έχετε σε μια καρτέλα.', turnOn: 'Ενεργοποίηση', turnOff: 'Απενεργοποίηση',
 		sClosed: 'Υπενθυμίσεις όταν η εφαρμογή είναι κλειστή', sClosedDesc: 'Προσθέστε όλους τους λογαριασμούς σας στο ημερολόγιό σας με ειδοποιήσεις. Το ημερολόγιο του κινητού ή του υπολογιστή σας θα σας υπενθυμίζει μόνο του, σε κάθε συσκευή όπου συγχρονίζεται. Εισαγάγετε το αρχείο στο ημερολόγιο Google, Apple ή Outlook.',
 		dlIcs: 'Λήψη αρχείου ημερολογίου', sData: 'Τα δεδομένα σας',
 		sDataDesc: ( v ) => `${ v.b } ${ plural( v.b, 'λογαριασμός', 'λογαριασμοί' ) } και ${ v.p } ${ plural( v.p, 'πληρωμή', 'πληρωμές' ) } είναι αποθηκευμένα μόνο σε αυτό το πρόγραμμα περιήγησης. Αν καθαρίσετε τα δεδομένα ιστότοπου, θα χαθούν, γι' αυτό κρατήστε αντίγραφο ασφαλείας.`,
 		dlBackup: 'Λήψη αντιγράφου ασφαλείας (JSON)', dlCsv: 'Πληρωμές σε CSV', restore: 'Επαναφορά αντιγράφου', sAppearance: 'Εμφάνιση', themeAuto: 'Όπως η συσκευή', themeLight: 'Φωτεινό', themeDark: 'Σκούρο', sLanguage: 'Γλώσσα',
-		sNext: 'Τι έρχεται', sNextDesc: 'Ο συγχρονισμός μεταξύ συσκευών, τα κοινά νοικοκυριά και οι υπενθυμίσεις με email ή push όταν η εφαρμογή είναι κλειστή χρειάζονται έναν μικρό διακομιστή. Είναι προγραμματισμένα και οι προδιαγραφές είναι δημόσιες στο <a href="https://github.com/george-stathopoulos/duenest/tree/main/docs">αποθετήριο</a>.',
+		sNext: 'Τι έρχεται', sNextDesc: 'Ο συγχρονισμός μεταξύ συσκευών, τα κοινά νοικοκυριά και οι υπενθυμίσεις με email ή push όταν η εφαρμογή είναι κλειστή χρειάζονται έναν μικρό διακομιστή. Είναι προγραμματισμένα και οι προδιαγραφές είναι δημόσιες στο <a href="https://github.com/george-stathopoulos/expenity/tree/main/docs">αποθετήριο</a>.',
 		sDanger: 'Διαγραφή όλων', sDangerDesc: 'Αφαιρεί όλους τους λογαριασμούς και τις πληρωμές από αυτό το πρόγραμμα περιήγησης. Δεν αναιρείται.', wipe: 'Διαγραφή όλων των δεδομένων μου',
 		confirmWipe: 'Να διαγραφούν όλοι οι λογαριασμοί και οι πληρωμές από αυτό το πρόγραμμα περιήγησης; Δεν αναιρείται.', confirmRestore: ( v ) => `Να αντικατασταθούν τα τρέχοντα δεδομένα με αυτό το αντίγραφο (${ v.n } λογαριασμοί);`,
 		csvHead: [ 'Ημ/νία πληρωμής', 'Λογαριασμός', 'Κατηγορία', 'Ημ/νία λήξης', 'Ποσό', 'Νόμισμα' ], numberHint: 'Εισαγάγετε αριθμό, π.χ. 49,90',
-		icsPay: ( v ) => `Πληρωμή: ${ v.name }${ v.amt }`, icsDueIn: ( v ) => `Το «${ v.name }» λήγει σε ${ v.n } ${ plural( v.n, 'ημέρα', 'ημέρες' ) }`, icsToday: ( v ) => `Το «${ v.name }» λήγει σήμερα`, icsRef: 'Κωδικός πληρωμής', icsPayLink: 'Πληρωμή', icsCal: 'Λογαριασμοί Duenest',
+		icsPay: ( v ) => `Πληρωμή: ${ v.name }${ v.amt }`, icsDueIn: ( v ) => `Το «${ v.name }» λήγει σε ${ v.n } ${ plural( v.n, 'ημέρα', 'ημέρες' ) }`, icsToday: ( v ) => `Το «${ v.name }» λήγει σήμερα`, icsRef: 'Κωδικός πληρωμής', icsPayLink: 'Πληρωμή', icsCal: 'Λογαριασμοί Expenity',
 		nTitle1: 'Ένας λογαριασμός λήγει σύντομα', nTitleN: ( v ) => `${ v.n } λογαριασμοί λήγουν σύντομα`, nMore: ( v ) => `+${ v.n } ακόμα`,
 		tplRent: 'Ενοίκιο', tplElectricity: 'Ρεύμα (ΔΕΗ)', tplWater: 'Νερό (ΕΥΔΑΠ)', tplInternet: 'Internet', tplPhone: 'Κινητό', tplNetflix: 'Netflix', tplSpotify: 'Spotify', tplCarIns: 'Ασφάλεια αυτοκινήτου',
 		tplCard: 'Πιστωτική κάρτα', tplGym: 'Γυμναστήριο', tplPropTax: 'ΕΝΦΙΑ', tplSchool: 'Δίδακτρα',

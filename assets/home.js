@@ -1,4 +1,4 @@
-/* Duenest home page: reveal sections as they scroll into view. Everything is visible without JavaScript or with reduced motion. */
+/* Expenity home page: reveal sections as they scroll into view. Everything is visible without JavaScript or with reduced motion. */
 ( function () {
 	'use strict';
 	var still = window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
