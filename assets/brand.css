@@ -1,0 +1,55 @@
+/* Duenest brand: emerald green on soft mint, white cards, bold dark type. Overrides the shared tokens
+   from site.css so the header, footer and help center follow the same palette. */
+:root, :root[data-theme="light"] {
+	--bg: #f3f9f6;
+	--bg-2: #e6f3ed;
+	--surface: #ffffff;
+	--ink: #0f1f1a;
+	--ink-2: #34463f;
+	--muted: #62766d;
+	--line: #d9e8e1;
+	--line-2: #c4d9cf;
+	--accent: #0a8f6a;
+	--accent-hover: #077a5a;
+	--accent-ink: #ffffff;
+	--accent-soft: rgba(10, 143, 106, 0.09);
+	--accent-line: rgba(10, 143, 106, 0.3);
+	--good: #0a7a5a;
+	--good-soft: rgba(10, 143, 106, 0.1);
+	--code: #ebf5f0;
+	--shadow: 0 1px 2px rgba(15, 31, 26, 0.05), 0 12px 32px -18px rgba(15, 31, 26, 0.28);
+	--shadow-lg: 0 2px 4px rgba(15, 31, 26, 0.04), 0 40px 80px -34px rgba(7, 100, 74, 0.55);
+	--radius: 16px;
+	--hero: linear-gradient(135deg, #14b08a 0%, #0a8f6a 55%, #066a50 100%);
+	--amber: #f5b335;
+	color-scheme: light;
+}
+:root[data-theme="dark"] {
+	--bg: #09130f;
+	--bg-2: #0f1d17;
+	--surface: #13211b;
+	--ink: #e9f4ef;
+	--ink-2: #bfd2c9;
+	--muted: #8ca59a;
+	--line: #203429;
+	--line-2: #2d4739;
+	--accent: #2fd0a0;
+	--accent-hover: #5be0b8;
+	--accent-ink: #052a1f;
+	--accent-soft: rgba(47, 208, 160, 0.12);
+	--accent-line: rgba(47, 208, 160, 0.35);
+	--good: #4fe0b0;
+	--good-soft: rgba(47, 208, 160, 0.14);
+	--code: #162a21;
+	--shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 32px -18px rgba(0, 0, 0, 0.7);
+	--shadow-lg: 0 2px 4px rgba(0, 0, 0, 0.4), 0 40px 80px -30px rgba(0, 0, 0, 0.9);
+	color-scheme: dark;
+}
+:root[data-theme="dark"] .site-head { background: color-mix(in srgb, var(--bg) 88%, transparent); }
+.btn { border-radius: 12px; }
+.btn-primary { background: linear-gradient(180deg, #11a67c, #077f5f); box-shadow: 0 8px 20px -10px rgba(7, 127, 95, 0.9); }
+.btn-primary:hover { background: linear-gradient(180deg, #0f9a73, #067255); }
+:root[data-theme="dark"] .btn-primary { background: linear-gradient(180deg, #4de3b5, #27c595); color: #04261c; }
+.brand--logo .logo-text b { color: var(--accent); font-weight: inherit; }
+.lang-switch { display: inline-flex; align-items: center; padding: 6px 11px; border: 1px solid var(--line-2); border-radius: 999px; font-size: 13px; font-weight: 700; text-decoration: none; color: var(--ink-2); background: var(--surface); }
+.lang-switch:hover { border-color: var(--accent); color: var(--accent); }
