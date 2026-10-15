@@ -4,7 +4,7 @@
 
 ## Ανοίξτε το Expenity
 
-Ανοίξτε την εφαρμογή στο [george-stathopoulos.github.io/expenity/app/?lang=el](https://george-stathopoulos.github.io/expenity/app/?lang=el). Δεν εγκαθιστάτε τίποτα και δεν φτιάχνετε λογαριασμό. Δουλεύει σε κάθε σύγχρονο browser, σε κινητό, tablet ή υπολογιστή. Για να την έχετε στην αρχική οθόνη σαν εφαρμογή, δείτε το [Εγκατάσταση στη συσκευή σας](install-on-your-device.md).
+Ανοίξτε την εφαρμογή στο [expenity.github.io/expenity/app/?lang=el](https://expenity.github.io/expenity/app/?lang=el). Δεν εγκαθιστάτε τίποτα και δεν φτιάχνετε λογαριασμό. Δουλεύει σε κάθε σύγχρονο browser, σε κινητό, tablet ή υπολογιστή. Για να την έχετε στην αρχική οθόνη σαν εφαρμογή, δείτε το [Εγκατάσταση στη συσκευή σας](install-on-your-device.md).
 
 ![Η πρώτη οθόνη, με πρότυπα για να ξεκινήσετε.](../images/empty-el.png)
 

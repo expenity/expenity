@@ -38,8 +38,8 @@ Any currency by its three-letter code. Totals are shown per currency; there is n
 
 ## The sentence box got something wrong.
 
-It is a helper. Correct the field in the form below it. If you have a sentence that should work, please [open an issue](https://github.com/george-stathopoulos/expenity/issues) with the exact text.
+It is a helper. Correct the field in the form below it. If you have a sentence that should work, please [open an issue](https://github.com/expenity/expenity/issues) with the exact text.
 
 ## How do I report a bug or suggest something?
 
-On [GitHub](https://github.com/george-stathopoulos/expenity/issues).
+On [GitHub](https://github.com/expenity/expenity/issues).

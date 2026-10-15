@@ -34,4 +34,4 @@ The calendar file you download contains your bill names, amounts and notes. When
 
 ## Open source
 
-The code is public, so you can check all of this: [github.com/george-stathopoulos/expenity](https://github.com/george-stathopoulos/expenity).
+The code is public, so you can check all of this: [github.com/expenity/expenity](https://github.com/expenity/expenity).

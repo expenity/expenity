@@ -1,0 +1,17 @@
+{
+  "name": "expenity-api",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --local",
+    "deploy": "wrangler deploy",
+    "db:local": "wrangler d1 execute expenity --local --file=schema.sql",
+    "db:remote": "wrangler d1 execute expenity --remote --file=schema.sql"
+  },
+  "devDependencies": {
+    "wrangler": "^4.40.0"
+  },
+  "dependencies": {
+    "@simplewebauthn/server": "^14.0.3"
+  }
+}

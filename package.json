@@ -1,6 +1,6 @@
 {
   "name": "expenity",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "Expenity: your bills and subscriptions, calmly in one place. Free, private, works on every device.",
   "license": "GPL-2.0-or-later",
@@ -8,9 +8,13 @@
   "scripts": {
     "site": "node website/build.mjs",
     "test": "node dev/test.mjs",
-    "screenshots": "node dev/screenshots.mjs"
+    "screenshots": "node dev/screenshots.mjs",
+    "test:api": "node dev/test-api.mjs",
+    "test:e2e": "node dev/test-e2e.mjs",
+    "test:all": "node dev/test.mjs && node dev/test-api.mjs && node dev/test-e2e.mjs"
   },
   "devDependencies": {
+    "@tabler/icons": "^3.49.0",
     "markdown-it": "^14.3.2",
     "playwright-core": "^1.48.0"
   }

@@ -1,0 +1,56 @@
+/**
+ * A short check against a LIVE deployment (the beta app and the real API): sign up with a virtual passkey, add an
+ * expense, see it reach the server, sign in again from a second window, then delete the account so nothing is left.
+ *   node dev/test-live.mjs https://expenity.github.io/expenity-beta/app/
+ */
+import { chromium } from 'playwright-core';
+const URL_ = process.argv[ 2 ] || 'https://expenity.github.io/expenity-beta/app/';
+const browser = await chromium.launch( { channel: 'chrome' } );
+let fail = 0;
+const ok = ( c, l, x = '' ) => { if ( ! c ) { fail++; console.log( 'FAIL', l, x ); } else console.log( 'ok  ', l ); };
+const errors = [];
+async function device() {
+	const context = await browser.newContext( { locale: 'en-US', viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true } );
+	const page = await context.newPage();
+	page.on( 'pageerror', ( e ) => errors.push( String( e ) ) );
+	page.on( 'console', ( m ) => { if ( m.type() === 'error' && ! /beacon|cloudflare|ERR_|Failed to load resource/.test( m.text() ) ) errors.push( m.text() ); } );
+	page.on( 'dialog', ( d ) => d.accept() );
+	const cdp = await context.newCDPSession( page );
+	await cdp.send( 'WebAuthn.enable' );
+	const { authenticatorId } = await cdp.send( 'WebAuthn.addVirtualAuthenticator', { options: { protocol: 'ctap2', ctap2Version: 'ctap2_1', transport: 'internal', hasResidentKey: true, hasUserVerification: true, isUserVerified: true, automaticPresenceSimulation: true, defaultBackupEligibility: true, defaultBackupState: true } } );
+	return { context, page, cdp, authenticatorId };
+}
+const synced = ( d ) => d.page.waitForFunction( () => window.EX.sync.status === 'ok' && window.EX.sync.pending() === 0, null, { timeout: 30000 } );
+const A = await device();
+await A.page.goto( URL_ );
+await A.page.waitForSelector( '#tabbar button', { state: 'attached' } );
+await A.page.evaluate( () => { window.EXA.skipFlow(); } );
+ok( ( await A.page.title() ).startsWith( '[Beta]' ), 'the beta page loads, marked as beta' );
+await A.page.click( '[data-act=auth-create]' );
+await A.page.fill( '#registerForm [name=email]', `livecheck${ Date.now() }@example.com` );
+await A.page.click( '#registerForm [type=submit]' );
+await A.page.waitForSelector( '#codesDone', { timeout: 30000 } );
+ok( ( await A.page.locator( '.codes code' ).count() ) === 10, 'live sign-up with a passkey works and shows 10 recovery codes' );
+await A.page.check( '#codesSaved' ); await A.page.click( '#codesDone' );
+await synced( A );
+await A.page.click( '.fab' ); await A.page.click( '[data-act=tx-expense]' );
+for ( const k of '990' ) await A.page.click( `.keypad [data-key="${ k }"]` );
+await A.page.fill( '#txDesc', 'Live check' ); await A.page.click( '[data-tx=save]' );
+await synced( A );
+ok( true, 'an expense synced to the live database' );
+const creds = ( await A.cdp.send( 'WebAuthn.getCredentials', { authenticatorId: A.authenticatorId } ) ).credentials;
+const B = await device();
+for ( const c of creds ) await B.cdp.send( 'WebAuthn.addCredential', { authenticatorId: B.authenticatorId, credential: c } );
+await B.page.goto( URL_ ); await B.page.waitForSelector( '#tabbar button', { state: 'attached' } );
+await B.page.evaluate( () => { window.EXA.skipFlow(); } );
+await B.page.click( '.ab-avatar .avatar:visible' ); await B.page.click( '[data-more=account]' ); await B.page.click( '[data-act=auth-signin]' ); await B.page.click( '#authLogin' );
+await B.page.waitForFunction( () => window.EX.auth.isSignedIn() && window.EX.state().txs.some( ( x ) => x.name === 'Live check' ), null, { timeout: 30000 } );
+ok( true, 'a second device signs in with the passkey and sees the expense' );
+await A.page.click( '.ab-avatar .avatar:visible' ); await A.page.click( '[data-more=account]' );
+await A.page.click( '[data-act=delete-account]' ); await A.page.click( '#confirmYes' );
+await A.page.waitForFunction( () => ! window.EX.auth.isSignedIn(), null, { timeout: 30000 } );
+ok( true, 'the test account was deleted (nothing left behind)' );
+ok( ! errors.length, 'no console errors', errors.join( ' | ' ) );
+await browser.close();
+console.log( fail ? `\n${ fail } failed` : '\nall passed' );
+process.exit( fail ? 1 : 0 );

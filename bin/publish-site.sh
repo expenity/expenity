@@ -3,7 +3,7 @@
 # served by GitHub Pages.
 set -euo pipefail
 cd "$(dirname "$0")/.."
-REPO="george-stathopoulos/expenity"
+REPO="expenity/expenity"
 node website/build.mjs
 work="$(mktemp -d)"
 if git ls-remote --exit-code --heads "https://github.com/$REPO.git" gh-pages >/dev/null 2>&1; then
@@ -23,4 +23,4 @@ else
 fi
 rm -rf "$work"
 gh api "repos/$REPO/pages" >/dev/null 2>&1 || gh api -X POST "repos/$REPO/pages" -f "source[branch]=gh-pages" -f "source[path]=/" >/dev/null
-echo "https://george-stathopoulos.github.io/expenity/"
+echo "https://expenity.github.io/expenity/"

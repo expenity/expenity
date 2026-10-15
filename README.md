@@ -2,8 +2,8 @@
 
 Your bills and subscriptions, calmly in one place. A free, open-source web app that works on every device, keeps your data in your browser, and speaks **English and Greek (Ελληνικά)**.
 
-- **App:** https://george-stathopoulos.github.io/expenity/app/ (installable, works offline)
-- **Website:** https://george-stathopoulos.github.io/expenity/ ([Ελληνικά](https://george-stathopoulos.github.io/expenity/el/))
+- **App:** https://expenity.github.io/expenity/app/ (installable, works offline)
+- **Website:** https://expenity.github.io/expenity/ ([Ελληνικά](https://expenity.github.io/expenity/el/))
 - **Help center:** [docs/](docs/README.md) ([Ελληνικά](docs/el/README.md))
 - **Blog post:** https://george-stathopoulos.github.io/blog/
 

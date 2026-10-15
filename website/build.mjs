@@ -16,11 +16,11 @@ import { dirname, join } from 'node:path';
 
 const SITE = {
 	name: 'Expenity',
-	url: 'https://george-stathopoulos.github.io/expenity/',
+	url: 'https://expenity.github.io/expenity/',
 	base: '/expenity/', // Used only by 404.html, which GitHub Pages serves from any path.
 	author: 'George Stathopoulos',
 	authorUrl: 'https://george-stathopoulos.github.io/',
-	repo: 'https://github.com/george-stathopoulos/expenity',
+	repo: 'https://github.com/expenity/expenity',
 };
 
 // Every project site lists the others (and the personal site keeps them all). Keep this list the
@@ -30,7 +30,7 @@ const PROJECTS = [
 	{ name: 'Helpdesk Hero', url: 'https://george-stathopoulos.github.io/helpdesk-hero/', text: 'WordPress support with diagnostics and password-free access' },
 	{ name: 'Fixpass', url: 'https://george-stathopoulos.github.io/fixpass/', text: 'Spotlight the problem and give support safe, temporary access' },
 	{ name: 'SheetPilot', url: 'https://george-stathopoulos.github.io/sheetpilot/', text: 'Turn any spreadsheet into an interactive dashboard, in your browser' },
-	{ name: 'Expenity', url: 'https://george-stathopoulos.github.io/expenity/', text: 'Bills and subscriptions, calmly in one place. English and Greek' },
+	{ name: 'Expenity', url: 'https://expenity.github.io/expenity/', text: 'Bills and subscriptions, calmly in one place. English and Greek' },
 ];
 
 const ROOT = process.cwd();
@@ -47,7 +47,7 @@ writeFileSync( join( OUT, '.nojekyll' ), '' );
 
 // The app itself is the live demo: the same files, served from app/.
 mkdirSync( join( OUT, 'app' ), { recursive: true } );
-for ( const f of [ 'index.html', 'app.js', 'i18n.js', 'style.css', 'favicon.svg', 'manifest.webmanifest', 'sw.js', 'icon-192.png', 'icon-512.png' ] ) cpSync( join( ROOT, f ), join( OUT, 'app', f ) );
+for ( const f of [ 'index.html', 'icons.js', 'ui.js', 'views.js', 'forms.js', 'reports.js', 'plan.js', 'insights.js', 'share.js', 'flow.js', 'themes.js', 'core.js', 'sync.js', 'theme.js', 'app.js', 'i18n.js', 'style.css', 'themes.css', 'favicon.svg', 'manifest.webmanifest', 'sw.js', 'icon-192.png', 'icon-512.png' ] ) cpSync( join( ROOT, f ), join( OUT, 'app', f ) );
 
 /* ------------------------------------------------------------------ Images */
 

@@ -34,4 +34,4 @@
 
 ## Ανοιχτός κώδικας
 
-Ο κώδικας είναι δημόσιος, ώστε να τα ελέγξετε όλα αυτά: [github.com/george-stathopoulos/expenity](https://github.com/george-stathopoulos/expenity).
+Ο κώδικας είναι δημόσιος, ώστε να τα ελέγξετε όλα αυτά: [github.com/expenity/expenity](https://github.com/expenity/expenity).

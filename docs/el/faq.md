@@ -38,8 +38,8 @@
 
 ## Το πεδίο της πρότασης έκανε λάθος.
 
-Είναι βοηθός. Διορθώστε το πεδίο στη φόρμα από κάτω. Αν έχετε πρόταση που θα έπρεπε να δουλεύει, [ανοίξτε ένα issue](https://github.com/george-stathopoulos/expenity/issues) με το ακριβές κείμενο.
+Είναι βοηθός. Διορθώστε το πεδίο στη φόρμα από κάτω. Αν έχετε πρόταση που θα έπρεπε να δουλεύει, [ανοίξτε ένα issue](https://github.com/expenity/expenity/issues) με το ακριβές κείμενο.
 
 ## Πώς αναφέρω σφάλμα ή προτείνω κάτι;
 
-Στο [GitHub](https://github.com/george-stathopoulos/expenity/issues).
+Στο [GitHub](https://github.com/expenity/expenity/issues).

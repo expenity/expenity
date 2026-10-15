@@ -1,0 +1,228 @@
+/**
+ * Tests the Worker API end to end against a local copy (wrangler dev, local D1), with a software passkey:
+ * sign-up, sign-in, recovery codes, step-up checks, devices, two "devices" syncing, last-writer-wins,
+ * deletions, email codes (through a test mail sink), isolation and account deletion.
+ *   npm run test:api        (needs: cd worker && npm install)
+ */
+import { spawn, execFileSync } from 'node:child_process';
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { SoftPasskey } from './webauthn-soft.mjs';
+
+const WORKER = join( process.cwd(), 'worker' );
+const PERSIST = mkdtempSync( join( tmpdir(), 'expenity-d1-' ) );
+const PORT = 8791;
+const API = `http://127.0.0.1:${ PORT }`;
+const ORIGIN = 'http://localhost:8766';
+const VARS = [ '--var', 'RP_ID:localhost', '--var', `RP_ORIGINS:${ ORIGIN }`, '--var', 'TEST_MODE:1' ];
+execFileSync( 'npx', [ 'wrangler', 'd1', 'execute', 'expenity', '--local', '--persist-to', PERSIST, '--file=schema.sql' ], { cwd: WORKER, stdio: 'ignore' } );
+const dev = spawn( 'npx', [ 'wrangler', 'dev', '--local', '--persist-to', PERSIST, '--port', String( PORT ), ...VARS ], { cwd: WORKER, stdio: 'ignore' } );
+const stop = () => { dev.kill(); try { rmSync( PERSIST, { recursive: true, force: true } ); } catch ( e ) { /* ignore */ } };
+process.on( 'exit', stop );
+
+let fail = 0;
+const ok = ( cond, label, extra = '' ) => { if ( ! cond ) { fail++; console.log( 'FAIL', label, extra ); } else console.log( 'ok  ', label ); };
+const call = async ( method, path, body, token, extraHeaders = {} ) => {
+	const res = await fetch( API + path, { method, headers: { 'Content-Type': 'application/json', Origin: ORIGIN, ...( token ? { Authorization: 'Bearer ' + token } : {} ), ...extraHeaders }, body: body ? JSON.stringify( body ) : undefined } );
+	let json = null; try { json = await res.json(); } catch ( e ) { /* none */ }
+	return { status: res.status, json, headers: res.headers };
+};
+const newKey = () => new SoftPasskey( { rpId: 'localhost', origin: ORIGIN } );
+async function signUp( email, key, lang = 'en' ) {
+	const o = await call( 'POST', '/api/auth/register/options', { email, lang } );
+	if ( o.status !== 200 ) return o;
+	return call( 'POST', '/api/auth/register/verify', { challengeId: o.json.challengeId, response: key.create( o.json.options ), label: 'Test key' } );
+}
+async function signIn( key ) {
+	const o = await call( 'POST', '/api/auth/login/options' );
+	return call( 'POST', '/api/auth/login/verify', { challengeId: o.json.challengeId, response: key.get( o.json.options ) } );
+}
+async function stepUp( key, token ) {
+	const o = await call( 'POST', '/api/auth/stepup/options', {}, token );
+	const v = await call( 'POST', '/api/auth/stepup/verify', { challengeId: o.json.challengeId, response: key.get( o.json.options ) }, token );
+	return v.json?.stepUp;
+}
+
+for ( let i = 0; i < 80; i++ ) { try { if ( ( await fetch( API + '/api/health' ) ).ok ) break; } catch ( e ) { /* not up yet */ } await new Promise( ( r ) => setTimeout( r, 500 ) ); }
+
+const email = `test${ Date.now() }@example.com`;
+const key1 = newKey();
+
+// Sign-up with a passkey.
+ok( ( await call( 'POST', '/api/auth/register/options', { email: 'nope' } ) ).json?.error === 'invalid_email', 'rejects a bad email' );
+const reg = await signUp( email, key1, 'el' );
+ok( reg.status === 201 && /^ex_/.test( reg.json.token ) && reg.json.user.lang === 'el' && reg.json.user.emailVerified === false, 'signs up with a passkey', JSON.stringify( reg.json ) );
+ok( Array.isArray( reg.json.recoveryCodes ) && reg.json.recoveryCodes.length === 10 && /^[A-Z2-9]{4}-[A-Z2-9]{4}-[A-Z2-9]{4}$/.test( reg.json.recoveryCodes[ 0 ] ), 'shows ten recovery codes once' );
+ok( ( await signUp( email.toUpperCase(), newKey() ) ).status === 409, 'the same email (any case) cannot sign up twice' );
+const forged = await call( 'POST', '/api/auth/register/options', { email: `forged${ Date.now() }@example.com` } );
+const wrongOrigin = new SoftPasskey( { rpId: 'localhost', origin: 'https://evil.example' } );
+ok( ( await call( 'POST', '/api/auth/register/verify', { challengeId: forged.json.challengeId, response: wrongOrigin.create( forged.json.options ) } ) ).status === 400, 'a passkey made for another origin is refused' );
+const A = reg.json.token;
+
+// Sign-in with the passkey, on a second "device".
+const s2 = await signIn( key1 );
+ok( s2.status === 200 && s2.json.user.email === email, 'signs in with the passkey (no email needed)' );
+const B = s2.json.token;
+ok( B && B !== A, 'second device gets its own session' );
+const replay = await call( 'POST', '/api/auth/login/options' );
+const goodAssertion = key1.get( replay.json.options );
+await call( 'POST', '/api/auth/login/verify', { challengeId: replay.json.challengeId, response: goodAssertion } );
+ok( ( await call( 'POST', '/api/auth/login/verify', { challengeId: replay.json.challengeId, response: goodAssertion } ) ).status === 400, 'a challenge works only once' );
+const stranger = newKey();
+const so = await call( 'POST', '/api/auth/login/options' );
+ok( ( await call( 'POST', '/api/auth/login/verify', { challengeId: so.json.challengeId, response: stranger.get( so.json.options ) } ) ).status === 401, 'an unknown passkey is refused' );
+ok( ( await call( 'GET', '/api/me' ) ).status === 401 && ( await call( 'GET', '/api/me', null, 'ex_' + 'x'.repeat( 40 ) ) ).status === 401, 'no token or a fake token is unauthorised' );
+const me = await call( 'GET', '/api/me', null, A );
+ok( me.json.user.email === email && me.json.recoveryCodesLeft === 10, 'me returns the account and the codes left' );
+
+// Sync between the two devices.
+const bill = { id: 'b1', kind: 'bill', data: { id: 'b1', name: 'Rent', amount: '850' }, updatedAt: 1000 };
+const tx = { id: 't1', kind: 'tx', data: { id: 't1', type: 'income', amount: '1500', name: 'Salary' }, updatedAt: 1000 };
+let s = await call( 'POST', '/api/sync', { since: 0, changes: [ bill, tx ] }, A );
+ok( s.status === 200 && s.json.rev === 1 && s.json.changes.length === 2, 'device A pushes two records', JSON.stringify( s.json ) );
+let pull = await call( 'POST', '/api/sync', { since: 0, changes: [] }, B );
+ok( pull.json.changes.length === 2 && pull.json.changes.some( ( c ) => c.data.name === 'Salary' ), 'device B sees them' );
+const revB = pull.json.rev;
+await call( 'POST', '/api/sync', { since: revB, changes: [ { ...bill, data: { ...bill.data, amount: '900' }, updatedAt: 3000 } ] }, B );
+s = await call( 'POST', '/api/sync', { since: 1, changes: [ { ...bill, data: { ...bill.data, amount: '875' }, updatedAt: 2000 } ] }, A );
+ok( s.json.changes.find( ( c ) => c.id === 'b1' )?.data.amount === '900', 'last writer wins: the newer edit survives an older one' );
+for ( const kind of [ 'account', 'category', 'budget', 'goal', 'settings' ] ) {
+	const r = await call( 'POST', '/api/sync', { since: 0, changes: [ { id: 'k_' + kind, kind, data: { name: kind }, updatedAt: 5000 } ] }, A );
+	if ( r.status !== 200 ) ok( false, `accepts kind ${ kind }`, JSON.stringify( r.json ) );
+}
+ok( true, 'accepts accounts, categories, budgets, goals and settings' );
+await call( 'POST', '/api/sync', { since: s.json.rev, changes: [ { id: 't1', kind: 'tx', deleted: true, updatedAt: 4000 } ] }, A );
+pull = await call( 'POST', '/api/sync', { since: revB, changes: [] }, B );
+ok( pull.json.changes.some( ( c ) => c.id === 't1' && c.deleted === true ), 'a deletion is delivered as a tombstone' );
+await call( 'POST', '/api/sync', { since: 0, changes: [ { ...tx, updatedAt: 500 } ] }, B );
+pull = await call( 'POST', '/api/sync', { since: 0, changes: [] }, A );
+ok( pull.json.changes.find( ( c ) => c.id === 't1' )?.deleted === true, 'an older write does not resurrect a deleted record' );
+ok( ( await call( 'POST', '/api/sync', { since: 0, changes: [ { id: 'x y', kind: 'bill', data: {}, updatedAt: 1 } ] }, A ) ).status === 400, 'rejects a bad record id' );
+ok( ( await call( 'POST', '/api/sync', { since: 0, changes: [ { id: 'x', kind: 'weird', data: {}, updatedAt: 1 } ] }, A ) ).status === 400, 'rejects an unknown kind' );
+ok( ( await call( 'POST', '/api/sync', { since: 0, changes: [ { id: 'x', kind: 'bill', data: { big: 'z'.repeat( 9000 ) }, updatedAt: 1 } ] }, A ) ).status === 413, 'rejects an oversized record' );
+
+// Another account sees nothing.
+const key2 = newKey();
+const other = ( await signUp( `other${ Date.now() }@example.com`, key2 ) ).json.token;
+ok( ( await call( 'POST', '/api/sync', { since: 0, changes: [] }, other ) ).json.changes.length === 0, 'another account sees none of this account\'s data' );
+ok( ( await call( 'GET', '/api/export', null, A ) ).json.records.some( ( r ) => r.id === 'b1' ), 'export lists the live records' );
+
+// Shared wallets: spaces, invites, roles, permissions.
+{
+	const viewerKey = newKey();
+	const V = ( await signUp( `viewer${ Date.now() }@example.com`, viewerKey ) ).json.token;
+	const sp = await call( 'POST', '/api/spaces', { name: 'Home budget' }, A );
+	ok( sp.status === 200 && sp.json.role === 'owner' && /^[a-z0-9]{16}$/.test( sp.json.id ), 'a space can be created', JSON.stringify( sp.json ) );
+	const sid = sp.json.id;
+	ok( ( await call( 'POST', '/api/spaces', { name: '' }, A ) ).status === 400, 'a space needs a name' );
+	ok( ( await call( 'POST', `/api/spaces/${ sid }/sync`, { since: 0, changes: [] }, other ) ).status === 404, 'outsiders cannot read a space' );
+	ok( ( await call( 'POST', `/api/spaces/${ sid }/invites`, { role: 'editor' }, other ) ).status === 403 || ( await call( 'POST', `/api/spaces/${ sid }/invites`, { role: 'editor' }, other ) ).status === 404, 'outsiders cannot make invites' );
+	const w = { id: 'wa', kind: 'account', data: { id: 'wa', name: 'Joint', type: 'bank', currency: 'EUR', opening: '0', space: sid }, updatedAt: Date.now() };
+	const push = await call( 'POST', `/api/spaces/${ sid }/sync`, { since: 0, changes: [ w, { id: 'tx1', kind: 'tx', data: { id: 'tx1', type: 'expense', amount: '5', account: 'wa', category: 'food', date: '2026-01-01' }, updatedAt: Date.now() } ] }, A );
+	ok( push.status === 200 && push.json.rev === 1, 'the owner writes to the space' );
+	ok( ( await call( 'POST', `/api/spaces/${ sid }/sync`, { since: 0, changes: [ { id: 'g', kind: 'goal', data: {}, updatedAt: 1 } ] }, A ) ).status === 400, 'a space only holds wallets, transactions and bills' );
+	ok( ( await call( 'POST', '/api/sync', { since: 0, changes: [] }, A ) ).json.changes.every( ( c ) => c.id !== 'wa' ), 'space records never appear in the personal store' );
+	const inv = await call( 'POST', `/api/spaces/${ sid }/invites`, { role: 'editor' }, A );
+	ok( inv.status === 200 && /^[A-HJ-NP-Z2-9]{10}$/.test( inv.json.code ), 'the owner makes a single-use invite code' );
+	ok( ( await call( 'POST', `/api/spaces/${ sid }/invites`, { role: 'owner' }, A ) ).status === 400, 'an invite cannot grant ownership' );
+	ok( ( await call( 'POST', '/api/invites/accept', { code: 'AAAAAAAAAA' }, other ) ).status === 404, 'a wrong code is refused' );
+	const acc = await call( 'POST', '/api/invites/accept', { code: inv.json.code.toLowerCase() }, other );
+	ok( acc.status === 200 && acc.json.id === sid && acc.json.role === 'editor', 'a member joins with the code (any case)' );
+	ok( ( await call( 'POST', '/api/invites/accept', { code: inv.json.code }, V ) ).status === 404, 'a code works only once' );
+	const pull = await call( 'POST', `/api/spaces/${ sid }/sync`, { since: 0, changes: [] }, other );
+	ok( pull.json.changes.length === 2 && pull.json.changes.some( ( c ) => c.id === 'tx1' ), 'the member receives the wallet and its transactions' );
+	const edit = await call( 'POST', `/api/spaces/${ sid }/sync`, { since: pull.json.rev, changes: [ { id: 'tx2', kind: 'tx', data: { id: 'tx2', type: 'expense', amount: '9', account: 'wa', category: 'food', date: '2026-01-02', by: 'x' }, updatedAt: Date.now() } ] }, other );
+	ok( edit.status === 200, 'an editor can add transactions' );
+	ok( ( await call( 'POST', `/api/spaces/${ sid }/sync`, { since: push.json.rev, changes: [] }, A ) ).json.changes.some( ( c ) => c.id === 'tx2' ), 'the owner sees what the editor added' );
+	const vinv = await call( 'POST', `/api/spaces/${ sid }/invites`, { role: 'viewer' }, A );
+	ok( ( await call( 'POST', '/api/invites/accept', { code: vinv.json.code }, V ) ).json.role === 'viewer', 'a viewer joins' );
+	ok( ( await call( 'POST', `/api/spaces/${ sid }/sync`, { since: 0, changes: [ { id: 'tx3', kind: 'tx', data: { id: 'tx3', type: 'expense', amount: '1', account: 'wa', category: 'food', date: '2026-01-03' }, updatedAt: Date.now() } ] }, V ) ).status === 403, 'a viewer cannot write' );
+	ok( ( await call( 'POST', `/api/spaces/${ sid }/sync`, { since: 0, changes: [] }, V ) ).json.changes.length === 3, 'a viewer can read' );
+	const mem = await call( 'GET', `/api/spaces/${ sid }/members`, null, A );
+	ok( mem.json.members.length === 3 && mem.json.members.some( ( m ) => m.role === 'viewer' ), 'the owner lists members' );
+	ok( ( await call( 'GET', '/api/spaces', null, other ) ).json.spaces[ 0 ].role === 'editor', 'a member lists the spaces they belong to' );
+	ok( ( await call( 'POST', `/api/spaces/${ sid }/members/${ mem.json.members.find( ( m ) => m.role === 'viewer' ).id }`, { role: 'editor' }, other ) ).status === 403, 'only the owner changes roles' );
+	ok( ( await call( 'DELETE', `/api/spaces/${ sid }/members/${ mem.json.members.find( ( m ) => m.you ).id }`, null, A ) ).status === 409, 'the owner cannot leave their own space' );
+	const vid = mem.json.members.find( ( m ) => m.role === 'viewer' ).id;
+	ok( ( await call( 'DELETE', `/api/spaces/${ sid }/members/${ vid }`, null, other ) ).status === 403, 'an editor cannot remove others' );
+	ok( ( await call( 'DELETE', `/api/spaces/${ sid }/members/${ vid }`, null, A ) ).status === 200 && ( await call( 'POST', `/api/spaces/${ sid }/sync`, { since: 0, changes: [] }, V ) ).status === 404, 'the owner removes a member and access ends' );
+	ok( ( await call( 'DELETE', `/api/spaces/${ sid }`, null, other ) ).status === 403, 'only the owner deletes a space' );
+	const oid = ( await call( 'GET', `/api/spaces/${ sid }/members`, null, other ) ).json.members.find( ( m ) => m.you ).id;
+	ok( ( await call( 'DELETE', `/api/spaces/${ sid }/members/${ oid }`, null, other ) ).status === 200, 'a member can leave' );
+	ok( ( await call( 'DELETE', `/api/spaces/${ sid }`, null, A ) ).status === 200 && ( await call( 'GET', '/api/spaces', null, A ) ).json.spaces.length === 0, 'the owner deletes the space' );
+}
+
+// Devices, step-up and passkeys.
+let dv = await call( 'GET', '/api/devices', null, A );
+ok( dv.json.passkeys.length === 1 && dv.json.sessions.length >= 2 && dv.json.sessions.filter( ( x ) => x.current ).length === 1, 'lists passkeys and sessions' );
+ok( ( await call( 'POST', '/api/passkeys/options', {}, A ) ).status === 403, 'adding a passkey needs a fresh passkey check' );
+ok( ( await call( 'POST', '/api/auth/stepup/verify', { challengeId: 'nope', response: {} }, A ) ).status === 400, 'a made-up step-up is refused' );
+const keyOther = newKey();
+let su = await stepUp( key1, A );
+ok( /^su_/.test( su ), 'step-up with the passkey gives a short-lived token' );
+const ao = await call( 'POST', '/api/passkeys/options', {}, A, { 'X-Step-Up': su } );
+ok( ao.status === 200, 'step-up token opens the add-passkey step' );
+ok( ( await call( 'POST', '/api/passkeys/options', {}, A, { 'X-Step-Up': su } ) ).status === 403, 'a step-up token works only once' );
+ok( ( await call( 'POST', '/api/passkeys/verify', { challengeId: ao.json.challengeId, response: keyOther.create( ao.json.options ), label: 'Second' }, A ) ).status === 200, 'adds a second passkey' );
+const viaSecond = await signIn( keyOther );
+ok( viaSecond.status === 200 && viaSecond.json.user.email === email, 'signs in with the second passkey' );
+dv = await call( 'GET', '/api/devices', null, A );
+const secondId = dv.json.passkeys.find( ( p ) => p.label === 'Second' ).id;
+ok( ( await call( 'DELETE', `/api/devices/passkey/${ secondId }`, null, A ) ).status === 403, 'removing a passkey needs a step-up' );
+su = await stepUp( key1, A );
+ok( ( await call( 'DELETE', `/api/devices/passkey/${ secondId }`, null, A, { 'X-Step-Up': su } ) ).status === 200, 'removes a passkey' );
+su = await stepUp( key1, A );
+const firstId = ( await call( 'GET', '/api/devices', null, A ) ).json.passkeys[ 0 ].id;
+ok( ( await call( 'DELETE', `/api/devices/passkey/${ firstId }`, null, A, { 'X-Step-Up': su } ) ).status === 409, 'the last passkey cannot be removed' );
+const otherSession = dv.json.sessions.find( ( x ) => ! x.current );
+ok( ( await call( 'DELETE', `/api/devices/session/${ otherSession.id }`, null, A ) ).status === 200, 'signs another device out' );
+
+// Recovery codes.
+ok( ( await call( 'POST', '/api/auth/recover/options', { email, code: 'AAAA-AAAA-AAAA' } ) ).status === 401, 'a wrong recovery code is refused' );
+const code = reg.json.recoveryCodes[ 0 ];
+const ro = await call( 'POST', '/api/auth/recover/options', { email, code: code.toLowerCase().replace( /-/g, ' ' ) } );
+ok( ro.status === 200, 'a recovery code starts a recovery (case and spacing do not matter)' );
+ok( ( await call( 'POST', '/api/auth/recover/options', { email, code } ) ).status === 401, 'a recovery code works only once' );
+const keyNew = newKey();
+const rv = await call( 'POST', '/api/auth/recover/verify', { challengeId: ro.json.challengeId, response: keyNew.create( ro.json.options ), label: 'After recovery' } );
+ok( rv.status === 200 && rv.json.recoveryCodesLeft === 9, 'recovery adds a new passkey and signs in' );
+ok( ( await call( 'GET', '/api/me', null, A ) ).status === 401, 'recovery signs every other device out' );
+const C = rv.json.token;
+su = await stepUp( keyNew, C );
+const rg = await call( 'POST', '/api/recovery/regenerate', {}, C, { 'X-Step-Up': su } );
+ok( rg.status === 200 && rg.json.recoveryCodes.length === 10 && ( await call( 'GET', '/api/me', null, C ) ).json.recoveryCodesLeft === 10, 'new recovery codes replace the old ones (step-up)' );
+ok( ( await call( 'POST', '/api/auth/recover/options', { email, code: reg.json.recoveryCodes[ 1 ] } ) ).status === 401, 'the old codes no longer work' );
+
+// Email codes (through the test mail sink).
+ok( ( await call( 'POST', '/api/email/start', {}, C ) ).status === 200, 'sends an email verification code' );
+const mail = ( await call( 'GET', `/api/test/outbox?to=${ encodeURIComponent( email ) }` ) ).json.mails[ 0 ];
+const emailCode = /(\d{6})/.exec( mail.body )[ 1 ];
+ok( /Ο κωδικός/.test( mail.subject ), 'the email follows the account language (Greek)' );
+ok( ( await call( 'POST', '/api/email/verify', { code: '000000' }, C ) ).status === 401, 'a wrong email code is refused' );
+ok( ( await call( 'POST', '/api/email/verify', { code: emailCode }, C ) ).status === 200 && ( await call( 'GET', '/api/me', null, C ) ).json.user.emailVerified === true, 'a right email code verifies the address' );
+await call( 'POST', '/api/auth/recover/email', { email } );
+const mail2 = ( await call( 'GET', `/api/test/outbox?to=${ encodeURIComponent( email ) }` ) ).json.mails[ 0 ];
+const rc = /(\d{6})/.exec( mail2.body )[ 1 ];
+const eo = await call( 'POST', '/api/auth/recover/email/verify', { email, code: rc } );
+ok( eo.status === 200 && eo.json.options, 'an emailed code can start a recovery too' );
+ok( ( await call( 'POST', '/api/auth/recover/email', { email: 'nobody@example.com' } ) ).status === 200, 'recovery by email answers the same for unknown addresses' );
+
+// CORS, sign out, delete account.
+const pre = await fetch( API + '/api/sync', { method: 'OPTIONS', headers: { Origin: ORIGIN } } );
+ok( pre.headers.get( 'access-control-allow-origin' ) === ORIGIN && /X-Step-Up/.test( pre.headers.get( 'access-control-allow-headers' ) ), 'CORS allows the app origin and the step-up header' );
+{ const r = await fetch( API + '/api/rates' ); const j = await r.json(); ok( r.ok && j.base === 'EUR' && typeof j.rates === 'object', 'exchange rates are public and well-formed (no sign-in needed)' ); }
+ok( ( await fetch( API + '/api/health', { headers: { Origin: 'https://evil.example' } } ) ).headers.get( 'access-control-allow-origin' ) === 'null', 'CORS refuses other origins' );
+await call( 'POST', '/api/logout', {}, C );
+ok( ( await call( 'GET', '/api/me', null, C ) ).status === 401, 'sign out ends the session' );
+const D = ( await signIn( keyNew ) ).json.token;
+ok( ( await call( 'DELETE', '/api/account', {}, D ) ).status === 403, 'deleting the account needs a step-up' );
+su = await stepUp( keyNew, D );
+ok( ( await call( 'DELETE', '/api/account', {}, D, { 'X-Step-Up': su } ) ).status === 200, 'account deleted' );
+const gone = await call( 'POST', '/api/auth/login/options' );
+ok( ( await call( 'POST', '/api/auth/login/verify', { challengeId: gone.json.challengeId, response: keyNew.get( gone.json.options ) } ) ).status === 401, 'a deleted account cannot sign in' );
+ok( ( await call( 'GET', '/api/export', null, A ) ).status === 401, 'its old tokens are dead' );
+
+stop();
+console.log( fail ? `\n${ fail } failed` : '\nall passed' );
+process.exit( fail ? 1 : 0 );

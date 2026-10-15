@@ -4,7 +4,7 @@ Expenity keeps your bills and subscriptions in one place and tells you what is c
 
 ## Open Expenity
 
-Open the app at [george-stathopoulos.github.io/expenity/app/](https://george-stathopoulos.github.io/expenity/app/). There is nothing to install and no account to create. It works in any modern browser on a phone, tablet or computer. To keep it on your home screen like an app, see [Install on your device](install-on-your-device.md).
+Open the app at [expenity.github.io/expenity/app/](https://expenity.github.io/expenity/app/). There is nothing to install and no account to create. It works in any modern browser on a phone, tablet or computer. To keep it on your home screen like an app, see [Install on your device](install-on-your-device.md).
 
 ![The first screen, with templates to start from.](images/empty.png)
 
