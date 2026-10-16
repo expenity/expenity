@@ -72,7 +72,9 @@
  const getReleases=async()=>{if(!releasePromise)releasePromise=fetch('releases.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('release');return r.json();}).then(x=>(releases=x)).catch(e=>{releasePromise=null;throw e;});return releasePromise;};
  A.showReleases=async(latest=false)=>{
   try{const data=await getReleases();const running=window.EXPENITY_VERSION;
-   const notes=data.releases.filter(r=>r.version===running||!latest);
+   let seen;try{seen=localStorage.getItem('expenity.releaseSeen');}catch(e){}
+   const currentIndex=data.releases.findIndex(r=>r.version===running),seenIndex=data.releases.findIndex(r=>r.version===seen);
+   const notes=latest?data.releases.slice(Math.max(0,currentIndex),seenIndex>currentIndex?seenIndex:Math.max(0,currentIndex)+1):data.releases;
    UI.openSheet(head('changelog')+`<div class="sheet-pad release-notes">${notes.map((r,i)=>`<${latest?'section':'details'}${!latest&&i===0?' open':''}>${latest?`<h3>${L('releaseLabel')} ${esc(r.version)}</h3>`:`<summary>${L('releaseLabel')} ${esc(r.version)} ${r.date?`<small>${esc(r.date)}</small>`:''}</summary>`}<ul>${(r[EX.lang()]||r.en).map(x=>`<li>${esc(x)}</li>`).join('')}</ul></${latest?'section':'details'}>`).join('')}</div>`,{tall:true});
    try{localStorage.setItem('expenity.releaseSeen',running);}catch(e){}
   }catch(e){UI.toast(A.label('releaseFail'));}

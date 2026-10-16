@@ -1,6 +1,22 @@
 {
-  "version": "0.10.1",
+  "version": "0.10.2",
   "releases": [
+    {
+      "version": "0.10.2",
+      "date": "2026-10-17",
+      "en": [
+        "Receipt scanning: open Add expense → Scan receipt to recognise English or Greek receipts on your device. Review the name, amount, currency and date before applying them; nothing is saved automatically.",
+        "Safe to spend: a new Home card estimates your remaining spending allowance after upcoming bills, scheduled outflows and reserves. View the calculation and adjust wallets, period and assumptions. Expected income is not counted until received.",
+        "Update popups now show every release since your last viewed version, so feature announcements are not hidden by a later patch. All previous releases remain available from the changelog icon in Account.",
+        "Includes the fix for Cancel being ignored immediately after resizing a Home card."
+      ],
+      "el": [
+        "Σάρωση αποδείξεων: ανοίξτε Προσθήκη εξόδου → Σάρωση απόδειξης για αναγνώριση ελληνικών και αγγλικών αποδείξεων στη συσκευή σας. Ελέγξτε όνομα, ποσό, νόμισμα και ημερομηνία πριν τα μεταφέρετε στη φόρμα· δεν αποθηκεύεται τίποτα αυτόματα.",
+        "Περιθώριο εξόδων: νέα κάρτα στην Αρχική υπολογίζει τι απομένει μετά από λογαριασμούς, προγραμματισμένες εκροές και δεσμευμένα ποσά. Δείτε την ανάλυση και αλλάξτε πορτοφόλια, περίοδο και παραδοχές. Τα αναμενόμενα έσοδα δεν προσμετρώνται πριν εισπραχθούν.",
+        "Το παράθυρο ενημέρωσης δείχνει πλέον όλες τις εκδόσεις από την τελευταία που είδατε, ώστε οι νέες λειτουργίες να μην κρύβονται από μεταγενέστερες διορθώσεις. Όλες οι προηγούμενες εκδόσεις παραμένουν διαθέσιμες από το εικονίδιο ιστορικού εκδόσεων στον Λογαριασμό.",
+        "Περιλαμβάνεται η διόρθωση για το πάτημα Ακύρωση αμέσως μετά την αλλαγή μεγέθους κάρτας στην Αρχική."
+      ]
+    },
     {
       "version": "0.10.1",
       "date": "2026-10-17",
