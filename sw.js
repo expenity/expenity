@@ -1,5 +1,5 @@
 /* Expenity service worker: the app works offline. Network first, so updates arrive as soon as you are online. */
-const CACHE = 'expenity-v21';
+const CACHE = 'expenity-v22';
 const FILES = [ './', 'index.html', 'icons.js', 'i18n.js', 'core.js', 'sync.js', 'ui.js', 'views.js', 'forms.js', 'photos.js', 'reports.js', 'plan.js', 'insights.js', 'safe-spend.js', 'receipts.js', 'share.js', 'push.js', 'flow.js', 'installation.js', 'themes.js', 'app.js', 'enhancements.js', 'dashboard.js', 'releases.json', 'theme.js', 'style.css', 'themes.css', 'favicon.svg', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'installation/ios-en.mp4', 'installation/ios-en.png', 'installation/ios-el.mp4', 'installation/ios-el.png', 'installation/android-en.mp4', 'installation/android-en.png', 'installation/android-el.mp4', 'installation/android-el.png', 'installation/desktop-en.mp4', 'installation/desktop-en.png', 'installation/desktop-el.mp4', 'installation/desktop-el.png' ];
 
 self.addEventListener( 'install', ( e ) => {

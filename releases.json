@@ -1,6 +1,18 @@
 {
-  "version": "0.11.0",
+  "version": "0.11.1",
   "releases": [
+    {
+      "version": "0.11.1",
+      "date": "2026-10-17",
+      "en": [
+        "Installation guide videos now play muted, inline and on a loop without native playback controls, in onboarding and Account guides. Tap to pause or resume. Reduced-motion preferences are respected, with a simple Play button when playback needs a tap.",
+        "New Receipt scanner switch in Settings. Turn scanning off to hide it from expense entry; the preference is saved with your settings."
+      ],
+      "el": [
+        "Τα βίντεο εγκατάστασης παίζουν πλέον χωρίς ήχο, μέσα στη σελίδα και σε επανάληψη, χωρίς τα χειριστήρια του προγράμματος περιήγησης, στην αρχική ρύθμιση και στους οδηγούς Λογαριασμού. Πατήστε για παύση ή συνέχεια. Οι προτιμήσεις μειωμένης κίνησης τηρούνται, με απλό κουμπί αναπαραγωγής όταν χρειάζεται πάτημα.",
+        "Νέος διακόπτης Σάρωση αποδείξεων στις Ρυθμίσεις. Απενεργοποιήστε τον για να κρύψετε τη σάρωση από την προσθήκη εξόδου· η προτίμηση αποθηκεύεται με τις ρυθμίσεις σας."
+      ]
+    },
     {
       "version": "0.11.0",
       "date": "2026-10-17",
