@@ -35,8 +35,13 @@ ok( ( await A.page.locator( '.codes code' ).count() ) === 10, 'live sign-up with
 await A.page.check( '#codesSaved' ); await A.page.click( '#codesDone' );
 await synced( A );
 await A.page.click( '.fab' ); await A.page.click( '[data-act=tx-expense]' );
+ok(await A.page.locator('#txKeypad').isHidden(),'amount keypad starts collapsed');
+await A.page.click('[data-tx=target-amount]');
 for ( const k of '990' ) await A.page.click( `.keypad [data-key="${ k }"]` );
+await A.page.click('[data-tx=amount-done]');
+ok(await A.page.locator('#txKeypad').isHidden(),'amount Done collapses the keypad');
 await A.page.fill( '#txDesc', 'Live check' );
+await A.page.click('[data-tx=field-done]');
 const photo = await A.page.evaluate( () => { const c = document.createElement('canvas'); c.width=1600; c.height=1000; const g=c.getContext('2d');g.fillStyle='#f4dbaf';g.fillRect(0,0,c.width,c.height);g.fillStyle='#222';g.font='60px sans-serif';g.fillText('Expenity live reference photo',80,140);return c.toDataURL('image/png').split(',')[1]; } );
 await A.page.locator('.photo-file').setInputFiles({name:'reference.png',mimeType:'image/png',buffer:Buffer.from(photo,'base64')});
 await A.page.waitForFunction(()=>!!document.querySelector('.photo-slot [name=photo]')?.value, null, {timeout:30000});

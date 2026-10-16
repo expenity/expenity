@@ -122,8 +122,8 @@
 		const dm = T.dateMode;
 		return `<div class="sheet-head">${ X }<div class="segm tx-seg" role="tablist" aria-label="${ esc( t( 'addTx' ) ) }">${ typeBtn( 'expense', t( 'typeExpense' ) ) }${ typeBtn( 'income', t( 'typeIncome' ) ) }${ typeBtn( 'transfer', t( 'typeTransfer' ) ) }</div><button type="button" class="ab-btn ok" data-tx="save" aria-label="${ esc( t( 'saveTx' ) ) }">${ UI.icon( 'check', 26 ) }</button></div>
 			<div class="tx-scroll"><div class="tx-main">
-				<button type="button" class="amt-display${ T.target === 'amount' ? ' on' : '' }" data-tx="target-amount" aria-label="${ esc( t( 'fAmount' ) ) }"><span class="cur">${ esc( curSymbol( cur ) ) }</span><span class="val ${ T.amount === '' ? 'zero' : '' }" id="amtVal">${ esc( showAmt( T.amount ) ) }</span></button>
-				${ cross ? `<button type="button" class="amt-display small${ T.target === 'toAmount' ? ' on' : '' }" data-tx="target-to" aria-label="${ esc( t( 'fToAmount' ) ) }"><small>${ esc( t( 'received' ) ) }</small><span class="cur">${ esc( curSymbol( toCur ) ) }</span><span class="val ${ T.toAmount === '' ? 'zero' : '' }" id="toAmtVal">${ esc( showAmt( T.toAmount ) ) }</span></button>` : '' }
+				<button type="button" class="amt-display${ T.keypadOpen && T.target === 'amount' ? ' on' : '' }" data-tx="target-amount" aria-controls="txKeypad" aria-expanded="${ !! T.keypadOpen && T.target === 'amount' }" aria-label="${ esc( t( 'fAmount' ) ) }"><span class="cur">${ esc( curSymbol( cur ) ) }</span><span class="val ${ T.amount === '' ? 'zero' : '' }" id="amtVal">${ esc( showAmt( T.amount ) ) }</span></button>
+				${ cross ? `<button type="button" class="amt-display small${ T.keypadOpen && T.target === 'toAmount' ? ' on' : '' }" data-tx="target-to" aria-controls="txKeypad" aria-expanded="${ !! T.keypadOpen && T.target === 'toAmount' }" aria-label="${ esc( t( 'fToAmount' ) ) }"><small>${ esc( t( 'received' ) ) }</small><span class="cur">${ esc( curSymbol( toCur ) ) }</span><span class="val ${ T.toAmount === '' ? 'zero' : '' }" id="toAmtVal">${ esc( showAmt( T.toAmount ) ) }</span></button>` : '' }
 				<input class="desc" id="txDesc" name="desc" maxlength="80" autocomplete="off" autocorrect="off" data-1p-ignore data-lpignore="true" placeholder="${ esc( t( 'descPh' ) ) }" aria-label="${ esc( t( 'fWhat' ) ) }" value="${ esc( T.name ) }">
 				${ T.editId ? '' : `<div class="quickline">${ T.quick ? `<input id="txQuick" type="text" autocomplete="off" spellcheck="false" placeholder="${ esc( t( 'quickTxPh' ) ) }" aria-label="${ esc( t( 'quickLabel' ) ) }" value="${ esc( T.quickText || '' ) }">` : `<button type="button" class="link small" data-tx="quick">${ esc( t( 'typeIt' ) ) }</button>` }</div>` }
 			</div>
@@ -134,7 +134,7 @@
 			${ EXA.photos.slot( T.photo ) }
 			${ T.noteOpen || T.note ? `<div class="sheet-pad tight"><textarea id="txNote" rows="2" maxlength="400" placeholder="${ esc( t( 'notePh' ) ) }" aria-label="${ esc( t( 'fNote' ) ) }">${ esc( T.note ) }</textarea></div>` : '' }
 			<p class="err sheet-pad tight" id="txErr" role="alert" hidden></p>
-			</div><div class="keypad" role="group" aria-label="${ esc( t( 'fAmount' ) ) }">${ [ '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '0', '<' ].map( ( k ) => `<button type="button" class="key" data-key="${ k }" aria-label="${ k === '<' ? esc( t( 'del' ) ) : k === '.' ? esc( decimalMark() ) : k }">${ k === '<' ? UI.icon( 'backspace', 26 ) : k === '.' ? esc( decimalMark() ) : k }</button>` ).join( '' ) }</div>`;
+			</div><div class="tx-field-actions"${ T.editingField ? '' : ' hidden' }><button type="button" class="btn btn-primary" data-tx="field-done">${ UI.icon( 'check', 20 ) } ${ esc( t( 'entryDone' ) ) }</button></div><div id="txKeypad" class="keypad"${ T.keypadOpen ? '' : ' hidden' } role="group" aria-label="${ esc( t( 'fAmount' ) ) }"><div class="keypad-head"><span>${ esc( t( T.target === 'toAmount' ? 'fToAmount' : 'fAmount' ) ) }</span><button type="button" class="btn btn-primary" data-tx="amount-done">${ UI.icon( 'check', 20 ) } ${ esc( t( 'entryDone' ) ) }</button></div>${ [ '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '0', '<' ].map( ( k ) => `<button type="button" class="key" data-key="${ k }" aria-label="${ k === '<' ? esc( t( 'del' ) ) : k === '.' ? esc( decimalMark() ) : k }">${ k === '<' ? UI.icon( 'backspace', 26 ) : k === '.' ? esc( decimalMark() ) : k }</button>` ).join( '' ) }</div>`;
 	}
 	function readTxFields() {
 		const d = $( '#txDesc' ); if ( d ) T.name = d.value;
@@ -153,7 +153,7 @@
 		EX.ensureWallet();
 		const base = { type: 'expense', date: today(), account: ( EX.writableAccounts()[ 0 ] || {} ).id, amount: '', toAmount: '', name: '', note: '', category: null };
 		const v = Object.assign( base, tx || preset );
-		T = { type: v.type, amount: v.amount || '', toAmount: v.toAmount || '', account: v.account, toAccount: v.toAccount || '', category: v.category || null, date: v.date, name: v.name || '', note: v.note || '', photo: v.photo || '', editId: tx ? tx.id : null, target: 'amount', quick: false, quickText: '', noteOpen: false };
+		T = { type: v.type, amount: v.amount || '', toAmount: v.toAmount || '', account: v.account, toAccount: v.toAccount || '', category: v.category || null, date: v.date, name: v.name || '', note: v.note || '', photo: v.photo || '', editId: tx ? tx.id : null, target: 'amount', keypadOpen: false, editingField: false, quick: false, quickText: '', noteOpen: false };
 		T.dateMode = T.date === today() ? 'today' : T.date === addDays( today(), -1 ) ? 'yesterday' : 'other';
 		if ( T.type !== 'transfer' && ! T.category ) T.category = ( EX.catList( T.type === 'income' ? 'income' : 'expense' )[ 0 ] || {} ).key;
 		if ( T.type === 'transfer' && ! T.toAccount ) T.toAccount = ( EX.peerAccount( T.account ) || {} ).id || '';
@@ -172,6 +172,31 @@
 		const el = $( key === 'toAmount' ? '#toAmtVal' : '#amtVal' );
 		if ( el ) { el.textContent = showAmt( s ); el.classList.toggle( 'zero', s === '' ); }
 	};
+	function setKeypad( open, target = T.target ) {
+		readTxFields();
+		T.keypadOpen = open; T.target = target; T.editingField = false;
+		const active = document.activeElement;
+		if ( active && /^(INPUT|TEXTAREA)$/.test( active.tagName ) ) active.blur();
+		$( '#txKeypad' ).hidden = ! open;
+		$( '.keypad-head span' ).textContent = t( target === 'toAmount' ? 'fToAmount' : 'fAmount' );
+		$( '.tx-field-actions' ).hidden = true;
+		$$( '.amt-display' ).forEach( b => { const on = open && ( b.dataset.tx === 'target-to' ? target === 'toAmount' : target === 'amount' ); b.classList.toggle( 'on', on ); b.setAttribute( 'aria-expanded', String( on ) ); } );
+		$( target === 'toAmount' ? '[data-tx=target-to]' : '[data-tx=target-amount]' )?.focus( { preventScroll: true } );
+	}
+	function finishField() {
+		readTxFields(); T.editingField = false;
+		document.activeElement?.blur();
+		$( '.tx-field-actions' ).hidden = true;
+		$( '.sheet-body' ).focus( { preventScroll: true } );
+	}
+	document.addEventListener( 'focusin', e => {
+		if ( ! T || ! [ 'txDesc', 'txQuick', 'txNote', 'txDate' ].includes( e.target.id ) ) return;
+		T.keypadOpen = false; T.editingField = true;
+		$( '#txKeypad' ).hidden = true;
+		$( '.tx-field-actions' ).hidden = false;
+		$$( '.amt-display' ).forEach( b => { b.classList.remove( 'on' ); b.setAttribute( 'aria-expanded', 'false' ); } );
+	} );
+
 	EXA.txKey = pressKey;
 	function onTxQuick() {
 		const q = $( '#txQuick' ); if ( ! q ) return;
@@ -250,8 +275,10 @@
 		if ( ( el = g( '[data-tx]' ) ) ) {
 			const a = el.dataset.tx;
 			if ( a === 'save' ) saveTx();
-			else if ( a === 'target-amount' ) { T.target = 'amount'; drawTx( true ); }
-			else if ( a === 'target-to' ) { T.target = 'toAmount'; drawTx( true ); }
+			else if ( a === 'target-amount' ) setKeypad( true, 'amount' );
+			else if ( a === 'target-to' ) setKeypad( true, 'toAmount' );
+			else if ( a === 'amount-done' ) setKeypad( false );
+			else if ( a === 'field-done' ) finishField();
 			else if ( a === 'quick' ) { T.quick = true; drawTx( true ); const q = $( '#txQuick' ); if ( q ) q.focus(); }
 			else if ( a === 'note' ) { readTxFields(); T.noteOpen = ! T.noteOpen; drawTx( true ); if ( T.noteOpen ) { const n = $( '#txNote' ); if ( n ) n.focus(); } }
 			return true;
@@ -263,11 +290,12 @@
 	document.addEventListener( 'keydown', ( e ) => {
 		if ( ! T || ! UI.sheetOpen() || e.ctrlKey || e.metaKey || e.altKey ) return;
 		const tag = ( document.activeElement && document.activeElement.tagName ) || '';
-		if ( /INPUT|TEXTAREA|SELECT/.test( tag ) && document.activeElement.type !== 'radio' ) { if ( e.key === 'Enter' && tag === 'INPUT' && document.activeElement.id !== 'txQuick' ) { e.preventDefault(); saveTx(); } return; }
+		if ( /INPUT|TEXTAREA|SELECT/.test( tag ) && document.activeElement.type !== 'radio' ) { if ( e.key === 'Enter' && tag === 'INPUT' && document.activeElement.id !== 'txQuick' ) { e.preventDefault(); finishField(); } return; }
+		if ( ! T.keypadOpen ) return;
 		if ( /^\d$/.test( e.key ) ) { pressKey( e.key ); e.preventDefault(); }
 		else if ( e.key === ',' || e.key === '.' ) { pressKey( '.' ); e.preventDefault(); }
 		else if ( e.key === 'Backspace' ) { pressKey( '<' ); e.preventDefault(); }
-		else if ( e.key === 'Enter' ) { saveTx(); e.preventDefault(); }
+		else if ( e.key === 'Enter' ) { setKeypad( false ); e.preventDefault(); }
 	} );
 
 	/* ------------------------------------------------------------------ Bill sheet */

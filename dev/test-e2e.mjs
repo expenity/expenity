@@ -57,6 +57,7 @@ const open = async ( d ) => { await d.page.goto( APP ); await d.page.waitForSele
 const avatar = ( d ) => d.page.click( '.ab-avatar .avatar:visible' );
 async function addTx( d, type, amount, name ) {
 	await d.page.click( '.fab' ); await d.page.click( `[data-act=tx-${ type }]` );
+	await d.page.click('[data-tx=target-amount]');
 	for ( const k of amount ) await d.page.click( `.keypad [data-key="${ k === ',' ? '.' : k }"]` );
 	await d.page.fill( '#txDesc', name );
 	await d.page.click( '[data-tx=save]' );
@@ -236,6 +237,7 @@ ok( true, 'a deleted account cannot be signed into any more' );
 	ok( await Q.page.evaluate( () => window.EX.state().accounts.filter( ( a ) => a.name === 'Household' ).length === 1 ), 'the member has exactly one copy of the wallet' );
 	// The member adds something; the owner receives it, with the author recorded.
 	await Q.page.click( '.fab' ); await Q.page.click( '[data-act=tx-expense]' ); await Q.page.click( '[data-tx-wallet]:has-text("Household")' );
+	await Q.page.click('[data-tx=target-amount]');
 	for ( const k of '7' ) await Q.page.click( `.keypad [data-key="${ k }"]` );
 	await Q.page.fill( '#txDesc', 'Bread' ); await Q.page.click( '[data-tx=save]' ); await runSync( Q ); await runSync( P );
 	ok( ( await txs( P ) ).some( ( x ) => x.n === 'Bread' ), 'what the member adds reaches the owner' );

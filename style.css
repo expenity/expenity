@@ -406,3 +406,5 @@ body, .card, .list, .hero, .wc, .promo, .tabbar, .appbar, .rail, .chip, .theme-c
 :root[data-motion="off"] .hero-flip > .hero, :root[data-motion="reduced"] .hero-flip > .hero { transition: none; }
 
 .photo-slot{padding:10px 0;min-width:0}.photo-slot .btn-row{flex-wrap:wrap}.photo-slot .btn{min-height:44px}.photo-status{font-size:.85rem;overflow-wrap:anywhere}.photo-viewer{max-width:min(96vw,900px);max-height:94dvh;padding:12px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:16px}.photo-viewer::backdrop{background:#000b}.photo-viewer img{display:block;max-width:100%;max-height:76dvh;object-fit:contain;margin:12px auto}.photo-slot input[type=file]{display:none}
+
+.keypad-head{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:12px;font-weight:700}.keypad-head .btn,.tx-field-actions .btn{min-height:44px}.tx-field-actions{display:flex;justify-content:flex-end;padding:8px 16px;background:var(--surface);border-top:1px solid var(--line);flex:none}

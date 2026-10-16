@@ -37,7 +37,7 @@ const { context, page } = await newPage();
 const cdp = await context.newCDPSession( page );
 const st = () => page.evaluate( () => JSON.parse( JSON.stringify( window.EX.state() ) ) );
 const tab = ( name ) => page.click( `[data-go=${ name }]:visible` );
-const keys = async ( s ) => { for ( const k of s ) await page.click( `.keypad [data-key="${ k }"]` ); };
+const keys = async ( s ) => { if ( await page.locator('#txKeypad').isHidden() ) await page.click('[data-tx=target-amount]'); for ( const k of s ) await page.click( `.keypad [data-key="${ k }"]` ); };
 const addTx = async ( type, amount, name ) => { await page.click( '.fab' ); await page.click( `[data-act=tx-${ type }]` ); await keys( amount ); if ( name ) await page.fill( '#txDesc', name ); };
 async function swipe( selector, dx ) {
 	const box = await page.locator( selector ).first().boundingBox();
@@ -257,6 +257,7 @@ ok( await page.getAttribute( 'html', 'lang' ) === 'el' && /Αρχική/.test( a
 for ( const name of [ 'home', 'activity', 'bills', 'reports' ] ) { await tab( name ); ok( ( await page.locator( '#view' ).innerText() ).length > 20, `Greek ${ name } view renders` ); }
 await page.click( '.fab' ); await page.click( '[data-act=tx-expense]' );
 ok( /Έξοδο/.test( await page.locator( '.tx-seg' ).innerText() ), 'the add sheet is in Greek' );
+await page.click('[data-tx=target-amount]');
 ok( await page.locator( '.keypad [data-key="."]' ).innerText() === ',', 'the Greek keypad uses a decimal comma' );
 await audit( 'Greek transaction sheet' );
 await page.keyboard.press( 'Escape' );
