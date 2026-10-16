@@ -15,3 +15,11 @@ User decision: remove navigation cameos. Characters belong only to the flipping 
 High-resolution transparent character cutouts, ideally matching front/holding and turned-away poses. Separate hand layers allow convincing contact with the card edges. Artwork should include complete ears/cap and hands with enough clear padding. Character size should be materially larger than the old 70px navigation drawings, sized to the card rather than the viewport.
 
 Status: interaction direction recorded; awaiting supplied artwork. No placeholder character animation is shipped as a completed feature.
+
+## Artwork style confirmed
+
+User reference: https://www.pinterest.com/pin/mickey-and-minnie-valentines-day-drawing--5348093303221313/
+
+Pencil-drawing style, confirmed explicitly by the user: expressive graphite outlines, softly shaded volume and a hand-drawn sketch character. Preserve recognizable proportions and natural faces; avoid the old geometric SVG look and the proposed glossy 3D character direction. The reference was inspected in the browser; it is a style reference, not a supplied layered production asset. Larger characters should retain crisp pencil detail at device scale. Keep them local to the balance card and keep numbers/controls unobstructed.
+
+Still awaiting usable character artwork/poses for integration. A single static reference does not supply the holding/release/turned-away sequence; do not claim that interaction is complete before those visual states exist.
