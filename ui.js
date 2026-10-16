@@ -86,39 +86,50 @@
 
 	UI.justSwiped = false;
 	UI.initSwipe = ( root ) => {
-		const THRESHOLD = 76, MAX = 104;
-		let row = null, front = null, x0 = 0, y0 = 0, dx = 0, mode = '';
+		// A swipe slides the row to reveal buttons. It never acts on its own: the person taps Paid, Edit or Delete.
+		let row = null, front = null, x0 = 0, y0 = 0, base = 0, dx = 0, mode = '', wL = 0, wR = 0;
+		const closeAll = ( except ) => { document.querySelectorAll( '.sw.open' ).forEach( ( r ) => { if ( r === except ) return; r.classList.remove( 'open' ); const f = $( '.sw-front', r ); if ( f ) f.style.transform = ''; } ); };
+		UI.swipeClose = () => closeAll();
 		root.addEventListener( 'pointerdown', ( e ) => {
 			if ( e.pointerType === 'mouse' ) return;
 			const r = e.target.closest( '.sw' );
-			if ( ! r ) return;
+			if ( ! r ) { closeAll(); return; }
+			if ( e.target.closest( '.sw-act' ) ) return;
+			closeAll( r );
 			row = r; front = $( '.sw-front', r ); x0 = e.clientX; y0 = e.clientY; dx = 0; mode = '';
+			wL = $( '.sw-l', r ) ? $( '.sw-l', r ).offsetWidth : 0; wR = $( '.sw-r', r ) ? $( '.sw-r', r ).offsetWidth : 0;
+			base = r.classList.contains( 'open-l' ) ? wL : r.classList.contains( 'open-r' ) ? -wR : 0;
 		}, { passive: true } );
 		root.addEventListener( 'pointermove', ( e ) => {
 			if ( ! row ) return;
 			const mx = e.clientX - x0, my = e.clientY - y0;
 			if ( ! mode ) { if ( Math.abs( mx ) > 10 && Math.abs( mx ) > Math.abs( my ) * 1.4 ) mode = 'x'; else if ( Math.abs( my ) > 10 ) { row = null; return; } else return; }
-			dx = Math.max( -MAX, Math.min( MAX, mx ) );
-			if ( dx > 0 && ! row.dataset.swr ) dx = 0;
-			if ( dx < 0 && ! row.dataset.swl ) dx = 0;
+			dx = Math.max( -wR, Math.min( wL, base + mx ) );
 			front.style.transition = 'none';
 			front.style.transform = `translateX(${ dx }px)`;
-			row.classList.toggle( 'sw-right', dx > 0 ); row.classList.toggle( 'sw-left', dx < 0 );
-			row.classList.toggle( 'sw-armed', Math.abs( dx ) >= THRESHOLD );
 		}, { passive: true } );
 		const finish = () => {
 			if ( ! row ) return;
-			const r = row, f = front, d = dx; row = null; front = null;
-			f.style.transition = ''; f.style.transform = '';
-			r.classList.remove( 'sw-right', 'sw-left', 'sw-armed' );
+			const r = row, f = front; row = null; front = null;
+			f.style.transition = '';
 			if ( mode === 'x' ) {
-				UI.justSwiped = true; setTimeout( () => { UI.justSwiped = false; }, 80 );
-				if ( d >= THRESHOLD && r.dataset.swr ) { UI.haptic(); r.dispatchEvent( new CustomEvent( 'swipeaction', { bubbles: true, detail: { action: r.dataset.swr, id: r.dataset.id, kind: r.dataset.kind } } ) ); }
-				else if ( d <= -THRESHOLD && r.dataset.swl ) { UI.haptic(); r.dispatchEvent( new CustomEvent( 'swipeaction', { bubbles: true, detail: { action: r.dataset.swl, id: r.dataset.id, kind: r.dataset.kind } } ) ); }
+				UI.justSwiped = true; setTimeout( () => { UI.justSwiped = false; }, 120 );
+				const open = dx > wL * 0.5 ? 'l' : dx < -wR * 0.5 ? 'r' : '';
+				r.classList.remove( 'open-l', 'open-r' );
+				if ( open ) { r.classList.add( 'open', 'open-' + open ); f.style.transform = `translateX(${ open === 'l' ? wL : -wR }px)`; UI.haptic(); } else { r.classList.remove( 'open' ); f.style.transform = ''; }
 			}
 			mode = '';
 		};
 		root.addEventListener( 'pointerup', finish ); root.addEventListener( 'pointercancel', finish );
+		// While a row is open, the next tap either presses one of its buttons or just closes it.
+		root.addEventListener( 'click', ( e ) => {
+			const openRow = document.querySelector( '.sw.open' );
+			if ( ! openRow ) return;
+			const btn = e.target.closest( '.sw-act' );
+			e.stopPropagation(); e.preventDefault();
+			if ( btn && openRow.contains( btn ) ) { const d = { action: btn.dataset.sw, id: openRow.dataset.id, kind: openRow.dataset.kind }; closeAll(); openRow.dispatchEvent( new CustomEvent( 'swipeaction', { bubbles: true, detail: d } ) ); }
+			else closeAll();
+		}, true );
 	};
 
 	/* ------------------------------------------------------------------ Pull to refresh */

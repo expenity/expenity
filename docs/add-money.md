@@ -51,9 +51,13 @@ Other actions, from the **⋯** menu on a bill: **Snooze** (to tomorrow or for 3
 
 ## Swipe and pull
 
-- On a transaction: swipe **left** to delete, **right** to edit.
-- On a bill: swipe **right** to mark it paid, **left** to delete.
+Swiping a row slides it to show buttons. **Nothing happens until you tap a button**, and tapping anywhere else closes the row again.
+
+- On a **transaction**: swipe **left** to reveal **Edit** and **Delete**.
+- On a **bill**: swipe **right** to reveal **Paid**, or **left** to reveal **Edit** and **Delete**.
 - Pull the screen down to sync now (when you are signed in).
+
+The setup shows this in a short animation.
 
 ![The Activity screen.](images/activity.png)
 

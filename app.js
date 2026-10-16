@@ -241,7 +241,7 @@
 		document.addEventListener( 'swipeaction', ( e ) => {
 			const { action, id, kind } = e.detail;
 			if ( kind === 'tx' ) { const x = S().txs.find( ( z ) => z.id === id ); if ( action === 'edit' && x ) EXA.openTx( x ); else if ( action === 'del' ) EXA.removeTx( id ); }
-			else { const b = S().bills.find( ( z ) => z.id === id ); if ( action === 'paid' && b ) quickPay( b ); else if ( action === 'del' ) EXA.removeBill( id ); }
+			else { const b = S().bills.find( ( z ) => z.id === id ); if ( action === 'paid' && b ) quickPay( b ); else if ( action === 'edit' && b ) EXA.openBill( b ); else if ( action === 'del' ) EXA.removeBill( id ); }
 		} );
 
 		document.addEventListener( 'submit', ( e ) => {

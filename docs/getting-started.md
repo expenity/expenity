@@ -27,7 +27,7 @@ A short setup asks a few questions. Each one can be skipped, and you can change 
 - **What you want help with**, such as tracking spending, saving for a trip, or cutting subscriptions. Expenity uses this to suggest things that fit you. See [Budgets, goals and income](budgets-goals-income.md#ideas-for-you).
 - **A first goal**, if you chose to save for something.
 - **Your wallets**: cash, bank account, card, savings, with what is in each.
-- **How it looks**: a theme and whether animations are on. See [Themes and animations](themes-and-look.md).
+- **How it looks**: a theme and whether animations are on, followed by a short animated tip on swiping rows. See [Themes and animations](themes-and-look.md).
 
 ![Choosing what you want help with.](images/setup-aims.png)
 

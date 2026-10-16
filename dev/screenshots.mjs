@@ -61,6 +61,7 @@ for ( const lang of [ 'en', 'el' ] ) {
 		await page.click( '[data-flow=guest]' ); await page.click( '[data-fstep=plat][data-plat=ios]' ); await page.waitForTimeout( 1500 ); await shot( page, 'install' );
 		await page.click( '[data-flow=install-skip]' ); await page.click( '[data-flow=next]' ); await page.click( '[data-flow=next]' );
 		await page.click( '[data-fstep=aim][data-aim=save]' ); await page.click( '[data-fstep=aim][data-aim=subs]' ); await shot( page, 'setup-aims' );
+		for ( let i = 0; i < 8 && await page.locator( '.swipe-demo' ).count() === 0; i++ ) await page.click( '[data-flow=next]' ); await page.waitForTimeout( 2200 ); await shot( page, 'setup-tips' );
 		await context.close();
 	}
 	{ // The app on a phone

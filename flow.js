@@ -16,7 +16,7 @@
 	let platform = null, busy = false;
 	const W = { step: 0, wallets: null, curQuery: '' };
 	// The goal step only appears for people who said they want to save for something.
-	const steps = () => [ 'name', 'currency', 'aims' ].concat( ( S().settings.aims || [] ).includes( 'save' ) ? [ 'goal' ] : [] ).concat( [ 'wallets', 'look', 'done' ] );
+	const steps = () => [ 'name', 'currency', 'aims' ].concat( ( S().settings.aims || [] ).includes( 'save' ) ? [ 'goal' ] : [] ).concat( [ 'wallets', 'look', 'tips', 'done' ] );
 	const GOAL_PRESETS = [ [ 'trip', 'plane' ], [ 'car', 'car' ], [ 'gift', 'gift' ], [ 'home', 'home' ], [ 'emergency', 'heart' ], [ 'other', 'target' ] ];
 
 	/* ------------------------------------------------------------------ Stage machine */
@@ -218,6 +218,11 @@
 			const mo = D().motion || 'auto';
 			const mt = ( v, label ) => `<button type="button" class="chip big${ mo === v ? ' on' : '' }" data-fstep="motion" data-motion="${ v }">${ esc( label ) }</button>`;
 			body = `${ EXA.themePicker() }<div class="lbl pad0">${ esc( t( 'setupMotion' ) ) }</div><div class="chips wrap">${ mt( 'auto', t( 'motionAuto' ) ) }${ mt( 'full', t( 'motionFull' ) ) }${ mt( 'reduced', t( 'motionReduced' ) ) }${ mt( 'off', t( 'motionOff' ) ) }</div>`;
+		} else if ( id === 'tips' ) {
+			icon = 'arrows-exchange'; color = 'blue'; title = t( 'setupTipsTitle' ); text = t( 'setupTipsText' );
+			const row = ( cls, ic, tint, name, amt ) => `<div class="mock-sw ${ cls }"><div class="mb"><div class="l"><span class="mact paid">${ UI.icon( 'check', 20 ) }<b>${ esc( t( 'actPaid' ) ) }</b></span></div><div class="r"><span class="mact edit">${ UI.icon( 'pencil', 20 ) }<b>${ esc( t( 'actEdit' ) ) }</b></span><span class="mact del">${ UI.icon( 'trash', 20 ) }<b>${ esc( t( 'actDelete' ) ) }</b></span></div></div><div class="front">${ UI.ci( ic, tint, 40 ) }<span class="mid"><b>${ esc( name ) }</b><small>${ esc( t( 'relTomorrow' ) ) }</small></span><span class="a">${ amt }</span></div></div>`;
+			body = `<div class="swipe-demo" aria-hidden="true">${ row( 'a', 'device-tv', 'purple', 'Netflix', '€15.99' ) }${ row( 'b', 'home', 'blue', t( 'tplRent' ), '€850' ) }<span class="sfinger fa"></span><span class="sfinger fb"></span></div>
+				<ul class="tip-list"><li>${ UI.icon( 'arrow-left', 20 ) } ${ esc( t( 'tipLeft' ) ) }</li><li>${ UI.icon( 'arrow-right', 20 ) } ${ esc( t( 'tipRight' ) ) }</li><li>${ UI.icon( 'hand-click', 20 ) } ${ esc( t( 'tipTap' ) ) }</li></ul>`;
 		} else {
 			icon = 'circle-check'; color = 'green'; title = t( 'setupDoneTitle', { name: ( S().settings.name || '' ).trim() } ); text = t( 'setupDoneText' );
 		}

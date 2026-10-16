@@ -41,28 +41,30 @@
 	const greeting = () => { const h = new Date().getHours(); const g = t( h < 12 ? 'greetMorning' : h < 18 ? 'greetAfternoon' : 'greetEvening' ); const n = ( S().settings.name || '' ).trim(); return n ? `${ g }, ${ n }` : g; };
 
 	/** One transaction as a row. Swipe right edits, swipe left deletes; tap opens the detail. */
+	// Rows reveal their actions when swiped: nothing happens until a button is tapped (see UI.initSwipe).
+	const swBtn = ( action, icon, labelKey, cls ) => `<button type="button" class="sw-act ${ cls }" data-sw="${ action }" tabindex="-1" aria-hidden="true">${ UI.icon( icon, 22 ) }<span>${ esc( t( labelKey ) ) }</span></button>`;
 	function txItem( x ) {
 		const cur = EX.txCurrency( x );
 		const info = x.type === 'transfer' ? { iconName: 'arrows-exchange', color: 'blue', name: t( 'catTransfer' ) } : EX.catInfo( x.category );
 		const title = x.name || info.name;
 		const meta = [ x.type === 'transfer' ? `${ walletName( x.account ) } → ${ walletName( x.toAccount ) }` : walletName( x.account ), x.note ].filter( Boolean ).join( ' · ' );
 		const sign = x.type === 'income' ? '+' : x.type === 'expense' ? '−' : '';
-		return `<li class="sw" data-kind="tx" data-id="${ esc( x.id ) }" data-swr="edit" data-swl="del">
-			<div class="sw-back"><span class="sw-act edit">${ UI.icon( 'pencil', 22 ) }</span><span class="sw-act del">${ UI.icon( 'trash', 22 ) }</span></div>
+		return `<li class="sw" data-kind="tx" data-id="${ esc( x.id ) }">
+			<div class="sw-back"><div class="sw-l"></div><div class="sw-r">${ swBtn( 'edit', 'pencil', 'actEdit', 'edit' ) }${ swBtn( 'del', 'trash', 'actDelete', 'del' ) }</div></div>
 			<button type="button" class="sw-front item" data-act="open-tx" data-id="${ esc( x.id ) }" aria-label="${ esc( title ) }, ${ esc( sign + money( Number( x.amount ), cur ) ) }">
 				${ UI.catCi( info.iconName ? info : EX.catInfo( x.category ) ) }
 				<span class="mid"><b>${ esc( title ) }</b><small>${ esc( meta || dayName( x.date ) ) }</small></span>
 				<span class="a ${ x.type }">${ sign }${ esc( money( Number( x.amount ), cur ) ) }</span>
 			</button></li>`;
 	}
-	/** One bill as a row. Swipe right marks it paid, left deletes; tap opens the detail. */
+	/** One bill as a row. Swipe right to reveal Paid, left to reveal Edit and Delete; tap opens the detail. */
 	function billItem( b, { showDate = true } = {} ) {
 		const n = diffDays( b.next, today() );
 		const cls = n < 0 ? 'late' : n === 0 ? 'now' : '';
 		const snoozed = b.snooze && b.snooze > today();
 		const meta = [ showDate ? rel( b.next ) : null, EX.repeatLabel( b.repeat ), b.autopay ? t( 'autopay' ) : null, snoozed ? t( 'snoozed' ) : null ].filter( Boolean ).join( ' · ' );
-		return `<li class="sw ${ cls }" data-kind="bill" data-id="${ esc( b.id ) }" data-swr="paid" data-swl="del">
-			<div class="sw-back"><span class="sw-act paid">${ UI.icon( 'check', 22 ) }</span><span class="sw-act del">${ UI.icon( 'trash', 22 ) }</span></div>
+		return `<li class="sw ${ cls }" data-kind="bill" data-id="${ esc( b.id ) }">
+			<div class="sw-back"><div class="sw-l">${ swBtn( 'paid', 'check', 'actPaid', 'paid' ) }</div><div class="sw-r">${ swBtn( 'edit', 'pencil', 'actEdit', 'edit' ) }${ swBtn( 'del', 'trash', 'actDelete', 'del' ) }</div></div>
 			<button type="button" class="sw-front item" data-act="open-bill" data-id="${ esc( b.id ) }" aria-label="${ esc( b.name ) }, ${ esc( amountText( b ) ) }">
 				${ UI.catCi( EX.catInfo( b.category ) ) }
 				<span class="mid"><b>${ esc( b.name ) }</b><small class="due">${ esc( meta ) }</small></span>
