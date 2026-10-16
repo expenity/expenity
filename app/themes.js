@@ -10,6 +10,9 @@
  const S=EX.state;
  Object.assign(EX.I18N.langs.en,{customTitle:'My custom theme',customTemplates:'Theme templates',customPaletteTitle:'Choose a starting palette',customPaletteHint:'Pick a palette, then adjust every colour below. Changes stay in the preview until you save.',customApply:'Use my theme',customActive:'Currently active',customEditSaved:'Edit my theme',customCreate:'Create my theme',custom_icons:'Icons',customHex:'Hex colour',customInvalid:'Enter a six-digit hex colour, for example #89BAFF.',customIconContrast:'Choose an icon colour with stronger contrast against the page and cards.',customLive:'Live preview',customPreviewExpense:'Coffee',customPreviewGoal:'Savings goal',customPreset_0:'Ocean',customPreset_1:'Amber',customPreset_2:'Rose',customPreset_3:'Mint',customPreset_4:'Paper',customPreset_5:'Violet'});
  Object.assign(EX.I18N.langs.el,{customTitle:'Το δικό μου θέμα',customTemplates:'Έτοιμα θέματα',customPaletteTitle:'Επιλέξτε αρχική παλέτα',customPaletteHint:'Επιλέξτε παλέτα και προσαρμόστε κάθε χρώμα παρακάτω. Οι αλλαγές φαίνονται μόνο στην προεπισκόπηση μέχρι να τις αποθηκεύσετε.',customApply:'Χρήση του θέματός μου',customActive:'Ενεργό θέμα',customEditSaved:'Επεξεργασία του θέματός μου',customCreate:'Δημιουργία του θέματός μου',custom_icons:'Εικονίδια',customHex:'Δεκαεξαδικό χρώμα',customInvalid:'Γράψτε εξαψήφιο δεκαεξαδικό χρώμα, π.χ. #89BAFF.',customIconContrast:'Επιλέξτε χρώμα εικονιδίων με μεγαλύτερη αντίθεση στο φόντο και στις κάρτες.',customLive:'Ζωντανή προεπισκόπηση',customPreviewExpense:'Καφές',customPreviewGoal:'Στόχος αποταμίευσης',customPreset_0:'Ωκεανός',customPreset_1:'Κεχριμπάρι',customPreset_2:'Ροζ',customPreset_3:'Μέντα',customPreset_4:'Χαρτί',customPreset_5:'Βιολετί'});
+
+ Object.assign(EX.I18N.langs.en,{theme_mario:'Mario · Pixel adventure',themeD_mario:'Clouds, coins and a familiar red cap peeking above navigation.',theme_bricks:'Brick party',themeD_bricks:'Colourful building bricks, floating studs and playful shapes.',theme_minnie:'Minnie · Bow atelier',themeD_minnie:'Painted rose, polka dots, bows and two playful visitors.'});
+ Object.assign(EX.I18N.langs.el,{theme_mario:'Mario · Περιπέτεια σε πίξελ',themeD_mario:'Σύννεφα, νομίσματα και ένα κόκκινο καπέλο που ξεπροβάλλει.',theme_bricks:'Πάρτι με τουβλάκια',themeD_bricks:'Πολύχρωμα τουβλάκια, ανάλαφρη κίνηση και παιχνιδιάρικα σχήματα.',theme_minnie:'Minnie · Ατελιέ φιόγκων',themeD_minnie:'Ζωγραφιστό ροζ, πουά, φιόγκοι και δύο παιχνιδιάρικοι επισκέπτες.'});
 	// swatch: page color, card color, accent, text. mode: the theme also has a light and a dark version.
 	const THEMES = [
 		{ id: 'emerald', mode: true, sw: [ '#eef6f3', '#ffffff', '#0a8f6a', '#0f1f1a' ] },
@@ -20,6 +23,9 @@
 		{ id: 'synthwave', sw: [ '#120726', '#1f0f45', '#ff3ea5', '#2de2e6' ] },
 		{ id: 'amberwave', sw: [ '#120c07', '#24160d', '#ffbd59', '#fff2d6' ] },
 		{ id: 'ion', sw: [ '#04131d', '#092735', '#61eeff', '#dcfbff' ] },
+		{ id: 'mario', sw: [ '#dcf3ff', '#fffdf2', '#c52b32', '#172b49' ] },
+		{ id: 'bricks', sw: [ '#fff5d8', '#ffffff', '#164bb2', '#182d4b' ] },
+		{ id: 'minnie', sw: [ '#fff0f3', '#fffafd', '#a7194c', '#35202d' ] },
 		{ id: 'custom', sw: [ '#101724', '#1c283b', '#89baff', '#eef4ff' ] },
 		{ id: 'blueprint', sw: [ '#0d3b82', '#11449a', '#ffffff', '#f0f7ff' ] },
 		{ id: 'candy', sw: [ '#fff1f8', '#ffffff', '#ff6fb0', '#4a2a5c' ] },
@@ -54,7 +60,7 @@
 		const [ bg, sf, ac, ink ] = palette ? [ palette.bg, palette.surface, palette.accent, palette.ink ] : th.sw;
 		return `<button type="button" class="theme-card${ th.id === cur ? ' on' : '' }" data-skin-set="${ th.id }" role="radio" aria-checked="${ th.id === cur }">
 			<span class="tc-prev" aria-hidden="true" style="background:${ bg }"><i style="background:${ sf };border-color:${ ink }33"><b style="background:${ ac }"></b><u style="background:${ ink }"></u><u style="background:${ ink };width:42%"></u></i></span>
-			<span class="tc-name">${UI.icon('palette',16)} ${ esc( t( 'theme_' + th.id ) ) }</span><small>${ esc( t( 'themeD_' + th.id ) ) }</small></button>`;
+			<span class="tc-name">${UI.icon(({mario:'device-gamepad-2',bricks:'category-2',minnie:'heart'})[th.id]||'palette',16)} ${ esc( t( 'theme_' + th.id ) ) }</span><small>${ esc( t( 'themeD_' + th.id ) ) }</small></button>`;
 	};
 	/** The picker: theme cards, then light/dark chips for themes that have both. */
 	EXA.themePicker = () => {
@@ -117,9 +123,30 @@
   paint();
  }
 
+
+ // Lightweight, original vector decorations. Decorative only: never intercept a financial control.
+ const cameo=(kind)=>{
+  const mouse=kind==='minnie'||kind==='mickey';
+  const drawing=mouse?`<circle cx="25" cy="22" r="19" fill="#231e29"/><circle cx="75" cy="22" r="19" fill="#231e29"/><ellipse cx="50" cy="51" rx="33" ry="32" fill="#231e29"/><path d="M24 49C24 22 45 30 50 40C55 30 76 22 76 49L71 68Q50 84 29 68Z" fill="#ffe6cc"/><ellipse cx="42" cy="49" rx="4" ry="9" fill="#231e29"/><ellipse cx="58" cy="49" rx="4" ry="9" fill="#231e29"/><ellipse cx="50" cy="61" rx="8" ry="5" fill="#231e29"/><path d="M39 69Q50 78 61 69" fill="none" stroke="#231e29" stroke-width="2" stroke-linecap="round"/>${kind==='minnie'?'<path d="M50 23Q18 0 21 25Q25 37 50 27Q75 37 79 25Q82 0 50 23" fill="#d62859"/><g fill="#fff"><circle cx="31" cy="19" r="3"/><circle cx="39" cy="27" r="3"/><circle cx="68" cy="19" r="3"/><circle cx="61" cy="27" r="3"/></g><ellipse cx="50" cy="24" rx="7" ry="8" fill="#a7194c"/><path d="M37 40l-4 -5m28 5l5 -5" stroke="#231e29" stroke-width="2"/>':''}`:
+  `<path d="M20 78V46Q20 13 50 13Q80 13 80 46V78" fill="#7b452c"/><ellipse cx="50" cy="53" rx="28" ry="29" fill="#ffcf9c"/><path d="M20 46V35Q20 7 50 7Q80 7 80 35V40L87 44Q62 52 20 46" fill="#e22e35"/><ellipse cx="51" cy="27" rx="13" ry="12" fill="#fff5e3"/><path d="M43 33V22L51 29L59 22V33" fill="none" stroke="#c52b32" stroke-width="3"/><ellipse cx="43" cy="52" rx="4" ry="8" fill="#183b64"/><ellipse cx="64" cy="52" rx="4" ry="8" fill="#183b64"/><path d="M32 64Q38 57 45 63Q51 57 57 63Q63 57 70 63Q67 77 51 73Q38 77 32 64" fill="#533020"/><ellipse cx="53" cy="60" rx="11" ry="8" fill="#efb37c"/><path d="M24 80V74H76V80" fill="#1c56b8"/>`;
+  return 'url("data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="100" height="84" viewBox="0 0 100 84">'+drawing+'</svg>')+'")';
+ };
+ let funScene,funSkin;
+ EXA.updateFunThemes=on=>{
+  const skin=EXA.skin(),active=['mario','bricks','minnie'].includes(skin);
+  if(!active){funScene?.remove();funScene=null;funSkin=null;delete root.dataset.funMotion;root.style.removeProperty('--theme-cameo');root.style.removeProperty('--theme-friend');return;}
+  root.dataset.funMotion=on?'on':'still';
+  if(funSkin!==skin||!funScene){funScene?.remove();funSkin=skin;funScene=document.createElement('div');funScene.className='fun-scene '+skin+'-scene';funScene.setAttribute('aria-hidden','true');
+   const kinds=skin==='mario'?['cloud','cloud','cloud','hill','hill','coin','coin','coin','block','block']:skin==='bricks'?Array(12).fill('brick'):Array.from({length:13},(_,i)=>i%3===0?'bow':i%3===1?'confetti':'petal');
+   kinds.forEach((kind,i)=>{const el=document.createElement('i');el.className='fun-'+kind;el.style.setProperty('--n',i);el.style.setProperty('--x',((i*29+7)%94)+'%');el.style.setProperty('--y',((i*19+8)%88)+'%');el.style.setProperty('--delay',(-i*1.7)+'s');el.style.setProperty('--turn',((i%2?-1:1)*(6+i%4*4))+'deg');funScene.append(el);});document.body.prepend(funScene);
+   root.style.setProperty('--theme-cameo',skin==='mario'?cameo('mario'):skin==='minnie'?cameo('minnie'):'none');root.style.setProperty('--theme-friend',skin==='minnie'?cameo('mickey'):'none');
+  }
+ };
+
 	let trails;
 	EXA.updateTrails = () => {
 		const m=root.dataset.motion, on=!document.hidden&&(m==='full'||(m!=='off'&&m!=='reduced'&&!matchMedia('(prefers-reduced-motion: reduce)').matches));
+		EXA.updateFunThemes(on);
 		const enabled=['synthwave','amberwave','ion'].includes(EXA.skin())||(EXA.skin()==='custom'&&EXA.customPalette().trails);
 		if(!enabled){if(trails)trails.remove();trails=null;return;}
 		if(!trails){trails=document.createElement('div');trails.className='neon-trails';trails.setAttribute('aria-hidden','true');for(let i=0;i<22;i++){const dot=document.createElement('i');dot.style.left=(Math.random()*100)+'%';dot.style.setProperty('--duration',(7+Math.random()*12)+'s');dot.style.setProperty('--delay',(-Math.random()*20)+'s');dot.style.setProperty('--length',(15+Math.random()*45)+'px');trails.appendChild(dot);}document.body.prepend(trails);}

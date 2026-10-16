@@ -1,6 +1,22 @@
 {
-  "version": "0.12.0",
+  "version": "0.12.1",
   "releases": [
+    {
+      "version": "0.12.1",
+      "date": "2026-10-17",
+      "en": [
+        "New Mario · Pixel adventure theme: sky-blue scenery, drifting pixel clouds, spinning coins, hills and a red-capped character peeking above navigation.",
+        "New Brick party theme: colorful studded building bricks floating over a warm canvas, bold primary colors and dimensional cards.",
+        "New Minnie · Bow atelier theme: watercolor rose, polka dots, floating bows and petals, with Minnie and Mickey peeking from navigation.",
+        "All three themes support English and Greek, persist across launches, and respect animation settings and system reduced motion. Scenery never blocks controls; character cameos hide while dialogs or dashboard editing are open."
+      ],
+      "el": [
+        "Νέο θέμα Mario · Περιπέτεια σε πίξελ: γαλάζιο τοπίο, σύννεφα, περιστρεφόμενα νομίσματα, λόφοι και ένας χαρακτήρας με κόκκινο καπέλο που ξεπροβάλλει από την πλοήγηση.",
+        "Νέο θέμα Πάρτι με τουβλάκια: πολύχρωμα τουβλάκια που αιωρούνται σε ζεστό φόντο, έντονα βασικά χρώματα και κάρτες με αίσθηση βάθους.",
+        "Νέο θέμα Minnie · Ατελιέ φιόγκων: ζωγραφιστό ροζ, πουά, αιωρούμενοι φιόγκοι και πέταλα, με τη Minnie και τον Mickey να ξεπροβάλλουν από την πλοήγηση.",
+        "Και τα τρία θέματα υποστηρίζουν ελληνικά και αγγλικά, διατηρούνται στο επόμενο άνοιγμα και τηρούν τις ρυθμίσεις κίνησης και τη μειωμένη κίνηση της συσκευής. Τα διακοσμητικά δεν εμποδίζουν τα χειριστήρια. Οι χαρακτήρες κρύβονται όταν ανοίγει παράθυρο ή γίνεται επεξεργασία της Αρχικής."
+      ]
+    },
     {
       "version": "0.12.0",
       "date": "2026-10-17",
