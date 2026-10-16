@@ -52,18 +52,18 @@
   const config=layout(),ids=config.map(x=>x.id);
   if(ids.length)nodes.sort((a,b)=>(ids.includes(a.dataset.home)?ids.indexOf(a.dataset.home):99)-(ids.includes(b.dataset.home)?ids.indexOf(b.dataset.home):99));
   nodes=nodes.filter(x=>!(config.find(c=>c.id===x.dataset.home)||{}).hidden&&x.innerHTML.trim());
-  const bar=draft!==null?`<div class="dash-editbar" role="toolbar" aria-label="${L('title')}"><button type="button" class="btn btn-ghost" data-dash-cancel>${L('cancel')}</button><button type="button" class="btn btn-ghost dash-add-cards" data-dash-cards aria-label="${L('add')}">${UI.icon('plus',20)} ${L('cards')}</button><button type="button" class="btn btn-primary" data-dash-done>${L('done')}</button></div>${!S().device.dashboardHintSeen?`<div class="dash-hint" role="status"><span>${L('hint')}</span><button type="button" class="ab-btn" data-dash-dismiss aria-label="${L('dismiss')}">${UI.icon('x',18)}</button></div>`:''}`:'';
+  const bar=draft!==null?`<div class="dash-editbar" role="toolbar" aria-label="${L('title')}"><button type="button" class="btn btn-ghost" data-dash-cancel>${L('cancel')}</button><button type="button" class="btn btn-ghost dash-add-cards" data-dash-cards aria-label="${L('add')}">${UI.icon('plus',20)} ${L('cards')}</button><button type="button" class="btn btn-ghost" data-dash-appearance>${UI.icon('palette',20)} ${esc(EX.t('homeAppearance'))}</button><button type="button" class="btn btn-primary" data-dash-done>${L('done')}</button></div>${!S().device.dashboardHintSeen?`<div class="dash-hint" role="status"><span>${L('hint')}</span><button type="button" class="ab-btn" data-dash-dismiss aria-label="${L('dismiss')}">${UI.icon('x',18)}</button></div>`:''}`:'';
   return bar+`<div id="homeGrid" class="dashboard-grid dash-grid${draft!==null?' dashboard-editing':''}">${nodes.map(renderWidget).join('')}</div><div id="dashAnnounce" class="sr-only" aria-live="polite"></div>`;
  };
  function select(id){selected=id;all('#homeGrid>[data-home]').forEach(x=>x.dataset.selected=String(x.dataset.home===id));}
  function begin(id){
   if(draft!==null||UI.sheetOpen()||A.flow.active())return;
-  source=readSource();draft=copy(layout()).map(x=>({...x,size:sizeOf(x.size)}));
+  A.homeLookDraft=copy(S().settings.themeLooks||{});source=readSource();draft=copy(layout()).map(x=>({...x,size:sizeOf(x.size)}));
   source.forEach(x=>entry(x.dataset.home));selected=id||null;A.render();UI.haptic(25);
  }
  function closeEditor(save){
   stopGesture(true);if(save){const defaults=source.map(x=>x.dataset.home);const unchanged=draft.length===defaults.length&&draft.every((x,i)=>x.id===defaults[i]&&!x.hidden&&sizeOf(x.size)==='full');S().settings.homeLayout=unchanged?[]:copy(draft||[]);S().device.dashboardHintSeen=true;}
-  draft=null;source=null;selected=null;
+  if(save)S().settings.themeLooks=copy(A.homeLookDraft||{});delete A.homeLookDraft;A.applyCustomTheme();draft=null;source=null;selected=null;
   if(save)EX.save();else A.render();
  }
  const sheetHead=title=>`<div class="sheet-head"><button type="button" class="ab-btn" data-close aria-label="${esc(EX.t('close'))}">${UI.icon('x',24)}</button><h2 id="sheetTitle">${esc(title)}</h2></div>`;
@@ -145,9 +145,10 @@
  document.addEventListener('pointercancel',()=>stopGesture(true));
  document.addEventListener('click',e=>{
   if(performance.now()<blockClickUntil&&e.target.closest('#homeGrid,.dash-ghost')||performance.now()<blockToolbarUntil&&e.target.closest('.dash-editbar,.dash-hint')){e.preventDefault();e.stopImmediatePropagation();return;}
-  const el=e.target.closest('[data-home-settings],[data-dash-done],[data-dash-cancel],[data-dash-cards],[data-dash-dismiss],[data-dash-hide],[data-dash-resize],[data-dash-size],[data-dash-restore],[data-dash-reset],[data-dash-drag]');
+  const el=e.target.closest('[data-home-settings],[data-dash-done],[data-dash-cancel],[data-dash-cards],[data-dash-appearance],[data-dash-dismiss],[data-dash-hide],[data-dash-resize],[data-dash-size],[data-dash-restore],[data-dash-reset],[data-dash-drag]');
   if(!el)return;e.preventDefault();e.stopImmediatePropagation();
   if(el.hasAttribute('data-home-settings')){UI.closeSheet();A.go('home');begin();return;}
+  if(el.hasAttribute('data-dash-appearance'))return A.editHomeAppearance();
   if(el.hasAttribute('data-dash-done'))return closeEditor(true);
   if(el.hasAttribute('data-dash-cancel'))return closeEditor(false);
   if(el.hasAttribute('data-dash-cards'))return cardsPicker();
@@ -167,5 +168,5 @@
   if(step&&ids[i+step]){e.preventDefault();move(id,ids[i+step]);el.focus({preventScroll:true});}
   if(e.key==='Enter'){e.preventDefault();sizePicker(id);}
  });
- EX.on('auth',()=>{stopGesture(true);draft=null;source=null;selected=null;});
+ EX.on('auth',()=>{stopGesture(true);delete A.homeLookDraft;A.applyCustomTheme();draft=null;source=null;selected=null;});
 })();

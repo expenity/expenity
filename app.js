@@ -12,7 +12,7 @@
 	const $ = ( s, r = document ) => r.querySelector( s );
 	const $$ = ( s, r = document ) => [ ...r.querySelectorAll( s ) ];
 	const toast = UI.toast;
-	window.EXPENITY_VERSION = '0.12.8';
+	window.EXPENITY_VERSION = '0.13.0';
 
 	/* ------------------------------------------------------------------ Drawing the shell */
 
@@ -22,6 +22,7 @@
 		return `<div class="pane-head"><h2>${ esc( t( 'paneTitle' ) ) }</h2></div>${ h || `<div class="empty small">${ UI.ci( 'point', 'gray', 56 ) }<p>${ esc( t( 'paneEmpty' ) ) }</p></div>` }`;
 	}
 	function render() {
+        EXA.applyCustomTheme?.();
 		const view = $( '#view' );
 		const keep = view.dataset.key === st.view + ':' + st.more ? view.scrollTop : 0;
 		// A redraw (a sync, a change elsewhere) must not steal the field someone is typing in: remember it and put it back.

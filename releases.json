@@ -1,6 +1,20 @@
 {
-  "version": "0.12.8",
+  "version": "0.13.0",
   "releases": [
+    {
+      "version": "0.13.0",
+      "date": "2026-10-17",
+      "en": [
+        "Home editing now includes Appearance: customize the current theme’s colors, icon color, typography and square or rounded elements without losing its artwork. Preview changes and use Done to save, or Cancel to discard.",
+        "Ten additional locally bundled fonts with Greek and Latin support. Theme styling is saved per template and included in account sync. Reset styling independently of the card layout.",
+        "Mickey/Minnie blur and then disappear completely; Mario and Vader stay as faint blurred watermarks. The two-second gap collapse remains."
+      ],
+      "el": [
+        "Η προσαρμογή της Αρχικής περιλαμβάνει πλέον την Εμφάνιση: αλλάξτε χρώματα, χρώμα εικονιδίων, γραμματοσειρά και τετράγωνες ή στρογγυλεμένες γωνίες χωρίς να χάνονται τα σχέδια του θέματος. Δείτε προεπισκόπηση και πατήστε Έτοιμο για αποθήκευση ή Ακύρωση για απόρριψη.",
+        "Δέκα επιπλέον ενσωματωμένες γραμματοσειρές με ελληνικούς και λατινικούς χαρακτήρες. Οι αλλαγές αποθηκεύονται ανά θέμα και συγχρονίζονται με τον λογαριασμό. Η εμφάνιση επαναφέρεται ανεξάρτητα από τη διάταξη.",
+        "Ο Mickey και η Minnie θολώνουν και εξαφανίζονται εντελώς. Ο Mario και ο Vader παραμένουν αχνά θολωμένοι στο φόντο. Ο κενός χώρος συνεχίζει να μαζεύεται μετά από δύο δευτερόλεπτα."
+      ]
+    },
     {
       "version": "0.12.8",
       "date": "2026-10-17",
