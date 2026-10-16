@@ -175,6 +175,25 @@ ok((await call('POST','/api/sync',{changes:[{id:'stolenphoto',kind:'tx',data:{ph
 	ok( ( await call( 'DELETE', `/api/spaces/${ sid }`, null, A ) ).status === 200 && ( await call( 'GET', '/api/spaces', null, A ) ).json.spaces.length === 0, 'the owner deletes the space' );
 }
 
+// Bulk photo deletion keeps records, isolates upload ownership and neutralises offline references.
+{
+ const keep=(await call('POST','/api/photos',{data:jpeg},other)).json.id;
+ const change={id:'photoKeepTx',kind:'tx',data:{id:'photoKeepTx',name:'Preserve me',amount:'7',photo:photoId},updatedAt:Date.now()};
+ await call('POST','/api/sync',{changes:[change]},A);
+ ok((await call('DELETE','/api/photos',{},A)).status===403,'deleting all photos requires a fresh passkey check');
+ const proof=await stepUp(key1,A);
+ const removed=await call('DELETE','/api/photos',{},A,{'X-Step-Up':proof});
+ ok(removed.status===200&&removed.json.ids.includes(photoId),'bulk deletion removes the account uploads');
+ ok((await call('GET','/api/photos/'+photoId,null,A)).status===404,'deleted photos cannot be downloaded');
+ ok((await call('GET','/api/photos/'+keep,null,other)).status===200,'bulk deletion keeps another account photos');
+ const records=(await call('POST','/api/sync',{since:0,changes:[]},A)).json.changes;
+ const tx=records.find(x=>x.id==='photoKeepTx');
+ ok(tx&&tx.data.name==='Preserve me'&&tx.data.amount==='7'&&!tx.data.photo,'deletion detaches photos without deleting financial records');
+ change.updatedAt=Date.now()+1000;
+ const offline=await call('POST','/api/sync',{changes:[change]},A);
+ ok(offline.status===200&&!offline.json.changes.find(x=>x.id==='photoKeepTx').data.photo,'an offline edit cannot resurrect a deleted photo');
+}
+
 // Push notifications: subscribe, an hourly pass, encrypted delivery that a device can read, once a day only.
 {
 	const received = [];

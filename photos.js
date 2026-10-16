@@ -17,6 +17,19 @@
    }throw Error('photoType');
   }finally{img.close();}
  };
+ P.deleteAll=async()=>{
+  if(P.busy){UI.toast(t('photoWorking'));return;}
+  if(!await EXA.confirm({title:t('photoDeleteAll'),text:t('photoDeleteConfirm'),confirm:t('photoDeleteAll')}))return;
+  const proof=await EX.auth.stepUp();if(!proof.ok){UI.toast(EXA.errText(proof.error));return;}
+  const r=await EX.api('DELETE','/api/photos',{}, {stepUp:proof.token});
+  if(!r.ok){UI.toast(EXA.errText(r.error));return;}
+  const ids=new Set(r.json.ids);
+  for(const name of ['txs','bills','accounts','budgets','goals','incomes'])for(const item of EX.state()[name])if(ids.has(item.photo))delete item.photo;
+  EX.persist();EXA.render();
+  await EX.sync.run();
+  UI.toast(t('photoDeletedAll'));
+ };
+
  async function view(id){
   if(!valid(id))return;
   const r=await EX.api('GET','/api/photos/'+id);

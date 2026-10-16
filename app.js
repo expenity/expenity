@@ -45,6 +45,7 @@
 	EXA.applyMotion = () => { const m = S().device.motion || 'auto'; if ( m === 'auto' ) delete document.documentElement.dataset.motion; else document.documentElement.dataset.motion = m; try { if ( m === 'auto' ) localStorage.removeItem( 'expenity.motion' ); else localStorage.setItem( 'expenity.motion', m ); } catch ( e ) { /* ignore */ } };
 	function go( view, more = 'root' ) {
 		st.view = view; st.more = more; st.sel = null;
+		if ( view === 'plan' ) { S().device.goalsDiscovered = true; EX.persist(); }
 		if ( view !== 'activity' ) { st.searchOpen = false; st.txFilter.q = ''; }
 		$( '#view' ).dataset.key = '';
 		render();
@@ -188,6 +189,7 @@
 			case 'rm-session': { const r = await EX.auth.revokeSession( el.dataset.id ); if ( r.ok ) { toast( t( 'tDeviceOut' ) ); loadDevices(); } else toast( EXA.errText( r.error ) ); break; }
 			case 'new-codes': { const r = await EX.auth.regenerateCodes(); if ( r.ok ) EXA.showCodes( r.recoveryCodes, () => render() ); else toast( EXA.errText( r.error ) ); break; }
 			case 'flip-hero': st.heroFlip = ! el.classList.contains( 'flipped' ); el.classList.toggle( 'flipped', st.heroFlip ); el.setAttribute( 'aria-pressed', String( st.heroFlip ) ); UI.haptic(); break;
+			case 'delete-photos': await EXA.photos.deleteAll(); break;
 			case 'check-update': checkUpdate( el ); break;
 			case 'apply-update': try { const reg = await navigator.serviceWorker.getRegistration(); if ( reg ) await reg.update(); } catch ( err ) { /* reload anyway */ } location.reload(); break;
 			case 'sign-out': {
@@ -260,6 +262,7 @@
 			if ( e.target.id === 'authLogin' ) { EXA.authLogin(); return; }
 			if ( EXA.flow.onClick( e ) || EXA.flow.onStepClick( e ) || EXA.pushClick( e ) || EXA.ideasClick( e ) || EXA.shareClick( e ) || EXA.planClick( e ) || EXA.repClick( e ) ) return;
 			let el;
+			if ( ( el = e.target.closest( '[data-income-mode]' ) ) ) { st.incomeMode = el.dataset.incomeMode; render(); return; }
 			if ( ( el = e.target.closest( '[data-go]' ) ) ) { UI.closeSheet(); go( el.dataset.go ); return; }
 			if ( ( el = e.target.closest( '[data-more]' ) ) ) { st.view = 'more'; st.more = el.dataset.more; render(); $( '#view' ).scrollTop = 0; if ( st.more === 'account' ) loadDevices(); return; }
 			if ( ( el = e.target.closest( '[data-lang]' ) ) ) { EX.setLang( el.dataset.lang ); return; }

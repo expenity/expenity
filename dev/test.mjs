@@ -365,11 +365,11 @@ for ( const w of [ 320, 360, 390, 430 ] ) {
 	ok( ( await p.locator( '.gcard' ).innerText() ).includes( '30%' ), 'plan: the goal ring shows 30 percent' );
 	await p.evaluate( () => window.EXA.go( 'plan' ) ); await p.click( '[data-tab=budgets]' );
 	ok( ( await p.locator( '.bcard' ).innerText() ).includes( '€140' ), 'plan: money set aside for a goal is not counted as spending' );
-	await p.click( '[data-tab=income]' ); await p.click( '[data-plan=add-income]' ); await p.fill( '#incomeForm [name=iname]', 'Salary' ); await p.fill( '#incomeForm [name=amount]', '1500' ); await p.click( '#incomeForm [type=submit]' );
+	await p.evaluate(()=>window.EXA.go('activity')); await p.click('[data-txtype=income]'); await p.click('[data-income-mode=recurring]'); await p.click( '[data-plan=add-income]' ); await p.fill( '#incomeForm [name=iname]', 'Salary' ); await p.fill( '#incomeForm [name=amount]', '1500' ); await p.click( '#incomeForm [type=submit]' );
 	s = await p.evaluate( () => JSON.parse( JSON.stringify( window.EX.state() ) ) ); ok( s.incomes.length === 1 && s.incomes[ 0 ].repeat === 'monthly', 'plan: recurring income is saved' );
 	const before = s.incomes[ 0 ].next; await p.click( '[data-plan=receive]' );
 	s = await p.evaluate( () => JSON.parse( JSON.stringify( window.EX.state() ) ) ); ok( s.txs.some( ( x ) => x.incomeId === s.incomes[ 0 ].id && x.type === 'income' ) && s.incomes[ 0 ].next > before, 'plan: marking income received adds it and moves the next date on' );
-	for ( const w of [ 320, 390 ] ) { await p.setViewportSize( { width: w, height: 800 } ); for ( const tb of [ 'budgets', 'goals', 'income' ] ) { await p.evaluate( ( x ) => { window.EXA.st.planTab = x; window.EXA.go( 'plan' ); }, tb ); const over = await p.evaluate( () => document.documentElement.scrollWidth > innerWidth + 1 || document.querySelector( '#view' ).scrollWidth > document.querySelector( '#view' ).clientWidth + 1 ); ok( ! over, `plan ${ tb } at ${ w }px: no sideways scrolling` ); } }
+	for ( const w of [ 320, 390 ] ) { await p.setViewportSize( { width: w, height: 800 } ); for ( const tb of [ 'budgets', 'goals', 'income' ] ) { await p.evaluate( ( x ) => { if(x==='income'){window.EXA.st.txFilter.type='income';window.EXA.st.incomeMode='recurring';window.EXA.go('activity');}else{window.EXA.st.planTab=x;window.EXA.go('plan');} }, tb ); const over = await p.evaluate( () => document.documentElement.scrollWidth > innerWidth + 1 || document.querySelector( '#view' ).scrollWidth > document.querySelector( '#view' ).clientWidth + 1 ); ok( ! over, `plan ${ tb } at ${ w }px: no sideways scrolling` ); } }
 	await c.close();
 }
 
@@ -414,8 +414,8 @@ for ( const w of [ 320, 360, 390, 430 ] ) {
 	ok( txt.includes( '€191.88' ) && txt.includes( 'Trip' ), 'ideas: the subscription idea shows the yearly saving and ties it to the goal', txt );
 	ok( await p.locator( '.idea' ).count() === 2, 'ideas: Home shows the two best ideas' );
 	await p.click( '.idea [data-idea=off]' ); ok( ( await p.evaluate( () => window.EX.state().settings.tipsOff.length ) ) === 1, 'ideas: an idea can be hidden' );
-	await p.evaluate( () => { window.EXA.st.planTab = 'ideas'; window.EXA.go( 'plan' ); } );
-	ok( await p.locator( '.aim' ).count() === 7, 'ideas: the aims can be changed from the Ideas tab' );
+	await p.evaluate( () => { window.EXA.st.ideasExpanded = true; window.EXA.go( 'home' ); } );
+	ok( await p.locator( '.aim' ).count() === 7, 'ideas: the aims can be changed from Home Ideas' );
 	const over = await p.evaluate( () => document.documentElement.scrollWidth > innerWidth + 1 ); ok( ! over, 'ideas: no sideways scrolling' );
 	await c.close();
 }

@@ -121,8 +121,15 @@
 
 	/* ------------------------------------------------------------------ The Plan screen */
 
+	EXA.incomeSchedules = () => {
+			const list = S().incomes.filter( ( i ) => ! i.done && ( ! st.txFilter.account || i.account === st.txFilter.account ) ).sort( ( a, b ) => ( a.next < b.next ? -1 : 1 ) );
+			return `<section class="card"><h2>${ esc( t( 'incExpected' ) ) }</h2><div class="tiles"><div class="tile"><small>${ esc( t( 'next30' ) ) }</small><b>${ esc( m$( P.expectedIncome( 30 ) ) ) }</b><span></span></div><div class="tile"><small>${ esc( t( 'next90' ) ) }</small><b>${ esc( m$( P.expectedIncome( 90 ) ) ) }</b><span></span></div></div></section>
+				${ list.length ? `<ul class="list">${ list.map( incomeRow ).join( '' ) }</ul>` : `<div class="empty small">${ UI.ci( 'briefcase', 'green', 64 ) }<p>${ esc( t( 'incNone' ) ) }</p></div>` }
+				<div class="btn-row"><button type="button" class="btn btn-primary" data-plan="add-income">${ UI.icon( 'plus', 22 ) } ${ esc( t( 'incAdd' ) ) }</button></div>`;
+	};
+
 	EXA.plan = () => {
-		const tab = st.planTab || 'budgets';
+		const tab = st.planTab === 'goals' ? 'goals' : 'budgets';
 		const seg = ( id, label ) => `<button type="button" class="${ tab === id ? 'on' : '' }" data-plan="tab" data-tab="${ id }" role="tab" aria-selected="${ tab === id }">${ esc( label ) }</button>`;
 		let body;
 		if ( tab === 'budgets' ) {
@@ -139,23 +146,17 @@
 			body = `<section class="card"><h2>${ esc( t( 'savingsTitle' ) ) }</h2><div class="tiles"><div class="tile"><small>${ esc( t( 'savedInGoals' ) ) }</small><b>${ esc( m$( saved ) ) }</b><span>${ esc( target ? t( 'ofTarget', { b: m$( target ) } ) : '' ) }</span></div><div class="tile"><small>${ esc( t( 'savingsWallets' ) ) }</small><b>${ esc( m$( savBal ) ) }</b><span>${ esc( t( 'walletsN', { n: sav.length } ) ) }</span></div></div></section>
 				${ goals.length ? `<div class="ggrid">${ goals.map( goalCard ).join( '' ) }</div>` : `<div class="empty small">${ UI.ci( 'target', 'pink', 64 ) }<p>${ esc( t( 'goalNone' ) ) }</p></div>` }
 				<div class="btn-row"><button type="button" class="btn btn-primary" data-plan="add-goal">${ UI.icon( 'plus', 22 ) } ${ esc( t( 'goalAdd' ) ) }</button></div>`;
-		} else if ( tab === 'ideas' ) {
-			body = EXA.ideasTab();
-		} else {
-			const list = S().incomes.filter( ( i ) => ! i.done ).sort( ( a, b ) => ( a.next < b.next ? -1 : 1 ) );
-			body = `<section class="card"><h2>${ esc( t( 'incExpected' ) ) }</h2><div class="tiles"><div class="tile"><small>${ esc( t( 'next30' ) ) }</small><b>${ esc( m$( P.expectedIncome( 30 ) ) ) }</b><span></span></div><div class="tile"><small>${ esc( t( 'next90' ) ) }</small><b>${ esc( m$( P.expectedIncome( 90 ) ) ) }</b><span></span></div></div></section>
-				${ list.length ? `<ul class="list">${ list.map( incomeRow ).join( '' ) }</ul>` : `<div class="empty small">${ UI.ci( 'briefcase', 'green', 64 ) }<p>${ esc( t( 'incNone' ) ) }</p></div>` }
-				<div class="btn-row"><button type="button" class="btn btn-primary" data-plan="add-income">${ UI.icon( 'plus', 22 ) } ${ esc( t( 'incAdd' ) ) }</button></div>`;
+
 		}
-		return `<div class="segm" role="tablist">${ seg( 'budgets', t( 'planBudgets' ) ) }${ seg( 'goals', t( 'planGoals' ) ) }${ seg( 'income', t( 'planIncome' ) ) }${ seg( 'ideas', t( 'planIdeas' ) ) }</div>${ body }`;
+		return `<div class="segm" role="tablist">${ seg( 'budgets', t( 'planBudgets' ) ) }${ seg( 'goals', t( 'planGoals' ) ) }</div>${ body }`;
 	};
 	/** A short summary for Home: the three tightest budgets and the goals. Empty until something is set up. */
 	EXA.planHome = () => {
 		const bs = S().budgets.slice().sort( ( a, b ) => P.budget( b ).pct - P.budget( a ).pct ).slice( 0, 3 );
 		const gs = S().goals.slice( 0, 4 );
 		const exp = P.expectedIncome( 30 );
-		if ( ! bs.length && ! gs.length && ! S().incomes.length ) return `<div class="sec-head"><h2>${ esc( t( 'planTitle' ) ) }</h2><button type="button" class="link" data-go="plan">${ esc( t( 'seeAll' ) ) }</button></div><button type="button" class="promo-plan" data-go="plan">${ UI.ci( 'target', 'pink', 44 ) }<span class="mid"><b>${ esc( t( 'planPromoTitle' ) ) }</b><small>${ esc( t( 'planPromoText' ) ) }</small></span>${ UI.icon( 'chevron-right', 22 ) }</button>`;
-		return `<div class="sec-head"><h2>${ esc( t( 'planTitle' ) ) }</h2><button type="button" class="link" data-go="plan">${ esc( t( 'seeAll' ) ) }</button></div>
+		if ( ! bs.length && ! gs.length && ! S().incomes.length ) return `<div class="sec-head"><h2>${ esc( t( 'planTitle' ) ) }${ EXA.goalsDiscovery() }</h2><button type="button" class="link" data-go="plan">${ esc( t( 'seeAll' ) ) }</button></div><button type="button" class="promo-plan" data-go="plan">${ UI.ci( 'target', 'pink', 44 ) }<span class="mid"><b>${ esc( t( 'planPromoTitle' ) ) }</b><small>${ esc( t( 'planPromoText' ) ) }</small></span>${ UI.icon( 'chevron-right', 22 ) }</button>`;
+		return `<div class="sec-head"><h2>${ esc( t( 'planTitle' ) ) }${ EXA.goalsDiscovery() }</h2><button type="button" class="link" data-go="plan">${ esc( t( 'seeAll' ) ) }</button></div>
 			${ bs.length ? `<div class="bgrid">${ bs.map( budgetCard ).join( '' ) }</div>` : '' }
 			${ gs.length ? `<div class="ghome">${ gs.map( ( g ) => { const i = P.goal( g ); return `<button type="button" class="gmini" data-plan="goal-money" data-id="${ esc( g.id ) }">${ ring( i.pct, 56, UI.icon( g.icon || 'target', 22 ) ) }<small>${ esc( g.name ) }</small></button>`; } ).join( '' ) }</div>` : '' }
 			${ exp ? `<p class="muted small pad">${ esc( t( 'incExpectedLine', { a: m$( exp ) } ) ) }</p>` : '' }`;

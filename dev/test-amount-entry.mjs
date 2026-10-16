@@ -19,4 +19,19 @@ try{
  await page.fill('#txDesc','Lunch');assert(await page.locator('[data-tx=field-done]').isVisible(),'text editing offers a Done checkmark');
  await page.click('[data-tx=field-done]');assert(await page.evaluate(()=>!['INPUT','TEXTAREA'].includes(document.activeElement.tagName)),'text Done removes input focus');
  await page.click('[data-tx=save]');assert(await page.evaluate(()=>EX.state().txs.some(x=>x.name==='Lunch'&&x.amount==='123')),'Save records the confirmed amount and description');
+ await page.evaluate(()=>EXA.go('home'));
+ assert(await page.locator('#view .goals-discovery').count()>0,'Home highlights Budgets & goals until discovered');
+ await page.evaluate(()=>EXA.go('plan'));
+ assert(await page.locator('#appbar').innerText().then(x=>x.includes('Budgets & goals')),'section has its descriptive name');
+ assert(await page.locator('[data-plan=tab]').count()===2,'section contains only budgets and goals');
+ await page.evaluate(()=>EXA.go('home'));
+ assert(await page.locator('.goals-discovery').count()===0,'discovery dot stops after visiting');
+ await page.click('[data-idea=all]');
+ assert(await page.evaluate(()=>EXA.st.view==='home'&&EXA.st.ideasExpanded),'Ideas expands on Home');
+ await page.evaluate(()=>EXA.go('activity'));await page.click('[data-txtype=income]');await page.click('[data-income-mode=recurring]');
+ assert(await page.locator('[data-plan=add-income]').isVisible(),'Recurring income lives under Activity Income');
+ await page.screenshot({path:'/tmp/expenity-income-navigation.png'});
+ await page.evaluate(()=>{EX.auth.isSignedIn=()=>true;EXA.go('more','account');});
+ assert(await page.locator('[data-act=delete-photos]').isVisible(),'Account offers Delete all photos');
+
 }finally{await browser.close();server.close();}

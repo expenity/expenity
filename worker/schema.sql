@@ -149,3 +149,6 @@ CREATE TABLE IF NOT EXISTS photos (
  bytes INTEGER NOT NULL, created_at INTEGER NOT NULL
 );
 CREATE INDEX IF NOT EXISTS photos_user ON photos(user_id);
+
+-- Small tombstones prevent offline edits from restoring deleted photo references.
+CREATE TABLE IF NOT EXISTS removed_photos (id TEXT PRIMARY KEY);

@@ -418,6 +418,25 @@ async function readPhoto(req,env,user,id){
 	return reply(req,env,p);
 }
 
+async function deletePhotos( req, env, user ) {
+	if ( ! await consumeStepUp( req, env, user ) ) return fail( req, env, 'step_up_required', 403 );
+	const owned = await env.DB.prepare('SELECT id FROM photos WHERE user_id=?').bind(user.id).all();
+	const ids = (owned.results || []).map(p=>p.id);
+	if (!ids.length) return reply(req,env,{ids:[],deleted:0});
+	const photoExpr = "json_extract(CASE WHEN json_valid(data) THEN data ELSE '{}' END,'$.photo')";
+	const scopes = await env.DB.prepare(`SELECT DISTINCT user_id FROM records WHERE deleted=0 AND ${photoExpr} IN (SELECT id FROM photos WHERE user_id=?)`).bind(user.id).all();
+	const statements=[];
+	for(const row of scopes.results || []) {
+		const shared=row.user_id.startsWith('sp_'), table=shared?'spaces':'users', id=shared?row.user_id.slice(3):row.user_id;
+		statements.push(env.DB.prepare(`UPDATE ${table} SET rev=rev+1 WHERE id=?`).bind(id));
+		statements.push(env.DB.prepare(`UPDATE records SET data=json_remove(data,'$.photo'),updated_at=MAX(updated_at+1,?),rev=(SELECT rev FROM ${table} WHERE id=?) WHERE user_id=? AND deleted=0 AND ${photoExpr} IN (SELECT id FROM photos WHERE user_id=?)`).bind(now(),id,row.user_id,user.id));
+	}
+	statements.push(env.DB.prepare('INSERT OR IGNORE INTO removed_photos(id) SELECT id FROM photos WHERE user_id=?').bind(user.id));
+	statements.push(env.DB.prepare('DELETE FROM photos WHERE user_id=?').bind(user.id));
+	await env.DB.batch(statements);
+	return reply(req,env,{ids,deleted:ids.length});
+}
+
 /* ------------------------------------------------------------------ Sync */
 
 // scope: the personal store of the user, or one shared space. Spaces only hold a wallet, its transactions and its bills.
@@ -436,7 +455,11 @@ async function sync( req, env, user, body, scope = personalScope( user ) ) {
 		let data = '';
 		if ( ! deleted ) {
 			if ( ! c.data || typeof c.data !== 'object' || Array.isArray( c.data ) ) return fail( req, env, 'bad_request' );
-			if ( c.data.photo && ( typeof c.data.photo !== 'string' || ! /^ph_[A-Za-z0-9_-]{24}$/.test(c.data.photo) || ! await photoAccess(env,user,c.data.photo) ) ) return fail(req,env,'bad_photo');
+			if ( c.data.photo ) {
+				if(typeof c.data.photo !== 'string'||!/^ph_[A-Za-z0-9_-]{24}$/.test(c.data.photo)) return fail(req,env,'bad_photo');
+				if(await env.DB.prepare('SELECT id FROM removed_photos WHERE id=?').bind(c.data.photo).first()) delete c.data.photo;
+				else if(!await photoAccess(env,user,c.data.photo)) return fail(req,env,'bad_photo');
+			}
 			data = JSON.stringify( c.data );
 			if ( data.length > MAX_DATA ) return fail( req, env, 'too_large', 413 );
 		}
@@ -677,6 +700,7 @@ export default {
 			if ( r.tooLarge ) return fail( req, env, 'too_large', 413 );
 			if ( r.bad ) return fail( req, env, 'bad_request' );
 			const b = r.body;
+			if ( path === '/api/photos' && M === 'DELETE' ) return deletePhotos(req,env,user);
 			if ( path === '/api/photos' && M === 'POST' ) return uploadPhoto(req,env,user,b);
 			if ( path === '/api/sync' && M === 'POST' ) return sync( req, env, user, b );
 			if ( path === '/api/spaces' && M === 'POST' ) return createSpace( req, env, user, b );
