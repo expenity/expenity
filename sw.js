@@ -1,6 +1,6 @@
 /* Expenity service worker: the app works offline. Network first, so updates arrive as soon as you are online. */
-const CACHE = 'expenity-v13';
-const FILES = [ './', 'index.html', 'icons.js', 'i18n.js', 'core.js', 'sync.js', 'ui.js', 'views.js', 'forms.js', 'photos.js', 'reports.js', 'plan.js', 'insights.js', 'share.js', 'push.js', 'flow.js', 'themes.js', 'app.js', 'enhancements.js', 'releases.json', 'theme.js', 'style.css', 'themes.css', 'favicon.svg', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png' ];
+const CACHE = 'expenity-v14';
+const FILES = [ './', 'index.html', 'icons.js', 'i18n.js', 'core.js', 'sync.js', 'ui.js', 'views.js', 'forms.js', 'photos.js', 'reports.js', 'plan.js', 'insights.js', 'share.js', 'push.js', 'flow.js', 'installation.js', 'themes.js', 'app.js', 'enhancements.js', 'releases.json', 'theme.js', 'style.css', 'themes.css', 'favicon.svg', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'installation/ios-en.mp4', 'installation/ios-en.png', 'installation/ios-el.mp4', 'installation/ios-el.png', 'installation/android-en.mp4', 'installation/android-en.png', 'installation/android-el.mp4', 'installation/android-el.png', 'installation/desktop-en.mp4', 'installation/desktop-en.png', 'installation/desktop-el.mp4', 'installation/desktop-el.png' ];
 
 self.addEventListener( 'install', ( e ) => {
 	e.waitUntil( caches.open( CACHE ).then( ( c ) => c.addAll( FILES ) ).then( () => self.skipWaiting() ) );
@@ -11,6 +11,20 @@ self.addEventListener( 'activate', ( e ) => {
 self.addEventListener( 'fetch', ( e ) => {
 	const req = e.request;
 	if ( req.method !== 'GET' || new URL( req.url ).origin !== location.origin ) return; // the API is another origin and is never cached
+	// Video seeking (including offline Safari) needs a partial-content response, not the app HTML fallback.
+	if(new URL(req.url).pathname.endsWith('.mp4')){
+		e.respondWith((async()=>{
+			const cache=await caches.open(CACHE);let full=await cache.match(req.url,{ignoreSearch:true});
+			if(!full){try{full=await fetch(req.url);if(!full.ok)return full;if(full.status===200)await cache.put(req.url,full.clone());}catch(error){return new Response('',{status:503});}}
+			const range=req.headers.get('Range');if(!range)return full;
+			const match=/^bytes=(\d*)-(\d*)$/.exec(range);if(!match)return new Response('',{status:416});
+			const bytes=await full.arrayBuffer(),length=bytes.byteLength;
+			const start=match[1]?Number(match[1]):Math.max(0,length-Number(match[2]));
+			const end=match[1]&&match[2]?Math.min(length-1,Number(match[2])):length-1;
+			if(start>=length||end<start||(!match[1]&&!match[2]))return new Response('',{status:416,headers:{'Content-Range':`bytes */${length}`}});
+			return new Response(bytes.slice(start,end+1),{status:206,headers:{'Content-Type':'video/mp4','Accept-Ranges':'bytes','Content-Range':`bytes ${start}-${end}/${length}`,'Content-Length':String(end-start+1)}});
+		})());return;
+	}
 	e.respondWith(
 		fetch( req ).then( ( res ) => {
 			const copy = res.clone();

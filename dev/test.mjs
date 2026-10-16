@@ -80,9 +80,9 @@ ok( await page.locator( '#flow' ).isVisible() && await page.locator( '#flow form
 ok( await page.locator( '[data-go]:visible' ).count() === 0 || ! await page.locator( '#tabbar' ).isVisible(), 'nothing of the app is reachable behind the first screen' );
 ok( ( await st() ).accounts.length === 0, 'no wallet exists before the flow is done' );
 await page.click( '[data-flow=guest]' );
-ok( await page.locator( '.anim-stage' ).isVisible() && await page.locator( '[data-flow=install-skip]' ).isVisible(), 'next: the install guide with an animation and a skip' );
+ok( await page.locator( '.install-video-guide video' ).isVisible() && await page.locator( '[data-flow=install-skip]' ).isVisible(), 'next: the install guide with an animation and a skip' );
 await page.click( '[data-fstep=plat][data-plat=android]' );
-ok( await page.locator( '.anim-stage.plat-android' ).count() === 1, 'the install guide can switch platform' );
+ok( await page.locator( '.install-video-guide.plat-android' ).count() === 1, 'the install guide can switch platform' );
 await page.click( '[data-flow=install-skip]' );
 await page.click('#confirmYes');
 await page.waitForSelector('#setupForm input[name=name]');

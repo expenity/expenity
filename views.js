@@ -53,7 +53,7 @@
 			<div class="sw-back"><div class="sw-l"></div><div class="sw-r">${ swBtn( 'edit', 'pencil', 'actEdit', 'edit' ) }${ swBtn( 'del', 'trash', 'actDelete', 'del' ) }</div></div>
 			<button type="button" class="sw-front item" data-act="open-tx" data-id="${ esc( x.id ) }" aria-label="${ esc( title ) }, ${ esc( sign + money( Number( x.amount ), cur ) ) }">
 				${ UI.catCi( info.iconName ? info : EX.catInfo( x.category ) ) }
-				<span class="mid"><b>${ esc( title ) }${ x.photo ? UI.icon( 'paperclip', 14 ) : '' }</b><small>${ esc( meta || dayName( x.date ) ) }</small></span>
+				<span class="mid"><b>${ esc( title ) }${ x.photo ? UI.icon( 'paperclip', 14 ) : '' }</b><small>${ esc( meta || dayName( x.date ) ) }</small>${EXA.tagsInline(x.tags)}</span>
 				<span class="a ${ x.type }">${ sign }${ esc( money( Number( x.amount ), cur ) ) }</span>
 			</button></li>`;
 	}
@@ -67,7 +67,7 @@
 			<div class="sw-back"><div class="sw-l">${ swBtn( 'paid', 'check', 'actPaid', 'paid' ) }</div><div class="sw-r">${ swBtn( 'edit', 'pencil', 'actEdit', 'edit' ) }${ swBtn( 'del', 'trash', 'actDelete', 'del' ) }</div></div>
 			<button type="button" class="sw-front item" data-act="open-bill" data-id="${ esc( b.id ) }" aria-label="${ esc( b.name ) }, ${ esc( amountText( b ) ) }">
 				${ UI.catCi( EX.catInfo( b.category ) ) }
-				<span class="mid"><b>${ esc( b.name ) }</b><small class="due">${ esc( meta ) }</small></span>
+				<span class="mid"><b>${ esc( b.name ) }</b><small class="due">${ esc( meta ) }</small>${EXA.tagsInline(b.tags)}</span>
 				<span class="a">${ esc( amountText( b ) ) }</span>
 			</button></li>`;
 	}
@@ -324,7 +324,7 @@
 	const updateCard = () => `<section class="card"><h2>${ esc( t( 'updTitle' ) ) }</h2><p class="muted small" id="updLine">${ esc( t( 'aboutVersion', { v: window.EXPENITY_VERSION || '0.4' } ) ) }</p><div class="btn-row"><button type="button" class="btn btn-ghost" id="updBtn" data-act="check-update">${ UI.icon( 'refresh', 20 ) } ${ esc( t( 'updCheck' ) ) }</button><button type="button" class="ab-btn" data-release-notes aria-label="${esc(EXA.label('changelog'))}" title="${esc(EXA.label('changelog'))}">${UI.icon('notes',22)}</button></div></section>`;
 	function accountView() {
 		if ( ! EX.auth.isSignedIn() ) {
-			return `<section class="card"><p class="muted">${ esc( t( 'acctGuest' ) ) }</p><div class="btn-row stack"><button type="button" class="btn btn-primary" data-act="auth-create">${ esc( t( 'createAccount' ) ) }</button><button type="button" class="btn btn-ghost" data-act="auth-signin">${ esc( t( 'signIn' ) ) }</button></div></section>${ updateCard() }`;
+			return `<section class="card"><p class="muted">${ esc( t( 'acctGuest' ) ) }</p><div class="btn-row stack"><button type="button" class="btn btn-primary" data-act="auth-create">${ esc( t( 'createAccount' ) ) }</button><button type="button" class="btn btn-ghost" data-act="auth-signin">${ esc( t( 'signIn' ) ) }</button></div></section>${ updateCard() }${EXA.installGuideEntry()}`;
 		}
 		const u = EX.auth.user() || {}, d = st.devCache, pk = d ? d.passkeys : [], ss = d ? d.sessions : [], left = EX.auth.codesLeft();
 		return `<section class="card"><p><b>${ esc( t( 'acctSignedIn', { email: u.email || '' } ) ) }</b></p><p class="muted small" id="syncLine">${ syncLine() }</p>${ u.emailVerified ? '' : `<p class="muted small">${ esc( t( 'emailPending' ) ) }</p>` }<div class="btn-row"><button type="button" class="btn btn-ghost" data-act="sync-now">${ UI.icon( 'refresh', 20 ) } ${ esc( t( 'syncNow' ) ) }</button></div></section>
@@ -334,7 +334,7 @@
 			<section class="card"><div class="btn-row"><button type="button" class="btn btn-ghost" data-act="sign-out">${ UI.icon( 'logout', 20 ) } ${ esc( t( 'signOut' ) ) }</button></div></section>
 			<section class="card"><h2>${ esc( t( 'photoStorage' ) ) }</h2><p class="muted small">${ esc( t( 'photoDeleteHelp' ) ) }</p><button type="button" class="btn btn-danger-ghost" data-act="delete-photos">${ UI.icon( 'trash', 20 ) } ${ esc( t( 'photoDeleteAll' ) ) }</button></section>
 			<section class="card danger"><h2>${ esc( t( 'devDelete' ) ) }</h2><p class="muted small">${ esc( t( 'devDeleteText' ) ) }</p><div class="btn-row"><button type="button" class="btn btn-danger" data-act="delete-account">${ esc( t( 'devDelete' ) ) }</button></div></section>
-			${ updateCard() }`;
+			${ updateCard() }${EXA.installGuideEntry()}`;
 	}
 	function remindersView() {
 		const n = typeof Notification === 'undefined' ? null : Notification.permission, on = S().device.notify && n === 'granted';
@@ -363,8 +363,8 @@
 			<section class="card"><h2>${ esc( t( 'sLanguage' ) ) }</h2><div class="chips wrap">${ Object.keys( EX.I18N.langs ).map( ( k ) => `<button type="button" class="chip big${ k === EX.lang() ? ' on' : '' }" data-lang="${ k }" lang="${ k }">${ UI.icon( 'language', 20 ) } ${ esc( EX.I18N.langs[ k ].langName ) }</button>` ).join( '' ) }</div></section>`;
 	}
 	function installView() {
-		if ( UI.isStandalone() ) return `<section class="card"><p>${ esc( t( 'installDone' ) ) }</p></section>`;
-		return `<section class="card"><h2>${ esc( t( 'installTitle' ) ) }</h2><p class="muted">${ esc( t( 'installText' ) ) }</p>${ installSteps() }${ EXA.installEvent ? `<div class="btn-row"><button type="button" class="btn btn-primary" data-act="install">${ esc( t( 'installBtn' ) ) }</button></div>` : '' }</section>`;
+		const installed=UI.isStandalone()?`<p>${esc(t('installDone'))}</p>`:'';
+		return `<section class="card"><h2>${ esc( t( 'installTitle' ) ) }</h2><p class="muted">${ esc( t( 'installText' ) ) }</p>${installed}${EXA.installGuides()}${ EXA.installEvent ? `<div class="btn-row"><button type="button" class="btn btn-primary" data-act="install">${ esc( t( 'installBtn' ) ) }</button></div>` : '' }</section>`;
 	}
 	function aboutView() {
 		const L = ( href, label, icon ) => `<a class="mrow" href="${ href }" target="_blank" rel="noopener noreferrer">${ UI.ci( icon, 'gray', 40 ) }<span class="mid"><b>${ esc( label ) }</b></span>${ UI.icon( 'link', 18 ) }</a>`;
@@ -387,7 +387,7 @@
 		const u = EX.auth.user() || {};
 		const signed = EX.auth.isSignedIn();
 		return `<button type="button" class="profile" data-more="account"><span class="avatar big${ signed ? ' on' : '' }">${ signed ? `<span class="who">${ esc( ( u.email || '?' ).charAt( 0 ).toUpperCase() ) }</span>` : UI.icon( 'user-circle', 40 ) }</span><span class="mid"><b>${ esc( signed ? u.email : t( 'signIn' ) ) }</b><small>${ signed ? syncLine() : esc( t( 'rowAccountGuest' ) ) }</small></span>${ chev }</button>
-			<div class="list mlist">${ row( 'wallets', 'wallet', 'teal', t( 'walletsTitle' ), t( 'ovManage' ) ) }<button type="button" class="mrow" data-go="plan">${ UI.ci( 'target', 'pink', 40 ) }<span class="mid"><b>${ esc( t( 'planTitle' ) ) }${ EXA.goalsDiscovery() }</b><small>${ esc( t( 'planMoreSub' ) ) }</small></span>${ UI.icon( 'chevron-right', 18 ) }</button>${ row( 'tags', 'tag', 'teal', EXA.label('tags') ) }${ row( 'categories', 'tag', 'purple', t( 'catsTitle' ) ) }${ row( 'reminders', 'bell', 'amber', t( 'rowReminders' ) ) }${ row( 'data', 'database-export', 'blue', t( 'rowData' ) ) }${ row( 'appearance', 'palette', 'pink', t( 'rowAppearance' ) ) }${ UI.isStandalone() ? '' : row( 'install', 'device-mobile', 'green', t( 'rowInstall' ) ) }${ row( 'about', 'info-circle', 'gray', t( 'rowAbout' ) ) }</div>`;
+			<div class="list mlist">${ row( 'wallets', 'wallet', 'teal', t( 'walletsTitle' ), t( 'ovManage' ) ) }<button type="button" class="mrow" data-go="plan">${ UI.ci( 'target', 'pink', 40 ) }<span class="mid"><b>${ esc( t( 'planTitle' ) ) }${ EXA.goalsDiscovery() }</b><small>${ esc( t( 'planMoreSub' ) ) }</small></span>${ UI.icon( 'chevron-right', 18 ) }</button>${ row( 'tags', 'tag', 'teal', EXA.label('tags') ) }${ row( 'categories', 'tag', 'purple', t( 'catsTitle' ) ) }${ row( 'reminders', 'bell', 'amber', t( 'rowReminders' ) ) }${ row( 'data', 'database-export', 'blue', t( 'rowData' ) ) }<button type="button" class="mrow" data-home-settings>${UI.ci('layout-dashboard','blue',40)}<span class="mid"><b>${esc(EXA.label('editHome'))}</b><small>${esc(EXA.label('editSizeHint'))}</small></span>${chev}</button>${ row( 'appearance', 'palette', 'pink', t( 'rowAppearance' ) ) }${ UI.isStandalone() ? '' : row( 'install', 'device-mobile', 'green', t( 'rowInstall' ) ) }${ row( 'about', 'info-circle', 'gray', t( 'rowAbout' ) ) }</div>`;
 	};
 
 	/** The whole content of the main column for the current screen. */

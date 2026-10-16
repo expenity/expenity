@@ -140,39 +140,17 @@
 
 	/* ------------------------------------------------------------------ 2. Install: an animated guide */
 
-	const phone = ( inner, cls = '' ) => `<div class="mock-phone ${ cls }"><div class="notch"></div><div class="mock-screen">${ inner }</div></div>`;
-	const appPage = `<div class="mock-app"><div class="ma-head"><i></i><b></b></div><div class="ma-card"></div><div class="ma-row"></div><div class="ma-row"></div></div>`;
-	const appIcon = `<span class="app-icon"><span id="mockLogo">${ EXA.logoSvg || '' }</span></span>`;
-	const homeGrid = `<div class="home-grid">${ Array.from( { length: 11 }, ( _, i ) => `<i class="g${ i }"></i>` ).join( '' ) }${ appIcon }</div>`;
-	const anims = {
-		ios: () => phone( `
-			<div class="scene s1">${ appPage }<div class="safari-bar"><span>◀</span><span>▶</span><span class="share-ic">${ UI.icon( 'share-2', 22 ) }</span><span>▣</span><span>⧉</span></div></div>
-			<div class="scene s2"><div class="dim"></div><div class="sheet-mock"><div class="sm-app">${ appIcon }<b>Expenity</b></div><div class="sm-row">${ esc( t( 'copyLabel' ) ) }</div><div class="sm-row">${ esc( t( 'bookmark' ) ) }</div><div class="sm-row hot">${ esc( t( 'addHome' ) ) } <span>＋</span></div></div></div>
-			<div class="scene s3"><div class="dim"></div><div class="add-dialog"><div class="ad-top"><span>✕</span><b>${ esc( t( 'addHome' ) ) }</b><span class="hotbtn">${ esc( t( 'addBtn' ) ) }</span></div><div class="ad-body">${ appIcon }<b>Expenity</b></div></div></div>
-			<div class="scene s4">${ homeGrid }</div><span class="finger"></span>`, 'ios' ),
-		android: () => phone( `
-			<div class="scene s1"><div class="chrome-bar"><span class="url">expenity.github.io</span><span class="dots3">⋮</span></div>${ appPage }</div>
-			<div class="scene s2"><div class="chrome-bar"><span class="url">expenity.github.io</span><span class="dots3">⋮</span></div>${ appPage }<div class="menu-mock"><div class="mm-row">New tab</div><div class="mm-row">Bookmarks</div><div class="mm-row hot">${ esc( t( 'installApp' ) ) }</div><div class="mm-row">Settings</div></div></div>
-			<div class="scene s3"><div class="dim"></div><div class="add-dialog compact"><b>${ esc( t( 'installAsk' ) ) }</b><div class="ad-body">${ appIcon }<b>Expenity</b></div><div class="ad-btns"><span>✕</span><span class="hotbtn">${ esc( t( 'installBtn' ) ) }</span></div></div></div>
-			<div class="scene s4">${ homeGrid }</div><span class="finger"></span>`, 'android' ),
-		desktop: () => `<div class="mock-window"><div class="mw-bar"><i></i><i></i><i></i><span class="url">expenity.github.io/expenity/app/<span class="inst-ic">${ UI.icon( 'download', 16 ) }</span></span></div><div class="mw-body">
-			${ appPage }<div class="scene s2 pop"><div class="add-dialog compact"><b>${ esc( t( 'installAsk' ) ) }</b><div class="ad-body">${ appIcon }<b>Expenity</b></div><div class="ad-btns"><span>✕</span><span class="hotbtn">${ esc( t( 'installBtn' ) ) }</span></div></div></div>
-			<div class="scene s34"><div class="app-window">${ appPage }</div></div></div><span class="finger"></span></div>`,
-	};
 	function install() {
 		if ( ! platform ) platform = EXA.installPlatform();
 		const tab = ( id, label ) => `<button type="button" class="${ platform === id ? 'on' : '' }" data-fstep="plat" data-plat="${ id }" role="tab" aria-selected="${ platform === id }">${ esc( label ) }</button>`;
-		const key = { ios: 'stepIos', android: 'stepAnd', desktop: 'stepDes' }[ platform ];
 		$( '#flow' ).innerHTML = `<div class="flow-card install">
 			<div class="flow-top"><span class="brand-row"><span id="flowLogo"></span></span><span class="flow-count">${ esc( t( 'stepOf', { n: 1, total: 2 } ) ) }</span></div>
 			<div class="flow-body">
 				<h1>${ esc( t( 'installTitle' ) ) }</h1><p class="lead">${ esc( t( 'instWhy' ) ) }</p>
 				<div class="segm" role="tablist">${ tab( 'ios', t( 'platIos' ) ) }${ tab( 'android', t( 'platAndroid' ) ) }${ tab( 'desktop', t( 'platDesktop' ) ) }</div>
-				<div class="anim-stage plat-${ platform }" aria-hidden="true">${ anims[ platform ]() }</div>
-				<ol class="anim-steps">${ [ 1, 2, 3, 4 ].map( ( n ) => `<li class="st${ n }"><span class="n">${ n }</span>${ esc( t( key + n ) ) }</li>` ).join( '' ) }</ol>
+				<div class="install-video-guide plat-${platform}">${EXA.installVideoMarkup(platform)}</div>
 			</div>
 			<div class="flow-actions">${ EXA.installEvent ? `<button type="button" class="btn btn-primary big" data-flow="install-now">${ UI.icon( 'download', 22 ) } ${ esc( t( 'instNow' ) ) }</button>` : '' }<button type="button" class="btn ${ EXA.installEvent ? 'btn-ghost' : 'btn-primary' } big" data-flow="install-done">${ esc( t( 'instDone' ) ) }</button><button type="button" class="btn btn-text" data-flow="install-skip">${ esc( t( 'instSkip' ) ) }</button></div></div>`;
-		const ml = $( '#mockLogo' ); $$( '#mockLogo' ).forEach( ( m ) => { if ( EXA.logoSvg ) m.innerHTML = EXA.logoSvg; } ); void ml;
 	}
 	flow.onPlatform = ( p ) => { platform = p; flow.show(); };
 
