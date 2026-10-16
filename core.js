@@ -225,11 +225,13 @@
 		const defaults = Object.values(I18N.langs).map(l=>l[key]).filter(x=>typeof x==='string');
 		return defaults.includes(a.name) ? t(key) : a.name || t(key);
 	};
+	EX.compactAccountName = a => a?.type==='bank' && EX.accountName(a)===t('wtBank') ? t('wtBankCompact') : EX.accountName(a);
 	EX.savedNames = type => (S.settings.savedNames || []).filter(x=>x && x.type===type && typeof x.name==='string');
 	EX.rememberName = (type,name,category,extra={}) => {
 		name=String(name||'').trim().slice(0,80);if(!name||!['expense','income'].includes(type))return;
+		const previous=(S.settings.savedNames||[]).find(x=>x.type===type&&EX.fold(x.name)===EX.fold(name));
 		const old=(S.settings.savedNames||[]).filter(x=>!(x.type===type&&EX.fold(x.name)===EX.fold(name)));
-		S.settings.savedNames=[{type,name,category:category||'',...(extra.account?{account:extra.account}:{}),...(extra.amount?{amount:extra.amount}:{})},...old].slice(0,30);
+		S.settings.savedNames=[{type,name,pinned:!!previous?.pinned,category:category||'',...(extra.account?{account:extra.account}:{}),...(extra.amount?{amount:extra.amount}:{})},...old].slice(0,30);
 	};
 
 	EX.activeAccounts = () => S.accounts.filter( ( a ) => ! a.archived );

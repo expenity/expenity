@@ -242,7 +242,8 @@
 		Object.keys( base ).forEach( ( id ) => { if ( ! seen.has( id ) ) { out.push( { id, kind: base[ id ].k, deleted: true, updatedAt: now } ); sent[ id ] = null; } } );
 		return { changes: out, sent };
 	}
-	sync.pending = () => ( auth.token ? collect( false ).changes.length : 0 );
+	sync.pendingChanges=()=>auth.token?[null,...Object.keys(spaces())].flatMap(scope=>collect(false,scope).changes.map(change=>({id:change.id,kind:change.kind,deleted:!!change.deleted,name:change.data?.name||'',scope,account:change.data?.account||'',blocked:!!scope&&EX.role(acct(change.data?.account)||S().accounts.find(a=>a.space===scope)||{})==='viewer'}))):[];
+    sync.pending = () => sync.pendingChanges().length;
 
 	// Acknowledgement is per record, including shared scopes; a global green dot alone is insufficient.
 	sync.recordStatus=id=>{
