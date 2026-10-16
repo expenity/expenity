@@ -1,6 +1,16 @@
 {
-  "version": "0.12.6",
+  "version": "0.12.7",
   "releases": [
+    {
+      "version": "0.12.7",
+      "date": "2026-10-17",
+      "en": [
+        "Two seconds after flipping a character balance card, the empty space above it collapses smoothly and stays collapsed until the next Home visit. Applies to Mario, Mickey/Minnie and Vader."
+      ],
+      "el": [
+        "Δύο δευτερόλεπτα αφού γυρίσετε την κάρτα υπολοίπου με χαρακτήρα, ο κενός χώρος από πάνω μαζεύεται ομαλά και παραμένει έτσι μέχρι την επόμενη επίσκεψη στην Αρχική. Ισχύει για Mario, Mickey/Minnie και Vader."
+      ]
+    },
     {
       "version": "0.12.6",
       "date": "2026-10-17",
