@@ -66,43 +66,7 @@
   while(next&&linked.some(t=>t.due===next)&&n++<1000)next=nextAfter(schedule,next);
   return next;
  };
- // Dashboard layout lives in synced settings; edit drafts stay local until Done.
- let draft=null, dragging=null, hold=null, suppressClick=false, selectedWidget=null;
- EX.on('auth',()=>{draft=null;A.tagFilter='';selectedTag='';});
- const originalHome=A.home;
- const widgetKeys=['balance','welcome','due','wallets','ideas','goals','recent'];
- function layout(){const saved=draft||S().settings.homeLayout||[];return saved.filter(x=>widgetKeys.includes(x.id));}
- function currentOrder(){return [...document.querySelectorAll('#homeGrid > [data-home]')].map(e=>e.dataset.home);}
- const sizeOf=value=>value==='compact'?'medium':value==='wide'?'full':['small','medium','full'].includes(value)?value:'full';
- function enterEditor(){draft=copy(layout()).map(x=>({...x,size:sizeOf(x.size)}));if(!draft.length)draft=currentOrder().map(id=>({id,size:'full',hidden:false}));selectedWidget=null;A.render();UI.haptic(25);}
- function editorTutorial(){
-  UI.openSheet(head('editTutorial')+`<div class="sheet-pad"><div class="edit-demo" aria-hidden="true"><div class="edit-demo-card">${UI.icon('wallet',26)}</div><div class="edit-demo-card active">${UI.icon('chart-pie',26)}<span class="demo-arrows">↑ ↓</span></div><div class="edit-demo-card">${UI.icon('target',26)}</div><span class="edit-demo-finger">${UI.icon('point',28)}</span></div><p>${L('editTutorialText')}</p><p class="muted small">${L('editSizeHint')}</p><button type="button" class="btn btn-primary" data-home-start>${L('editStart')}</button></div>`,{cls:'small'});
- }
- function beginEdit(){if(A.st.view!=='home'||UI.sheetOpen()||A.flow.active())return;editorTutorial();}
- function entry(id){let x=draft.find(x=>x.id===id);if(!x){x={id,size:'full',hidden:false};draft.push(x);}return x;}
- function reorder(id,target){const ids=currentOrder();const from=ids.indexOf(id),to=ids.indexOf(target);if(from<0||to<0||from===to)return;ids.splice(from,1);ids.splice(to,0,id);draft=ids.map(k=>entry(k));}
- function compactWidget(id){
-  const wallets=EX.activeAccounts(),total=EX.sumByCur(wallets.map(a=>({amount:EX.balance(a)/100,currency:a.currency})))||EX.money(0);
-  const stats={balance:[total,'wallet',''],wallets:[String(wallets.length),'wallet','data-more="wallets"'],due:[String(A.active().length),'calendar-event','data-go="bills"'],recent:[String(S().txs.length),'arrows-sort','data-go="activity"'],goals:[String((S().budgets||[]).length+(S().goals||[]).length),'target','data-go="plan"'],ideas:['','bulb','data-go="home" data-home-ideas'],welcome:['','user-circle','data-more="account"']};
-  const [value,icon,action]=stats[id];return `<div class="widget-summary${id==='balance'?' balance-summary':''}"><span class="summary-label">${UI.icon(icon==='bulb'?'info-circle':icon,20)} ${L(id)}</span><b>${esc(value)}</b>${id==='balance'?`<small>${esc(EX.t('ovBalance'))}</small>`:`<button type="button" class="link" ${action}>${L('open')} ${UI.icon('chevron-right',16)}</button>`}</div>`;
- }
- A.home=()=>{
-  const template=document.createElement('template');template.innerHTML=originalHome();
-  let widgets=[...template.content.children].filter(e=>e.hasAttribute('data-home'));
-  const config=layout(),order=config.map(x=>x.id);
-  if(order.length)widgets.sort((a,b)=>{const ai=order.indexOf(a.dataset.home),bi=order.indexOf(b.dataset.home);return(ai<0?99:ai)-(bi<0?99:bi);});
-  const selection=selectedWidget&&draft?entry(selectedWidget):null;
-  const controls=selection?`<div class="selected-widget-name" aria-live="polite">${L('selected')}: <strong>${L(selectedWidget)}</strong></div><div class="btn-row widget-toolbar">${button(`data-home-up="${selectedWidget}"`,'up','chevron-up')}${button(`data-home-down="${selectedWidget}"`,'down','chevron-down')}<label class="home-size-label">${L('resize')}<select data-home-size="${selectedWidget}" aria-label="${L('resize')}: ${L(selectedWidget)}">${['small','medium','full'].map(k=>`<option value="${k}"${sizeOf(selection.size)===k?' selected':''}>${L(k)}</option>`).join('')}</select></label>${button(`data-home-hide="${selectedWidget}"`,selection.hidden?'show':'hide')}</div>`:`<p class="select-widget-hint">${UI.icon('point',20)} ${L('chooseWidget')}</p>`;
-  const toolbar=draft?`<div class="home-editor" role="toolbar" aria-label="${L('editHome')}"><div class="home-editor-heading"><b>${L('editHome')}</b><button type="button" class="ab-btn" data-home-help aria-label="${L('editWatch')}">${UI.icon('info-circle',20)}</button></div>${controls}<div class="btn-row editor-save-row">${button('data-home-done','done','check')}${button('data-home-cancel','cancel')}${button('data-home-reset','reset','refresh')}</div></div>`:'';
-  return toolbar+`<div id="homeGrid" class="dashboard-grid${draft?' editing':''}">`+widgets.map(el=>{
-   const id=el.dataset.home,c=config.find(x=>x.id===id)||{},size=sizeOf(c.size),selected=draft&&selectedWidget===id;
-   if((c.hidden||!el.innerHTML.trim())&&!draft)return '';
-   el.classList.add('home-widget','widget-'+size);if(c.hidden)el.classList.add('widget-hidden');
-   if(size==='small')el.innerHTML=compactWidget(id);
-   if(draft){el.classList.add(selected?'widget-selected':'widget-muted');el.innerHTML=`<div class="widget-content">${el.innerHTML.trim()||`<p>${L('noWidget')}</p>`}</div><button type="button" class="widget-select" data-home-select="${id}" aria-pressed="${!!selected}" aria-label="${L('editSelect')}: ${L(id)}"><span>${L(id)}</span></button>${selected?`<div class="widget-controls"><button type="button" class="ab-btn drag-handle" data-home-drag="${id}" aria-label="${L('drag')}: ${L(id)}">${UI.icon('arrows-sort',20)}</button></div>`:''}`;}
-   return el.outerHTML;
-  }).join('')+'</div>';
- };
+ EX.on('auth',()=>{A.tagFilter='';selectedTag='';});
  // Retained, bilingual changelog. Seen version is device-local and never consumes dashboard space.
  let releases=null, releasePromise=null, updateRegistration=null;
  const getReleases=async()=>{if(!releasePromise)releasePromise=fetch('releases.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('release');return r.json();}).then(x=>(releases=x)).catch(e=>{releasePromise=null;throw e;});return releasePromise;};
@@ -148,9 +112,8 @@
   EX.on('change',()=>{if(!A.flow.active())setTimeout(notify,300);});
  };
  document.addEventListener('click',async e=>{
-  const el=e.target.closest('[data-release-notes],[data-reminder-settings],[data-reverse-tx],[data-pick-tag],[data-tag-results],[data-tag-edit],[data-tag-delete],[data-tag-tx],[data-tag-bill],[data-home-start],[data-home-settings],[data-home-select],[data-home-help],[data-home-ideas],[data-home-done],[data-home-cancel],[data-home-reset],[data-home-hide],[data-home-up],[data-home-down]');
-  if(suppressClick){e.preventDefault();e.stopImmediatePropagation();suppressClick=false;return;}
-  if(!el){if(draft&&e.target.closest('#homeGrid')&&!e.target.closest('.widget-controls')){e.preventDefault();e.stopImmediatePropagation();}return;}
+  const el=e.target.closest('[data-release-notes],[data-reminder-settings],[data-reverse-tx],[data-pick-tag],[data-tag-results],[data-tag-edit],[data-tag-delete],[data-tag-tx],[data-tag-bill],[data-home-ideas]');
+  if(!el)return;
   e.preventDefault();e.stopImmediatePropagation();
   if(el.hasAttribute('data-release-notes'))return A.showReleases();
   if(el.hasAttribute('data-reminder-settings')){UI.closeSheet();return A.go('more','reminders');}
@@ -161,38 +124,15 @@
   if(el.hasAttribute('data-tag-delete')){const tag=catalogue()[Number(el.dataset.tagDelete)];if(await A.confirm({title:A.label('tagRemove'),text:tag,confirm:EX.t('del')}))changeTag(tag,'');return;}
   if(el.dataset.tagTx){const x=S().txs.find(x=>x.id===el.dataset.tagTx);if(x)A.openTx(x);return;}
   if(el.dataset.tagBill){const x=S().bills.find(x=>x.id===el.dataset.tagBill);if(x)A.openBill(x);return;}
-  if(el.hasAttribute('data-home-settings')){UI.closeSheet();A.go('home');return beginEdit();}
-  if(el.hasAttribute('data-home-start')){UI.closeSheet();if(!draft)enterEditor();return;}
-  if(el.hasAttribute('data-home-help'))return editorTutorial();
-  if(el.dataset.homeSelect){selectedWidget=el.dataset.homeSelect;A.render();return;}
   if(el.hasAttribute('data-home-ideas')){A.go('home');const box=document.querySelector('[data-home=ideas]');if(box){UI.openSheet(head('ideas')+`<div class="sheet-pad">${A.ideasHome()}</div>`,{tall:true});}return;}
-  if(el.hasAttribute('data-home-done')){S().settings.homeLayout=copy(draft||[]);draft=null;selectedWidget=null;EX.save();return;}
-  if(el.hasAttribute('data-home-cancel')){draft=null;selectedWidget=null;A.render();return;}
-  if(el.hasAttribute('data-home-reset')){draft=[];selectedWidget=null;A.render();return;}
-  if(el.dataset.homeHide){const x=entry(el.dataset.homeHide);x.hidden=!x.hidden;A.render();return;}
-  const id=el.dataset.homeUp||el.dataset.homeDown;if(id){const ids=currentOrder(),i=ids.indexOf(id),j=i+(el.dataset.homeUp?-1:1);if(ids[j]){reorder(id,ids[j]);A.render();document.querySelector(`[data-home="${id}"]`)?.scrollIntoView({block:'nearest',behavior:'instant'});}}
+
  },true);
  document.addEventListener('submit',e=>{
   if(!['tagCreate','tagRename'].includes(e.target.id))return;
   e.preventDefault();e.stopImmediatePropagation();const value=e.target.elements.tagName.value.trim();if(!value)return UI.toast(A.label('tagRequired'));
   if(e.target.id==='tagRename'){changeTag(e.target.dataset.old,value);UI.closeSheet();}else saveTags([...catalogue(),value]);
  },true);
- document.addEventListener('change',e=>{if(e.target.id==='tagFilter'){A.tagFilter=e.target.value;A.render();return;}if(e.target.dataset.homeSize&&draft){entry(e.target.dataset.homeSize).size=e.target.value;A.render();}});
+ document.addEventListener('change',e=>{if(e.target.id==='tagFilter'){A.tagFilter=e.target.value;A.render();return;}});
  // Collapse preset names as soon as typing begins. Never steal focus or open a keyboard.
  document.addEventListener('focusin',e=>{if(e.target.matches('#quick,#txDesc,[name=name],[name=iname],[name=gname]'))document.querySelectorAll('#sheet .name-suggestions,#sheet .saved-names').forEach(x=>x.open=false);});
- document.addEventListener('pointerdown',e=>{
-  if(e.button!==0||A.st.view!=='home'||UI.sheetOpen())return;
-  const handle=e.target.closest('[data-home-drag]');
-  if(draft&&handle&&handle.dataset.homeDrag===selectedWidget){const box=handle.closest('[data-home]');dragging={id:box.dataset.home,pointer:e.pointerId,handle};handle.setPointerCapture(e.pointerId);box.classList.add('dragging');e.preventDefault();return;}
-  if(draft||e.pointerType!=='touch'||e.target.closest('a,input,textarea,select,.widget-controls')||!e.target.closest('#homeGrid'))return;
-  const x=e.clientX,y=e.clientY;hold={x,y,timer:setTimeout(()=>{hold=null;suppressClick=true;beginEdit();setTimeout(()=>{suppressClick=false;},1000);},650)};
- });
- document.addEventListener('pointermove',e=>{
-  if(hold&&Math.hypot(e.clientX-hold.x,e.clientY-hold.y)>10){clearTimeout(hold.timer);hold=null;}
-  if(!dragging)return;e.preventDefault();const target=document.elementFromPoint(e.clientX,e.clientY)?.closest('#homeGrid > [data-home]');
-  if(target&&target.dataset.home!==dragging.id){reorder(dragging.id,target.dataset.home);const grid=$('#homeGrid');draft.forEach(x=>{const el=[...grid.children].find(e=>e.dataset.home===x.id);if(el)grid.appendChild(el);});}
-  const view=$('#view'),r=view.getBoundingClientRect();if(e.clientY<r.top+70)view.scrollTop-=12;else if(e.clientY>r.bottom-70)view.scrollTop+=12;
- },{passive:false});
- function stopDrag(){if(hold){clearTimeout(hold.timer);hold=null;}if(dragging){dragging=null;suppressClick=true;A.render();setTimeout(()=>suppressClick=false,300);}}
- document.addEventListener('pointerup',stopDrag);document.addEventListener('pointercancel',stopDrag);
 })();

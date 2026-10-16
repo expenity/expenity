@@ -1,6 +1,22 @@
 {
-  "version": "0.7.0",
+  "version": "0.8.0",
   "releases": [
+    {
+      "version": "0.8.0",
+      "date": "2026-10-16",
+      "en": [
+        "Simpler Home editing: touch and hold a card, then drag it into place. A gentle jiggle, floating preview and placeholder show what is moving.",
+        "Resize from a card’s corner or choose from three large visual options. On phones, Small is half-width; Medium stays wide and short; Full shows more detail.",
+        "Medium wallet cards keep wallets side by side. Hide cards with the minus button and restore them from Cards.",
+        "A compact Done / Cancel bar replaces the large editor panel. Changes are saved only when you choose Done. Desktop users can open the same editor from Settings."
+      ],
+      "el": [
+        "Απλούστερη προσαρμογή Αρχικής: πατήστε παρατεταμένα μια κάρτα και σύρετέ την στη θέση που θέλετε. Η διακριτική κίνηση, η αιωρούμενη προεπισκόπηση και η ένδειξη θέσης δείχνουν ποια κάρτα μετακινείται.",
+        "Αλλάξτε μέγεθος από τη γωνία της κάρτας ή επιλέξτε από τρεις μεγάλες, οπτικές επιλογές. Στο κινητό, το Μικρό καταλαμβάνει μισό πλάτος, το Μεσαίο παραμένει οριζόντιο και χαμηλό, ενώ το Πλήρες δείχνει περισσότερα στοιχεία.",
+        "Στο Μεσαίο μέγεθος, τα πορτοφόλια παραμένουν δίπλα δίπλα. Κρύψτε κάρτες με το μείον και επαναφέρετέ τες από τις Κάρτες.",
+        "Μια μικρή γραμμή με Έτοιμο / Ακύρωση αντικαθιστά τον μεγάλο πίνακα ελέγχου. Οι αλλαγές αποθηκεύονται μόνο με το Έτοιμο. Σε υπολογιστή, ο ίδιος επεξεργαστής ανοίγει από τις Ρυθμίσεις."
+      ]
+    },
     {
       "version": "0.7.0",
       "date": "2026-10-16",
