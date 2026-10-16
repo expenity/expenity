@@ -12,7 +12,7 @@
 	const $ = ( s, r = document ) => r.querySelector( s );
 	const $$ = ( s, r = document ) => [ ...r.querySelectorAll( s ) ];
 	const toast = UI.toast;
-	window.EXPENITY_VERSION = '0.7.0';
+	window.EXPENITY_VERSION = '0.8.0';
 
 	/* ------------------------------------------------------------------ Drawing the shell */
 
@@ -213,7 +213,7 @@
 		fetch( 'favicon.svg' ).then( ( r ) => r.text() ).then( ( svg ) => { logoSvg = svg.replace( '<svg ', '<svg width="34" height="34" aria-hidden="true" ' ); EXA.logoSvg = logoSvg; $$( '#logo' ).forEach( ( l ) => { l.innerHTML = logoSvg; } ); } ).catch( () => {} );
 		UI.initSheet();
 		UI.initSwipe( document.body );
-		UI.initPull( $( '#view' ), () => { EX.sync.run().then( () => toast( t( 'syncDone' ) ) ); }, () => EX.auth.isSignedIn() && ! UI.sheetOpen() );
+		UI.initPull( $( '#view' ), () => { EX.sync.run().then( () => toast( t( 'syncDone' ) ) ); }, () => EX.auth.isSignedIn() && ! UI.sheetOpen() && ! EXA.dashboardEditing() );
 		EXA.readJoinLink();
 		EX.sync.init();
 		EXA.applyMotion();

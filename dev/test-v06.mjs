@@ -41,18 +41,16 @@ try{
  await page.evaluate(()=>{const s=EX.state();s.incomes=[{id:'salary',name:'Salary',amount:'100',currency:'EUR',account:s.accounts[0].id,next:'2026-10-01',day:1,repeat:'monthly',tags:['Business']}];EX.plan.receive(s.incomes[0],'100');EXA.openDetail('tx',s.txs.find(x=>x.incomeId==='salary').id);});
  await page.click('[data-reverse-tx]');await page.click('#confirmYes');await page.waitForTimeout(200);s=await state();ok(s.incomes[0].next==='2026-10-01'&&!s.txs.some(x=>x.incomeId==='salary'),'history reversal reopens recurring income');
  await page.evaluate(()=>{const s=EX.state();s.goals=[{id:'trip',name:'Trip',target:'1000',tags:['Travel']}];EXA.go('plan');});await page.evaluate(()=>{const b=document.createElement('button');b.dataset.plan='goal-money';b.dataset.id='trip';EXA.planClick({target:b});});await page.locator('#contribForm [name=amount]').fill('5');await page.locator('#contribForm [name=tags]').fill('Travel, Holiday');await page.locator('#contribForm [type=submit]').click();ok((await state()).txs.find(x=>x.goalId==='trip').tags.includes('Holiday'),'goal contributions save the tags entered in their form');
- await page.evaluate(()=>EXA.go('home'));await holdCard();await page.click('[data-home-start]');ok(await page.locator('.home-editor').isVisible(),'dashboard editing opens');
- await page.click('[data-home-select=ideas]');await page.click('[data-home-hide=ideas]');await page.click('[data-home-select=balance]');await page.selectOption('[data-home-size=balance]','medium');await page.click('[data-home-select=recent]');await page.click('[data-home-up=recent]');await page.click('[data-home-done]');
+ await page.evaluate(()=>EXA.go('home'));await holdCard();ok(await page.locator('.dash-editbar').isVisible(),'dashboard editing opens directly');
+ await page.click('[data-dash-hide=ideas]');await page.click('[data-dash-resize=balance]');await page.click('[data-dash-size=medium]');await page.waitForTimeout(400);await page.click('[data-dash-done]');
  s=await state();ok(s.settings.homeLayout.find(x=>x.id==='ideas').hidden&&s.settings.homeLayout.find(x=>x.id==='balance').size==='medium','dashboard hide and resize are saved');
  ok(await page.locator('[data-home=ideas]').count()===0,'hidden widget is not displayed');
  await page.reload();await page.waitForFunction(()=>!!window.EXA?.enhancementsInit);ok(await page.locator('[data-home=ideas]').count()===0,'dashboard layout survives reload');
- await page.evaluate(()=>EXA.go('home'));await holdCard();await page.click('[data-home-start]');await page.click('[data-home-reset]');await page.click('[data-home-done]');
- ok((await state()).settings.homeLayout.length===0,'reset restores automatic default dashboard order');
- await holdCard();
- ok(await page.locator('.edit-demo').isVisible(),'long hold shows the animated editing guide');await page.click('[data-home-start]');
- const first=await page.locator('#homeGrid > [data-home]').first().getAttribute('data-home');
- await page.click(`[data-home-select=${first}]`);const handle=page.locator(`[data-home-drag=${first}]`),target=page.locator('[data-home=wallets] .widget-select');await handle.scrollIntoViewIfNeeded();const hb=await handle.boundingBox();await page.mouse.move(hb.x+hb.width/2,hb.y+hb.height/2);await page.mouse.down();await target.scrollIntoViewIfNeeded();const tb=await target.boundingBox();await page.mouse.move(tb.x+20,tb.y+20,{steps:10});await page.mouse.up();await page.waitForTimeout(350);
- ok(await page.locator('#homeGrid > [data-home]').first().getAttribute('data-home')!==first,'drag handle reorders dashboard widgets');await page.click('[data-home-cancel]');
+ await holdCard();await page.click('[data-dash-cards]');await page.click('[data-dash-reset]');await page.waitForTimeout(400);await page.click('[data-dash-done]');
+ ok((await state()).settings.homeLayout.every(x=>!x.hidden&&x.size==='full'),'reset restores full default cards');
+ await holdCard();const first=await page.locator('#homeGrid > [data-home]').first().getAttribute('data-home');
+ await page.locator(`[data-dash-drag=${first}]`).focus();await page.keyboard.press('ArrowDown');
+ ok(await page.locator('#homeGrid > [data-home]').first().getAttribute('data-home')!==first,'keyboard reorders dashboard cards');await page.click('[data-dash-cancel]');
  await page.evaluate(()=>EXA.go('more','account'));await page.click('[data-release-notes]');await page.waitForSelector('.release-notes details');ok(await page.locator('.release-notes details').count()>=2,'retained changelog shows current and previous releases');await close();
  for(const lang of ['en','el']){
   for(const [width,height] of [[320,568],[390,844],[744,1133],[834,1194],[1024,768],[1440,900]]){

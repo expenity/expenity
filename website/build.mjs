@@ -47,7 +47,7 @@ writeFileSync( join( OUT, '.nojekyll' ), '' );
 
 // The app itself is the live demo: the same files, served from app/.
 mkdirSync( join( OUT, 'app' ), { recursive: true } );
-for ( const f of [ 'index.html', 'icons.js', 'ui.js', 'views.js', 'forms.js', 'photos.js', 'reports.js', 'plan.js', 'insights.js', 'share.js', 'push.js', 'flow.js', 'installation.js', 'themes.js', 'core.js', 'sync.js', 'theme.js', 'app.js', 'enhancements.js', 'releases.json', 'i18n.js', 'style.css', 'themes.css', 'favicon.svg', 'manifest.webmanifest', 'sw.js', 'icon-192.png', 'icon-512.png' ] ) cpSync( join( ROOT, f ), join( OUT, 'app', f ) );
+for ( const f of [ 'index.html', 'icons.js', 'ui.js', 'views.js', 'forms.js', 'photos.js', 'reports.js', 'plan.js', 'insights.js', 'share.js', 'push.js', 'flow.js', 'installation.js', 'themes.js', 'core.js', 'sync.js', 'theme.js', 'app.js', 'enhancements.js', 'dashboard.js', 'releases.json', 'i18n.js', 'style.css', 'themes.css', 'favicon.svg', 'manifest.webmanifest', 'sw.js', 'icon-192.png', 'icon-512.png' ] ) cpSync( join( ROOT, f ), join( OUT, 'app', f ) );
 cpSync(join(ROOT,'installation'),join(OUT,'app','installation'),{recursive:true});
 // Every build gets its own cache name, so the app can tell that a newer version has been published (More, Check for updates).
 { const sw = join( OUT, 'app/sw.js' ); writeFileSync( sw, readFileSync( sw, 'utf8' ).replace( /(const CACHE = 'expenity-v\d+)'/, `$1-${ Date.now().toString( 36 ) }'` ) ); }
