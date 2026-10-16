@@ -59,8 +59,8 @@ async function addTx( d, type, amount, name ) {
 	await d.page.click( '.fab' ); await d.page.click( `[data-act=tx-${ type }]` );
 	await d.page.click('[data-tx=target-amount]');
 	for ( const k of amount ) await d.page.click( `.keypad [data-key="${ k === ',' ? '.' : k }"]` );
-	await d.page.fill( '#txDesc', name );
-	await d.page.click( '[data-tx=save]' );
+	if(await d.page.locator('[data-entry=wallet]').innerText().then(x=>/Choose wallet/.test(x))){await d.page.click('[data-entry=wallet]');await d.page.locator('[data-tx-wallet]').first().click();}await d.page.fill( '#txDesc', name );await d.page.locator('[data-tx-cat]').first().click();
+	await d.page.click( '[data-tx=save]' );if(await d.page.locator('#txErr:visible').count())throw Error('Entry save: '+await d.page.locator('#txErr').innerText());
 }
 
 const A = await device( 'A' );
@@ -87,7 +87,10 @@ ok( creds.length === 1 && creds[ 0 ].isResidentCredential, 'a discoverable passk
 // 2. Data entered on A reaches the server, and a second device signs in and gets it.
 await addTx( A, 'expense', '12.50', 'Lunch A' );
 await A.page.evaluate(()=>{const s=EX.state();s.txs.find(x=>x.name==='Lunch A').tags=['Work'];s.settings.homeLayout=[{id:'balance',size:'compact',hidden:false},{id:'ideas',size:'wide',hidden:true}];EX.save();});
-await synced( A );
+await synced(A);
+ok(await A.page.evaluate(()=>EX.sync.recordStatus(EX.state().txs.find(x=>x.name==='Lunch A').id)==='synced'),'save acknowledgement is tracked per record');
+await A.page.evaluate(()=>EXA.openTx());await A.page.click('[data-tx=target-amount]');await A.page.click('[data-key="5"]');await A.page.click('[data-tx=amount-done]');await A.page.fill('#txDesc','Draft across sign-in refresh');await A.page.waitForTimeout(200);await A.page.evaluate(()=>EX.auth.refresh());
+ok(await A.page.locator('#txDesc').inputValue()==='Draft across sign-in refresh','session refresh does not close or clear a draft');await A.page.reload();await A.page.waitForSelector('#tabbar button',{state:'attached'});await A.page.waitForTimeout(300);await A.page.evaluate(()=>EXA.openTx());ok(await A.page.locator('#txDesc').inputValue()==='Draft across sign-in refresh','signed-in draft survives a reload and session refresh');await A.page.keyboard.press('Escape');await A.page.click('[data-entry=discard]');await A.page.waitForTimeout(180);
 const B = await device( 'B' );
 for ( const c of creds ) await B.cdp.send( 'WebAuthn.addCredential', { authenticatorId: B.authenticatorId, credential: c } ); // passkeys sync between a person's devices
 await open( B );
@@ -238,16 +241,19 @@ ok( true, 'a deleted account cannot be signed into any more' );
 	ok( ( await txs( Q ) ).some( ( x ) => x.n === 'Groceries' ), 'the member sees the wallet and its transactions' );
 	ok( await Q.page.evaluate( () => window.EX.state().accounts.filter( ( a ) => a.name === 'Household' ).length === 1 ), 'the member has exactly one copy of the wallet' );
 	// The member adds something; the owner receives it, with the author recorded.
-	await Q.page.click( '.fab' ); await Q.page.click( '[data-act=tx-expense]' ); await Q.page.click( '[data-tx-wallet]:has-text("Household")' );
+	await Q.page.click( '.fab' ); await Q.page.click( '[data-act=tx-expense]' ); await Q.page.click('[data-entry=wallet]');await Q.page.click( '[data-tx-wallet]:has-text("Household")' );
 	await Q.page.click('[data-tx=target-amount]');
 	for ( const k of '7' ) await Q.page.click( `.keypad [data-key="${ k }"]` );
-	await Q.page.fill( '#txDesc', 'Bread' ); await Q.page.click( '[data-tx=save]' ); await runSync( Q ); await runSync( P );
+	await Q.page.fill( '#txDesc', 'Bread' );await Q.page.locator('[data-tx-cat]').first().click(); await Q.page.click( '[data-tx=save]' ); await runSync( Q ); await runSync( P );
 	ok( ( await txs( P ) ).some( ( x ) => x.n === 'Bread' ), 'what the member adds reaches the owner' );
 	ok( await P.page.evaluate( () => { const x = window.EX.state().txs.find( ( z ) => z.name === 'Bread' ); return !! x && !! x.by && x.by !== window.EX.auth.user().id; } ), 'a shared transaction records who added it (the member, not the owner)' );
+	// Keep a member entry local while the owner revokes write access.
+	await Q.page.evaluate(()=>{EX.sync.hold=true;const a=EX.state().accounts.find(a=>a.space);EXA.openTx(null,{account:a.id,name:'Awaiting permission',amount:'6',category:'food'});});await Q.page.click('[data-tx=save]');
 	// The owner makes the member a viewer: the member can no longer write.
 	await P.page.evaluate( () => window.EXA.go( 'more', 'wallets' ) ); await P.page.click( '[data-act=edit-wallet]' ); await P.page.click( '[data-share=open]' );
 	await P.page.waitForSelector( 'select[data-share-role]', { timeout: 15000 } ); await P.page.selectOption( 'select[data-share-role]', 'viewer' ); await P.page.waitForTimeout( 800 ); await P.page.keyboard.press( 'Escape' );
-	await runSync( Q );
+	await Q.page.evaluate(()=>EX.sync.hold=false);await runSync(Q);
+	ok(await Q.page.evaluate(()=>!EX.state().txs.some(x=>x.name==='Awaiting permission')&&Object.keys(localStorage).filter(k=>k.startsWith('expenity.entryRecovery.v1:')).some(k=>JSON.parse(localStorage.getItem(k)).some(x=>x.tx.name==='Awaiting permission'))),'a rejected shared entry is recoverable without claiming it synced');
 	ok( await Q.page.evaluate( () => window.EX.role( window.EX.state().accounts.find( ( a ) => a.space ) ) === 'viewer' ), 'the role change reaches the member' );
 	await Q.page.evaluate( () => window.EXA.go( 'activity' ) );
 	await Q.page.click( '.fab' ); await Q.page.click( '[data-act=tx-expense]' );

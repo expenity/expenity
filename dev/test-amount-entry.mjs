@@ -18,7 +18,7 @@ try{
  assert(await page.evaluate(()=>EX.state().txs.length===0&&UI.sheetOpen()),'amount confirmation does not save or close the form');
  await page.fill('#txDesc','Lunch');assert(await page.locator('[data-tx=field-done]').isVisible(),'text editing offers a Done checkmark');
  await page.click('[data-tx=field-done]');assert(await page.evaluate(()=>!['INPUT','TEXTAREA'].includes(document.activeElement.tagName)),'text Done removes input focus');
- await page.click('[data-tx=save]');assert(await page.evaluate(()=>EX.state().txs.some(x=>x.name==='Lunch'&&x.amount==='123')),'Save records the confirmed amount and description');
+ await page.locator('[data-tx-cat=food]').click();await page.click('[data-tx=save]');assert(await page.evaluate(()=>EX.state().txs.some(x=>x.name==='Lunch'&&x.amount==='123')),'Save records the confirmed amount and description');
  await page.evaluate(()=>EXA.go('home'));
  assert(await page.locator('#view .goals-discovery').count()>0,'Home highlights Budgets & goals until discovered');
  await page.evaluate(()=>EXA.go('plan'));
@@ -32,16 +32,16 @@ try{
  assert(await page.locator('[data-plan=add-income]').isVisible(),'Recurring income lives under Activity Income');
  await page.screenshot({path:'/tmp/expenity-income-navigation.png'});
 
- await page.evaluate(()=>{EXA.openTx(null,{amount:'8',name:'Coffee'});});await page.check('#rememberName');await page.click('[data-tx=save]');await page.waitForTimeout(100);
+ await page.evaluate(()=>{EXA.openTx(null,{amount:'8',name:'Coffee',category:'food'});});await page.check('#rememberName');await page.click('[data-tx=save]');await page.waitForTimeout(100);
  await page.evaluate(()=>EXA.openTx());await page.locator('.saved-names summary').click();await page.click('[data-tx-saved="0"]');
  assert(await page.locator('#txDesc').inputValue()==='Coffee','saved expense names can be reused');
- await page.keyboard.press('Escape');await page.waitForTimeout(100);
+ await page.evaluate(()=>UI.closeSheet(true));await page.waitForTimeout(180);
  await page.evaluate(()=>{EX.state().accounts[0].name='Μετρητά';EX.setLang('en');EXA.openTx();});
- assert(await page.locator('[data-tx-wallet]').first().innerText().then(x=>x.includes('Cash')),'legacy default wallets follow English UI language');
- await page.keyboard.press('Escape');await page.waitForTimeout(100);
+ assert(await page.locator('[data-entry=wallet]').first().innerText().then(x=>x.includes('Cash')),'legacy default wallets follow English UI language');
+ await page.evaluate(()=>UI.closeSheet(true));await page.waitForTimeout(180);
  await page.evaluate(()=>{EX.setLang('el');EXA.openTx();});
- assert(await page.locator('[data-tx-wallet]').first().innerText().then(x=>x.includes('Μετρητά')),'built-in wallet labels follow Greek UI language');
- await page.keyboard.press('Escape');await page.waitForTimeout(100);await page.evaluate(()=>EX.setLang('en'));
+ assert(await page.locator('[data-entry=wallet]').first().innerText().then(x=>x.includes('Μετρητά')),'built-in wallet labels follow Greek UI language');
+ await page.evaluate(()=>UI.closeSheet(true));await page.waitForTimeout(180);await page.evaluate(()=>EX.setLang('en'));
  await page.evaluate(()=>{EX.auth.isSignedIn=()=>true;EXA.go('more','account');});
  assert(await page.locator('[data-act=delete-photos]').isVisible(),'Account offers Delete all photos');
 

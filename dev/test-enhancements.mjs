@@ -40,13 +40,13 @@ try{
  const id='ph_'+'A'.repeat(24);let uploads=0;
  await page.route('**/api/photos',async route=>{uploads++;await route.fulfill({json:{id,bytes:compressed.bytes},headers:{'Access-Control-Allow-Origin':'*'}});});
  await page.route('**/api/photos/'+id,route=>route.fulfill({json:{data:compressed.data,bytes:compressed.bytes},headers:{'Access-Control-Allow-Origin':'*'}}));
- await page.evaluate(()=>{EX.auth.isSignedIn=()=>true;EXA.setSkin('amberwave');EXA.setMotion('full');EXA.openTx(null,{amount:'12.50',name:'Receipt test'});});
- await page.locator('.photo-file').setInputFiles({name:'receipt.png',mimeType:'image/png',buffer:Buffer.from(image.split(',')[1],'base64')});
+ await page.evaluate(()=>{EX.auth.isSignedIn=()=>true;EXA.setSkin('amberwave');EXA.setMotion('full');EXA.openTx(null,{amount:'12.50',name:'Receipt test',category:'food'});});
+ await page.click('[data-entry=photo]');await page.locator('.photo-file').setInputFiles({name:'receipt.png',mimeType:'image/png',buffer:Buffer.from(image.split(',')[1],'base64')});
  await page.waitForFunction(()=>document.querySelector('.photo-slot [name=photo]')?.value.startsWith('ph_'));
  await page.click('[data-tx=save]');
  ok(uploads===1&&await page.evaluate(id=>EX.state().txs.some(x=>x.name==='Receipt test'&&x.photo===id),id),'transaction saves the uploaded photo ID');
  await page.evaluate(()=>EXA.openTx(EX.state().txs.find(x=>x.name==='Receipt test')));
- await page.click('[data-photo-view]');await page.waitForSelector('.photo-viewer img');ok(await page.locator('#sheet').isVisible(),'viewing a photo preserves the unfinished edit sheet');await page.screenshot({path:join(out,'photo-viewer-phone.png')});await page.locator('.photo-viewer button').click();await page.click('[data-photo-remove]');await page.click('[data-tx=save]');ok(await page.evaluate(()=>!EX.state().txs.find(x=>x.name==='Receipt test').photo),'removing a photo clears the reference');
+ await page.click('[data-photo-view]:visible');await page.waitForSelector('.photo-viewer img');ok(await page.locator('#sheet').isVisible(),'viewing a photo preserves the unfinished edit sheet');await page.screenshot({path:join(out,'photo-viewer-phone.png')});await page.locator('.photo-viewer button').click();await page.click('[data-entry=photo]');await page.click('[data-photo-remove]');await page.click('[data-tx=save]');ok(await page.evaluate(()=>!EX.state().txs.find(x=>x.name==='Receipt test').photo),'removing a photo clears the reference');
  await page.setViewportSize({width:834,height:1194});await page.evaluate(()=>{EXA.setSkin('ion');EXA.go('home');});await page.waitForTimeout(1100);await page.screenshot({path:join(out,'ion-tablet.png')});
  ok(await page.evaluate(()=>document.querySelector('#view').scrollWidth<=document.querySelector('#view').clientWidth+1),'neon tablet layout has no sideways scrolling');
  ok(!errors.length,'no browser errors: '+errors.join('; '));

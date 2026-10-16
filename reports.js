@@ -109,7 +109,7 @@
 			<div class="chips tabs2" role="tablist">${ TABS.map( ( [ id, k ] ) => `<button type="button" class="chip${ f().tab === id ? ' on' : '' }" role="tab" aria-selected="${ f().tab === id }" data-rep="tab" data-tab="${ id }">${ UI.icon( TAB_ICON[ id ], 18 ) } ${ esc( t( k ) ) }</button>` ).join( '' ) }</div></div>`;
 	}
 	function openFilters() {
-		const wallets = EX.activeAccounts(), cats = EX.catList( 'expense' ).concat( EX.catList( 'income' ) );
+		const wallets = EX.activeAccounts(), cats = [...new Map(EX.catList('expense').concat(EX.catList('income')).map(c=>[c.key,c])).values()];
 		UI.openSheet( `<div class="sheet-head"><button type="button" class="ab-btn" data-close aria-label="${ esc( t( 'close' ) ) }">${ UI.icon( 'x', 24 ) }</button><h2 id="sheetTitle">${ esc( t( 'repFilters' ) ) }</h2><span class="sp"></span></div>
 			<form id="repFilterForm" class="sheet-pad" novalidate>
 			<label class="f"><span>${ esc( t( 'fWallet' ) ) }</span><select name="wallet"><option value="">${ esc( t( 'txAllWallets' ) ) }</option>${ wallets.map( ( a ) => `<option value="${ esc( a.id ) }"${ f().wallet === a.id ? ' selected' : '' }>${ esc( EX.accountName( a ) ) }</option>` ).join( '' ) }</select></label>

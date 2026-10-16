@@ -10,7 +10,7 @@ const browser=await chromium.launch({channel:'chrome'}),errors=[];
 const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,locale:'en-US',serviceWorkers:'block'});
 const page=await context.newPage();page.setDefaultTimeout(7000);page.on('pageerror',e=>errors.push(String(e)));
 const ok=(cond,name)=>{assert(cond,name);console.log('ok',name);};
-const close=async()=>{await page.evaluate(()=>UI.closeSheet());await page.waitForTimeout(180);};
+const close=async()=>{await page.evaluate(()=>UI.closeSheet(true));await page.waitForTimeout(180);};
 const state=()=>page.evaluate(()=>JSON.parse(JSON.stringify(EX.state())));
 const holdCard=async()=>{const e=page.locator('#homeGrid>[data-home]').first();await e.scrollIntoViewIfNeeded();const b=await e.boundingBox(),cdp=await context.newCDPSession(page);await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:b.x+25,y:b.y+40}]});await page.waitForTimeout(750);await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await cdp.detach();await page.waitForTimeout(350);};
 try{
@@ -24,9 +24,9 @@ try{
  await page.locator('#billForm [name=name]').fill('Custom rent');ok(!await page.locator('#tpls').isVisible(),'typing collapses suggestions');
  await page.locator('#billForm [name=tags]').fill('Home, Regular');await page.locator('#billForm [name=amount]').fill('80');await page.locator('#billForm [type=submit]').click();
  ok((await state()).bills.some(x=>x.name==='Custom rent'&&x.tags.includes('Home')),'bill saves reusable tags');
- await page.evaluate(()=>EXA.openTx(null,{amount:'12.50',name:'Lunch'}));await page.locator('#sheet [name=tags]').fill('Food, Work');
+ await page.evaluate(()=>EXA.openTx(null,{amount:'12.50',name:'Lunch',category:'food'}));await page.click('[data-entry=tags]');await page.locator('#sheet [name=tags]').fill('Food, Work');
  await page.click('[data-tx=save]');ok((await state()).txs.some(x=>x.name==='Lunch'&&x.tags.join(',')==='Food,Work'),'expense saves tags');
- await page.evaluate(()=>EXA.openTx(EX.state().txs.find(x=>x.name==='Lunch')));await page.click('[data-tx-wallet]');ok(await page.locator('#sheet [name=tags]').inputValue()==='Food, Work','tags survive a transaction sheet redraw');await close();
+ await page.evaluate(()=>EXA.openTx(EX.state().txs.find(x=>x.name==='Lunch')));await page.click('[data-entry=wallet]');await page.locator('[data-tx-wallet]').first().click();ok(await page.locator('#sheet [name=tags]').inputValue()==='Food, Work','tags survive a transaction sheet redraw');await close();
  await page.evaluate(()=>EXA.go('more','tags'));await page.locator('#tagCreate [name=tagName]').fill('Holiday');await page.locator('#tagCreate [type=submit]').click();
  ok((await state()).settings.tags.includes('Holiday'),'tag library creates reusable tag');
  await page.locator('[data-tag-results=Work]').click();ok(await page.locator('[data-tag-tx]').count()===1,'tag library finds matching transactions');

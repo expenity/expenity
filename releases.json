@@ -1,6 +1,28 @@
 {
-  "version": "0.8.0",
+  "version": "0.9.0",
   "releases": [
+    {
+      "version": "0.9.0",
+      "date": "2026-10-17",
+      "en": [
+        "A clearer + menu with four labelled actions and a redesigned expense/income form. Wallet and currency stay beside the amount, with a separate Save button.",
+        "Input opens only after a field tap. Done closes the keyboard or keypad without saving. Photo, tags and notes expand independently and show their contents.",
+        "Choose an intentional default wallet and an explicit category, including Uncategorized. Suggestions never silently categorise a transaction; currency changes require review.",
+        "Reuse names and categories with optional wallet/amount shortcuts. Unfinished entries recover on the same device for up to 24 hours; meaningful changes are protected when closing.",
+        "Transfers have distinct From/To controls and both amounts for different currencies. Future payments and income open explicit schedules without changing today’s balance.",
+        "Saving handles full storage and repeated taps safely. Undo affects only the new entry and preserves unrelated or newer changes. Activity distinguishes local saves from acknowledged sync.",
+        "Unsynced shared-wallet entries rejected after access changes can be recovered from +. Viewer wallets refresh immediately after a role downgrade. English and Greek layouts wrap without horizontal scrolling."
+      ],
+      "el": [
+        "Πιο ξεκάθαρο μενού + με τέσσερις επιλογές και νέα φόρμα εξόδων/εσόδων. Το πορτοφόλι και το νόμισμα εμφανίζονται δίπλα στο ποσό, με ξεχωριστό κουμπί αποθήκευσης.",
+        "Το πληκτρολόγιο ανοίγει μόνο όταν πατήσετε πεδίο. Το Έτοιμο το κλείνει χωρίς αποθήκευση. Φωτογραφία, ετικέτες και σημείωση ανοίγουν ανεξάρτητα και δείχνουν τι έχετε προσθέσει.",
+        "Ορίστε προεπιλεγμένο πορτοφόλι και επιλέξτε κατηγορία, ακόμη και «Χωρίς κατηγορία». Οι προτάσεις δεν κατηγοριοποιούν αυτόματα την κίνηση· η αλλαγή νομίσματος απαιτεί έλεγχο.",
+        "Επαναχρησιμοποιήστε ονόματα και κατηγορίες, με προαιρετική αποθήκευση πορτοφολιού/ποσού. Τα πρόχειρα επανέρχονται στην ίδια συσκευή για έως 24 ώρες· το κλείσιμο προστατεύει τις ουσιαστικές αλλαγές.",
+        "Οι μεταφορές έχουν ξεχωριστά Από/Προς και δύο ποσά για διαφορετικά νομίσματα. Οι μελλοντικές πληρωμές και εισπράξεις ανοίγουν φόρμα προγραμματισμού χωρίς αλλαγή στο σημερινό υπόλοιπο.",
+        "Ασφαλέστερη αποθήκευση όταν γεμίζει ο χώρος ή πατάτε επανειλημμένα. Η αναίρεση αφορά μόνο τη νέα κίνηση και διατηρεί άλλες ή νεότερες αλλαγές. Οι Κινήσεις ξεχωρίζουν την τοπική αποθήκευση από τον επιβεβαιωμένο συγχρονισμό.",
+        "Κινήσεις σε κοινόχρηστο πορτοφόλι που απορρίφθηκαν μετά από αλλαγή πρόσβασης ανακτώνται από το +. Η προβολή ενημερώνεται αμέσως μετά τον περιορισμό δικαιωμάτων. Οι διατάξεις στα ελληνικά και στα αγγλικά χωρούν χωρίς οριζόντια κύλιση."
+      ]
+    },
     {
       "version": "0.8.0",
       "date": "2026-10-16",

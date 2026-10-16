@@ -20,5 +20,9 @@ try{
   ok(await page.evaluate(()=>{const v=document.querySelector('#view');return document.documentElement.scrollWidth<=innerWidth+1&&v.scrollWidth<=v.clientWidth+1;}),`deployed ${lang} ${width}px Home fits`);
   await page.screenshot({path:`${out}/home-${lang}-${width}.png`});
  }
+ await page.setViewportSize({width:390,height:844});await page.evaluate(()=>{EX.setLang('en');EXA.setSkin('synthwave');EXA.go('home');});await page.click('.fab');ok(await page.locator('.entry-add-row').count()===4,'deployed + has four clear actions');await page.screenshot({path:out+'/add-menu.png'});await page.click('[data-act=tx-expense]');ok(await page.locator('#txKeypad').isHidden()&&await page.locator('.tx-seg').count()===0,'deployed composer starts with no keyboard or duplicate type tabs');ok(await page.locator('.entry-save').innerText()==='Save expense','deployed Save is clearly labelled');
+ await page.click('[data-tx=target-amount]');await page.click('[data-key="4"]');await page.click('[data-tx=amount-done]');await page.click('[data-tx-catsmore]');await page.click('[data-tx-cat=uncategorized]');await page.screenshot({path:out+'/expense-en-phone.png'});await page.click('[data-tx=save]');ok(await page.evaluate(()=>EX.state().txs.length===1),'deployed flow saves to isolated guest storage');await page.click('#toast button');ok(await page.evaluate(()=>EX.state().txs.length===0),'deployed Undo removes only the local test entry');
+ await page.waitForTimeout(200);await page.evaluate(()=>{EX.setLang('el');EXA.openTx();});ok(await page.locator('.entry-save').innerText()==='Αποθήκευση εξόδου','deployed Greek composer uses Greek actions');await page.screenshot({path:out+'/expense-el-phone.png'});await page.evaluate(()=>UI.closeSheet(true));
+
  ok(!errors.length,'deployed app has no browser exceptions: '+errors.join('; '));
 }finally{await browser.close();}

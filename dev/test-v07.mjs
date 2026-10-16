@@ -10,7 +10,7 @@ const browser=await chromium.launch({channel:'chrome'}),ctx=await browser.newCon
 const ok=(v,s)=>{assert(v,s);console.log('ok',s);};
 const close=async()=>{await page.evaluate(()=>UI.closeSheet());await page.waitForTimeout(200);};
 const home=async()=>page.evaluate(()=>EXA.go('home'));
-const holdCard=async()=>{const target=page.locator('#homeGrid>[data-home]').first();await target.scrollIntoViewIfNeeded();const b=await target.boundingBox();const cdp=await ctx.newCDPSession(page);await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:b.x+30,y:b.y+50}]});await page.waitForTimeout(750);await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await cdp.detach();await page.waitForTimeout(350);};
+const holdCard=async()=>{const target=page.locator('#homeGrid>[data-home]').first();await target.evaluate(el=>el.scrollIntoView({block:'nearest',behavior:'instant'}));const b=await target.boundingBox();const cdp=await ctx.newCDPSession(page);await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:b.x+30,y:b.y+50}]});await page.waitForTimeout(750);await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await cdp.detach();await page.waitForTimeout(350);};
 const edit=async()=>{await home();await holdCard();};
 const size=async(id,value)=>{await page.locator(`[data-dash-resize=${id}]`).click();await page.click(`[data-dash-size=${value}]`);await page.waitForTimeout(400);};
 try{

@@ -38,7 +38,7 @@ const cdp = await context.newCDPSession( page );
 const st = () => page.evaluate( () => JSON.parse( JSON.stringify( window.EX.state() ) ) );
 const tab = ( name ) => page.click( `[data-go=${ name }]:visible` );
 const keys = async ( s ) => { if ( await page.locator('#txKeypad').isHidden() ) await page.click('[data-tx=target-amount]'); for ( const k of s ) await page.click( `.keypad [data-key="${ k }"]` ); };
-const addTx = async ( type, amount, name ) => { await page.click( '.fab' ); await page.click( `[data-act=tx-${ type }]` ); await keys( amount ); if ( name ) await page.fill( '#txDesc', name ); };
+const addTx = async ( type, amount, name ) => { await page.click( '.fab' ); await page.click( `[data-act=tx-${ type }]` ); await keys( amount ); if ( name ) await page.fill( '#txDesc', name ); if(type==='transfer'){await page.click('[data-entry=wallet]');await page.locator('[data-tx-wallet]').first().click();await page.click('[data-entry=to-wallet]');await page.locator('[data-tx-to]').first().click();} };
 async function swipe( selector, dx ) {
 	const box = await page.locator( selector ).first().boundingBox();
 	const y = box.y + box.height / 2, x0 = box.x + box.width * ( dx > 0 ? 0.25 : 0.75 );
@@ -116,17 +116,17 @@ ok( ! await page.locator( '#rail' ).isVisible() && ! await page.locator( '#pane'
 
 /* ---- Add flow: amount first, keypad */
 await page.click( '.fab' );
-ok( await page.locator( '.tile-btn' ).count() === 4, 'the + button opens a sheet with four big tiles' );
+ok( await page.locator( '.entry-add-row' ).count() === 4, 'the + button opens a sheet with four labelled actions' );
 await page.click( '[data-act=tx-income]' );
 await keys( '15' ); await page.click( '.keypad [data-key="0"]' ); await page.click( '.keypad [data-key="0"]' );
 ok( await page.locator( '#amtVal' ).innerText() === '1500', 'the keypad builds the amount' );
 await page.click( '.keypad [data-key="<"]' ); await page.click( '.keypad [data-key="0"]' );
 await page.fill( '#txDesc', 'Salary' );
-ok( await page.locator( '.catchip.on' ).getAttribute( 'data-tx-cat' ) === 'salary', 'income starts on the Salary category' );
-await page.click( '[data-tx=save]' );
+ok(await page.locator('.catchip.on').count()===0,'income does not silently pick a category');await page.click('[data-tx-cat=salary]');
+await page.click('[data-tx=save]');if(await page.locator('#txErr:visible').count())throw Error(await page.locator('#txErr').innerText());
 await page.click( '.fab' ); await page.click( '[data-act=tx-expense]' );
-await page.click( '[data-tx=quick]' ); await page.fill( '#txQuick', 'Groceries 42,30 yesterday' );
-ok( await page.locator( '#amtVal' ).innerText() === '42.30' && await page.locator( '.catchip.on' ).getAttribute( 'data-tx-cat' ) === 'food', 'typing a sentence fills amount and category' );
+await page.click('[data-entry=more]');await page.click( '[data-tx=quick]' ); await page.fill( '#txQuick', 'Groceries 42,30 yesterday' );
+ok(await page.locator('#amtVal').innerText()==='42.30'&&await page.locator('[data-tx-cat=food]').innerText().then(x=>x.includes('Suggested')),'sentence parsing fills amount and suggests a category');await page.click('[data-tx-cat=food]');
 await page.click( '[data-tx=save]' );
 s = await st();
 ok( s.txs.length === 2 && s.txs.some( ( x ) => x.type === 'income' && x.amount === '1500' && x.category === 'salary' ) && s.txs.some( ( x ) => x.amount === '42.30' && x.category === 'food' && x.date === yest ), 'an income and a sentence-entered expense were saved', JSON.stringify( s.txs ) );
@@ -174,7 +174,7 @@ await page.keyboard.press( 'Escape' );
 
 /* ---- Swipe actions with real touch events */
 await page.click( '.fab' ); await page.click( '[data-act=add-bill]' );
-await page.fill( '#quick', 'Netflix 15.99 monthly on the 3rd' ); await page.click( '#saveBtn' );
+await page.fill( '#quick', 'Netflix 15.99 monthly on the 3rd' ); if(await page.locator('#billForm [name=account]').count()&&!await page.locator('#billForm [name=account]').inputValue()){const id=await page.evaluate(()=>EX.writableAccounts()[0].id);await page.selectOption('#billForm [name=account]',id);}await page.click( '#saveBtn' );
 await tab( 'bills' );
 await swipe( '.sw[data-kind=bill]', 200 );
 s = await st();
@@ -241,7 +241,7 @@ const screens = async ( prefix ) => {
 	for ( const name of [ 'home', 'activity', 'bills', 'reports' ] ) { await tab( name ); await audit( `${ prefix } ${ name }` ); }
 	await tab( 'bills' ); await page.click( '[data-billsmode=calendar]' ); await audit( `${ prefix } bill calendar` ); await page.click( '[data-billsmode=list]' );
 	await page.click( '.ab-avatar .avatar:visible' ); await audit( `${ prefix } more` );
-	for ( const sub of [ 'wallets', 'reminders', 'data', 'appearance', 'account', 'about' ] ) { await page.click( '[data-act=more-back]' ).catch( () => {} ); await page.click( `[data-more=${ sub }]` ); await audit( `${ prefix } more/${ sub }` ); }
+	for ( const sub of [ 'wallets', 'reminders', 'data', 'appearance', 'account', 'about' ] ) { if(await page.locator('[data-act=more-back]').count())await page.click('[data-act=more-back]'); await page.click( `[data-more=${ sub }]` ); await audit( `${ prefix } more/${ sub }` ); }
 	await page.click( '[data-act=more-back]' ); await tab( 'home' );
 	await page.click( '.fab' ); await audit( `${ prefix } add sheet` );
 	await page.click( '[data-act=tx-expense]' ); await audit( `${ prefix } transaction sheet` ); await page.keyboard.press( 'Escape' );
@@ -259,7 +259,7 @@ await page.click( '.ab-avatar .avatar:visible' ); await page.click( '[data-more=
 ok( await page.getAttribute( 'html', 'lang' ) === 'el' && /Αρχική/.test( await page.locator( '#tabbar .tab' ).first().innerText() ), 'switching to Greek translates the app' );
 for ( const name of [ 'home', 'activity', 'bills', 'reports' ] ) { await tab( name ); ok( ( await page.locator( '#view' ).innerText() ).length > 20, `Greek ${ name } view renders` ); }
 await page.click( '.fab' ); await page.click( '[data-act=tx-expense]' );
-ok( /Έξοδο/.test( await page.locator( '.tx-seg' ).innerText() ), 'the add sheet is in Greek' );
+ok( /εξόδου/.test( await page.locator( '#sheetTitle' ).innerText() ), 'the add sheet is in Greek' );
 await page.click('[data-tx=target-amount]');
 ok( await page.locator( '.keypad [data-key="."]' ).innerText() === ',', 'the Greek keypad uses a decimal comma' );
 await audit( 'Greek transaction sheet' );
@@ -280,7 +280,7 @@ await context.close();
 	await d.click( '#rail [data-go=bills]' ); await d.click( '.sw[data-kind=bill]' );
 	ok( await d.evaluate( () => { const p = document.querySelector( '#pane' ); return p.scrollWidth <= p.clientWidth + 1 && [ ...p.querySelectorAll( '.btn' ) ].every( ( b ) => b.getBoundingClientRect().right <= p.getBoundingClientRect().right + 1 ); } ), 'desktop: the details pane fits, with every action button inside it' );
 	await d.keyboard.press( 'n' );
-	ok( await d.locator( '#sheet[open] .tile-btn' ).count() === 4, 'desktop: the n key opens the add sheet' );
+	ok( await d.locator( '#sheet[open] .entry-add-row' ).count() === 4, 'desktop: the n key opens the add sheet' );
 	await d.keyboard.press( 'Escape' );
 	ok( ! await d.evaluate( () => document.documentElement.scrollWidth > innerWidth + 1 ), 'desktop: no sideways scrolling' );
 	await dctx.close();
@@ -346,8 +346,8 @@ for ( const w of [ 320, 360, 390, 430 ] ) {
 	await p.click( '.fab' ); await p.click( '[data-act=tx-expense]' );
 	let r = await audit(); ok( ! r.length, `${ w }px expense sheet: nothing scrolls sideways or sticks out`, r.join( ' | ' ) );
 	await p.click( '[data-tx-catsmore]' ); r = await audit(); ok( ! r.length, `${ w }px expense sheet with all categories`, r.join( ' | ' ) );
-	await p.click( '[data-tx-date=other]' ); r = await audit(); ok( ! r.length, `${ w }px date picker row`, r.join( ' | ' ) );
-	await p.click( '[data-tx-type=transfer]' ); r = await audit(); ok( ! r.length, `${ w }px transfer sheet`, r.join( ' | ' ) );
+	await p.click('[data-entry=date]'); r = await audit(); ok( ! r.length, `${ w }px date picker row`, r.join( ' | ' ) );
+	await p.click('[data-entry=type]');await p.click( '[data-tx-type=transfer]' ); r = await audit(); ok( ! r.length, `${ w }px transfer sheet`, r.join( ' | ' ) );
 	await p.keyboard.press( 'Escape' ); await p.click( '.fab' ); await p.click( '[data-act=add-bill]' ); r = await audit(); ok( ! r.length, `${ w }px bill sheet`, r.join( ' | ' ) );
 	await p.keyboard.press( 'Escape' ); await p.evaluate( () => window.EXA.go( 'home' ) ); r = await audit(); ok( ! r.length, `${ w }px home`, r.join( ' | ' ) );
 	await c.close();
@@ -368,7 +368,7 @@ for ( const w of [ 320, 360, 390, 430 ] ) {
 	ok( ( await p.locator( '.gcard' ).innerText() ).includes( '30%' ), 'plan: the goal ring shows 30 percent' );
 	await p.evaluate( () => window.EXA.go( 'plan' ) ); await p.click( '[data-tab=budgets]' );
 	ok( ( await p.locator( '.bcard' ).innerText() ).includes( '€140' ), 'plan: money set aside for a goal is not counted as spending' );
-	await p.evaluate(()=>window.EXA.go('activity')); await p.click('[data-txtype=income]'); await p.click('[data-income-mode=recurring]'); await p.click( '[data-plan=add-income]' ); await p.fill( '#incomeForm [name=iname]', 'Salary' ); await p.fill( '#incomeForm [name=amount]', '1500' ); await p.click( '#incomeForm [type=submit]' );
+	await p.evaluate(()=>window.EXA.go('activity')); await p.click('[data-txtype=income]'); await p.click('[data-income-mode=recurring]'); await p.click( '[data-plan=add-income]' ); await p.fill( '#incomeForm [name=iname]', 'Salary' ); await p.fill( '#incomeForm [name=amount]', '1500' ); await p.selectOption('#incomeForm [name=account]',await p.evaluate(()=>EX.writableAccounts()[0].id));await p.click( '#incomeForm [type=submit]' );
 	s = await p.evaluate( () => JSON.parse( JSON.stringify( window.EX.state() ) ) ); ok( s.incomes.length === 1 && s.incomes[ 0 ].repeat === 'monthly', 'plan: recurring income is saved' );
 	const before = s.incomes[ 0 ].next; await p.click( '[data-plan=receive]' );
 	s = await p.evaluate( () => JSON.parse( JSON.stringify( window.EX.state() ) ) ); ok( s.txs.some( ( x ) => x.incomeId === s.incomes[ 0 ].id && x.type === 'income' ) && s.incomes[ 0 ].next > before, 'plan: marking income received adds it and moves the next date on' );
