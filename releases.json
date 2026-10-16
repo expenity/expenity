@@ -1,6 +1,18 @@
 {
-  "version": "0.12.1",
+  "version": "0.12.2",
   "releases": [
+    {
+      "version": "0.12.2",
+      "date": "2026-10-17",
+      "en": [
+        "Brick party now uses locally bundled, rendered 3D building bricks with raised studs, glossy plastic, thickness and shadows, replacing flat rectangle decorations. The artwork is cached for offline use.",
+        "Removed the low-detail navigation character cameos. Replacement character artwork and the proposed balance-card interaction are pending; no new character animation is included in this release."
+      ],
+      "el": [
+        "Το Πάρτι με τουβλάκια χρησιμοποιεί πλέον τρισδιάστατη εικονογράφηση με ανάγλυφες προεξοχές, γυαλιστερό πλαστικό, πάχος και σκιές, αντί για επίπεδα ορθογώνια. Η εικόνα περιλαμβάνεται στην εφαρμογή και αποθηκεύεται για χρήση χωρίς σύνδεση.",
+        "Αφαιρέθηκαν οι απλοποιημένοι χαρακτήρες από την πλοήγηση. Η νέα εικονογράφηση και η προτεινόμενη αλληλεπίδραση με την κάρτα υπολοίπου εκκρεμούν· αυτή η έκδοση δεν περιλαμβάνει νέα κίνηση χαρακτήρων."
+      ]
+    },
     {
       "version": "0.12.1",
       "date": "2026-10-17",

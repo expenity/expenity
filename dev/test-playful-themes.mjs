@@ -13,12 +13,12 @@ try{
   ok(await page.locator('.fun-scene').count()===1,`${skin}: one decorative scene`);
   ok(await page.evaluate(()=>getComputedStyle(document.querySelector('.fun-scene')).pointerEvents==='none'),`${skin}: scenery never intercepts taps`);
   ok(await page.evaluate(()=>document.querySelector('.fun-scene i').getAnimations().some(a=>a.playState==='running')),`${skin}: background animates`);
-  if(skin!=='bricks')ok(await page.evaluate(()=>getComputedStyle(document.querySelector('.tabbar'),'::before').backgroundImage.includes('svg')),`${skin}: vector character cameo`);
+  ok(await page.evaluate(()=>getComputedStyle(document.querySelector('.tabbar'),'::before').content==='none'),`${skin}: no navigation character cameos`);if(skin==='bricks'){ok(await page.evaluate(()=>getComputedStyle(document.querySelector('.fun-brick')).backgroundImage.includes('brick-cluster-v2.webp')),'bricks use rendered dimensional artwork');const response=await page.request.get(`http://localhost:${server.address().port}/assets/themes/brick-cluster-v2.webp`);ok(response.ok(),'brick artwork is bundled locally');}
   await page.evaluate(()=>document.querySelectorAll('.tabbar').forEach(el=>{const a=el.getAnimations({subtree:true}).find(a=>a.animationName==='fun-peek');if(a){a.pause();a.currentTime=10000;}}));
-  await page.waitForTimeout(900);await page.screenshot({path:`/tmp/expenity-${skin}-phone.png`});
+  await page.waitForTimeout(900);await page.evaluate(()=>document.querySelectorAll('.fun-scene i').forEach(el=>el.getAnimations().forEach(a=>a.pause())));await page.screenshot({path:`/tmp/expenity-${skin}-phone.png`});
   for(const width of [320,834,1440]){await page.setViewportSize({width,height:900});ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),`${skin}: ${width}px no horizontal overflow`);}
   await page.setViewportSize({width:390,height:844});
-  await page.evaluate(()=>EXA.setMotion('off'));ok(await page.evaluate(()=>!document.querySelector('.fun-scene i').getAnimations().length&&getComputedStyle(document.querySelector('.tabbar'),'::before').display==='none'),`${skin}: motion off stops scenery and hides cameos`);
+  await page.evaluate(()=>EXA.setMotion('off'));ok(await page.evaluate(()=>!document.querySelector('.fun-scene i').getAnimations().length&&getComputedStyle(document.querySelector('.tabbar'),'::before').content==='none'),`${skin}: motion off stops scenery and hides cameos`);
   await page.emulateMedia({reducedMotion:'reduce'});await page.evaluate(()=>EXA.setMotion('auto'));ok(await page.evaluate(()=>document.documentElement.dataset.funMotion==='still'),`${skin}: system reduced motion respected`);await page.emulateMedia({reducedMotion:'no-preference'});await page.evaluate(()=>EXA.setMotion('full'));
   await page.reload();await page.waitForFunction(s=>window.EXA?.skin()===s,skin);ok(await page.locator('.fun-scene').count()===1,`${skin}: theme survives reload`);
  }
