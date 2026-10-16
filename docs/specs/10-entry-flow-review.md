@@ -1,8 +1,11 @@
 # 10 — Add menu and money-entry flow
 
-Date: 2026-10-16  
-Baseline: published app 0.8.0, source commit `2c593e3`.  
-Status: consolidated specification for a prototype and review. These changes are not implemented by this document.  
+Date: 2026-10-16
+
+Baseline: published app 0.8.0, source commit `2c593e3`.
+
+Status: implemented in 0.9.0 following the instruction to deliver. See section 19 for implementation details and verification limits.
+
 Scope: app UX only. No website, public documentation, blog, onboarding rebuild, dashboard-editor change, or navigation rebuild is authorized by this specification alone.
 
 ## 1. Purpose and confidence
