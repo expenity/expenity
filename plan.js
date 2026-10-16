@@ -72,7 +72,7 @@
 	};
 	P.receive = ( inc, amount, account ) => {
 		const before = JSON.parse( JSON.stringify( inc ) );
-		const tx = { id: uid(), type: 'income', amount: String( amount ), account: account || inc.account || ( EX.activeAccounts()[ 0 ] || {} ).id, category: inc.category || 'salary', date: today(), name: inc.name, incomeId: inc.id, due: inc.next, photo: inc.photo || '', photo: inc.photo || '' };
+		const tx = { id: uid(), type: 'income', amount: String( amount ), account: account || inc.account || ( EX.activeAccounts()[ 0 ] || {} ).id, category: inc.category || 'salary', date: today(), name: inc.name, incomeId: inc.id, due: inc.next, photo: inc.photo || '' };
 		S().txs.push( tx );
 		const nx = EX.nextAfter( inc, inc.next );
 		if ( nx ) inc.next = nx; else inc.done = true;
