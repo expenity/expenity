@@ -50,7 +50,7 @@
 		const meta = [ x.type === 'transfer' ? `${ walletName( x.account ) } → ${ walletName( x.toAccount ) }` : walletName( x.account ), x.note ].filter( Boolean ).join( ' · ' );
 		const sign = x.type === 'income' ? '+' : x.type === 'expense' ? '−' : '';
 		return `<li class="sw" data-kind="tx" data-id="${ esc( x.id ) }">
-			<div class="sw-back"><div class="sw-l"></div><div class="sw-r">${ swBtn( 'edit', 'pencil', 'actEdit', 'edit' ) }${ swBtn( 'del', 'trash', 'actDelete', 'del' ) }</div></div>
+			<div class="sw-back"><div class="sw-l"></div><div class="sw-r">${ swBtn( 'edit', 'pencil', 'actEdit', 'edit' ) }${ swBtn( 'duplicate', 'copy', 'duplicateRecord', 'duplicate' ) }${ swBtn( 'del', 'trash', 'actDelete', 'del' ) }</div></div>
 			<button type="button" class="sw-front item" data-act="open-tx" data-id="${ esc( x.id ) }" aria-label="${ esc( title ) }, ${ esc( sign + money( Number( x.amount ), cur ) ) }">
 				${ UI.catCi( info.iconName ? info : EX.catInfo( x.category ) ) }
 				<span class="mid"><b>${ esc( title ) }${ x.photo ? UI.icon( 'paperclip', 14 ) : '' }</b><small>${ esc( meta || dayName( x.date ) ) }</small>${EXA.tagsInline(x.tags)}</span>
@@ -64,7 +64,7 @@
 		const snoozed = b.snooze && b.snooze > today();
 		const meta = [ showDate ? rel( b.next ) : null, EX.repeatLabel( b.repeat ), b.autopay ? t( 'autopay' ) : null, snoozed ? t( 'snoozed' ) : null ].filter( Boolean ).join( ' · ' );
 		return `<li class="sw ${ cls }" data-kind="bill" data-id="${ esc( b.id ) }">
-			<div class="sw-back"><div class="sw-l">${ swBtn( 'paid', 'check', 'actPaid', 'paid' ) }</div><div class="sw-r">${ swBtn( 'edit', 'pencil', 'actEdit', 'edit' ) }${ swBtn( 'del', 'trash', 'actDelete', 'del' ) }</div></div>
+			<div class="sw-back"><div class="sw-l">${ swBtn( 'paid', 'check', 'actPaid', 'paid' ) }</div><div class="sw-r">${ swBtn( 'edit', 'pencil', 'actEdit', 'edit' ) }${ swBtn( 'duplicate', 'copy', 'duplicateRecord', 'duplicate' ) }${ swBtn( 'del', 'trash', 'actDelete', 'del' ) }</div></div>
 			<button type="button" class="sw-front item" data-act="open-bill" data-id="${ esc( b.id ) }" aria-label="${ esc( b.name ) }, ${ esc( amountText( b ) ) }">
 				${ UI.catCi( EX.catInfo( b.category ) ) }
 				<span class="mid"><b>${ esc( b.name ) }</b><small class="due">${ esc( meta ) }</small>${EXA.tagsInline(b.tags)}</span>
@@ -350,7 +350,7 @@
 	}
 	function categoriesView() {
 		const custom = S().categories;
-		return `<p class="muted pad">${ esc( t( 'catCustomNote' ) ) }</p>${ custom.length ? `<ul class="list">${ custom.map( ( c ) => `<li><div class="item">${ UI.catCi( EX.catInfo( c.id ) ) }<span class="mid"><b>${ esc( c.name ) }</b><small>${ esc( t( c.type === 'income' ? 'typeIncome' : 'typeExpense' ) ) }</small></span><button type="button" class="btn btn-ghost btn-sm" data-act="del-cat" data-id="${ esc( c.id ) }">${ esc( t( 'del' ) ) }</button></div></li>` ).join( '' ) }</ul>` : `<p class="muted pad">${ esc( t( 'catNone' ) ) }</p>` }
+		return `<p class="muted pad">${ esc( t( 'catCustomNote' ) ) }</p>${ custom.length ? `<ul class="list">${ custom.map( ( c ) => `<li><div class="item">${ UI.catCi( EX.catInfo( c.id ) ) }<span class="mid"><b>${ esc( c.name ) }</b><small>${ esc( t( c.type === 'income' ? 'typeIncome' : 'typeExpense' ) ) }</small></span><button type="button" class="ab-btn" data-edit-category="${esc(c.id)}" aria-label="${esc(t('actEdit'))}">${UI.icon('pencil',20)}</button><button type="button" class="btn btn-ghost btn-sm" data-act="del-cat" data-id="${ esc( c.id ) }">${ esc( t( 'del' ) ) }</button></div></li>` ).join( '' ) }</ul>` : `<p class="muted pad">${ esc( t( 'catNone' ) ) }</p>` }
 			<div class="btn-row"><button type="button" class="btn btn-primary" data-act="add-cat">${ UI.icon( 'plus', 20 ) } ${ esc( t( 'catAdd' ) ) }</button></div>`;
 	}
 	function dataView() {
@@ -368,7 +368,7 @@
 	}
 	function aboutView() {
 		const L = ( href, label, icon ) => `<a class="mrow" href="${ href }" target="_blank" rel="noopener noreferrer">${ UI.ci( icon, 'gray', 40 ) }<span class="mid"><b>${ esc( label ) }</b></span>${ UI.icon( 'link', 18 ) }</a>`;
-		return `<section class="card"><h2>${ esc( t( 'aboutTitle' ) ) }</h2><p class="muted">${ esc( t( 'aboutText' ) ) }</p><p class="muted small">${ esc( t( 'aboutVersion', { v: window.EXPENITY_VERSION || '0.3' } ) ) }</p></section>
+		return `<section class="card"><h2>${ esc( t( 'aboutTitle' ) ) }</h2><p class="muted">${ esc( t( 'aboutText' ) ).replace('George Stathopoulos','<a class="creator-link" href="https://george-stathopoulos.github.io/" target="_blank" rel="noopener noreferrer">George Stathopoulos</a>') }</p><p class="muted small">${ esc( t( 'aboutVersion', { v: window.EXPENITY_VERSION || '0.3' } ) ) }</p></section>
 			<div class="list">${ L( 'https://expenity.github.io/expenity/docs/', t( 'aboutHelp' ), 'help-circle' ) }${ L( 'https://george-stathopoulos.github.io/blog/', t( 'aboutBlog' ), 'notes' ) }${ L( 'https://george-stathopoulos.github.io/', t( 'aboutProjects' ), 'category-2' ) }${ L( 'https://github.com/expenity/expenity', t( 'aboutSource' ), 'brand-github' ) }</div>
 			<p class="muted small pad">${ esc( t( 'footerNote' ) ) }</p>
 			${ updateCard() }`;

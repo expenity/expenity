@@ -1,6 +1,32 @@
 {
-  "version": "0.11.1",
+  "version": "0.12.0",
   "releases": [
+    {
+      "version": "0.12.0",
+      "date": "2026-10-17",
+      "en": [
+        "Entry forms now use expandable rows for wallet/date, category/tags, repeat and extras. Amount and description remain visible; collapsed fields retain their values and validation opens the relevant row.",
+        "Shared control sizing across the app, including equally sized receipt-scanning and photo-attachment actions. Compact default Greek bank labels and wrapping text prevent horizontal overflow.",
+        "Recurring expenses and income are scheduled directly in the entry form, preserving the entered details without recording a payment.",
+        "Duplicate transactions and schedules into a new editable entry. Transaction copies use today’s date and do not carry payment links or receipt photos.",
+        "Pin up to three saved shortcuts per expense/income type for faster repeat entry.",
+        "Sync details now show pending personal/shared changes, deletions, retry options and the last successful sync.",
+        "Spending ideas now link to recorded evidence, using comparable periods and budget limits. Comparisons are suppressed when required exchange rates are missing or stale.",
+        "Create and edit categories and tags with visual icon and color choices. Inline category creation preserves the open entry.",
+        "More is grouped into money organization, personalization, account/data and help. Creator and blog links are included."
+      ],
+      "el": [
+        "Η καταχώριση οργανώθηκε σε αναπτυσσόμενες ενότητες για πορτοφόλι/ημερομηνία, κατηγορία/ετικέτες, επανάληψη και πρόσθετα. Το ποσό και το όνομα παραμένουν ορατά. Τα πεδία διατηρούνται όταν κλείνει μια ενότητα και τα σφάλματα ανοίγουν τη σχετική ενότητα.",
+        "Κοινοί κανόνες μεγέθους χειριστηρίων σε όλη την εφαρμογή, με ίσα κουμπιά σάρωσης απόδειξης και επισύναψης φωτογραφίας. Συντομότερη προεπιλεγμένη ονομασία τράπεζας και αναδίπλωση κειμένου χωρίς οριζόντια κύλιση.",
+        "Τα επαναλαμβανόμενα έξοδα και έσοδα προγραμματίζονται στην ίδια φόρμα, διατηρώντας τα στοιχεία χωρίς καταχώριση πληρωμής.",
+        "Αντιγραφή κινήσεων και προγραμμάτων ως νέα, επεξεργάσιμη καταχώριση. Τα αντίγραφα κινήσεων έχουν τη σημερινή ημερομηνία, χωρίς συνδέσεις πληρωμής ή φωτογραφίες αποδείξεων.",
+        "Καρφιτσώστε έως τρεις αποθηκευμένες συντομεύσεις ανά τύπο εξόδου/εσόδου για γρηγορότερη καταχώριση.",
+        "Οι λεπτομέρειες συγχρονισμού δείχνουν προσωπικές και κοινόχρηστες αλλαγές σε αναμονή, διαγραφές, επανάληψη προσπάθειας και τον τελευταίο επιτυχή συγχρονισμό.",
+        "Οι ιδέες εξόδων συνδέονται με τις καταχωρίσεις που τις στηρίζουν, συγκρίνοντας αντίστοιχες περιόδους και όρια προϋπολογισμών. Οι συγκρίσεις αποκρύπτονται όταν λείπουν ή έχουν παλιώσει οι απαραίτητες ισοτιμίες.",
+        "Δημιουργία και επεξεργασία κατηγοριών και ετικετών με επιλογές εικονιδίου και χρώματος. Η δημιουργία κατηγορίας μέσα από τη φόρμα διατηρεί την καταχώριση.",
+        "Οι επιλογές στα Περισσότερα ομαδοποιήθηκαν σε οργάνωση οικονομικών, προσαρμογή, λογαριασμό/δεδομένα και βοήθεια. Προστέθηκαν σύνδεσμοι δημιουργού και ιστολογίου."
+      ]
+    },
     {
       "version": "0.11.1",
       "date": "2026-10-17",

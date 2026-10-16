@@ -119,7 +119,7 @@
 	let draftOwner = '', draftTimer = 0;
 	const owner = () => EX.auth.isSignedIn() ? 'user:'+EX.auth.user()?.id : 'guest';
 	const draftKey = (type,edit='',recovery='') => 'expenity.entryDraft.v1:'+owner()+':'+(edit?'edit:'+edit:recovery?'recovery:'+recovery+':'+type:type);
-	const draftValue = () => ({type:T.type,amount:T.amount,toAmount:T.toAmount,account:T.account,toAccount:T.toAccount,name:T.name,note:T.note,category:T.category,date:T.date,tags:T.tags,photo:T.photo});
+	const draftValue = () => ({type:T.type,amount:T.amount,toAmount:T.toAmount,account:T.account,toAccount:T.toAccount,name:T.name,note:T.note,category:T.category,date:T.date,tags:T.tags,photo:T.photo,repeat:T.repeat||'once'});
 	const meaningful = () => T && (T.editId ? JSON.stringify(draftValue())!==T.baseline : !!(T.amount||T.toAmount||T.name.trim()||T.note.trim()||T.tags.length||T.photo||T.date!==today()));
 	function storeDraft(){
 		clearTimeout(draftTimer);if(!T||draftOwner!==owner()||T.saving||T.committed)return;
@@ -134,9 +134,9 @@
 	const entryButton=(act,label,icon='')=>`<button type="button" class="btn btn-ghost" data-entry="${act}">${icon?UI.icon(icon,20):''}${esc(t(label))}</button>`;
 	function walletChoices(to=false){
 		const id=to?T.toAccount:T.account;
-		return `<div class="entry-wallet-options" id="${to?'entryToChoices':'entryWalletChoices'}">${EX.writableAccounts().filter(a=>!to||a.id!==T.account&&EX.sameScope(a,EX.account(T.account))).map(a=>`<button type="button" class="chip${a.id===id?' on':''}" ${to?'data-tx-to':'data-tx-wallet'}="${esc(a.id)}">${UI.walletCi(a,26)}<span>${esc(EX.accountName(a))}<small>${esc(a.currency)}${a.space?' · '+esc(t('entryShared')):''}</small></span>${a.id===id?UI.icon('check',18):''}</button>`).join('')}</div>${!to&&T.account?`<label class="entry-check"><input id="entryDefault" type="checkbox"${(T.defaultTouched?T.makeDefault:T.makeDefault||S().settings.defaultAccount===T.account)?' checked':''}>${esc(t('entryDefault'))}</label>`:''}`;
+		return `<div class="entry-wallet-options" id="${to?'entryToChoices':'entryWalletChoices'}">${EX.writableAccounts().filter(a=>!to||a.id!==T.account&&EX.sameScope(a,EX.account(T.account))).map(a=>`<button type="button" class="chip${a.id===id?' on':''}" ${to?'data-tx-to':'data-tx-wallet'}="${esc(a.id)}">${UI.walletCi(a,26)}<span>${esc(EX.compactAccountName(a))}<small>${esc(a.currency)}${a.space?' · '+esc(t('entryShared')):''}</small></span>${a.id===id?UI.icon('check',18):''}</button>`).join('')}</div>${!to&&T.account?`<label class="entry-check"><input id="entryDefault" type="checkbox"${(T.defaultTouched?T.makeDefault:T.makeDefault||S().settings.defaultAccount===T.account)?' checked':''}>${esc(t('entryDefault'))}</label>`:''}`;
 	}
-	function walletControl(to=false){const a=EX.account(to?T.toAccount:T.account);return `<button type="button" class="entry-wallet" data-entry="${to?'to-wallet':'wallet'}" aria-expanded="${!!(to?T.toWalletOpen:T.walletOpen)}">${a?UI.walletCi(a,28):UI.icon('wallet',24)}<span>${esc(a?EX.accountName(a):t('entryChooseWallet'))}${a?.space?`<small>${esc(t('entryShared'))}</small>`:''}</span>${UI.icon('chevron-down',18)}</button>`;}
+	function walletControl(to=false){const a=EX.account(to?T.toAccount:T.account);return `<button type="button" class="entry-wallet" data-entry="${to?'to-wallet':'wallet'}" aria-expanded="${!!(to?T.toWalletOpen:T.walletOpen)}">${a?UI.walletCi(a,28):UI.icon('wallet',24)}<span>${esc(a?EX.compactAccountName(a):t('entryChooseWallet'))}${a?.space?`<small>${esc(t('entryShared'))}</small>`:''}</span>${UI.icon('chevron-down',18)}</button>`;}
 	function entryCategories(){
 		const cats=EX.catList(T.type),suggestion=!T.category?guessCategory(T.name,T.type):null;
 		const recent=S().txs.filter(x=>x.type===T.type&&x.category).slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map(x=>x.category);
@@ -144,43 +144,50 @@
 		const tile=c=>`<button type="button" class="catchip${T.category===c.key?' on':''}" data-tx-cat="${esc(c.key)}" aria-pressed="${T.category===c.key}">${UI.catCi(c,36)}<span>${esc(c.name)}${c.key===suggestion?`<small>${esc(t('entrySuggested'))}</small>`:''}</span></button>`;
 		return `<div class="entry-label">${esc(t(T.category?'fCategory':'entryChooseCat'))}</div><div class="cats entry-cat-suggestions">${ids.map(id=>tile(EX.catInfo(id))).join('')}<button type="button" class="catchip more" data-tx-catsmore aria-expanded="${!!T.catsOpen}">${UI.ci(T.catsOpen?'chevron-up':'category-2','gray',36)}<span>${esc(t('entryAllCats'))}</span></button></div>${T.catsOpen?`<div class="entry-allcats"><div class="cats">${cats.map(tile).join('')}</div>${entryButton('new-category','entryCreateCategory','plus')}</div>`:''}`;
 	}
+	function entryGroup(id,label,icon,summary,body){
+	 const open=(T.entryGroup??'payment')===id;
+	 return `<details name="entry-options" class="entry-group" data-entry-group="${id}"${open?' open':''}><summary>${UI.ci(icon,'teal',36)}<span class="entry-group-copy"><b>${esc(t(label))}</b><small data-group-summary="${id}">${esc(summary)}</small></span>${UI.icon('chevron-down',18)}</summary><div class="entry-group-body">${body}</div></details>`;
+	}
+	document.addEventListener('toggle',e=>{
+	 const group=e.target;if(!T||!group.isConnected||!group.matches?.('#sheet [data-entry-group]'))return;
+	 if(group.open){T.entryGroup=group.dataset.entryGroup;$('#sheet').querySelectorAll('[data-entry-group]').forEach(other=>{if(other!==group)other.open=false;});}
+	 else if(T.entryGroup===group.dataset.entryGroup)T.entryGroup='';
+	 storeDraft();
+	},true);
+
 	function txBody() {
 		const cur=walletCur(T.account),toCur=walletCur(T.toAccount),cross=T.type==='transfer'&&T.toAccount&&cur!==toCur;
-		const details=(act,label,icon,on,extra='')=>`<button type="button" data-entry="${act}" aria-expanded="${!!on}" class="entry-detail${extra?' populated':''}">${UI.icon(icon,22)}<span>${esc(t(label))}</span>${extra?`<small>${esc(extra)}</small>`:''}</button>`;
 		return `<div class="sheet-head entry-head">${X}<h2 id="sheetTitle">${esc(t(titleKey()))}</h2><button type="button" class="btn btn-ghost entry-change" data-entry="type" aria-expanded="${!!T.typeOpen}">${esc(t('entryChange'))}</button></div>
 		<div class="tx-scroll entry-scroll">
 		${T.discard?`<section class="entry-alert" role="alertdialog" aria-labelledby="discardTitle"><h3 id="discardTitle">${esc(t('entryCloseTitle'))}</h3><p>${esc(t('entryCloseText'))}</p><div class="btn-row">${entryButton('keep','entryKeep')}${entryButton('discard','entryDiscard')}</div></section>`:''}
 		${T.pendingShortcut!==undefined?`<section class="entry-alert" role="alert"><p>${esc(t('entryReplace'))}</p>${entryButton('apply-shortcut','entryApply')}${entryButton('cancel-shortcut','cancel')}</section>`:''}
 		${T.pendingSchedule?`<section class="entry-alert" role="alert"><p>${esc(t('entryLeaveSchedule'))}</p>${entryButton('schedule-go','entryContinue')}${entryButton('schedule-cancel','cancel')}</section>`:''}
 		${T.typeOpen?`<div class="entry-type-picker" role="group" aria-label="${esc(t('entryChange'))}">${['expense','income','transfer'].map(type=>`<button type="button" class="chip${type===T.type?' on':''}" data-tx-type="${type}">${esc(t('type'+type[0].toUpperCase()+type.slice(1)))}</button>`).join('')}</div>`:''}
-		<p class="muted small entry-draft-status" id="entryDraftStatus" role="status">${T.resumed?esc(t('entryResumed')):T.draftFail?esc(t('entryDraftFail')):''}</p>
+		${!T.editId&&T.type!=='transfer'?EXA.pinnedEntries?.(T.type)||'':''}<p class="muted small entry-draft-status" id="entryDraftStatus" role="status">${T.resumed?esc(t('entryResumed')):T.draftFail?esc(t('entryDraftFail')):''}</p>
 		${T.notice?`<p class="entry-alert" role="status">${esc(t(T.notice))}</p>`:''}
 		${T.type==='transfer'?`<div class="entry-transfer-wallets"><div><span class="entry-label">${esc(t('fromWallet'))}</span>${walletControl()}</div><button type="button" class="ab-btn" data-entry="swap" aria-label="${esc(t('entrySwap'))}">${UI.icon('arrows-exchange',24)}</button><div><span class="entry-label">${esc(t('toWallet'))}</span>${walletControl(true)}</div></div>`:''}
-		<div class="entry-amount-panel"><div class="entry-amount-context">${T.type!=='transfer'?walletControl():`<span>${esc(t('entrySent'))}</span>`}<span class="entry-currency" aria-label="${esc(cur)}">${esc(T.account?cur:'—')}</span></div>
+		<div class="entry-amount-panel"><div class="entry-amount-context"><span>${esc(t(T.type==='transfer'?'entrySent':'fAmount'))}</span><span class="entry-currency" aria-label="${esc(cur)}">${esc(T.account?cur:'—')}</span></div>
 		<button type="button" class="amt-display${T.keypadOpen&&T.target==='amount'?' on':''}" data-tx="target-amount" aria-controls="txKeypad" aria-expanded="${!!T.keypadOpen&&T.target==='amount'}" aria-label="${esc(t('fAmount'))}"><span class="cur">${esc(T.account?curSymbol(cur):'')}</span><span class="val${T.amount===''?' zero':''}" id="amtVal">${esc(showAmt(T.amount))}</span></button><small>${esc(t('entryTap'))}</small>
 		${cross?`<span class="entry-label">${esc(t('entryReceived'))} · ${esc(toCur)}</span><button type="button" class="amt-display small" data-tx="target-to" aria-controls="txKeypad" aria-expanded="${!!T.keypadOpen&&T.target==='toAmount'}" aria-label="${esc(t('fToAmount'))}"><span class="cur">${esc(curSymbol(toCur))}</span><span class="val" id="toAmtVal">${esc(showAmt(T.toAmount))}</span></button>`:''}</div>
-		${T.walletOpen?walletChoices():''}${T.toWalletOpen?walletChoices(true):''}
+
 		${T.currencyReview?`<div class="entry-alert" role="alert"><p>${esc(t('entryCurrencyReview'))}${T.sourceCurrency?' · '+esc(T.sourceCurrency)+' → '+esc(T.account?walletCur(T.account):'—'):''}</p>${entryButton('review-currency','entryReview')}</div>`:''}
-		${T.type==='expense'&&EX.state().settings.receiptScanner!==false?`<button type="button" class="btn btn-ghost entry-scan" data-receipt-scan>${UI.icon('photo',20)}${esc(t('scanReceipt'))}</button>`:''}<div class="entry-name"><label for="txDesc">${esc(t('entryName'))}</label><input id="txDesc" class="desc" maxlength="80" autocomplete="off" autocorrect="off" data-1p-ignore data-lpignore="true" placeholder="${esc(t('descPh'))}" value="${esc(T.name)}">
-		${T.type!=='transfer'?`<label class="remember-name"${T.name.trim()?'':' hidden'}><input type="checkbox" id="rememberName"${T.rememberName?' checked':''}>${UI.icon('bookmark',18)}${esc(t('entryNext'))}</label>${EX.savedNames(T.type).length?`<details class="saved-names"><summary>${UI.icon('bookmark',18)}${esc(t('savedNames'))} (${EX.savedNames(T.type).length}) ${UI.icon('chevron-down',16)}</summary><div class="saved-name-grid">${EX.savedNames(T.type).map((x,i)=>`<span><button type="button" class="chip" data-tx-saved="${i}">${esc(x.name)}</button></span>`).join('')}</div></details>`:''}`:''}</div>
-		${T.type!=='transfer'?`<div class="entry-category" id="entryCategory">${entryCategories()}</div>`:''}
-		<div class="entry-date"><button type="button" class="entry-date-button" data-entry="date" aria-expanded="${!!T.dateOpen}">${UI.icon('calendar',22)}<span>${esc(t('entryDate'))}<b>${esc(T.date===today()?t('relToday'):EX.dayName(T.date))}</b></span>${UI.icon('chevron-down',18)}</button>${T.dateOpen?`<div class="entry-date-options"><button type="button" class="chip" data-tx-date="today">${esc(t('relToday'))}</button><button type="button" class="chip" data-tx-date="yesterday">${esc(t('relYesterday'))}</button><label class="f"><span>${esc(t('pickDate'))}</span><input type="date" id="txDate" value="${esc(T.date)}"></label></div>`:''}</div>
-		<div class="entry-details">${details('photo','entryPhoto','photo',T.photoOpen,T.photo?'1':'')}${details('tags','entryTags','tag',T.tagsOpen,T.tags.length?String(T.tags.length):'')}${details('note','entryNote','notes',T.noteOpen,T.note?'✓':'')}${details('more','entryMore','dots',T.moreOpen)}</div>
-		<div class="entry-detail-content"${T.photoOpen?'':' hidden'}>${EXA.photos.slot(T.photo)}</div>
-		<div class="entry-detail-content"${T.tagsOpen?'':' hidden'}>${EXA.tagsField(T.tags)}${T.tags.length?`<p class="entry-tag-preview">${T.tags.map(x=>esc(x)).join(' · ')}</p>`:''}</div>
-		<div class="entry-detail-content"${T.noteOpen?'':' hidden'}><label for="txNote">${esc(t('fNote'))}</label><textarea id="txNote" rows="2" maxlength="400" placeholder="${esc(t('notePh'))}">${esc(T.note)}</textarea></div>
-		${T.tags.length&&!T.tagsOpen?`<div class="entry-tag-preview">${UI.icon('tag',16)} ${T.tags.map(x=>esc(x)).join(' · ')}</div>`:''}
-		${T.photo&&!T.photoOpen?`<div class="entry-photo-preview">${EXA.photos.button(T.photo)}</div>`:''}
-		${T.note&&!T.noteOpen?`<p class="entry-note-preview">${UI.icon('notes',16)} ${esc(T.note.slice(0,100))}</p>`:''}
-		<div class="entry-more"${T.moreOpen?'':' hidden'}>
+		<div class="entry-name"><label for="txDesc">${esc(t('entryName'))}</label><input id="txDesc" class="desc" maxlength="80" autocomplete="off" autocorrect="off" data-1p-ignore data-lpignore="true" placeholder="${esc(t('descPh'))}" value="${esc(T.name)}">
+		${T.type!=='transfer'?`<label class="remember-name"${T.name.trim()?'':' hidden'}><input type="checkbox" id="rememberName"${T.rememberName?' checked':''}>${UI.icon('bookmark',18)}${esc(t('entryNext'))}</label>${EX.savedNames(T.type).length?`<details class="saved-names"><summary>${UI.icon('bookmark',18)}${esc(t('savedNames'))} (${EX.savedNames(T.type).length}) ${UI.icon('chevron-down',16)}</summary><div class="saved-name-grid">${EX.savedNames(T.type).map((x,i)=>`<span><button type="button" class="chip" data-tx-saved="${i}">${esc(x.name)}</button>${EXA.pinControl?.(T.type,i)||''}</span>`).join('')}</div></details>`:''}`:''}</div>
+		${entryGroup('payment',T.type==='expense'?'entryPayment':'entryWalletDate','wallet',[(EX.account(T.account)?EX.compactAccountName(EX.account(T.account)):t('entryChooseWallet')),T.date===today()?t('relToday'):EX.dayName(T.date)].join(' · '),`${T.type!=='transfer'?walletControl():''}${T.walletOpen?walletChoices():''}${T.toWalletOpen?walletChoices(true):''}<div class="entry-date"><button type="button" class="entry-date-button" data-entry="date" aria-expanded="${!!T.dateOpen}">${UI.icon('calendar',22)}<span>${esc(t('entryDate'))}<b>${esc(T.date===today()?t('relToday'):EX.dayName(T.date))}</b></span>${UI.icon('chevron-down',18)}</button>${T.dateOpen?`<div class="entry-date-options"><button type="button" class="chip" data-tx-date="today">${esc(t('relToday'))}</button><button type="button" class="chip" data-tx-date="yesterday">${esc(t('relYesterday'))}</button><label class="f"><span>${esc(t('pickDate'))}</span><input type="date" id="txDate" value="${esc(T.date)}"></label></div>`:''}</div>`)}
+		${entryGroup('category',T.type==='transfer'?'entryTags':'entryCategoryTags','category-2',[T.type!=='transfer'?(T.category?EX.catInfo(T.category).name:t('entryChooseCat')):'',...T.tags].filter(Boolean).join(' · '),`${T.type!=='transfer'?`<div class="entry-category" id="entryCategory">${entryCategories()}</div>`:''}${EXA.tagsField(T.tags)}`)}
+		${!T.editId&&T.type!=='transfer'?entryGroup('repeat','fRepeats','repeat',EX.repeatLabel(T.repeat||'once'),`${!T.editId&&T.type!=='transfer'?`<label class="f entry-repeat"><span>${esc(t('fRepeats'))}</span><select id="entryRepeat">${EX.REPEATS.map(r=>`<option value="${r}"${r===(T.repeat||'once')?' selected':''}>${esc(EX.repeatLabel(r))}</option>`).join('')}</select></label>${(T.repeat||'once')!=='once'||T.date>today()?`<p class="entry-alert">${esc(t('scheduleSameForm'))}</p>`:''}`:''}`):''}
+		${entryGroup('extras','entryExtras','paperclip',[T.photo?t('entryPhoto'):'',T.note?t('entryNote'):''].filter(Boolean).join(' · ')||t('entryExtrasHint'),`${T.type==='expense'&&EX.state().settings.receiptScanner!==false?`<button type="button" class="btn btn-ghost entry-scan" data-receipt-scan>${UI.icon('photo',20)}${esc(t('scanReceipt'))}</button>`:''}		<div class="entry-detail-content">${EXA.photos.slot(T.photo)}</div>
+		<div class="entry-detail-content"><label for="txNote">${esc(t('fNote'))}</label><textarea id="txNote" rows="2" maxlength="400" placeholder="${esc(t('notePh'))}">${esc(T.note)}</textarea></div>
+		<div class="entry-more">
 		${T.type!=='transfer'?`<div class="entry-shortcut-options"><b>${esc(t('entryShortcut'))}</b><label class="entry-check"><input id="entryRememberWallet" type="checkbox"${T.rememberWallet?' checked':''}>${esc(t('entryRememberWallet'))}</label><label class="entry-check"><input id="entryRememberAmount" type="checkbox"${T.rememberAmount?' checked':''}>${esc(t('entryRememberAmount'))}</label>${EX.savedNames(T.type).length?`<details><summary>${esc(t('entryManageNames'))}</summary>${EX.savedNames(T.type).map((x,i)=>`<button type="button" class="btn btn-ghost" data-tx-forget="${i}">${UI.icon('trash',18)} ${esc(x.name)}</button>`).join('')}</details>`:''}</div>`:''}
 		${!T.editId?`<div class="quickline">${T.quick?`<label class="f"><span>${esc(t('quickLabel'))}</span><input id="txQuick" autocomplete="off" spellcheck="false" placeholder="${esc(t('quickTxPh'))}" value="${esc(T.quickText||'')}"></label>`:`<button type="button" class="btn btn-ghost" data-tx="quick">${esc(t('typeIt'))}</button>`}</div>`:''}
-		${T.type!=='transfer'?`<p class="muted small">${esc(t('entryScheduleText'))}</p>${entryButton('schedule','entryRepeat','repeat')}`:''}</div>
+		</div>`)}
 		<p class="err entry-error" id="txErr" role="alert" hidden></p></div>
-		<div class="entry-footer"><div class="tx-field-actions"${T.editingField?'':' hidden'}><button type="button" class="btn btn-ghost" data-tx="field-done">${UI.icon('check',20)}${esc(t('entryDone'))}</button></div><button type="button" class="btn btn-primary entry-save" data-tx="save"${T.saving?' disabled':''}>${esc(t(buttonKey()))}</button></div>
+		<div class="entry-footer"><div class="tx-field-actions"${T.editingField?'':' hidden'}><button type="button" class="btn btn-ghost" data-tx="field-done">${UI.icon('check',20)}${esc(t('entryDone'))}</button></div><button type="button" class="btn btn-primary entry-save" data-tx="save"${T.saving?' disabled':''}>${esc(t(!T.editId&&T.type!=='transfer'&&((T.repeat||'once')!=='once'||T.date>today())?(T.type==='income'?'entryScheduleIncome':'entryScheduleBill'):buttonKey()))}</button></div>
 		<div id="txKeypad" class="keypad"${T.keypadOpen?'':' hidden'} role="group" aria-label="${esc(t('fAmount'))}"><div class="keypad-head"><span>${esc(t(T.target==='toAmount'?'fToAmount':'fAmount'))}</span><button type="button" class="btn btn-ghost" data-tx="amount-done">${UI.icon('check',20)}${esc(t('entryDone'))}</button></div>${['1','2','3','4','5','6','7','8','9','.','0','<'].map(k=>`<button type="button" class="key" data-key="${k}" aria-label="${k==='<'?esc(t('del')):k==='.'?esc(decimalMark()):k}">${k==='<'?UI.icon('backspace',26):k==='.'?esc(decimalMark()):k}</button>`).join('')}</div>`;
 	}
 	function readTxFields() {
+        if(T&&$('#entryRepeat'))T.repeat=$('#entryRepeat').value;
 		if(!T||!$('#txDesc'))return;
 		T.name=$('#txDesc').value;T.tags=EXA.readTags($('#sheet'));T.rememberName=!!$('#rememberName')?.checked;
 		T.rememberWallet=!!$('#entryRememberWallet')?.checked;T.rememberAmount=!!$('#entryRememberAmount')?.checked;
@@ -198,7 +205,7 @@
 	EXA.openTx=(tx,preset={})=>{
 		if(T&&UI.sheetOpen()&&!T.committed){if(meaningful()){UI.closeSheet();return;}UI.closeSheet(true);}
 		EX.ensureWallet();const ws=EX.writableAccounts(),def=ws.find(a=>a.id===S().settings.defaultAccount),account=def?.id||(ws.length===1?ws[0].id:'');
-		const v={type:'expense',date:today(),account,amount:'',toAmount:'',name:'',note:'',category:null,...(tx||preset)};
+		const v={type:'expense',repeat:'once',date:today(),account,amount:'',toAmount:'',name:'',note:'',category:null,...(tx||preset)};
 		T={...v,tags:copy(v.tags||[]),photo:v.photo||'',id:tx?.id||uid(),editId:tx?.id||null,target:'amount',keypadOpen:false,editingField:false,rememberName:false,rememberWallet:false,rememberAmount:false,quick:false,quickText:'',noteOpen:false,makeDefault:false,original:tx?contentStamp(tx):null};
 		if(T.type==='transfer'&&!T.toAccount)T.toAccount=EX.peerAccount(T.account)?.id||'';
 		T.baseline=JSON.stringify(draftValue());const restored=restoreDraft(T.type,T.editId,T.recoveryId);if(restored){T={...restored,keypadOpen:false,editingField:false,saving:false,committed:false,discard:false,resumed:true,pendingSchedule:false,pendingShortcut:undefined};}
@@ -250,6 +257,9 @@
 		$$( '.amt-display' ).forEach( b => { b.classList.remove( 'on' ); b.setAttribute( 'aria-expanded', 'false' ); } );
 	} );
 
+	EXA.refreshEntry=()=>{if(T&&$('#txDesc')){readTxFields();drawTx(true,false);storeDraft();}};
+	EXA.categoryCreated=item=>{if(T&&$('#txDesc')&&item.type===T.type){readTxFields();T.category=item.id;T.catsOpen=false;drawTx(true,false);storeDraft();}};
+	EXA.applySavedEntry=i=>{if(!T)return;readTxFields();applyShortcut(i);};
 	EXA.txKey = pressKey;
 	function onTxQuick() {
 		const q = $( '#txQuick' ); if ( ! q ) return;readTxFields();
@@ -265,17 +275,25 @@
 		drawTx( true, false );
 		if ( hadFocus ) { const n = $( '#txQuick' ); n.focus(); n.setSelectionRange( n.value.length, n.value.length ); }
 	}
-	function entryError(key,selector){const e=$('#txErr');e.textContent=t(key);e.hidden=false;const field=$(selector||'[data-tx=save]');field?.setAttribute('aria-invalid','true');field?.setAttribute('aria-describedby','txErr');field?.scrollIntoView({block:'center'});field?.focus({preventScroll:true});}
+	function entryError(key,selector){const e=$('#txErr');e.textContent=t(key);e.hidden=false;const field=$(selector||'[data-tx=save]');const group=field?.closest('[data-entry-group]');if(group){group.open=true;T.entryGroup=group.dataset.entryGroup;}field?.setAttribute('aria-invalid','true');field?.setAttribute('aria-describedby','txErr');field?.scrollIntoView({block:'center'});field?.focus({preventScroll:true});}
 	function saveTx(){
 		if(!T||T.saving||T.committed)return;if(EXA.photos.busy)return toast(t('photoWorking'));readTxFields();
 		const amount=T.amount.replace(/\.$/,'');
 		if(!/^\d{1,9}(\.\d{1,2})?$/.test(amount)||EX.cents(amount)<=0)return entryError('errAmountReq','[data-tx=target-amount]');
 		if(!T.date||!/^\d{4}-\d{2}-\d{2}$/.test(T.date))return entryError('errDate','#txDate');
-		if(T.date>today()){T.moreOpen=true;drawTx(true,false);return entryError('entryFuture','[data-entry=schedule]');}
+		if(T.date>today()&&(T.editId||T.type==='transfer'))return entryError('entryFuture','#txDate');
 		if(!writable(T.account)){T.walletOpen=true;drawTx(true,false);return entryError('entryWalletGone','[data-entry=wallet]');}
 		if(T.currencyReview)return entryError('entryCurrencyReview','[data-entry=review-currency]');
-		if(T.type!=='transfer'&&!T.category){T.catsOpen=true;drawTx(true,false);return entryError('entryCategoryError','[data-tx-cat=uncategorized]');}
+		if(T.type!=='transfer'&&!T.category){T.catsOpen=true;T.entryGroup='category';drawTx(true,false);return entryError('entryCategoryError','[data-tx-cat=uncategorized]');}
 		if(T.type!=='transfer'&&!EX.catList(T.type).some(c=>c.key===T.category)&&T.category!=='uncategorized')return entryError('entryCategoryError','[data-tx-catsmore]');
+		if(!T.editId&&T.type!=='transfer'&&((T.repeat||'once')!=='once'||T.date>today())){
+          if(!T.name.trim())return entryError('errNameReq','#txDesc');
+          const list=T.type==='income'?S().incomes:S().bills;
+          if(list.some(x=>x.id===T.id))return;
+          const record={id:T.id,name:T.name.trim(),amount,account:T.account,currency:walletCur(T.account),category:T.category,tags:copy(T.tags),photo:T.photo||'',repeat:T.repeat||'once',next:T.date,day:parse(T.date).getDate(),...(T.type==='income'?{note:T.note.trim()}:{notes:T.note.trim(),lead:null})};
+          T.saving=true;list.push(record);if(!EX.save()){list.splice(list.indexOf(record),1);T.saving=false;return entryError('tSaveFail');}
+          const type=T.type;T.committed=true;dropDraft();UI.closeSheet(true);if(type==='income'){EXA.st.txFilter.type='income';EXA.st.incomeMode='recurring';}EXA.go(type==='income'?'activity':'bills');return;
+        }
 		const tx={type:T.type,amount,account:T.account,date:T.date,name:T.name.trim(),note:T.note.trim(),photo:T.photo||'',tags:T.tags||[]};
 		if(T.type==='transfer'){
 		 if(!writable(T.toAccount)||T.toAccount===T.account){T.toWalletOpen=true;drawTx(true,false);return entryError('errTransferSame','[data-entry=to-wallet]');}
@@ -340,7 +358,7 @@
 		if((el=g('[data-tx-forget]'))){readTxFields();const x=EX.savedNames(T.type)[Number(el.dataset.txForget)];if(x){S().settings.savedNames=S().settings.savedNames.filter(n=>n!==x);EX.save();drawTx(true,false);}return true;}
 		if((el=g('[data-tx-type]'))){changeType(el.dataset.txType);return true;}
 		if(g('[data-tx-catsmore]')){readTxFields();T.catsOpen=!T.catsOpen;drawTx(true,false);return true;}
-		if((el=g('[data-tx-cat]'))){readTxFields();T.category=el.dataset.txCat;T.catsOpen=false;drawTx(true,false);storeDraft();return true;}
+		if((el=g('[data-tx-cat]'))){readTxFields();T.entryGroup='category';T.category=el.dataset.txCat;T.catsOpen=false;drawTx(true,false);storeDraft();return true;}
 		if((el=g('[data-tx-wallet]'))){changeWallet(el.dataset.txWallet);return true;}
 		if((el=g('[data-tx-to]'))){changeWallet(el.dataset.txTo,true);return true;}
 		if((el=g('[data-tx-date]'))){readTxFields();T.dateMode=el.dataset.txDate;T.date=T.dateMode==='today'?today():T.dateMode==='yesterday'?addDays(today(),-1):T.date;T.dateOpen=T.dateMode==='other';drawTx(true,false);storeDraft();return true;}
@@ -361,23 +379,24 @@
 		  T.committed=true;UI.closeSheet(true);T=null;
 		  if(type==='income'){EXA.go('activity');EXA.st.txFilter.type='income';EXA.st.incomeMode='recurring';EXA.openIncome(null,v);}else EXA.openBill(null,v);return true;
 		 }
-		 if(a==='new-category'){T.categoryCreate=!T.categoryCreate;drawTx(true,false);if(T.categoryCreate){const zone=$('.entry-allcats');zone.insertAdjacentHTML('beforeend',`<div class="entry-category-create"><label class="f"><span>${esc(t('fName'))}</span><input id="entryCategoryName" maxlength="40"></label><label class="f"><span>${esc(t('cIcon'))}</span><select id="entryCategoryIcon">${['tag','coffee','shopping-cart','car','home','gift','briefcase','heart'].map(icon=>`<option value="${icon}">${esc(t('entryIcon_'+icon))}</option>`).join('')}</select></label><div class="entry-icon-preview">${UI.ci('tag','teal',40)}</div><button type="button" class="btn btn-primary" data-entry="create-category">${esc(t('entryCreateCategory'))}</button></div>`);}return true;}
+		 if(a==='new-category'){EXA.openCategory(null,T.type);return true;}
 		 if(a==='create-category'){const name=$('#entryCategoryName')?.value.trim();if(name){const id=uid();S().categories.push({id,name,type:T.type,iconName:$('#entryCategoryIcon')?.value||'tag',color:'teal'});if(EX.save()){T.category=id;T.catsOpen=false;drawTx(true,false);storeDraft();}}return true;}
 		 const field={type:'typeOpen',wallet:'walletOpen','to-wallet':'toWalletOpen',date:'dateOpen',photo:'photoOpen',tags:'tagsOpen',note:'noteOpen',more:'moreOpen'}[a];
-		 if(field){T[field]=!T[field];drawTx(true,false);return true;}return true;
+		 if(field){if(['wallet','to-wallet','date'].includes(a))T.entryGroup='payment';T[field]=!T[field];drawTx(true,false);return true;}return true;
 		}
 		if((el=g('[data-tx]'))){const a=el.dataset.tx;
-		 if(a==='save')saveTx();else if(a==='target-amount')setKeypad(true,'amount');else if(a==='target-to')setKeypad(true,'toAmount');else if(a==='amount-done'){setKeypad(false);storeDraft();}else if(a==='field-done'){finishField();drawTx(true,false);storeDraft();}else if(a==='quick'){readTxFields();T.quick=true;T.moreOpen=true;drawTx(true,false);$('#txQuick')?.focus();}else if(a==='note'){readTxFields();T.noteOpen=!T.noteOpen;drawTx(true,false);}
+		 if(a==='save')saveTx();else if(a==='target-amount')setKeypad(true,'amount');else if(a==='target-to')setKeypad(true,'toAmount');else if(a==='amount-done'){setKeypad(false);storeDraft();}else if(a==='field-done'){finishField();drawTx(true,false);storeDraft();}else if(a==='quick'){readTxFields();T.quick=true;T.moreOpen=true;T.entryGroup='extras';drawTx(true,false);$('#txQuick')?.focus();}else if(a==='note'){readTxFields();T.noteOpen=!T.noteOpen;drawTx(true,false);}
 		 return true;
 		}return false;
 	};
 	EXA.txInput=e=>{if(!T||!$('#txDesc'))return false;
+		if(e.target.id==='entryRepeat'){readTxFields();drawTx(true,false);storeDraft();return true;}
 		if(e.target.id==='txQuick'){onTxQuick();storeDraft();return true;}
 		if(e.target.id==='txDesc'&&e.type==='input'){T.name=e.target.value;const r=$('.remember-name');if(r)r.hidden=!T.name.trim();const cat=$('#entryCategory');if(cat)cat.innerHTML=entryCategories();}
 		if(e.target.id==='entryCategoryIcon'){const preview=$('.entry-icon-preview');if(preview)preview.innerHTML=UI.ci(e.target.value,'teal',40);}
 		if(['entryRememberAmount','entryRememberWallet'].includes(e.target.id)&&e.target.checked){if(T.name.trim()){T.rememberName=true;$('#rememberName').checked=true;}else{e.target.checked=false;toast(t('entryNoName'));}}
 		if(e.target.id==='entryDefault'){T.defaultTouched=true;T.makeDefault=e.target.checked;}
-		clearTimeout(draftTimer);draftTimer=setTimeout(storeDraft,120);return false;
+		const summary=$('[data-group-summary=category]');if(summary)summary.textContent=[T.category?EX.catInfo(T.category).name:t('entryChooseCat'),...EXA.readTags($('#sheet'))].join(' · ');const extra=$('[data-group-summary=extras]');if(extra)extra.textContent=[T.photo?t('entryPhoto'):'',$('#txNote')?.value?t('entryNote'):''].filter(Boolean).join(' · ')||t('entryExtrasHint');clearTimeout(draftTimer);draftTimer=setTimeout(storeDraft,120);return false;
 	};
 	window.addEventListener('pagehide',storeDraft);
 	document.addEventListener('visibilitychange',()=>{if(document.hidden)storeDraft();});
@@ -442,7 +461,7 @@
 			<label class="f"><span>${ esc( t( 'fAmount' ) ) }</span><input name="amount" inputmode="decimal" placeholder="0.00" autocomplete="off" value="${ esc( v.amount ) }"></label>
 			<div class="grid2"><label class="f"><span>${ esc( t( 'fNext' ) ) }</span><input name="next" type="date" required value="${ esc( v.next || '' ) }"></label>
 			<label class="f"><span>${ esc( t( 'fRepeats' ) ) }</span><select name="repeat">${ EX.REPEATS.map( ( r ) => `<option value="${ r }"${ v.repeat === r ? ' selected' : '' }>${ esc( t( 'r' + r.charAt( 0 ).toUpperCase() + r.slice( 1 ) ) ) }</option>` ).join( '' ) }</select></label></div>
-			<div class="lbl">${ esc( t( 'fCategory' ) ) }</div><div class="cats" id="billCats">${ catChips( v.category ) }</div><input type="hidden" name="category" value="${ esc( v.category ) }">
+			<div class="lbl">${ esc( t( 'fCategory' ) ) }</div><div class="cats" id="billCats">${ catChips( v.category ) }</div><input type="hidden" name="category" value="${ esc( v.category ) }"><button type="button" class="btn btn-ghost" data-inline-category="expense">${esc(t('entryCreateCategory'))}</button>
 			<div><label class="f"><span>${ esc( t( 'fRemind' ) ) }</span><select name="lead"><option value="">${ esc( t( 'leadDefault' ) ) }</option>${ EX.LEADS.map( ( x ) => `<option value="${ x }"${ v.lead === x ? ' selected' : '' }>${ esc( t( 'lead' + x ) ) }</option>` ).join( '' ) }</select></label>${EXA.reminderNotice()}
 </div>
 			<label class="f chk"><input type="checkbox" name="variable"${ v.variable ? ' checked' : '' }> <span>${ esc( t( 'fVariable' ) ) }</span></label>
@@ -660,7 +679,7 @@
 		return `<div class="detail"><div class="detail-top">${ UI.catCi( info.iconName ? info : EX.catInfo( x.category ), 64 ) }<h3>${ esc( x.name || info.name ) }</h3><div class="big ${ x.type }">${ sign }${ esc( money( Number( x.amount ), cur ) ) }</div></div>
 			<p class="entry-receipt" data-entry-status="${esc(x.id)}" role="status">${EXA.entryStatus(x.id)}</p>
 			${ EXA.tagsDisplay(x.tags) }${ EXA.photos.button( x.photo ) }<dl class="facts">${ rows.map( ( [ k, v ] ) => `<div><dt>${ esc( k ) }</dt><dd>${ esc( v ) }</dd></div>` ).join( '' ) }</dl>
-			<div class="btn-row stack"><button type="button" class="btn btn-ghost" data-reverse-tx="${esc(x.id)}">${UI.icon('refresh',20)} ${esc(EXA.label(x.billId ? 'unpaid' : x.incomeId ? 'unreceived' : 'reverse'))}</button><button type="button" class="btn btn-primary" data-act="edit-tx" data-id="${ esc( x.id ) }">${ UI.icon( 'pencil', 20 ) } ${ esc( t( 'actEdit' ) ) }</button><button type="button" class="btn btn-danger-ghost" data-act="del-tx" data-id="${ esc( x.id ) }">${ UI.icon( 'trash', 20 ) } ${ esc( t( 'actDelete' ) ) }</button></div></div>`;
+			<div class="btn-row stack"><button type="button" class="btn btn-ghost" data-duplicate="tx" data-id="${esc(x.id)}">${UI.icon('copy',20)} ${esc(t('duplicateRecord'))}</button><button type="button" class="btn btn-ghost" data-reverse-tx="${esc(x.id)}">${UI.icon('refresh',20)} ${esc(EXA.label(x.billId ? 'unpaid' : x.incomeId ? 'unreceived' : 'reverse'))}</button><button type="button" class="btn btn-primary" data-act="edit-tx" data-id="${ esc( x.id ) }">${ UI.icon( 'pencil', 20 ) } ${ esc( t( 'actEdit' ) ) }</button><button type="button" class="btn btn-danger-ghost" data-act="del-tx" data-id="${ esc( x.id ) }">${ UI.icon( 'trash', 20 ) } ${ esc( t( 'actDelete' ) ) }</button></div></div>`;
 	}
 	function billDetailHtml( b ) {
 		const rows = [ [ t( 'dDue' ), `${ EXA.rel( b.next ) } · ${ dayName( b.next ) }` ], [ t( 'dRepeats' ), EX.repeatLabel( b.repeat ) ], b.account ? [ t( 'dWallet' ), EXA.walletName( b.account ) ] : null, [ t( 'fRemind' ), t( 'lead' + EXA.lead( b ) ) ], b.reference ? [ t( 'dReference' ), b.reference ] : null, b.notes ? [ t( 'dNote' ), b.notes ] : null, b.by && ( EX.account( b.account ) || {} ).space ? [ t( 'dAddedBy' ), EX.spaces.nameOf( b.by, EX.account( b.account ).space ) ] : null ].filter( Boolean );
@@ -669,7 +688,7 @@
 			<div class="btn-row stack"><button type="button" class="btn btn-primary" data-act="pay-bill" data-id="${ esc( b.id ) }">${ UI.icon( 'check', 20 ) } ${ esc( b.autopay ? t( 'checked' ) : t( 'actPaid' ) ) }</button>
 			<div class="btn-row two"><button type="button" class="btn btn-ghost" data-act="snooze1" data-id="${ esc( b.id ) }">${ UI.icon( 'clock-pause', 20 ) } ${ esc( t( 'snooze1' ) ) }</button>${ b.repeat !== 'once' ? `<button type="button" class="btn btn-ghost" data-act="skip" data-id="${ esc( b.id ) }">${ UI.icon( 'player-skip-forward', 20 ) } ${ esc( t( 'skipThis' ) ) }</button>` : '' }</div>
 			<div class="btn-row two">${ b.payUrl ? `<a class="btn btn-ghost" href="${ esc( b.payUrl ) }" target="_blank" rel="noopener noreferrer">${ UI.icon( 'link', 20 ) } ${ esc( t( 'openLink' ) ) }</a>` : '' }${ b.reference ? `<button type="button" class="btn btn-ghost" data-act="copyref" data-id="${ esc( b.id ) }">${ UI.icon( 'copy', 20 ) } ${ esc( t( 'copyRef' ) ) }</button>` : '' }</div>
-			<div class="btn-row two"><button type="button" class="btn btn-ghost" data-act="edit-bill" data-id="${ esc( b.id ) }">${ UI.icon( 'pencil', 20 ) } ${ esc( t( 'actEdit' ) ) }</button><button type="button" class="btn btn-danger-ghost" data-act="del-bill" data-id="${ esc( b.id ) }">${ UI.icon( 'trash', 20 ) } ${ esc( t( 'actDelete' ) ) }</button></div></div></div>`;
+			<button type="button" class="btn btn-ghost" data-duplicate="bill" data-id="${esc(b.id)}">${UI.icon('copy',20)} ${esc(t('duplicateRecord'))}</button><div class="btn-row two"><button type="button" class="btn btn-ghost" data-act="edit-bill" data-id="${ esc( b.id ) }">${ UI.icon( 'pencil', 20 ) } ${ esc( t( 'actEdit' ) ) }</button><button type="button" class="btn btn-danger-ghost" data-act="del-bill" data-id="${ esc( b.id ) }">${ UI.icon( 'trash', 20 ) } ${ esc( t( 'actDelete' ) ) }</button></div></div></div>`;
 	}
 	EXA.detailHtml = ( sel ) => {
 		if ( ! sel ) return '';
