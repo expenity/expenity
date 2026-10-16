@@ -86,6 +86,7 @@ ok( creds.length === 1 && creds[ 0 ].isResidentCredential, 'a discoverable passk
 
 // 2. Data entered on A reaches the server, and a second device signs in and gets it.
 await addTx( A, 'expense', '12.50', 'Lunch A' );
+await A.page.evaluate(()=>{const s=EX.state();s.txs.find(x=>x.name==='Lunch A').tags=['Work'];s.settings.homeLayout=[{id:'balance',size:'compact',hidden:false},{id:'ideas',size:'wide',hidden:true}];EX.save();});
 await synced( A );
 const B = await device( 'B' );
 for ( const c of creds ) await B.cdp.send( 'WebAuthn.addCredential', { authenticatorId: B.authenticatorId, credential: c } ); // passkeys sync between a person's devices
@@ -94,6 +95,7 @@ await avatar( B ); await B.page.click( '[data-more=account]' ); await B.page.cli
 await B.page.click( '#authLogin' );
 await B.page.waitForFunction( () => window.EX.auth.isSignedIn() && window.EX.state().txs.length >= 1, null, { timeout: 20000 } );
 ok( ( await txs( B ) ).some( ( x ) => x.n === 'Lunch A' && x.a === '12.50' ), 'device B signs in with the passkey and sees the expense from device A' );
+ok(await B.page.evaluate(()=>EX.state().txs.find(x=>x.name==='Lunch A').tags.includes('Work')&&EX.state().settings.tags.includes('Work')&&EX.state().settings.homeLayout.find(x=>x.id==='ideas').hidden),'tags and dashboard layout sync to the second device');
 await B.page.click( '[data-go=home]:visible' );
 ok( await B.page.locator( '.promo' ).count() === 0 || ! /Not backed up/.test( await B.page.locator( '#view' ).innerText() ), 'a signed-in user no longer sees the backup banner' );
 
@@ -190,9 +192,9 @@ ok( true, 'a deleted account cannot be signed into any more' );
 	await R.page.goto( APP ); await R.page.waitForSelector( '#flowRegister', { timeout: 20000 } );
 	await R.page.fill( '#flowRegister [name=email]', `again${ Date.now() }@example.com` ); await R.page.click( '#flowRegister [type=submit]' );
 	await R.page.waitForSelector( '#codesDone', { timeout: 20000 } ); await R.page.check( '#codesSaved' ); await R.page.click( '#codesDone' );
-	await R.page.click( '[data-flow=install-skip]' );
+	await R.page.click( '[data-flow=install-skip]' ); await R.page.click('#confirmYes');
 	await R.page.fill( '#setupForm [name=name]', 'Maria' ); await R.page.click( '[data-flow=next]' );
-	for ( let i = 0; i < 6 && await R.page.locator( '[data-flow=start]' ).count() === 0; i++ ) await R.page.click( '[data-flow=next]' );
+	for ( let i = 0; i < 10 && await R.page.locator( '[data-flow=start]' ).count() === 0; i++ ) await R.page.click( '[data-flow=next]' );
 	await R.page.click( '[data-flow=start]' );
 	await addTx( R, 'expense', '9', 'Bread' ); await runSync( R );
 	await R.page.evaluate( () => window.EXA.go( 'more', 'account' ) ); await R.page.click( '[data-act=sign-out]' );

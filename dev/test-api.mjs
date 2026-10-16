@@ -14,7 +14,7 @@ import { createServer as createHttp } from 'node:http';
 
 const WORKER = join( process.cwd(), 'worker' );
 const PERSIST = mkdtempSync( join( tmpdir(), 'expenity-d1-' ) );
-const PORT = 8791;
+const PORT = 8792;
 const API = `http://127.0.0.1:${ PORT }`;
 const ORIGIN = 'http://localhost:8766';
 const VAPID = await ( async () => { const k = await wc.subtle.generateKey( { name: 'ECDH', namedCurve: 'P-256' }, true, [ 'deriveBits' ] ); return { pub: Buffer.from( await wc.subtle.exportKey( 'raw', k.publicKey ) ).toString( 'base64url' ), jwk: await wc.subtle.exportKey( 'jwk', k.privateKey ) }; } )();

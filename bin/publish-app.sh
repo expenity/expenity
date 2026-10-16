@@ -15,7 +15,7 @@ writeFileSync(html,readFileSync(html,'utf8').replace(/((?:src|href)="[^"?]+\.(?:
 writeFileSync(sw,readFileSync(sw,'utf8').replace(/(const FILES = \[[^;]+\]);/, '$1.map( f => /\\.(js|css)$/.test(f) ? f + "?v='+build+'" : f );'));
 JS
 git -C "$work" add app
-git -C "$work" commit --quiet -m "App 0.6.0: reminders, release notes, tags and dashboard customisation"
+git -C "$work" commit --quiet -m "Update app build"
 git -C "$work" push --quiet origin gh-pages
 printf 'App pushed: https://expenity.github.io/expenity/app/\n'
 # Keep the temporary checkout available if a push fails; remove on success.

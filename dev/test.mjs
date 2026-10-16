@@ -84,6 +84,8 @@ ok( await page.locator( '.anim-stage' ).isVisible() && await page.locator( '[dat
 await page.click( '[data-fstep=plat][data-plat=android]' );
 ok( await page.locator( '.anim-stage.plat-android' ).count() === 1, 'the install guide can switch platform' );
 await page.click( '[data-flow=install-skip]' );
+await page.click('#confirmYes');
+await page.waitForSelector('#setupForm input[name=name]');
 ok( await page.locator( '#setupForm input[name=name]' ).isVisible(), 'then the setup wizard starts, asking for a name' );
 await page.fill( '#setupForm [name=name]', 'Tester' ); await page.click( '[data-flow=next]' );
 await page.click( '[data-fstep=cur][data-cur=EUR]' ); await page.click( '[data-flow=next]' );
@@ -100,6 +102,7 @@ await page.click( '[data-flow=next]' );
 await page.click( '[data-fstep=motion][data-motion=off]' );
 ok( await page.evaluate( () => document.documentElement.dataset.motion ) === 'off', 'animations can be switched off in the wizard' );
 await page.click( '[data-flow=next]' );
+if(await page.locator('.tour-grid').count()) await page.click('[data-flow=next]');
 ok( await page.locator( '.swipe-demo' ).isVisible() && await page.locator( '.tip-list li' ).count() === 3, 'the wizard shows an animated demo of swiping a row' );
 await page.click( '[data-flow=next]' );
 ok( await page.locator( '[data-flow=start]' ).isVisible(), 'the wizard ends on a done screen' );
@@ -441,6 +444,7 @@ for ( const w of [ 320, 360, 390, 430 ] ) {
 	ok( await p.locator( '#notifyBtn' ).count() === 1, 'push: guests still get notifications while the app is open' );
 	await p.evaluate( () => { window.EX.auth.isSignedIn = () => true; window.EXA.render(); } );
 	ok( await p.locator( '[data-push=on]' ).count() === 1 && await p.locator( '#notifyBtn' ).count() === 1, 'push: signed in, the card offers to turn notifications on' );
+	await c.grantPermissions(['notifications']);
 	await p.evaluate( () => { window.EX.state().device.push = { hour: 9 }; window.EX.state().device.notify = false; window.EXA.render(); } );
 	ok( await p.locator( '#pushHour' ).count() === 1 && await p.locator( '[data-push=test]' ).count() === 1 && await p.locator( '#notifyBtn' ).count() === 0, 'push: when on, it shows the time, a test button and hides the in-app option' );
 	await c.close();
@@ -508,9 +512,9 @@ for ( const w of [ 320, 360, 390, 430 ] ) {
 	await p.waitForTimeout( 400 );
 	await p.click( '#updBtn' ); await p.waitForFunction( () => /latest version/.test( document.querySelector( '#updLine' ).textContent ), null, { timeout: 5000 } );
 	ok( true, 'update check: the same build says the app is up to date' );
-	await c.route( '**/sw.js*', ( route ) => route.fulfill( { contentType: 'text/javascript', body: 'const CACHE = \'expenity-v999\';' } ) );
-	await p.click( '#updBtn' ); await p.waitForFunction( () => /new version/.test( document.querySelector( '#updLine' ).textContent ), null, { timeout: 5000 } );
-	ok( await p.locator( '#updBtn[data-act=apply-update]' ).count() === 1, 'update check: a newer build offers "Update now"' );
+	await c.route('**/releases.json',route=>route.fulfill({status:503,body:'Unavailable'}));
+	await p.click('#updBtn'); await p.waitForFunction(()=>/Could not download/.test(document.querySelector('#updLine').textContent),null,{timeout:5000});
+	ok(!await p.locator('#updBtn').isDisabled(),'update check: a failed manifest download shows an error and permits retry');
 	await c.close();
 }
 
