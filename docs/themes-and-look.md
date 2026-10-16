@@ -1,6 +1,6 @@
 # Themes and animations
 
-Expenity has twelve themes. A theme changes more than colour: shapes, type, borders and a few details too. Pick one in **More → Appearance and language**, or during setup.
+Expenity has fourteen themes plus a custom theme editor. A theme changes more than colour: shapes, type, borders and a few details too. Pick one in **More → Appearance and language**, or during setup.
 
 ![Six of the themes.](images/themes-gallery.png)
 
@@ -35,3 +35,9 @@ Expenity moves a little. The balance card on Home **flips over** when you tap it
 Theme, light or dark and animations are remembered on each device. Language is too: switch it any time in More → Appearance and language, or from the welcome screen.
 
 ![Dark mode.](images/home-dark.png)
+
+## Amberwave, Ion and your own palette
+
+Amberwave combines amber neon with warm shadows; Ion uses electric cyan on deep blue. Together with Synthwave they have sparse falling dots with thin trails. The effect pauses when hidden and follows reduced/off motion settings. Select **Your theme → Create your theme** to choose background, cards, accent and text colours, corner shape and typography. Text must have readable contrast on both backgrounds before saving. Trails are optional. Custom theme choices are saved per device.
+
+The balance animation begins on launch and screen navigation, stays between zero and the true amount, and ends on the exact value.

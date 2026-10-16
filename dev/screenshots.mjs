@@ -33,10 +33,10 @@ const DEMO = () => {
 	for ( let m = 0; m < 6; m++ ) { add( 'income', 1800 + m * 40, 'salary', -m * 30 - 9, t( 'cat_salary' ) ); [ [ 'food', 210 + m * 15 ], [ 'transport', 80 + m * 5 ], [ 'leisure', 90 ], [ 'shopping', 120 + m * 20 ], [ 'health', 35 ] ].forEach( ( [ c, a ], i ) => add( 'expense', a, c, -m * 30 - i * 2 - 1, t( 'cat_' + c ) ) ); }
 	add( 'expense', 3.5, 'food', 0, t( 'sampleCoffee' ), 'w2' ); add( 'expense', 42.3, 'food', -1, t( 'cat_food' ) ); add( 'expense', 18.4, 'food', -3, 'efood' ); add( 'expense', 22.1, 'food', -9, 'Wolt' ); add( 'expense', 19.9, 'food', -14, 'efood' );
 	const mk = ( key, amount, cat, repeat, off, extra = {} ) => S.bills.push( Object.assign( { id: X.uid(), name: t( key ), amount: String( amount ), currency: 'EUR', category: cat, repeat, next: X.addDays( td, off ), day: X.parse( X.addDays( td, off ) ).getDate(), lead: null, account: 'w1' }, extra ) );
-	mk( 'sampleRent', 850, 'housing', 'monthly', 4 ); mk( 'sampleElectricity', 64.2, 'utilities', 'monthly', -2, { variable: true } ); mk( 'tplNetflix', 15.99, 'subscriptions', 'monthly', 1 ); mk( 'tplSpotify', 10.99, 'subscriptions', 'monthly', 12 ); mk( 'sampleCarIns', 420, 'insurance', 'yearly', 38 ); mk( 'sampleGym', 35, 'health', 'monthly', 16 );
+	mk( 'sampleRent', 850, 'housing', 'monthly', 4 ); mk( 'sampleElectricity', 64.2, 'utilities', 'monthly', -2, { variable: true } ); mk( 'tourSubscription', 15.99, 'subscriptions', 'monthly', 1 ); mk( 'cat_subscriptions', 10.99, 'subscriptions', 'monthly', 12 ); mk( 'sampleCarIns', 420, 'insurance', 'yearly', 38 ); mk( 'sampleGym', 35, 'health', 'monthly', 16 );
 	S.budgets.push( { id: 'bg1', category: 'food', amount: '300', period: 'monthly', rollover: false }, { id: 'bg2', category: 'leisure', amount: '100', period: 'monthly', rollover: false }, { id: 'bg3', category: 'all', amount: '1500', period: 'monthly', rollover: true } );
-	S.goals.push( { id: 'g1', name: t( 'goalPreset_trip' ), target: '2000', deadline: X.addDays( td, 150 ), icon: 'plane' }, { id: 'g2', name: 'Laptop', target: '1200', deadline: '', icon: 'device-laptop' } );
-	S.txs.push( { id: 'gt1', type: 'expense', amount: '700', account: 'w1', category: 'goal', date: X.addDays( td, -20 ), name: t( 'goalPreset_trip' ), goalId: 'g1' }, { id: 'gt2', type: 'expense', amount: '300', account: 'w1', category: 'goal', date: X.addDays( td, -5 ), name: t( 'goalPreset_trip' ), goalId: 'g1' }, { id: 'gt3', type: 'expense', amount: '250', account: 'w1', category: 'goal', date: X.addDays( td, -9 ), name: 'Laptop', goalId: 'g2' } );
+	S.goals.push( { id: 'g1', name: t( 'goalPreset_trip' ), target: '2000', deadline: X.addDays( td, 150 ), icon: 'plane' }, { id: 'g2', name: X.lang() === 'el' ? 'Υπολογιστής' : 'Laptop', target: '1200', deadline: '', icon: 'device-laptop' } );
+	S.txs.push( { id: 'gt1', type: 'expense', amount: '700', account: 'w1', category: 'goal', date: X.addDays( td, -20 ), name: t( 'goalPreset_trip' ), goalId: 'g1' }, { id: 'gt2', type: 'expense', amount: '300', account: 'w1', category: 'goal', date: X.addDays( td, -5 ), name: t( 'goalPreset_trip' ), goalId: 'g1' }, { id: 'gt3', type: 'expense', amount: '250', account: 'w1', category: 'goal', date: X.addDays( td, -9 ), name: X.lang() === 'el' ? 'Υπολογιστής' : 'Laptop', goalId: 'g2' } );
 	S.incomes.push( { id: 'i1', name: t( 'cat_salary' ), amount: '1900', currency: 'EUR', account: 'w1', repeat: 'monthly', next: X.addDays( td, 11 ), day: 1, category: 'salary' } );
 	S.device.bannerDismissed = true; S.device.installDismissed = true; window.EXA.skipFlow();
 };
@@ -50,7 +50,7 @@ async function open( lang, { width = 390, height = 844, dark = false, touch = tr
 	return { page, context };
 }
 let sfx = '';
-const shot = async ( page, name ) => { await page.waitForTimeout( 450 ); await page.screenshot( { path: join( OUT, name + sfx + '.png' ) } ); console.log( name + sfx ); };
+const shot = async ( page, name ) => { await page.waitForTimeout( 950 ); await page.screenshot( { path: join( OUT, name + sfx + '.png' ) } ); console.log( name + sfx ); };
 const go = ( page, view, more ) => page.evaluate( ( [ v, m ] ) => window.EXA.go( v, m || 'root' ), [ view, more ] );
 
 for ( const lang of [ 'en', 'el' ] ) {
@@ -61,19 +61,19 @@ for ( const lang of [ 'en', 'el' ] ) {
 		await page.click( '[data-flow=guest]' ); await page.click( '[data-fstep=plat][data-plat=ios]' ); await page.waitForTimeout( 1500 ); await shot( page, 'install' );
 		await page.click( '[data-flow=install-skip]' ); await page.click( '[data-flow=next]' ); await page.click( '[data-flow=next]' );
 		await page.click( '[data-fstep=aim][data-aim=save]' ); await page.click( '[data-fstep=aim][data-aim=subs]' ); await shot( page, 'setup-aims' );
-		for ( let i = 0; i < 8 && await page.locator( '.swipe-demo' ).count() === 0; i++ ) await page.click( '[data-flow=next]' ); await page.waitForTimeout( 2200 ); await shot( page, 'setup-tips' );
+		for ( let i = 0; i < 9 && await page.locator( '.swipe-demo' ).count() === 0; i++ ) { if(await page.locator('.tour-grid').count())await shot(page,'setup-tour'); await page.click('[data-flow=next]'); } await page.waitForTimeout( 2200 ); await shot( page, 'setup-tips' );
 		await context.close();
 	}
 	{ // The app on a phone
 		const { page, context } = await open( lang );
 		await shot( page, 'home' );
-		await page.click( '.fab' ); await page.click( '[data-act=tx-expense]' ); await page.click( '[data-key="1"]' ); await page.click( '[data-key="2"]' ); await page.click( '[data-key="."]' ); await page.click( '[data-key="5"]' ); await page.fill( '#txDesc', lang === 'el' ? 'Μεσημεριανό' : 'Lunch' ); await shot( page, 'add-expense' );
+		await page.click( '.fab' ); await page.click( '[data-act=tx-expense]' ); await page.click('[data-tx=target-amount]'); await page.click( '[data-key="1"]' ); await page.click( '[data-key="2"]' ); await page.click( '[data-key="."]' ); await page.click( '[data-key="5"]' ); await page.fill( '#txDesc', lang === 'el' ? 'Μεσημεριανό' : 'Lunch' ); await page.click('[data-tx=field-done]'); await shot( page, 'add-expense' );
 		await page.keyboard.press( 'Escape' );
 		await go( page, 'activity' ); await shot( page, 'activity' );
 		await go( page, 'bills' ); await shot( page, 'bills' );
 		await page.evaluate( () => { window.EXA.st.planTab = 'budgets'; } ); await go( page, 'plan' ); await shot( page, 'plan-budgets' );
 		await page.evaluate( () => { window.EXA.st.planTab = 'goals'; } ); await go( page, 'plan' ); await shot( page, 'plan-goals' );
-		await page.evaluate( () => { window.EXA.st.planTab = 'ideas'; } ); await go( page, 'plan' ); await shot( page, 'plan-ideas' );
+		await page.evaluate( () => { window.EXA.st.ideasExpanded = true; } ); await go( page, 'home' ); await shot( page, 'plan-ideas' );
 		for ( const tab of [ 'overview', 'spending', 'forecast' ] ) { await page.evaluate( ( x ) => { window.EXA.st.rep.tab = x; window.EXA.st.rep.period = '12m'; }, tab ); await go( page, 'reports' ); await shot( page, 'reports-' + tab ); }
 		await go( page, 'more', 'wallets' ); await shot( page, 'wallets' );
 		await go( page, 'more', 'appearance' ); await shot( page, 'themes' );

@@ -29,6 +29,14 @@ async function visit( path, name, { width = 1360, height = 900, full = true } = 
 	await page.waitForLoadState( 'networkidle' );
 	await page.waitForTimeout( 400 );
 	await page.screenshot( { path: join( OUT, name + '.png' ), fullPage: full } );
+	if(name.startsWith('home')){
+		if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1))bad.push(path+' horizontal overflow');
+		await page.click('[data-tone=amberwave]');
+		if(await page.locator('.xp-theme-preview').getAttribute('data-preview')!=='amberwave')bad.push(path+' theme preview');
+		await page.click('[data-effects]');
+		if(!await page.evaluate(()=>document.documentElement.classList.contains('xp-paused')))bad.push(path+' effects pause');
+	}
+
 	await ctx.close();
 }
 await visit( '', 'home-en' );
@@ -41,3 +49,5 @@ await visit( 'el/docs/', 'docs-home-el', { full: false } );
 await visit( 'app/', 'app', { full: false } );
 await browser.close(); server.close();
 console.log( bad.length ? 'PROBLEMS:\n' + bad.join( '\n' ) : 'no console errors or failed requests' );
+
+if(bad.length)process.exitCode=1;

@@ -9,16 +9,20 @@ Know where your money goes. A free, open-source web app that works on every devi
 
 Started as a bill reminder and grew into a money app for expenses, income, bills, budgets and goals.
 
-## What works today (version 0.4)
+## What works today (version 0.5)
 
 - **Accounts and sync:** passkey sign-in (no passwords), recovery codes, your devices, offline first, sync through a Cloudflare Worker and D1 database. Guest mode keeps data in the browser only.
 - **First run:** account-first welcome, an animated "add to home screen" guide, and a skippable setup (name, currency, what you want help with, first goal, wallets, look).
 - **Money:** expenses, income, transfers, bills with repeats, wallets in any currency with daily ECB exchange rates, quick add from a sentence in English or Greek.
-- **Plan:** budgets (with carry-over), goals (with forecast and milestones), recurring income, and ideas worked out from your own data and your aims.
+- **Budgets & goals:** category limits, carry-over, savings targets and milestones. Recurring income is under Activity → Income; Ideas stays on Home.
 - **Reports:** overview, spending, cash flow, trends, forecast, subscriptions and a sortable table, with filters, CSV export and a table view for every chart.
 - **Shared wallets:** invite codes and links, roles (owner, editor, viewer) enforced by the server, "added by" on every item.
-- **Look:** twelve themes, light and dark, an animations setting, tablet and desktop layouts.
+- **Look:** fourteen themes and a custom palette editor, light and dark, an animations setting, tablet and desktop layouts.
 - Push notifications when the app is closed (a daily summary at your chosen hour; on iPhone for the home-screen app), calendar file with alarms, backup and restore, CSV export, installable PWA.
+
+- **Entry flow:** tap-to-open amount pad with Done, separate text confirmation, and reusable expense/income names.
+- **Navigation:** Budgets & goals, recurring income under Activity → Income, and Ideas on Home.
+- **Photos:** compressed reference images, wallet permissions and Delete all photos in Account.
 
 ## Honest limits
 

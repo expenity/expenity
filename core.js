@@ -218,6 +218,20 @@
 	/* ------------------------------------------------------------------ Wallets, categories, transactions */
 
 	EX.account = ( id ) => S.accounts.find( ( a ) => a.id === id );
+	// Built-in wallet labels are translated at display time; custom names stay exactly as entered.
+	EX.accountName = a => {
+		if(!a)return '';
+		const key = a.type === 'cash' ? 'wCash' : 'wt' + (a.type||'other').charAt(0).toUpperCase() + (a.type||'other').slice(1);
+		const defaults = Object.values(I18N.langs).map(l=>l[key]).filter(x=>typeof x==='string');
+		return defaults.includes(a.name) ? t(key) : a.name || t(key);
+	};
+	EX.savedNames = type => (S.settings.savedNames || []).filter(x=>x && x.type===type && typeof x.name==='string');
+	EX.rememberName = (type,name,category) => {
+		name=String(name||'').trim().slice(0,80);if(!name||!['expense','income'].includes(type))return;
+		const old=(S.settings.savedNames||[]).filter(x=>!(x.type===type&&EX.fold(x.name)===EX.fold(name)));
+		S.settings.savedNames=[{type,name,category:category||''},...old].slice(0,30);
+	};
+
 	EX.activeAccounts = () => S.accounts.filter( ( a ) => ! a.archived );
 	/** Shared wallets: the person's role in a wallet (null for their own), and what they may change. */
 	EX.role = ( a ) => ( a && a.space ? ( ( ( S.sync.spaces || {} )[ a.space ] || {} ).role || 'viewer' ) : null );
@@ -239,7 +253,7 @@
 		} );
 		return c;
 	};
-	EX.walletLabel = ( a ) => `${ ( EX.WALLET_TYPES.find( ( w ) => w[ 0 ] === a.type ) || EX.WALLET_TYPES[ 4 ] )[ 1 ] } ${ a.name }`;
+	EX.walletLabel = ( a ) => `${ ( EX.WALLET_TYPES.find( ( w ) => w[ 0 ] === a.type ) || EX.WALLET_TYPES[ 4 ] )[ 1 ] } ${ EX.accountName(a) }`;
 
 	const builtIn = ( key ) => EX.EXPENSE_CATS.concat( EX.INCOME_CATS ).find( ( c ) => c[ 0 ] === key );
 	EX.catInfo = ( key ) => {

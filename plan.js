@@ -165,7 +165,7 @@
 	/* ------------------------------------------------------------------ Sheets */
 
 	const wallets = () => EX.activeAccounts();
-	const walletOpts = ( sel ) => wallets().map( ( a ) => `<option value="${ esc( a.id ) }"${ sel === a.id ? ' selected' : '' }>${ esc( a.name ) } (${ esc( a.currency ) })</option>` ).join( '' );
+	const walletOpts = ( sel ) => wallets().map( ( a ) => `<option value="${ esc( a.id ) }"${ sel === a.id ? ' selected' : '' }>${ esc( EX.accountName( a ) ) } (${ esc( a.currency ) })</option>` ).join( '' );
 	let editing = null;
 	function openBudget( b ) {
 		editing = b || null;

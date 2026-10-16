@@ -2,7 +2,7 @@
 
 ## What is stored, and where
 
-**On your device.** Expenity saves everything in your browser first, so it works offline. Without an account, that is the only place your data lives.
+**On your device.** Expenity saves financial records in your browser first, so it works offline. Without an account, that is the only place your data lives.
 
 **On Expenity's server, if you create an account.** To sync between your devices, your email address and your data (wallets, transactions, bills, budgets, goals, categories, recurring income and some settings) are stored on a Cloudflare Worker and database (D1). The connection is encrypted, and access needs your passkey. Expenity does not look at your data, sell it, share it or use it for advertising. As with most online services, it is not end-to-end encrypted.
 
@@ -44,3 +44,7 @@ The calendar file you download contains your bill names, amounts and notes. When
 ## Open source
 
 The app and the server are public, so you can check all of this: [github.com/expenity/expenity](https://github.com/expenity/expenity).
+
+## Photos and saved names
+
+Saved names are optional account settings and sync with your financial data. Photos are compressed separately, stored in D1, and never cached by the app for offline viewing. They follow current wallet access. Delete your uploads in Account; other members’ uploads remain. JSON backups contain image references rather than the files.

@@ -7,7 +7,7 @@ Everything starts with the green **+** button. It offers four things: an **expen
 The sheet is built around the amount, so the most important thing comes first.
 
 1. Choose **Expense**, **Income** or **Transfer** at the top.
-2. Type the amount on the keypad.
+2. Tap the amount to open the keypad. Enter the value, then press **✓ Done** to collapse it.
 3. Add a **description** if you like, for example "Lunch".
 4. Pick a **category**. Common ones are shown; **More** opens the rest, including your own categories.
 5. Pick the **wallet**.
@@ -64,3 +64,19 @@ The setup shows this in a short animation.
 ## Edit and delete
 
 Tap any row to see its details, edit it or delete it. On a tablet or computer the details show in a side panel. In a [shared wallet](shared-wallets.md), the details also say who added it, and a viewer can look but not change.
+
+## Amount entry and reusable names
+
+The number pad starts **closed**. Tap the amount, enter a value, then press **✓ Done** to keep the amount and collapse the pad. This does not save the transaction. Text fields also show a **✓ Done** control to dismiss the phone keyboard. Press the checkmark at the top only when you are ready to save the whole transaction.
+
+To reuse a name, enter a description and tick **Save this name for next time** before saving. The next time you add the same kind of transaction, expand **Saved names** and tap one. Its name and category are reused; the amount, date and wallet remain under your control. Expenses and income have separate lists. Use the × beside a saved name to remove it. Up to 30 names are saved in total and sync with your account settings. Your own names are kept in their original language.
+
+## Reference photos
+
+While signed in, choose **Attach photo** on an expense, income, transfer, bill, wallet, budget, goal or recurring income. JPEG, PNG and WebP work; HEIC depends on browser decoding support. The original file must be under 20 MB. Expenity re-encodes the photo as JPEG, removes original metadata, resizes the longest side to at most 1,280 pixels and compresses it to 96 KB or less. Save the item after uploading. A paperclip marks a photo; open the item and choose **View photo**. Editing also offers Replace and Remove.
+
+Photos require an account and internet to upload or view. Up to 100 uploads fit in an account, with roughly 9.4 MiB of storage. Shared-wallet members can see attachments in that wallet; viewers cannot change them. A photo on a bill or income schedule is carried into its recorded payment.
+
+**Account → Delete all photos** permanently removes your uploads, including your uploads in shared wallets. Other members lose access to those images. Other people's uploads and all financial records remain. The app asks for confirmation and a fresh passkey check. Deletion reaches other devices during sync; offline edits cannot restore the removed images.
+
+Removing a photo from one item only detaches it. Unreferenced uploads older than a day are reclaimed on your next upload. JSON backups hold photo references, not image files: retain originals for an independent photo backup.

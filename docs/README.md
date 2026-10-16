@@ -14,7 +14,7 @@ The same guides as the [help center on the website](https://expenity.github.io/e
 | [Reports](reports.md) | Overview, spending, cash flow, trends, forecast, subscriptions, table |
 | [Reminders](reminders.md) | The calendar file (works when the app is closed) and notifications |
 | [Shared wallets](shared-wallets.md) | Share a wallet with family or friends, roles, invites |
-| [Themes and animations](themes-and-look.md) | Twelve looks, light and dark, turning animations off |
+| [Themes and animations](themes-and-look.md) | Fourteen looks, custom colours and motion controls |
 | [Account and sync](account-and-sync.md) | Passkeys, recovery codes, your devices, deleting your account |
 | [Privacy and your data](privacy-and-your-data.md) | What is stored where, backup, restore, delete |
 | [FAQ](faq.md) | Quick answers |

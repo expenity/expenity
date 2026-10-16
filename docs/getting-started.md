@@ -23,7 +23,7 @@ The next screen shows, with a short animation, how to add Expenity to your home 
 A short setup asks a few questions. Each one can be skipped, and you can change every answer later.
 
 - **Your name**, used in the greeting.
-- **Your main currency**. Totals and reports use it.
+- **Your main currency**, starting with EUR. Totals and reports use it.
 - **What you want help with**, such as tracking spending, saving for a trip, or cutting subscriptions. You can choose more than one, and one is already selected to show how. Expenity uses this to suggest things that fit you. See [Budgets, goals and income](budgets-goals-income.md#ideas-for-you).
 - **Your first goals**, if you chose to save for something. Pick as many ideas as you like (trip, car, gift, home, emergency fund) or add your own, each with a target amount.
 - **Your wallets**: cash, bank account, card, savings, with what is in each.
@@ -45,7 +45,9 @@ Press the green **+** button, choose **Expense**, type the amount on the keypad,
 - **Activity**: every transaction, by month, with search and filters.
 - **Bills**: what is coming, as a list or a calendar.
 - **Reports**: charts and tables. See [Reports](reports.md).
-- **Plan** (tablet and computer side bar, or from Home and **More**): budgets, goals, income and ideas.
+- **Budgets & goals**: spending limits and savings targets, from Home, More or the sidebar.
+- **Activity → Income → Recurring income**: salary and other regular income.
+- **Home → Ideas**: suggestions and your aims.
 - **More**: wallets, categories, reminders, backup, themes, your account.
 
 ## Where to go next
@@ -54,3 +56,11 @@ Press the green **+** button, choose **Expense**, type the amount on the keypad,
 - [Wallets and currencies](wallets-and-currencies.md)
 - [Budgets, goals and income](budgets-goals-income.md)
 - [Shared wallets](shared-wallets.md)
+
+## A quick tour, at your pace
+
+After choosing a look, an animated tour explains Home, Activity, Budgets & goals and Reports. On phones, the swipe guide shows how to reveal row actions: swiping never pays or deletes anything by itself. All optional setup steps can be skipped. Existing accounts that have completed setup return to their data after signing in. Blur, floating cards and transitions follow your animation setting and your device's reduced-motion preference.
+
+Built-in wallet and category labels follow the selected language. Names you write yourself, including saved transaction names, stay as written.
+
+![The animated tour of the main sections.](images/setup-tour.png)

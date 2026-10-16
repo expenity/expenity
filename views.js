@@ -22,7 +22,7 @@
 	const lead = ( b ) => ( b.lead == null ? S().settings.lead : b.lead );
 	const active = () => S().bills.filter( ( b ) => ! b.done && b.next );
 	const byDue = ( a, b ) => ( a.next < b.next ? -1 : a.next > b.next ? 1 : a.name.localeCompare( b.name ) );
-	const walletName = ( id ) => { const a = EX.account( id ); return a ? a.name : ''; };
+	const walletName = ( id ) => { const a = EX.account( id ); return a ? EX.accountName(a) : ''; };
 	const amountText = ( b ) => ( b.amount !== '' && b.amount != null ? ( b.variable ? '~' : '' ) + money( Number( b.amount ), b.currency ) : '–' );
 	const mainCur = () => S().settings.currency;
 	const sumMain = ( list ) => EX.mainCents( list );
@@ -152,7 +152,7 @@
 		const DUE = `<div class="sec-head"><h2>${ esc( t( 'dueSoon' ) ) }</h2><button type="button" class="link" data-go="bills">${ esc( t( 'seeAll' ) ) }</button></div>
 			${ upcoming.length ? `<ul class="list">${ upcoming.map( ( b ) => billItem( b ) ).join( '' ) }</ul>` : `<p class="muted pad">${ esc( t( 'noDue' ) ) }</p>` }`;
 		const WAL = `<div class="sec-head"><h2>${ esc( t( 'wallets' ) ) }</h2><button type="button" class="link" data-more="wallets">${ esc( t( 'ovManage' ) ) }</button></div>
-			<div class="wallets">${ wallets.map( ( a ) => `<button type="button" class="wc" data-act="edit-wallet" data-id="${ esc( a.id ) }">${ UI.walletCi( a, 36 ) }<span>${ a.space ? UI.icon( 'users', 14 ) + ' ' : '' }${ esc( a.name ) }</span><b>${ esc( money( EX.balance( a ) / 100, a.currency ) ) }</b></button>` ).join( '' ) }<button type="button" class="wc add" data-act="add-wallet">${ UI.icon( 'plus', 26 ) }<span>${ esc( t( 'newWallet' ) ) }</span></button></div>`;
+			<div class="wallets">${ wallets.map( ( a ) => `<button type="button" class="wc" data-act="edit-wallet" data-id="${ esc( a.id ) }">${ UI.walletCi( a, 36 ) }<span>${ a.space ? UI.icon( 'users', 14 ) + ' ' : '' }${ esc( EX.accountName( a ) ) }</span><b>${ esc( money( EX.balance( a ) / 100, a.currency ) ) }</b></button>` ).join( '' ) }<button type="button" class="wc add" data-act="add-wallet">${ UI.icon( 'plus', 26 ) }<span>${ esc( t( 'newWallet' ) ) }</span></button></div>`;
 		const recent = S().txs.slice().sort( ( a, b ) => ( a.date < b.date ? 1 : a.date > b.date ? -1 : 0 ) ).slice( 0, 5 );
 		const mC = { inc: EX.mainCents( f.income ), exp: EX.mainCents( f.expense ) }, mainCur = S().settings.currency, M = ( c ) => money( c / 100, mainCur );
 		const spark = [ 5, 4, 3, 2, 1, 0 ].map( ( k ) => { const d = new Date( y, m - k, 1 ), ff = EX.flow( EX.monthTxs( d.getFullYear(), d.getMonth() ) ); return { l: d.toLocaleDateString( EX.loc(), { month: 'short' } ), inc: EX.mainCents( ff.income ), exp: EX.mainCents( ff.expense ) }; } );
@@ -195,7 +195,7 @@
 			<div class="sumrow"><div class="in"><small>${ esc( t( 'ovIncome' ) ) }</small><b>${ esc( EX.sumByCur( f.income ) ) }</b></div><div><small>${ esc( t( 'ovExpenses' ) ) }</small><b>${ esc( EX.sumByCur( f.expense ) ) }</b></div><div><small>${ esc( t( 'ovNet' ) ) }</small><b>${ esc( net ) }</b></div></div>`;
 		return `${ schedules ? '' : monthHeader }
 			${ st.searchOpen ? `<div class="searchbar">${ UI.icon( 'search', 22 ) }<input id="txSearch" type="search" value="${ esc( fl.q ) }" placeholder="${ esc( t( 'txSearchPh' ) ) }" aria-label="${ esc( t( 'txSearchPh' ) ) }" autocomplete="off"></div>` : '' }
-			<div class="chips" role="group">${ chip( 'all', t( 'typeAll' ) ) }${ chip( 'expense', t( 'typeExpenses' ) ) }${ chip( 'income', t( 'typeIncomes' ) ) }${ chip( 'transfer', t( 'typeTransfer' ) ) }<label class="chip select${ fl.account ? ' on' : '' }">${ UI.icon( 'wallet', 18 ) }<select id="txWalletFilter" aria-label="${ esc( t( 'filterWallet' ) ) }"><option value="">${ esc( t( 'txAllWallets' ) ) }</option>${ S().accounts.map( ( a ) => `<option value="${ esc( a.id ) }"${ fl.account === a.id ? ' selected' : '' }>${ esc( a.name ) }</option>` ).join( '' ) }</select></label></div>
+			<div class="chips" role="group">${ chip( 'all', t( 'typeAll' ) ) }${ chip( 'expense', t( 'typeExpenses' ) ) }${ chip( 'income', t( 'typeIncomes' ) ) }${ chip( 'transfer', t( 'typeTransfer' ) ) }<label class="chip select${ fl.account ? ' on' : '' }">${ UI.icon( 'wallet', 18 ) }<select id="txWalletFilter" aria-label="${ esc( t( 'filterWallet' ) ) }"><option value="">${ esc( t( 'txAllWallets' ) ) }</option>${ S().accounts.map( ( a ) => `<option value="${ esc( a.id ) }"${ fl.account === a.id ? ' selected' : '' }>${ esc( EX.accountName( a ) ) }</option>` ).join( '' ) }</select></label></div>
 			${ incomeNav }
 			${ schedules ? EXA.incomeSchedules() : groups.length ? groups.map( ( g ) => `<section class="grp"><h2 class="sticky">${ esc( dayName( g.date ) ) }</h2><ul class="list">${ g.items.map( txItem ).join( '' ) }</ul></section>` ).join( '' ) + ( UI.isPhone() ? `<p class="hint">${ esc( t( 'swipeHint' ) ) }</p>` : '' ) : empty( 'arrows-sort', 'teal', t( 'txNone' ), t( 'txNoneHint' ), `<button type="button" class="btn btn-primary" data-act="add">${ esc( t( 'addTx' ) ) }</button>` ) }`;
 	};
@@ -344,7 +344,7 @@
 			<section class="card"><h2>${ esc( t( 'sClosed' ) ) }</h2><p class="muted small">${ esc( t( 'sClosedDesc' ) ) }</p><div class="btn-row"><button type="button" class="btn btn-primary" id="icsBtn">${ UI.icon( 'calendar-plus', 20 ) } ${ esc( t( 'dlIcs' ) ) }</button></div></section>`;
 	}
 	function walletsView() {
-		return `<ul class="list">${ S().accounts.map( ( a ) => `<li><button type="button" class="item" data-act="edit-wallet" data-id="${ esc( a.id ) }">${ UI.walletCi( a ) }<span class="mid"><b>${ esc( a.name ) }</b><small>${ esc( a.currency ) }${ a.archived ? ' · ' + esc( t( 'archivedTag' ) ) : '' }${ a.space ? ' · ' + esc( t( 'sharedTag' ) ) + ' · ' + esc( t( 'role' + EX.role( a ).charAt( 0 ).toUpperCase() + EX.role( a ).slice( 1 ) ) ) : '' }</small></span><span class="a">${ esc( money( EX.balance( a ) / 100, a.currency ) ) }</span></button></li>` ).join( '' ) }</ul>
+		return `<ul class="list">${ S().accounts.map( ( a ) => `<li><button type="button" class="item" data-act="edit-wallet" data-id="${ esc( a.id ) }">${ UI.walletCi( a ) }<span class="mid"><b>${ esc( EX.accountName( a ) ) }</b><small>${ esc( a.currency ) }${ a.archived ? ' · ' + esc( t( 'archivedTag' ) ) : '' }${ a.space ? ' · ' + esc( t( 'sharedTag' ) ) + ' · ' + esc( t( 'role' + EX.role( a ).charAt( 0 ).toUpperCase() + EX.role( a ).slice( 1 ) ) ) : '' }</small></span><span class="a">${ esc( money( EX.balance( a ) / 100, a.currency ) ) }</span></button></li>` ).join( '' ) }</ul>
 			<div class="btn-row"><button type="button" class="btn btn-primary" data-act="add-wallet">${ UI.icon( 'plus', 20 ) } ${ esc( t( 'walletAdd' ) ) }</button><button type="button" class="btn btn-ghost" data-act="join-wallet">${ UI.icon( 'users', 20 ) } ${ esc( t( 'joinTitle' ) ) }</button></div>`;
 	}
 	function categoriesView() {

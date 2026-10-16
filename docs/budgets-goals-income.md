@@ -1,12 +1,12 @@
 # Budgets, goals and income
 
-The **Plan** area has four tabs: **Budgets**, **Goals**, **Income** and **Ideas**. Open it from the side bar on a tablet or computer, from the Plan section on Home, or from **More**.
+**Budgets & goals** contains two tabs: **Budgets** and **Goals**. Find it on Home, in More, or in the tablet/desktop sidebar. A dot pulses briefly until your first visit. **Recurring income** lives in **Activity → Income → Recurring income**. **Ideas** lives on **Home**, with **See all** to expand the full list and change your aims.
 
 ## Budgets
 
 A budget is a limit for a category (or for everything) over a period.
 
-1. Open Plan → Budgets → **Add budget**.
+1. Open Budgets & goals → Budgets → **Add budget**.
 2. Choose a category, or **Everything**.
 3. Set the limit, and the period: monthly, weekly or yearly.
 4. Optionally turn on **Carry over what is left from the last period**.
@@ -19,7 +19,7 @@ Each budget shows what you spent, what is left, a progress bar that turns amber 
 
 A goal is something you save for: a trip, a car, a gift, an emergency fund.
 
-1. Open Plan → Goals → **Add goal**.
+1. Open Budgets & goals → Goals → **Add goal**.
 2. Give it a name, a target amount, an optional deadline and an icon.
 3. Press **Add money** on the goal to move money in from a wallet, or **Take out** to move it back.
 
@@ -29,11 +29,11 @@ The ring shows progress. Expenity estimates the date you will reach the goal fro
 
 ## Recurring income
 
-Add your salary or other regular income as a schedule: a name, the wallet it arrives in, the amount, the next date and how often. When it arrives, press **Received**. Expenity records the income in the wallet and moves the schedule to the next date (you can undo). Expected income feeds the [forecast](reports.md#forecast).
+Open **Activity → Income → Recurring income → Add recurring income**. Add your salary or other regular income as a schedule: a name, the wallet it arrives in, the amount, the next date and how often. When it arrives, press **Received**. Expenity records the income in the wallet and moves the schedule to the next date (you can undo). Expected income feeds the [forecast](reports.md#forecast).
 
 ## Ideas for you
 
-In the setup you can say what you want from Expenity, and you can change it any time in Plan → Ideas: track spending, save for something, build savings, cut subscriptions, spend less on everyday things, never miss a bill, pay off debt.
+In the setup you can say what you want from Expenity, and you can change it any time in Home → Ideas → See all: track spending, save for something, build savings, cut subscriptions, spend less on everyday things, never miss a bill, pay off debt.
 
 Expenity then looks at your own data, on your device, and offers specific ideas, for example:
 

@@ -38,3 +38,7 @@ Expenity updates itself when you open it with a connection. To check right now, 
 ## Email
 
 Expenity stores your email to identify your account. Email verification and email reminders are not switched on yet: they need a sending domain, which is planned.
+
+## Photo storage
+
+In Account, **Delete all photos** removes every photo you uploaded, including in shared wallets. Confirmation and a passkey check protect the action. Financial records remain. See [photos and backups](add-money.md#reference-photos).

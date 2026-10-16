@@ -117,7 +117,7 @@
 		const type = T.type, cur = walletCur( T.account ), toCur = walletCur( T.toAccount );
 		const cross = type === 'transfer' && T.toAccount && cur !== toCur;
 		const typeBtn = ( v, label ) => `<button type="button" class="${ type === v ? 'on' : '' }" data-tx-type="${ v }" role="tab" aria-selected="${ type === v }">${ esc( label ) }</button>`;
-		const wchip = ( a, sel, attr ) => `<button type="button" class="chip big${ sel === a.id ? ' on' : '' }" ${ attr }="${ esc( a.id ) }">${ UI.walletCi( a, 26 ) } ${ esc( a.name ) }</button>`;
+		const wchip = ( a, sel, attr ) => `<button type="button" class="chip big${ sel === a.id ? ' on' : '' }" ${ attr }="${ esc( a.id ) }">${ UI.walletCi( a, 26 ) } ${ esc( EX.accountName( a ) ) }</button>`;
 		const cats = EX.catList( type === 'income' ? 'income' : 'expense' );
 		const dm = T.dateMode;
 		return `<div class="sheet-head">${ X }<div class="segm tx-seg" role="tablist" aria-label="${ esc( t( 'addTx' ) ) }">${ typeBtn( 'expense', t( 'typeExpense' ) ) }${ typeBtn( 'income', t( 'typeIncome' ) ) }${ typeBtn( 'transfer', t( 'typeTransfer' ) ) }</div><button type="button" class="ab-btn ok" data-tx="save" aria-label="${ esc( t( 'saveTx' ) ) }">${ UI.icon( 'check', 26 ) }</button></div>
@@ -125,6 +125,8 @@
 				<button type="button" class="amt-display${ T.keypadOpen && T.target === 'amount' ? ' on' : '' }" data-tx="target-amount" aria-controls="txKeypad" aria-expanded="${ !! T.keypadOpen && T.target === 'amount' }" aria-label="${ esc( t( 'fAmount' ) ) }"><span class="cur">${ esc( curSymbol( cur ) ) }</span><span class="val ${ T.amount === '' ? 'zero' : '' }" id="amtVal">${ esc( showAmt( T.amount ) ) }</span></button>
 				${ cross ? `<button type="button" class="amt-display small${ T.keypadOpen && T.target === 'toAmount' ? ' on' : '' }" data-tx="target-to" aria-controls="txKeypad" aria-expanded="${ !! T.keypadOpen && T.target === 'toAmount' }" aria-label="${ esc( t( 'fToAmount' ) ) }"><small>${ esc( t( 'received' ) ) }</small><span class="cur">${ esc( curSymbol( toCur ) ) }</span><span class="val ${ T.toAmount === '' ? 'zero' : '' }" id="toAmtVal">${ esc( showAmt( T.toAmount ) ) }</span></button>` : '' }
 				<input class="desc" id="txDesc" name="desc" maxlength="80" autocomplete="off" autocorrect="off" data-1p-ignore data-lpignore="true" placeholder="${ esc( t( 'descPh' ) ) }" aria-label="${ esc( t( 'fWhat' ) ) }" value="${ esc( T.name ) }">
+				${ T.type !== 'transfer' ? `<label class="remember-name"><input type="checkbox" id="rememberName"${ T.rememberName ? ' checked' : '' }> ${ esc(t('rememberName')) }</label>${ EX.savedNames(T.type).length ? `<details class="saved-names"><summary>${ UI.icon('bookmark',18) } ${ esc(t('savedNames')) } (${ EX.savedNames(T.type).length }) ${ UI.icon('chevron-down',16) }</summary><div class="saved-name-grid">${ EX.savedNames(T.type).map((x,i)=>`<span><button type="button" class="chip" data-tx-saved="${i}">${esc(x.name)}</button><button type="button" class="ab-btn" data-tx-forget="${i}" aria-label="${esc(t('forgetName'))}: ${esc(x.name)}">${UI.icon('x',18)}</button></span>`).join('') }</div></details>` : '' }` : '' }
+
 				${ T.editId ? '' : `<div class="quickline">${ T.quick ? `<input id="txQuick" type="text" autocomplete="off" spellcheck="false" placeholder="${ esc( t( 'quickTxPh' ) ) }" aria-label="${ esc( t( 'quickLabel' ) ) }" value="${ esc( T.quickText || '' ) }">` : `<button type="button" class="link small" data-tx="quick">${ esc( t( 'typeIt' ) ) }</button>` }</div>` }
 			</div>
 			${ type === 'transfer' ? `<div class="lbl">${ esc( t( 'fromWallet' ) ) }</div><div class="chip-scroll">${ wallets.map( ( a ) => wchip( a, T.account, 'data-tx-wallet' ) ).join( '' ) }</div><div class="lbl">${ esc( t( 'toWallet' ) ) }</div><div class="chip-scroll">${ wallets.filter( ( a ) => a.id !== T.account && EX.sameScope( a, EX.account( T.account ) ) ).map( ( a ) => wchip( a, T.toAccount, 'data-tx-to' ) ).join( '' ) }</div>`
@@ -138,13 +140,14 @@
 	}
 	function readTxFields() {
 		const d = $( '#txDesc' ); if ( d ) T.name = d.value;
+		const remember = $('#rememberName'); if(remember) T.rememberName = remember.checked;
 		const ph = $( '.photo-slot' ); if ( ph ) T.photo = EXA.photos.value( ph );
 		const n = $( '#txNote' ); if ( n ) T.note = n.value;
 		const q = $( '#txQuick' ); if ( q ) T.quickText = q.value;
 		const dt = $( '#txDate' ); if ( dt && dt.value ) T.date = dt.value;
 	}
-	function drawTx( keepScroll ) {
-		readTxFields();
+	function drawTx( keepScroll, read = true ) {
+		if(read) readTxFields();
 		const sc = $( '.tx-scroll' ), top = sc ? sc.scrollTop : 0;
 		$( '.sheet-body' ).innerHTML = txBody();
 		const nsc = $( '.tx-scroll' ); if ( keepScroll && nsc ) nsc.scrollTop = top;
@@ -153,7 +156,7 @@
 		EX.ensureWallet();
 		const base = { type: 'expense', date: today(), account: ( EX.writableAccounts()[ 0 ] || {} ).id, amount: '', toAmount: '', name: '', note: '', category: null };
 		const v = Object.assign( base, tx || preset );
-		T = { type: v.type, amount: v.amount || '', toAmount: v.toAmount || '', account: v.account, toAccount: v.toAccount || '', category: v.category || null, date: v.date, name: v.name || '', note: v.note || '', photo: v.photo || '', editId: tx ? tx.id : null, target: 'amount', keypadOpen: false, editingField: false, quick: false, quickText: '', noteOpen: false };
+		T = { type: v.type, amount: v.amount || '', toAmount: v.toAmount || '', account: v.account, toAccount: v.toAccount || '', category: v.category || null, date: v.date, name: v.name || '', note: v.note || '', photo: v.photo || '', editId: tx ? tx.id : null, target: 'amount', keypadOpen: false, editingField: false, rememberName: false, quick: false, quickText: '', noteOpen: false };
 		T.dateMode = T.date === today() ? 'today' : T.date === addDays( today(), -1 ) ? 'yesterday' : 'other';
 		if ( T.type !== 'transfer' && ! T.category ) T.category = ( EX.catList( T.type === 'income' ? 'income' : 'expense' )[ 0 ] || {} ).key;
 		if ( T.type === 'transfer' && ! T.toAccount ) T.toAccount = ( EX.peerAccount( T.account ) || {} ).id || '';
@@ -231,6 +234,7 @@
 				tx.toAmount = ta;
 			}
 		} else tx.category = T.category;
+		if(T.rememberName)EX.rememberName(T.type,tx.name,tx.category);
 		const editing = T.editId ? S().txs.find( ( x ) => x.id === T.editId ) : null;
 		if ( editing ) {
 			const keep = { id: editing.id, u: editing.u, billId: editing.billId, due: editing.due };
@@ -251,6 +255,8 @@
 		if ( ! T ) return false;
 		const g = ( sel ) => e.target.closest( sel );
 		let el;
+		if((el=g('[data-tx-saved]'))){readTxFields();const x=EX.savedNames(T.type)[Number(el.dataset.txSaved)];if(x){T.name=x.name;if(EX.catList(T.type).some(c=>c.key===x.category))T.category=x.category;drawTx(true,false);}return true;}
+		if((el=g('[data-tx-forget]'))){readTxFields();const x=EX.savedNames(T.type)[Number(el.dataset.txForget)];if(x){S().settings.savedNames=(S().settings.savedNames||[]).filter(n=>n!==x);EX.save();drawTx(true);}return true;}
 		if ( ( el = g( '[data-key]' ) ) ) { pressKey( el.dataset.key ); return true; }
 		if ( ( el = g( '[data-tx-type]' ) ) ) {
 			readTxFields();
@@ -320,7 +326,7 @@
 		UI.openSheet( `${ head( t( bill ? 'editTitle' : 'addTitle' ) ) }<form id="billForm" novalidate class="sheet-pad">
 			${ bill ? '' : `<div class="quick"><label for="quick">${ esc( t( 'quickLabel' ) ) }</label><input id="quick" type="text" autocomplete="off" placeholder="${ esc( t( 'quickPh' ) ) }" spellcheck="false"><div class="chips-out" id="chips" aria-live="polite"></div><div class="chip-scroll" id="tpls">${ EX.TEMPLATES.map( ( x, i ) => `<button type="button" class="chip" data-tpl="${ i }">${ UI.icon( EX.CAT_STYLE[ x[ 1 ] ][ 0 ], 18 ) } ${ esc( t( x[ 0 ] ) ) }</button>` ).join( '' ) }</div></div>` }
 			<label class="f"><span>${ esc( t( 'fName' ) ) }</span><input name="name" required maxlength="80" autocomplete="off" value="${ esc( v.name ) }"></label>
-			<label class="f"><span>${ esc( t( 'fPayFrom' ) ) }</span><select name="account">${ wallets.map( ( a ) => `<option value="${ esc( a.id ) }"${ ( v.account || ( wallets[ 0 ] || {} ).id ) === a.id ? ' selected' : '' }>${ esc( a.name ) } (${ esc( a.currency ) })</option>` ).join( '' ) }</select></label>
+			<label class="f"><span>${ esc( t( 'fPayFrom' ) ) }</span><select name="account">${ wallets.map( ( a ) => `<option value="${ esc( a.id ) }"${ ( v.account || ( wallets[ 0 ] || {} ).id ) === a.id ? ' selected' : '' }>${ esc( EX.accountName( a ) ) } (${ esc( a.currency ) })</option>` ).join( '' ) }</select></label>
 			<label class="f"><span>${ esc( t( 'fAmount' ) ) }</span><input name="amount" inputmode="decimal" placeholder="0.00" autocomplete="off" value="${ esc( v.amount ) }"></label>
 			<div class="grid2"><label class="f"><span>${ esc( t( 'fNext' ) ) }</span><input name="next" type="date" required value="${ esc( v.next || '' ) }"></label>
 			<label class="f"><span>${ esc( t( 'fRepeats' ) ) }</span><select name="repeat">${ EX.REPEATS.map( ( r ) => `<option value="${ r }"${ v.repeat === r ? ' selected' : '' }>${ esc( t( 'r' + r.charAt( 0 ).toUpperCase() + r.slice( 1 ) ) ) }</option>` ).join( '' ) }</select></label></div>
@@ -400,7 +406,7 @@
 		const wallets = EX.writableAccounts(), sel = bill.account || ( wallets[ 0 ] || {} ).id;
 		UI.openSheet( `${ head( t( 'payTitle' ) ) }<form id="payForm" class="sheet-pad" data-id="${ esc( bill.id ) }"><p class="muted">${ esc( t( 'payFor', { name: bill.name, date: dayName( bill.next ) } ) ) }</p>
 			<div class="grid2"><label class="f"><span>${ esc( t( 'payAmount' ) ) }</span><input name="amount" inputmode="decimal" autocomplete="off" value="${ esc( bill.amount ) }" autofocus></label><label class="f"><span>${ esc( t( 'payOn' ) ) }</span><input name="paidOn" type="date" required value="${ today() }"></label></div>
-			<label class="f"><span>${ esc( t( 'fPayFrom' ) ) }</span><select name="account">${ wallets.map( ( a ) => `<option value="${ esc( a.id ) }"${ a.id === sel ? ' selected' : '' }>${ esc( a.name ) } (${ esc( a.currency ) })</option>` ).join( '' ) }</select></label>
+			<label class="f"><span>${ esc( t( 'fPayFrom' ) ) }</span><select name="account">${ wallets.map( ( a ) => `<option value="${ esc( a.id ) }"${ a.id === sel ? ' selected' : '' }>${ esc( EX.accountName( a ) ) } (${ esc( a.currency ) })</option>` ).join( '' ) }</select></label>
 			<p class="err" id="payErr" role="alert" hidden></p><div class="btn-row"><button type="submit" class="btn btn-primary wide">${ UI.icon( 'check', 22 ) } ${ esc( t( 'markPaid' ) ) }</button></div></form>`, { cls: 'small' } );
 		if ( matchMedia( '(min-width: 600px) and (pointer: fine)' ).matches ) $( '#payForm [name=amount]' ).select();
 	};
@@ -420,7 +426,7 @@
 		editingWallet = a;
 		const v = a || { name: '', type: 'bank', currency: S().settings.currency, opening: '', archived: false };
 		UI.openSheet( `${ head( t( a ? 'walletEdit' : 'walletAdd' ) ) }<form id="walletForm" novalidate class="sheet-pad">
-			<label class="f"><span>${ esc( t( 'wName' ) ) }</span><input name="name" required maxlength="40" autocomplete="off" value="${ esc( v.name ) }" autofocus></label>
+			<label class="f"><span>${ esc( t( 'wName' ) ) }</span><input name="name" required maxlength="40" autocomplete="off" value="${ esc( EX.accountName(v) ) }" autofocus></label>
 			<div class="lbl">${ esc( t( 'wType' ) ) }</div><div class="chip-scroll" id="wTypes">${ EX.WALLET_TYPES.map( ( w ) => `<button type="button" class="chip big${ v.type === w[ 0 ] ? ' on' : '' }" data-wtype="${ w[ 0 ] }">${ UI.icon( EX.WALLET_ICON[ w[ 0 ] ], 20 ) } ${ esc( t( 'wt' + w[ 0 ].charAt( 0 ).toUpperCase() + w[ 0 ].slice( 1 ) ) ) }</button>` ).join( '' ) }</div><input type="hidden" name="type" value="${ esc( v.type ) }">
 			<div class="grid2"><label class="f"><span>${ esc( t( 'wCurrency' ) ) }</span><input name="currency" list="curList" maxlength="3" autocomplete="off" value="${ esc( v.currency ) }"></label><label class="f"><span>${ esc( t( 'wOpening' ) ) }</span><input name="opening" inputmode="decimal" placeholder="0.00" autocomplete="off" value="${ esc( v.opening === '0' ? '' : v.opening ) }"></label></div>
 			<label class="f chk"><input type="checkbox" name="archived"${ v.archived ? ' checked' : '' }> <span>${ esc( t( 'wArchived' ) ) }</span></label>

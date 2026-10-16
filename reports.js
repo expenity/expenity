@@ -21,7 +21,7 @@
 	const PALETTE = [ '#14b8a6', '#f59e0b', '#8b5cf6', '#3b82f6', '#ec4899', '#22c55e', '#ef4444', '#94a3b8' ];
 	const colorOf = ( key, i ) => { const c = EX.catInfo( key ); return c.custom ? PALETTE[ i % PALETTE.length ] : HUE[ c.color ] || PALETTE[ i % PALETTE.length ]; };
 	const cents = ( x ) => { const v = EX.convert( num( x.amount ), EX.txCurrency( x ), main() ); return v == null ? 0 : Math.round( v * 100 ); };
-	const walletName = ( id ) => { const a = EX.account( id ); return a ? a.name : ''; };
+	const walletName = ( id ) => { const a = EX.account( id ); return a ? EX.accountName(a) : ''; };
 	const dayDiff = ( a, b ) => Math.round( ( parse( a ) - parse( b ) ) / 864e5 );
 	const short = ( d ) => parse( d ).toLocaleDateString( EX.loc(), { day: 'numeric', month: 'short' } );
 	const monthLabel = ( k ) => new Date( Number( k.slice( 0, 4 ) ), Number( k.slice( 5, 7 ) ) - 1, 1 ).toLocaleDateString( EX.loc(), { month: 'short' } );
@@ -112,7 +112,7 @@
 		const wallets = EX.activeAccounts(), cats = EX.catList( 'expense' ).concat( EX.catList( 'income' ) );
 		UI.openSheet( `<div class="sheet-head"><button type="button" class="ab-btn" data-close aria-label="${ esc( t( 'close' ) ) }">${ UI.icon( 'x', 24 ) }</button><h2 id="sheetTitle">${ esc( t( 'repFilters' ) ) }</h2><span class="sp"></span></div>
 			<form id="repFilterForm" class="sheet-pad" novalidate>
-			<label class="f"><span>${ esc( t( 'fWallet' ) ) }</span><select name="wallet"><option value="">${ esc( t( 'txAllWallets' ) ) }</option>${ wallets.map( ( a ) => `<option value="${ esc( a.id ) }"${ f().wallet === a.id ? ' selected' : '' }>${ esc( a.name ) }</option>` ).join( '' ) }</select></label>
+			<label class="f"><span>${ esc( t( 'fWallet' ) ) }</span><select name="wallet"><option value="">${ esc( t( 'txAllWallets' ) ) }</option>${ wallets.map( ( a ) => `<option value="${ esc( a.id ) }"${ f().wallet === a.id ? ' selected' : '' }>${ esc( EX.accountName( a ) ) }</option>` ).join( '' ) }</select></label>
 			<label class="f"><span>${ esc( t( 'fCategory' ) ) }</span><select name="cat"><option value="">${ esc( t( 'repAllCats' ) ) }</option>${ cats.map( ( c ) => `<option value="${ esc( c.key ) }"${ f().cat === c.key ? ' selected' : '' }>${ esc( c.name ) }</option>` ).join( '' ) }</select></label>
 			<label class="f"><span>${ esc( t( 'repKind' ) ) }</span><select name="type">${ [ 'all', 'expense', 'income' ].map( ( k ) => `<option value="${ k }"${ f().type === k ? ' selected' : '' }>${ esc( t( k === 'all' ? 'filterAll' : k === 'expense' ? 'typeExpense' : 'typeIncome' ) ) }</option>` ).join( '' ) }</select></label>
 			<label class="f"><span>${ esc( t( 'repText' ) ) }</span><input name="q" autocomplete="off" value="${ esc( f().q ) }"></label>

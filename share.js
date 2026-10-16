@@ -111,7 +111,7 @@
 			body = `<p class="muted small">${ UI.icon( 'lock', 14 ) } ${ esc( t( 'shareNote' ) ) }</p><h3 class="sub">${ esc( t( 'membersTitle' ) ) }</h3><ul class="plain people">${ people }</ul>${ inv }${ invite }<p class="err" id="shareErr" role="alert" hidden></p><div class="btn-row">${ out }</div>`;
 			void me;
 		}
-		UI.openSheet( `${ head( t( 'shareTitle' ) + ': ' + a.name ) }<div class="sheet-pad share" data-account="${ esc( a.id ) }">${ body }</div>`, { cls: 'small' } );
+		UI.openSheet( `${ head( t( 'shareTitle' ) + ': ' + EX.accountName(a) ) }<div class="sheet-pad share" data-account="${ esc( a.id ) }">${ body }</div>`, { cls: 'small' } );
 	}
 	async function openShare( id ) {
 		const a = EX.account( id );
@@ -151,7 +151,7 @@
 		if ( act === 'start' ) {
 			const r = await SP.create( a );
 			if ( ! r.ok ) { shareErr( r.error ); return; }
-			toast( t( 'tShared', { name: a.name } ) ); EX.sync.run(); renderShare( a, { members: [ { id: ( EX.auth.user() || {} ).id, email: ( EX.auth.user() || {} ).email || '', role: 'owner', you: true } ], invites: [] } );
+			toast( t( 'tShared', { name: EX.accountName(a) } ) ); EX.sync.run(); renderShare( a, { members: [ { id: ( EX.auth.user() || {} ).id, email: ( EX.auth.user() || {} ).email || '', role: 'owner', you: true } ], invites: [] } );
 		} else if ( act === 'pickrole' ) { ctx.role = el.dataset.role; renderShare( a, ( await SP.members( a.space ) ).json ); }
 		else if ( act === 'invite' ) { const r = await SP.invite( a.space, ctx.role ); if ( ! r.ok ) { shareErr( r.error ); return; } ctx.invite = r.json; await refresh(); }
 		else if ( act === 'copylink' && ctx.invite ) copy( link( ctx.invite.code ), t( 'tLinkCopied' ) );

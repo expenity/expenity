@@ -51,6 +51,12 @@ for ( const f of [ 'index.html', 'icons.js', 'ui.js', 'views.js', 'forms.js', 'p
 // Every build gets its own cache name, so the app can tell that a newer version has been published (More, Check for updates).
 { const sw = join( OUT, 'app/sw.js' ); writeFileSync( sw, readFileSync( sw, 'utf8' ).replace( /(const CACHE = 'expenity-v\d+)'/, `$1-${ Date.now().toString( 36 ) }'` ) ); }
 
+// HTML and offline installation use matching versioned JS/CSS URLs.
+{ const html=join(OUT,'app/index.html'), sw=join(OUT,'app/sw.js');
+ writeFileSync(html,readFileSync(html,'utf8').replace(/((?:src|href)="[^"?]+\.(?:js|css))"/g,'$1?v='+ASSET_V+'"'));
+ writeFileSync(sw,readFileSync(sw,'utf8').replace(/(const FILES = \[[^;]+\]);/, '$1.map( f => /\\.(js|css)$/.test(f) ? f + "?v='+ASSET_V+'" : f );'));
+}
+
 /* ------------------------------------------------------------------ Images */
 
 // Screenshots (made by dev/screenshots.mjs): docs/images/*.png -> assets/img/*.jpg (1800px, sharp on retina screens).
@@ -107,7 +113,7 @@ const LANGS = {
 	en: {
 		code: 'en', prefix: '', label: 'EN', other: 'el', switchLabel: 'EL', switchTitle: 'Greek',
 		tagline: 'Know where your money goes', titleHome: 'Expenity: know where your money goes',
-		descHome: 'Expenity tracks your expenses, income, bills, budgets and goals on every device. Sign in with a passkey, share wallets with family, pick one of twelve themes. Free, open source, in English and Greek.',
+		descHome: 'Expenity tracks your expenses, income, bills, budgets and goals on every device. Sign in with a passkey, share wallets with family, choose fourteen themes or create your own. Free, open source, in English and Greek.',
 		nav: { features: 'Features', how: 'How it works', app: 'Open the app', docs: 'Help center' }, openApp: 'Open app', darkTheme: 'Dark theme', skip: 'Skip to content', menu: 'Menu', homeAria: 'Expenity home',
 		about: 'Know where your money goes, on every device. Free and open source.',
 		foot: { product: 'Product', help: 'Help', more: 'More projects', trust: 'Trust', allProjects: 'All projects', blog: 'Blog', blogTitle: 'The story behind every project',
@@ -130,7 +136,7 @@ const LANGS = {
 	el: {
 		code: 'el', prefix: 'el/', label: 'ΕΛ', other: 'en', switchLabel: 'ΕΝ', switchTitle: 'Αγγλικά',
 		tagline: 'Τα οικονομικά σας, με καθαρό μυαλό', titleHome: 'Expenity: τα οικονομικά σας, με καθαρό μυαλό',
-		descHome: 'Το Expenity παρακολουθεί έξοδα, έσοδα, λογαριασμούς, προϋπολογισμούς και στόχους σε κάθε συσκευή. Σύνδεση με passkey, κοινά πορτοφόλια με την οικογένεια, δώδεκα θέματα. Δωρεάν, ανοιχτού κώδικα, στα ελληνικά και στα αγγλικά.',
+		descHome: 'Το Expenity παρακολουθεί έξοδα, έσοδα, λογαριασμούς, προϋπολογισμούς και στόχους σε κάθε συσκευή. Σύνδεση με passkey, κοινά πορτοφόλια με την οικογένεια, δεκατέσσερα θέματα και δική σας παλέτα. Δωρεάν, ανοιχτού κώδικα, στα ελληνικά και στα αγγλικά.',
 		nav: { features: 'Δυνατότητες', how: 'Πώς λειτουργεί', app: 'Ανοίξτε την εφαρμογή', docs: 'Κέντρο βοήθειας' }, openApp: 'Άνοιγμα', darkTheme: 'Σκούρο θέμα', skip: 'Μετάβαση στο περιεχόμενο', menu: 'Μενού', homeAria: 'Expenity, αρχική',
 		about: 'Τα οικονομικά σας, με καθαρό μυαλό, σε κάθε συσκευή. Δωρεάν και ανοιχτού κώδικα.',
 		foot: { product: 'Προϊόν', help: 'Βοήθεια', more: 'Περισσότερα έργα', trust: 'Εμπιστοσύνη', allProjects: 'Όλα τα έργα', blog: 'Blog', blogTitle: 'Η ιστορία πίσω από κάθε έργο',
