@@ -23,6 +23,10 @@ Expenity saves on your device first and syncs in the background, so it works off
 
 What syncs: wallets, transactions, bills, categories, budgets, goals, recurring income and some settings. Look settings (theme, animations, language) stay per device.
 
+## Check for updates
+
+Expenity updates itself when you open it with a connection. To check right now, open **More → Account and sync** (or **About and help**) and press **Check for updates**. If a newer version has been published, press **Update now** and the app reloads with it.
+
 ## Sign out
 
 **Sign out** removes the data from that device (it stays in your account). If something has not synced yet, Expenity tells you first.

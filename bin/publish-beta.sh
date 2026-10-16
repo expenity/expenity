@@ -11,7 +11,7 @@ for f in index.html icons.js ui.js views.js forms.js reports.js plan.js insights
 # Mark it as a beta: not indexed, and a clear name.
 sed -i.bak -e 's#<title>Expenity: #<title>[Beta] Expenity: #' -e 's#<meta name="theme-color"#<meta name="robots" content="noindex, nofollow">\n<meta name="theme-color"#' "$work/app/index.html" && rm "$work/app/index.html.bak"
 sed -i.bak -e 's#"name": "Expenity"#"name": "Expenity (beta)"#' -e 's#"short_name": "Expenity"#"short_name": "Expenity β"#' "$work/app/manifest.webmanifest" && rm "$work/app/manifest.webmanifest.bak"
-sed -i.bak -E "s#expenity-v([0-9]+)#expenity-beta-v\1#" "$work/app/sw.js" && rm "$work/app/sw.js.bak"
+sed -i.bak -E "s#expenity-v([0-9]+)#expenity-beta-v\1-$(date +%s)#" "$work/app/sw.js" && rm "$work/app/sw.js.bak"
 sed -i.bak "s#document.title = t( 'title' );#document.title = '[Beta] ' + t( 'title' );#" "$work/app/app.js" && rm "$work/app/app.js.bak"
 cat > "$work/index.html" <<'HTML'
 <!doctype html><html lang="en"><head><meta charset="utf-8"><title>Expenity beta</title><meta name="robots" content="noindex, nofollow"><meta http-equiv="refresh" content="0; url=app/"></head><body style="font-family:system-ui,sans-serif;margin:3rem auto;max-width:30rem;padding:0 1rem"><h1>Expenity beta</h1><p>A test copy of the next version. <a href="app/">Open the app</a>.</p></body></html>

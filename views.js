@@ -304,9 +304,10 @@
 	EXA.syncLine = syncLine;
 	const row = ( more, icon, color, title, sub ) => `<button type="button" class="mrow" data-more="${ more }">${ UI.ci( icon, color, 40 ) }<span class="mid"><b>${ esc( title ) }</b>${ sub ? `<small>${ esc( sub ) }</small>` : '' }</span>${ chev }</button>`;
 
+	const updateCard = () => `<section class="card"><h2>${ esc( t( 'updTitle' ) ) }</h2><p class="muted small" id="updLine">${ esc( t( 'aboutVersion', { v: window.EXPENITY_VERSION || '0.4' } ) ) }</p><div class="btn-row"><button type="button" class="btn btn-ghost" id="updBtn" data-act="check-update">${ UI.icon( 'refresh', 20 ) } ${ esc( t( 'updCheck' ) ) }</button></div></section>`;
 	function accountView() {
 		if ( ! EX.auth.isSignedIn() ) {
-			return `<section class="card"><p class="muted">${ esc( t( 'acctGuest' ) ) }</p><div class="btn-row stack"><button type="button" class="btn btn-primary" data-act="auth-create">${ esc( t( 'createAccount' ) ) }</button><button type="button" class="btn btn-ghost" data-act="auth-signin">${ esc( t( 'signIn' ) ) }</button></div></section>`;
+			return `<section class="card"><p class="muted">${ esc( t( 'acctGuest' ) ) }</p><div class="btn-row stack"><button type="button" class="btn btn-primary" data-act="auth-create">${ esc( t( 'createAccount' ) ) }</button><button type="button" class="btn btn-ghost" data-act="auth-signin">${ esc( t( 'signIn' ) ) }</button></div></section>${ updateCard() }`;
 		}
 		const u = EX.auth.user() || {}, d = st.devCache, pk = d ? d.passkeys : [], ss = d ? d.sessions : [], left = EX.auth.codesLeft();
 		return `<section class="card"><p><b>${ esc( t( 'acctSignedIn', { email: u.email || '' } ) ) }</b></p><p class="muted small" id="syncLine">${ syncLine() }</p>${ u.emailVerified ? '' : `<p class="muted small">${ esc( t( 'emailPending' ) ) }</p>` }<div class="btn-row"><button type="button" class="btn btn-ghost" data-act="sync-now">${ UI.icon( 'refresh', 20 ) } ${ esc( t( 'syncNow' ) ) }</button></div></section>
@@ -314,7 +315,8 @@
 			<section class="card"><h2>${ esc( t( 'devSessions' ) ) }</h2><ul class="plain flat">${ ss.map( ( s ) => `<li><span>${ UI.icon( 'devices', 20 ) } <small class="muted">${ esc( fmtDate( s.createdAt ) ) }</small> ${ s.current ? `<b>${ esc( t( 'devThis' ) ) }</b>` : '' }</span>${ s.current ? '' : `<button type="button" class="btn btn-ghost btn-sm" data-act="rm-session" data-id="${ esc( s.id ) }">${ esc( t( 'devSignOut' ) ) }</button>` }</li>` ).join( '' ) }</ul></section>
 			<section class="card"><h2>${ esc( t( 'devCodes' ) ) }</h2><p class="muted small">${ left == null ? '' : esc( t( 'codesLeft', { n: left } ) ) }</p><div class="btn-row"><button type="button" class="btn btn-ghost" data-act="new-codes">${ esc( t( 'devCodesBtn' ) ) }</button></div></section>
 			<section class="card"><div class="btn-row"><button type="button" class="btn btn-ghost" data-act="sign-out">${ UI.icon( 'logout', 20 ) } ${ esc( t( 'signOut' ) ) }</button></div></section>
-			<section class="card danger"><h2>${ esc( t( 'devDelete' ) ) }</h2><p class="muted small">${ esc( t( 'devDeleteText' ) ) }</p><div class="btn-row"><button type="button" class="btn btn-danger" data-act="delete-account">${ esc( t( 'devDelete' ) ) }</button></div></section>`;
+			<section class="card danger"><h2>${ esc( t( 'devDelete' ) ) }</h2><p class="muted small">${ esc( t( 'devDeleteText' ) ) }</p><div class="btn-row"><button type="button" class="btn btn-danger" data-act="delete-account">${ esc( t( 'devDelete' ) ) }</button></div></section>
+			${ updateCard() }`;
 	}
 	function remindersView() {
 		const n = typeof Notification === 'undefined' ? null : Notification.permission, on = S().device.notify && n === 'granted';
@@ -350,7 +352,8 @@
 		const L = ( href, label, icon ) => `<a class="mrow" href="${ href }" target="_blank" rel="noopener noreferrer">${ UI.ci( icon, 'gray', 40 ) }<span class="mid"><b>${ esc( label ) }</b></span>${ UI.icon( 'link', 18 ) }</a>`;
 		return `<section class="card"><h2>${ esc( t( 'aboutTitle' ) ) }</h2><p class="muted">${ esc( t( 'aboutText' ) ) }</p><p class="muted small">${ esc( t( 'aboutVersion', { v: window.EXPENITY_VERSION || '0.3' } ) ) }</p></section>
 			<div class="list">${ L( 'https://expenity.github.io/expenity/docs/', t( 'aboutHelp' ), 'help-circle' ) }${ L( 'https://george-stathopoulos.github.io/blog/', t( 'aboutBlog' ), 'notes' ) }${ L( 'https://george-stathopoulos.github.io/', t( 'aboutProjects' ), 'category-2' ) }${ L( 'https://github.com/expenity/expenity', t( 'aboutSource' ), 'brand-github' ) }</div>
-			<p class="muted small pad">${ esc( t( 'footerNote' ) ) }</p>`;
+			<p class="muted small pad">${ esc( t( 'footerNote' ) ) }</p>
+			${ updateCard() }`;
 	}
 	EXA.more = () => {
 		const sub = st.more;

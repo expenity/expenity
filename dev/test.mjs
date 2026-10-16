@@ -497,6 +497,19 @@ for ( const w of [ 320, 360, 390, 430 ] ) {
 	await c.close();
 }
 
+/* ---- Check for updates (More, Account) */
+{
+	const { context: c, page: p } = await newPage( { viewport: { width: 390, height: 844 } } );
+	await p.evaluate( () => { window.EXA.skipFlow(); window.EXA.go( 'more', 'account' ); } );
+	await p.waitForTimeout( 400 );
+	await p.click( '#updBtn' ); await p.waitForFunction( () => /latest version/.test( document.querySelector( '#updLine' ).textContent ), null, { timeout: 5000 } );
+	ok( true, 'update check: the same build says the app is up to date' );
+	await c.route( '**/sw.js*', ( route ) => route.fulfill( { contentType: 'text/javascript', body: 'const CACHE = \'expenity-v999\';' } ) );
+	await p.click( '#updBtn' ); await p.waitForFunction( () => /new version/.test( document.querySelector( '#updLine' ).textContent ), null, { timeout: 5000 } );
+	ok( await p.locator( '#updBtn[data-act=apply-update]' ).count() === 1, 'update check: a newer build offers "Update now"' );
+	await c.close();
+}
+
 /* ---- Migration from version 0.1 */
 {
 	const ctx2 = await browser.newContext( { locale: 'en-US' } );
