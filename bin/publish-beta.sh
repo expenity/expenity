@@ -7,7 +7,7 @@ cd "$(dirname "$0")/.."
 REPO="expenity/expenity-beta"
 work="$(mktemp -d)"
 mkdir -p "$work/app"
-for f in index.html icons.js ui.js views.js forms.js photos.js reports.js plan.js insights.js share.js push.js flow.js themes.js app.js core.js sync.js i18n.js theme.js style.css themes.css favicon.svg manifest.webmanifest sw.js icon-192.png icon-512.png; do cp "$f" "$work/app/$f"; done
+for f in index.html icons.js ui.js views.js forms.js photos.js reports.js plan.js insights.js share.js push.js flow.js themes.js enhancements.js releases.json app.js core.js sync.js i18n.js theme.js style.css themes.css favicon.svg manifest.webmanifest sw.js icon-192.png icon-512.png; do cp "$f" "$work/app/$f"; done
 # Use one build identifier for both HTML asset URLs and service-worker installation.
 node --input-type=module - "$work/app" <<'JS'
 import {readFileSync,writeFileSync} from 'node:fs';

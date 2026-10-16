@@ -1,0 +1,38 @@
+{
+  "version": "0.6.0",
+  "releases": [
+    {
+      "version": "0.6.0",
+      "date": "2026-10-16",
+      "en": [
+        "Clear reminder notices when notifications are off.",
+        "Retained release notes in Account and About, and a one-time update popup.",
+        "Install handoff: finish setup from the installed app, or explicitly continue in the browser.",
+        "Undo-only action notices and reversible transactions from history.",
+        "Reusable tags for financial records and a tag library in More.",
+        "Personalise Home: hold to edit, reorder, resize or hide widgets.",
+        "Greek photo-delete button wraps within the screen.",
+        "Custom names first; predefined suggestions are collapsed."
+      ],
+      "el": [
+        "Ενημέρωση όταν οι υπενθυμίσεις δεν μπορούν να σταλούν επειδή οι ειδοποιήσεις είναι απενεργοποιημένες.",
+        "Ιστορικό εκδόσεων στον Λογαριασμό και στις Πληροφορίες, με μία προβολή μετά την ενημέρωση.",
+        "Συνέχεια της αρχικής ρύθμισης από την εγκατεστημένη εφαρμογή ή ρητή επιλογή χρήσης στο πρόγραμμα περιήγησης.",
+        "Μόνο «Αναίρεση» στα σχετικά μηνύματα και αναίρεση κινήσεων από το ιστορικό.",
+        "Επαναχρησιμοποιούμενες ετικέτες και διαχείρισή τους στα Περισσότερα.",
+        "Προσαρμογή Αρχικής: παρατεταμένο πάτημα, αλλαγή σειράς, μεγέθους και απόκρυψη ενοτήτων.",
+        "Το κουμπί διαγραφής φωτογραφιών χωράει και στα ελληνικά.",
+        "Πρώτα το δικό σας όνομα· οι έτοιμες προτάσεις ανοίγουν προαιρετικά."
+      ]
+    },
+    {
+      "version": "0.5",
+      "en": [
+        "Animated onboarding, saved transaction names, refreshed navigation and Greek translations."
+      ],
+      "el": [
+        "Κινούμενη εισαγωγή, αποθηκευμένα ονόματα κινήσεων, ανανεωμένη πλοήγηση και ελληνικές μεταφράσεις."
+      ]
+    }
+  ]
+}
