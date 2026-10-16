@@ -8,7 +8,7 @@
  const t=k=>(words[EX.lang()]||words.en)[k],L=k=>esc(t(k));
  const copy=x=>JSON.parse(JSON.stringify(x));
  const sizeOf=s=>s==='compact'?'medium':s==='wide'?'full':['small','medium','full'].includes(s)?s:'full';
- let draft=null,source=null,selected=null,hold=null,drag=null,resize=null,blockClickUntil=0,scrollFrame=0,suppressRelease=false;
+ let draft=null,source=null,selected=null,hold=null,drag=null,resize=null,blockClickUntil=0,blockToolbarUntil=0,scrollFrame=0,suppressRelease=false;
  A.dashboardEditing=()=>draft!==null;
  const layout=()=>{const value=draft??S().settings.homeLayout;return Array.isArray(value)?value.filter(x=>x&&keys.includes(x.id)):[];};
  const widget=id=>all('#homeGrid>[data-home]').find(x=>x.dataset.home===id);
@@ -125,7 +125,7 @@
    e.preventDefault();e.stopPropagation();return;
   }
   const el=e.target.closest('#homeGrid>[data-home]');if(!el||e.pointerType!=='touch'||e.target.closest('input,textarea,select,a'))return;
-  hold={x:e.clientX,y:e.clientY,timer:setTimeout(()=>{const id=el.dataset.home;hold=null;suppressRelease=true;blockClickUntil=performance.now()+700;begin(id);},650)};
+  hold={x:e.clientX,y:e.clientY,timer:setTimeout(()=>{const id=el.dataset.home;hold=null;suppressRelease=true;blockToolbarUntil=performance.now()+700;blockClickUntil=performance.now()+700;begin(id);},650)};
  });
  document.addEventListener('pointermove',e=>{
   if(hold&&Math.hypot(e.clientX-hold.x,e.clientY-hold.y)>10){clearTimeout(hold.timer);hold=null;}
@@ -141,10 +141,10 @@
   if(!drag.started&&Math.hypot(e.clientX-drag.startX,e.clientY-drag.startY)>7)startDrag();
   if(drag.started){e.preventDefault();dragStep(e.clientX,e.clientY);}
  },{passive:false});
- document.addEventListener('pointerup',()=>{if(suppressRelease){suppressRelease=false;blockClickUntil=performance.now()+80;}stopGesture();});
+ document.addEventListener('pointerup',()=>{if(suppressRelease){suppressRelease=false;blockToolbarUntil=performance.now()+80;blockClickUntil=performance.now()+80;}stopGesture();});
  document.addEventListener('pointercancel',()=>stopGesture(true));
  document.addEventListener('click',e=>{
-  if(performance.now()<blockClickUntil&&e.target.closest('#homeGrid,.dash-ghost,.dash-editbar,.dash-hint')){e.preventDefault();e.stopImmediatePropagation();return;}
+  if(performance.now()<blockClickUntil&&e.target.closest('#homeGrid,.dash-ghost')||performance.now()<blockToolbarUntil&&e.target.closest('.dash-editbar,.dash-hint')){e.preventDefault();e.stopImmediatePropagation();return;}
   const el=e.target.closest('[data-home-settings],[data-dash-done],[data-dash-cancel],[data-dash-cards],[data-dash-dismiss],[data-dash-hide],[data-dash-resize],[data-dash-size],[data-dash-restore],[data-dash-reset],[data-dash-drag]');
   if(!el)return;e.preventDefault();e.stopImmediatePropagation();
   if(el.hasAttribute('data-home-settings')){UI.closeSheet();A.go('home');begin();return;}
