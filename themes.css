@@ -180,8 +180,8 @@
 :root[data-skin=vader] .hero-flip{position:relative;isolation:isolate;margin-top:156px}
 :root[data-skin=vader] .hero-flip>.hero{position:relative;z-index:1}
 :root[data-skin=vader] .hero-flip::before{content:"";position:absolute;pointer-events:none;right:16px;bottom:calc(100% - 27px);width:156px;height:190px;background:url('assets/themes/vader-portrait-v1.webp') center 18%/cover no-repeat;filter:grayscale(1) contrast(1.65) brightness(1.12);mix-blend-mode:screen;mask-image:linear-gradient(to right,transparent,#000 18% 82%,transparent);transform-origin:50% 100%;animation:vader-breathe 5s ease-in-out infinite;z-index:0}
-:root[data-skin=vader] #view.enter .hero-flip:not(.vader-retreated)::before{animation:vader-emerge 1s .15s both}
-:root[data-skin=vader] .hero-flip.vader-retreated::before{animation:vader-retreat .85s ease-in forwards}
+:root[data-skin=vader] #view.enter .hero-flip:not(.vader-retreated):not(.vader-retreating)::before{animation:vader-emerge 1s .15s both}
+:root[data-skin=vader] .hero-flip.vader-retreating::before{animation:vader-retreat .85s ease-in forwards}
 @keyframes vader-breathe{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-3px) scale(1.015)}}
 @keyframes vader-emerge{from{opacity:0;transform:translateY(75px) rotateY(-35deg)}to{opacity:1;transform:translateY(0) rotateY(0)}}
 @keyframes vader-retreat{0%{opacity:1;transform:translateY(0) rotateY(0)}45%{opacity:.8;transform:translateY(12px) rotateY(65deg)}100%{opacity:0;transform:translateY(115px) rotateY(85deg)}}
@@ -190,3 +190,5 @@
 :root[data-skin=vader] :is(.dash-small,.dash-medium,.dashboard-editing) .hero-flip{margin-top:4px}
 :root[data-skin=vader] :is(.dash-small,.dash-medium,.dashboard-editing) .hero-flip::before{display:none}
 :root:has(dialog[open])[data-skin=vader] .hero-flip::before{visibility:hidden}
+
+:root[data-skin=vader] .hero-flip.vader-retreated::before{opacity:0;animation:none}
