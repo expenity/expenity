@@ -25,7 +25,7 @@ Expenity has twelve themes. A theme changes more than colour: shapes, type, bord
 
 ## Animations
 
-Expenity moves a little: screens slide in, charts grow, buttons respond when pressed. Under **Animations** you can choose:
+Expenity moves a little. The balance card on Home **flips over** when you tap it, to show this month in short. Numbers roll up, list rows and wallet cards fade in one after another, bars, rings and donut slices draw themselves, a row you delete fades away, a tab you press bounces, and a goal you reach throws confetti. Under **Animations** you can choose:
 
 - **Match device**: follows your device's "reduce motion" setting.
 - **Full**: all animations.

@@ -121,6 +121,8 @@
 			else if ( a === 'back' ) back();
 			else if ( a === 'skip' ) { W.step += 1; D().setupStep = W.step; EX.persist(); flow.show(); }
 			else if ( a === 'start' ) finish();
+			else if ( a === 'add-goal' ) { readGoals(); ( W.goals = W.goals || [] ).push( { name: '', target: '', icon: 'target', preset: '' } ); flow.show( true ); }
+			else if ( a === 'rm-goal' ) { readGoals(); W.goals.splice( Number( el.dataset.i ), 1 ); flow.show( true ); }
 			else if ( a === 'add-wallet' ) { readWallets(); W.wallets.push( { type: 'other', on: true, name: '', opening: '' } ); flow.show(); }
 			return true;
 		}
@@ -176,6 +178,9 @@
 	const curName = ( c ) => { try { return new Intl.DisplayNames( [ EX.loc() || 'en' ], { type: 'currency' } ).of( c ); } catch ( e ) { return c; } };
 	const curSym = ( c ) => { try { return ( new Intl.NumberFormat( EX.loc(), { style: 'currency', currency: c } ).formatToParts( 0 ).find( ( p ) => p.type === 'currency' ) || {} ).value || c; } catch ( e ) { return c; } };
 	const defaultWallets = () => [ { type: 'cash', on: true, name: t( 'wCash' ), opening: '' }, { type: 'bank', on: true, name: t( 'wtBank' ), opening: '' }, { type: 'card', on: false, name: t( 'wtCard' ), opening: '' }, { type: 'savings', on: false, name: t( 'wtSavings' ), opening: '' } ];
+	function readGoals() {
+		$$( '#setupForm [data-grow]' ).forEach( ( r ) => { const g = ( W.goals || [] )[ Number( r.dataset.grow ) ]; if ( g ) { g.name = r.querySelector( '[name=gname]' ).value; g.target = r.querySelector( '[name=gtarget]' ).value; } } );
+	}
 	function readWallets() {
 		$$( '#setupForm [data-wrow]' ).forEach( ( r ) => {
 			const i = Number( r.dataset.wrow ), w = W.wallets[ i ];
@@ -200,14 +205,16 @@
 				<div class="cur-grid" role="radiogroup">${ list.map( ( c ) => `<button type="button" class="cur${ c === S().settings.currency ? ' on' : '' }" data-fstep="cur" data-cur="${ c }" role="radio" aria-checked="${ c === S().settings.currency }"><b>${ esc( curSym( c ) ) }</b><span>${ c }</span><small>${ esc( curName( c ) ) }</small></button>` ).join( '' ) }</div>`;
 		} else if ( id === 'aims' ) {
 			icon = 'target'; color = 'pink'; title = t( 'aimsSetupTitle' ); text = t( 'aimsSetupText' );
+			if ( ! W.aimsSeen && ! ( S().settings.aims || [] ).length ) S().settings.aims = [ 'track' ]; W.aimsSeen = true; // one is already chosen to show that more than one can be
 			const on = S().settings.aims || [];
-			body = `<div class="aims">${ EX.ideas.AIMS.map( ( a ) => `<button type="button" class="aim${ on.includes( a.id ) ? ' on' : '' }" data-fstep="aim" data-aim="${ a.id }" aria-pressed="${ on.includes( a.id ) }">${ UI.ci( a.icon, a.color, 36 ) }<span>${ esc( t( 'aim_' + a.id ) ) }</span></button>` ).join( '' ) }</div>`;
+			body = `<p class="multi-hint">${ UI.icon( 'checkbox', 18 ) } ${ esc( t( 'aimsMulti', { n: on.length } ) ) }</p><div class="aims">${ EX.ideas.AIMS.map( ( a ) => `<button type="button" class="aim${ on.includes( a.id ) ? ' on' : '' }" data-fstep="aim" data-aim="${ a.id }" aria-pressed="${ on.includes( a.id ) }">${ UI.ci( a.icon, a.color, 36 ) }<span>${ esc( t( 'aim_' + a.id ) ) }</span><i class=\"tick\" aria-hidden=\"true\">${ on.includes( a.id ) ? UI.icon( 'check', 18 ) : '' }</i></button>` ).join( '' ) }</div>`;
 		} else if ( id === 'goal' ) {
 			icon = 'plane'; color = 'pink'; title = t( 'goalSetupTitle' ); text = t( 'goalSetupText' );
-			const g = W.goal || ( W.goal = { name: '', target: '', icon: 'target' } );
-			body = `<div class="chips wrap">${ GOAL_PRESETS.map( ( [ k, ic ] ) => `<button type="button" class="chip big${ g.icon === ic && g.preset === k ? ' on' : '' }" data-fstep="gpreset" data-k="${ k }" data-ic="${ ic }">${ UI.icon( ic, 20 ) } ${ esc( t( 'goalPreset_' + k ) ) }</button>` ).join( '' ) }</div>
-				<label class="f"><span>${ esc( t( 'goalName' ) ) }</span><input name="gname" maxlength="60" autocomplete="off" value="${ esc( g.name ) }"></label>
-				<label class="f"><span>${ esc( t( 'goalTarget' ) ) } (${ esc( S().settings.currency ) })</span><input name="gtarget" inputmode="decimal" autocomplete="off" placeholder="0.00" value="${ esc( g.target ) }"></label><p class="err" id="setupErr" role="alert" hidden></p>`;
+			if ( ! W.goals ) W.goals = [];
+			const used = ( k ) => W.goals.some( ( g ) => g.preset === k );
+			body = `<div class="chips wrap" role="group" aria-label="${ esc( t( 'goalSetupTitle' ) ) }">${ GOAL_PRESETS.filter( ( p ) => p[ 0 ] !== 'other' ).map( ( [ k, ic ] ) => `<button type="button" class="chip big${ used( k ) ? ' on' : '' }" data-fstep="gpreset" data-k="${ k }" data-ic="${ ic }" aria-pressed="${ used( k ) }">${ UI.icon( used( k ) ? 'check' : ic, 20 ) } ${ esc( t( 'goalPreset_' + k ) ) }</button>` ).join( '' ) }</div>
+				<div class="grows">${ W.goals.map( ( g, i ) => `<div class="grow" data-grow="${ i }">${ UI.ci( g.icon || 'target', 'pink', 44 ) }<input name="gname" maxlength="60" autocomplete="off" value="${ esc( g.name ) }" placeholder="${ esc( t( 'goalName' ) ) }" aria-label="${ esc( t( 'goalName' ) ) }"><input name="gtarget" inputmode="decimal" autocomplete="off" value="${ esc( g.target ) }" placeholder="${ esc( S().settings.currency ) } 0.00" aria-label="${ esc( t( 'goalTarget' ) ) }"><button type="button" class="ab-btn" data-flow="rm-goal" data-i="${ i }" aria-label="${ esc( t( 'del' ) ) }">${ UI.icon( 'x', 20 ) }</button></div>` ).join( '' ) }</div>
+				<button type="button" class="btn btn-ghost" data-flow="add-goal">${ UI.icon( 'plus', 20 ) } ${ esc( t( W.goals.length ? 'setupAnotherGoal' : 'setupFirstGoal' ) ) }</button><p class="err" id="setupErr" role="alert" hidden></p>`;
 		} else if ( id === 'wallets' ) {
 			icon = 'wallet'; color = 'green'; title = t( 'setupWalletsTitle' ); text = t( 'setupWalletsText' );
 			body = `<div class="wrows">${ W.wallets.map( ( w, i ) => `<div class="wrow${ w.on ? ' on' : '' }" data-wrow="${ i }">${ UI.ci( EX.WALLET_ICON[ w.type ] || 'wallet', 'teal', 44 ) }<label class="switch"><input type="checkbox" name="on"${ w.on ? ' checked' : '' } aria-label="${ esc( w.name || t( 'wtOther' ) ) }"><i></i></label>
@@ -239,14 +246,12 @@
 		const id = steps()[ W.step ];
 		if ( id === 'name' ) { const n = $( '#setupForm [name=name]' ); S().settings.name = n ? n.value.trim() : ''; EX.persist(); }
 		if ( id === 'goal' ) {
-			const gn = $( '#setupForm [name=gname]' ).value.trim(), gt = $( '#setupForm [name=gtarget]' ).value.trim().replace( ',', '.' );
-			if ( gn || gt ) {
-				const err = ( k ) => { const e = $( '#setupErr' ); e.textContent = t( k ); e.hidden = false; };
-				if ( ! gn ) return err( 'errNameReq' );
-				if ( ! /^\d+(\.\d{1,2})?$/.test( gt ) || Number( gt ) <= 0 ) return err( 'errAmount' );
-				if ( ! S().goals.some( ( x ) => x.name === gn ) ) S().goals.push( { id: EX.uid(), name: gn, target: gt, deadline: '', icon: ( W.goal && W.goal.icon ) || 'target' } );
-				W.goal = null; EX.save();
-			}
+			readGoals();
+			const err = ( k ) => { const e = $( '#setupErr' ); e.textContent = t( k ); e.hidden = false; };
+			const rows = ( W.goals || [] ).filter( ( g ) => g.name.trim() || g.target.trim() );
+			for ( const g of rows ) { if ( ! g.name.trim() ) return err( 'errNameReq' ); if ( ! /^\d+(\.\d{1,2})?$/.test( g.target.trim().replace( ',', '.' ) ) || Number( g.target.replace( ',', '.' ) ) <= 0 ) return err( 'errAmount' ); }
+			rows.forEach( ( g ) => { if ( ! S().goals.some( ( x ) => x.name === g.name.trim() ) ) S().goals.push( { id: EX.uid(), name: g.name.trim(), target: g.target.trim().replace( ',', '.' ), deadline: '', icon: g.icon || 'target' } ); } );
+			W.goals = null; EX.save();
 		}
 		if ( id === 'wallets' ) {
 			readWallets();
@@ -271,7 +276,7 @@
 		const a = el.dataset.fstep;
 		if ( a === 'plat' ) flow.onPlatform( el.dataset.plat );
 		else if ( a === 'aim' ) { const cur = ( S().settings.aims || [] ).slice(), id = el.dataset.aim, i = cur.indexOf( id ); if ( i >= 0 ) cur.splice( i, 1 ); else cur.push( id ); S().settings.aims = cur; EX.persist(); flow.show( true ); }
-		else if ( a === 'gpreset' ) { const g = W.goal || ( W.goal = { name: '', target: '', icon: 'target' } ); const nm = $( '#setupForm [name=gname]' ), tg = $( '#setupForm [name=gtarget]' ); g.name = nm ? nm.value : g.name; g.target = tg ? tg.value : g.target; g.icon = el.dataset.ic; g.preset = el.dataset.k; if ( el.dataset.k !== 'other' ) g.name = t( 'goalPreset_' + el.dataset.k ); flow.show( true ); }
+		else if ( a === 'gpreset' ) { readGoals(); W.goals = W.goals || []; const k = el.dataset.k, i = W.goals.findIndex( ( g ) => g.preset === k ); if ( i >= 0 ) W.goals.splice( i, 1 ); else W.goals.push( { preset: k, name: t( 'goalPreset_' + k ), target: '', icon: el.dataset.ic } ); flow.show( true ); }
 		else if ( a === 'cur' ) { S().settings.currency = el.dataset.cur; EX.persist(); flow.show( true ); }
 		else if ( a === 'theme' ) { const v = el.dataset.theme; try { if ( v === 'auto' ) localStorage.removeItem( 'expenity.theme' ); else localStorage.setItem( 'expenity.theme', v ); } catch ( err ) { /* ignore */ } if ( v === 'auto' ) delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = v; flow.show(); }
 		else if ( a === 'motion' ) { EXA.setMotion( el.dataset.motion ); flow.show( true ); }

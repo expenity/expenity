@@ -88,9 +88,12 @@ ok( await page.locator( '#setupForm input[name=name]' ).isVisible(), 'then the s
 await page.fill( '#setupForm [name=name]', 'Tester' ); await page.click( '[data-flow=next]' );
 await page.click( '[data-fstep=cur][data-cur=EUR]' ); await page.click( '[data-flow=next]' );
 ok( await page.locator( '[data-fstep=aim]' ).count() === 7, 'the wizard asks what the person wants help with (seven aims)' );
+ok( await page.locator( '[data-fstep=aim][data-aim=track].on' ).count() === 1 && await page.locator( '.multi-hint' ).count() === 1, 'one aim is already chosen, and the step says more than one can be chosen' );
 await page.click( '[data-fstep=aim][data-aim=save]' ); await page.click( '[data-fstep=aim][data-aim=subs]' ); await page.click( '[data-flow=next]' );
-ok( await page.locator( '[name=gname]' ).isVisible(), 'choosing to save for something adds a goal step' );
-await page.click( '[data-fstep=gpreset][data-k=trip]' ); await page.fill( '#setupForm [name=gtarget]', '800' ); await page.click( '[data-flow=next]' );
+ok( await page.locator( '[data-flow=add-goal]' ).isVisible(), 'choosing to save for something adds a goal step' );
+await page.click( '[data-fstep=gpreset][data-k=trip]' ); await page.click( '[data-fstep=gpreset][data-k=car]' ); await page.click( '[data-flow=add-goal]' );
+ok( await page.locator( '.grow' ).count() === 3, 'the goal step can hold several goals' );
+await page.fill( '.grow >> nth=0 >> [name=gtarget]', '800' ); await page.fill( '.grow >> nth=1 >> [name=gtarget]', '9000' ); await page.click( '.grow >> nth=2 >> [data-flow=rm-goal]' ); await page.click( '[data-flow=next]' );
 await page.locator( '[data-wrow="1"] .switch' ).click();
 await page.fill( '[data-wrow="0"] [name=wname]', 'Main wallet' ); await page.fill( '[data-wrow="0"] [name=wopening]', '100' );
 await page.click( '[data-flow=next]' );
@@ -102,7 +105,7 @@ await page.click( '[data-flow=next]' );
 ok( await page.locator( '[data-flow=start]' ).isVisible(), 'the wizard ends on a done screen' );
 await page.click( '[data-flow=start]' );
 ok( ! await page.locator( '#flow' ).isVisible(), 'finishing opens the app' );
-{ const g = await st(); ok( g.goals.length === 1 && g.goals[ 0 ].target === '800' && g.goals[ 0 ].icon === 'plane' && g.settings.aims.includes( 'save' ), 'the first goal and the aims from setup are saved' ); }
+{ const g = await st(); ok( g.goals.length === 2 && g.goals[ 0 ].target === '800' && g.goals[ 0 ].icon === 'plane' && g.settings.aims.includes( 'save' ), 'the first goal and the aims from setup are saved' ); }
 let s = await st();
 ok( s.accounts.length === 1 && s.accounts[ 0 ].name === 'Main wallet' && s.accounts[ 0 ].opening === '100' && s.settings.currency === 'EUR' && ! s.accounts[ 0 ].auto && s.settings.name === 'Tester', 'the first wallet comes from the first-run answers' );
 ok( await page.locator( '#tabbar .fab' ).isVisible() && await page.locator( '#tabbar .tab' ).count() === 4, 'phone: bottom tab bar with four tabs and a center + button' );
@@ -507,6 +510,24 @@ for ( const w of [ 320, 360, 390, 430 ] ) {
 	await c.route( '**/sw.js*', ( route ) => route.fulfill( { contentType: 'text/javascript', body: 'const CACHE = \'expenity-v999\';' } ) );
 	await p.click( '#updBtn' ); await p.waitForFunction( () => /new version/.test( document.querySelector( '#updLine' ).textContent ), null, { timeout: 5000 } );
 	ok( await p.locator( '#updBtn[data-act=apply-update]' ).count() === 1, 'update check: a newer build offers "Update now"' );
+	await c.close();
+}
+
+/* ---- Effects: the balance card flips, numbers roll up and end on the real text */
+{
+	const { context: c, page: p } = await newPage( { viewport: { width: 390, height: 844 } } );
+	await p.evaluate( () => { window.EXA.skipFlow(); const X = window.EX, S = X.state(); S.settings.currency = 'EUR'; S.accounts[ 0 ].currency = 'EUR'; S.accounts[ 0 ].opening = '1250'; X.save(); window.EXA.go( 'home' ); } );
+	await p.waitForTimeout( 1300 );
+	ok( ( await p.locator( '.hero-front > b' ).innerText() ).includes( '1,250' ), 'the rolling number ends on the real balance' );
+	ok( await p.locator( '.hero-flip' ).getAttribute( 'aria-pressed' ) === 'false', 'the balance card starts on its front' );
+	await p.click( '.hero-flip' ); await p.waitForTimeout( 900 );
+	ok( await p.locator( '.hero-flip.flipped' ).count() === 1 && await p.locator( '.hero-flip' ).getAttribute( 'aria-pressed' ) === 'true', 'tapping the card flips it to this month' );
+	const hidden = await p.evaluate( () => getComputedStyle( document.querySelector( '.hero-front' ) ).transform );
+	ok( hidden !== 'none', 'the front is turned away', hidden );
+	await p.evaluate( () => { window.EXA.go( 'activity' ); window.EXA.go( 'home' ); } );
+	ok( await p.locator( '.hero-flip.flipped' ).count() === 1, 'the card stays flipped when you come back' );
+	await p.keyboard.press( 'Tab' ); await p.evaluate( () => document.querySelector( '.hero-flip' ).focus() ); await p.keyboard.press( 'Enter' ); await p.waitForTimeout( 200 );
+	ok( await p.locator( '.hero-flip.flipped' ).count() === 0, 'Enter flips it back (keyboard)' );
 	await c.close();
 }
 

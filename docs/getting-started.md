@@ -24,8 +24,8 @@ A short setup asks a few questions. Each one can be skipped, and you can change 
 
 - **Your name**, used in the greeting.
 - **Your main currency**. Totals and reports use it.
-- **What you want help with**, such as tracking spending, saving for a trip, or cutting subscriptions. Expenity uses this to suggest things that fit you. See [Budgets, goals and income](budgets-goals-income.md#ideas-for-you).
-- **A first goal**, if you chose to save for something.
+- **What you want help with**, such as tracking spending, saving for a trip, or cutting subscriptions. You can choose more than one, and one is already selected to show how. Expenity uses this to suggest things that fit you. See [Budgets, goals and income](budgets-goals-income.md#ideas-for-you).
+- **Your first goals**, if you chose to save for something. Pick as many ideas as you like (trip, car, gift, home, emergency fund) or add your own, each with a target amount.
 - **Your wallets**: cash, bank account, card, savings, with what is in each.
 - **How it looks**: a theme and whether animations are on, followed, on a phone, by a short animated tip on swiping rows. See [Themes and animations](themes-and-look.md).
 

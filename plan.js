@@ -67,7 +67,7 @@
 		S().txs.push( { id: uid(), type: direction === 'add' ? 'expense' : 'income', amount: String( amount ), account, category: 'goal', date: today(), name: g.name, goalId: g.id } );
 		EX.save();
 		const after = P.goal( g ).pct;
-		if ( direction === 'add' ) { const hit = [ 100, 75, 50, 25 ].find( ( m ) => before < m && after >= m ); if ( hit ) { UI.haptic(); toast( hit === 100 ? t( 'goalDone', { name: g.name } ) : t( 'goalMilestone', { n: hit, name: g.name } ) ); return; } }
+		if ( direction === 'add' ) { const hit = [ 100, 75, 50, 25 ].find( ( m ) => before < m && after >= m ); if ( hit ) { UI.haptic(); toast( hit === 100 ? t( 'goalDone', { name: g.name } ) : t( 'goalMilestone', { n: hit, name: g.name } ) ); if ( hit === 100 ) UI.confetti(); return; } }
 		toast( t( direction === 'add' ? 'tGoalAdded' : 'tGoalTaken', { name: g.name } ) );
 	};
 	P.receive = ( inc, amount, account ) => {
