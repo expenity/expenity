@@ -1,6 +1,16 @@
 {
-  "version": "0.10.0",
+  "version": "0.10.1",
   "releases": [
+    {
+      "version": "0.10.1",
+      "date": "2026-10-17",
+      "en": [
+        "Fixed a quick Cancel tap after resizing a Home card being ignored. This could leave the dashboard in edit mode and block card actions. Receipt scanning and Safe to spend from 0.10.0 are included."
+      ],
+      "el": [
+        "Διορθώθηκε η παράβλεψη γρήγορου πατήματος Ακύρωση μετά από αλλαγή μεγέθους κάρτας στην Αρχική. Μπορούσε να παραμείνει ενεργή η επεξεργασία και να εμποδίζονται οι ενέργειες των καρτών. Περιλαμβάνονται η σάρωση αποδείξεων και το Περιθώριο εξόδων της έκδοσης 0.10.0."
+      ]
+    },
     {
       "version": "0.10.0",
       "date": "2026-10-17",
