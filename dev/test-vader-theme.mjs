@@ -1,0 +1,18 @@
+// Isolated local browser checks. Does not create accounts or write to the live API.
+import {chromium} from 'playwright-core';import {createServer} from 'node:http';import {readFileSync,existsSync} from 'node:fs';import {join,extname} from 'node:path';import assert from 'node:assert/strict';
+const server=createServer((req,res)=>{const f=join(process.cwd(),req.url.split('?')[0]==='/'?'index.html':req.url.split('?')[0]);if(!existsSync(f)){res.writeHead(404).end();return;}res.setHeader('Content-Type',({'.html':'text/html','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.json':'application/json','.webp':'image/webp'})[extname(f)]||'application/octet-stream');res.end(readFileSync(f));}).listen(0);
+const browser=await chromium.launch({channel:'chrome'}),page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true,serviceWorkers:'block'}),errors=[];page.on('pageerror',e=>errors.push(e.message));const ok=(v,m)=>{assert(v,m);console.log('ok',m);};
+try{
+ await page.route('**/api/**',r=>r.abort());await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.skipFlow);
+ await page.evaluate(()=>{EXA.skipFlow();EXA.setMotion('full');EXA.setSkin('vader');const s=EX.state();s.device.bannerDismissed=true;s.device.installDismissed=true;s.accounts[0].opening='1250';s.settings.name='George';EX.save();EXA.go('home');});
+ ok(await page.locator('.fun-star').count()===48,'layered star field');ok(await page.locator('.fun-fighter').count()===3&&await page.locator('.fun-cruiser').count()===1,'fighter patrol and cruiser');ok(await page.locator('.fun-planet,.fun-moon,.fun-station').count()===3,'planet, moon and orbital station');
+ ok(await page.evaluate(()=>getComputedStyle(document.querySelector('.fun-scene')).pointerEvents==='none'),'decorations cannot intercept taps');ok(await page.evaluate(()=>document.querySelector('.fun-fighter').getAnimations().some(a=>a.playState==='running')),'fighters animate');
+ await page.waitForTimeout(900);await page.screenshot({path:'/tmp/expenity-vader-preview.png'});
+ for(const lang of ['en','el'])for(const width of [320,390,834,1440]){await page.setViewportSize({width,height:900});await page.evaluate(l=>EX.setLang(l),lang);ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),`${lang} ${width}px fits`);}
+ await page.evaluate(()=>EXA.openTx());ok(await page.evaluate(()=>{const s=getComputedStyle(document.querySelector('[data-tx=save]'));return s.backgroundImage==='none'&&s.backgroundColor==='rgb(255, 255, 255)'&&s.color==='rgb(0, 0, 0)';}),'primary controls have black-on-white contrast');await page.evaluate(()=>UI.closeSheet(true));
+ await page.evaluate(()=>EXA.setMotion('off'));ok(await page.evaluate(()=>!document.querySelector('.fun-star').getAnimations().length&&getComputedStyle(document.querySelector('.fun-fighter')).display==='none'),'motion off stops stars and hides ships');
+ await page.emulateMedia({reducedMotion:'reduce'});await page.evaluate(()=>EXA.setMotion('auto'));ok(await page.evaluate(()=>document.documentElement.dataset.funMotion==='still'),'system reduced motion respected');
+ await page.reload();await page.waitForFunction(()=>window.EXA?.skin()==='vader');ok(await page.locator('.vader-scene').count()===1,'theme restores after reload');
+ await page.evaluate(()=>EXA.go('more','appearance'));ok(await page.locator('[data-skin-set=vader]').innerText().then(s=>s.includes('Vader')&&!s.includes('theme_')),'localized theme picker');
+ await page.evaluate(()=>EXA.setSkin('emerald'));ok(await page.locator('.vader-scene').count()===0,'switching away removes space scene');ok(!errors.length,'no runtime exceptions');
+}finally{await browser.close();server.close();}

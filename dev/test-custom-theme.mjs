@@ -9,7 +9,7 @@ const browser=await chromium.launch({channel:'chrome'}),ctx=await browser.newCon
 const ok=(v,s)=>{assert(v,s);console.log('ok',s);};
 try{
  await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.customPalette);await page.evaluate(()=>{EXA.skipFlow();EXA.setMotion('off');EXA.go('more','appearance');});
- ok(await page.locator('.theme-grid [data-skin-set=custom]').count()===0,'custom theme is not a preset template');ok(await page.locator('.theme-grid .theme-card').count()===17,'all seventeen preset templates remain');
+ ok(await page.locator('.theme-grid [data-skin-set=custom]').count()===0,'custom theme is not a preset template');ok(await page.locator('.theme-grid .theme-card').count()===18,'all eighteen preset templates remain');
  ok(await page.locator('.custom-theme-section [data-custom-edit]').isVisible(),'create/edit custom theme is always visible without selecting a template first');await page.screenshot({path:out+'/appearance-phone.png'});
  await page.click('[data-custom-edit]');ok(await page.locator('[data-palette-preset]').count()===6,'six visible starting palettes');
  for(const key of ['bg','surface','accent','ink','icons']){ok(await page.locator(`#customThemeForm [name=${key}]`).isVisible()&&await page.locator(`[data-palette-hex=${key}]`).isVisible(),`${key} has colour-picker and editable hex controls`);}
