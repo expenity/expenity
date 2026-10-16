@@ -18,3 +18,11 @@ Character requests for Mario and Minnie/Mickey were rejected by the image tool; 
 - License: Pixabay Content License, https://pixabay.com/service/license-summary/ (full terms: https://pixabay.com/service/terms/)
 
 This third-party image is NOT covered by the repository's GPL license. It is used as an integrated decorative app-theme asset, not as a standalone stock-image offering. Pixabay's license does not clear any separate third-party character/trademark rights. Preserve this source/license note with the asset. Display-only CSS makes it monochrome and blends its background; the supplied pose is not changed or represented as an actual holding/back pose.
+
+## Colored-pencil brick revision
+
+`brick-pencil-v3.webp` replaces the glossy rendered brick artwork in the active theme. Generated with the built-in image-generation tool and encoded as a transparent 1104 × 736 WebP. Original output is retained in the generation library; the optimized asset is bundled locally and cached offline.
+
+Final prompt:
+
+> Use case: illustration-story. Create finished artistic COLORED-PENCIL ILLUSTRATIONS of four familiar interlocking toy building bricks, each isolated with generous space between, for a playful mobile-app background. Hand-drawn traditional colored pencil and graphite on transparent alpha: clearly visible pencil grain, layered cross-hatching, delicate uneven graphite contours, warm expressive drawing, soft hand-shaded volume. NOT a photograph, NOT a glossy 3D render, NOT vector art, NOT flat rectangles. Subjects: red 2x4 brick with eight raised round studs in two rows of four; blue 2x2 brick with four studs; yellow 2x4 brick with eight studs; green 2x2 brick with four studs. Each has correct recognizable thick plastic brick proportions, visible side walls, and genuinely drawn cylindrical studs with elliptical tops. Varied gentle isometric angles. Rich but slightly muted primary colored-pencil pigments, soft charcoal edges, little pencil sketch marks close to each object only. Four separate objects in a loose airy composition, all completely inside frame, no overlap. Fully transparent empty background: no paper rectangle, no white backdrop, no glow, no scenery, no text, no branding, no watermark, no UI. High-quality editorial sketchbook illustration that remains charming and legible when displayed small.

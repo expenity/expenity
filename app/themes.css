@@ -118,7 +118,7 @@
 .fun-hill:nth-child(5){bottom:10%;width:150px;height:100px;opacity:.18}
 .fun-coin{width:17px;height:23px;border:3px solid #d39b17;background:#ffe07b;box-shadow:inset 3px 0 #fff5bb,3px 3px 0 #e8ac3533;opacity:.6;animation:fun-coin-turn 5s ease-in-out infinite}
 .fun-block{width:38px;height:38px;border:3px solid #bf8128;background:repeating-linear-gradient(0deg,transparent 0 15px,#bf8128 15px 18px),repeating-linear-gradient(90deg,#f1bf60 0 16px,#bf8128 16px 19px);opacity:.35;animation:fun-float 8s ease-in-out infinite}
-.fun-brick{width:clamp(220px,27vw,380px);height:clamp(148px,18vw,254px);background:url('assets/themes/brick-cluster-v2.webp') center/contain no-repeat;opacity:.72;transform:rotate(var(--turn));animation:fun-brick-float 16s ease-in-out infinite}
+.fun-brick{width:clamp(220px,27vw,380px);height:clamp(148px,18vw,254px);background:url('assets/themes/brick-pencil-v3.webp') center/contain no-repeat;opacity:.72;transform:rotate(var(--turn));animation:fun-brick-float 16s ease-in-out infinite}
 .fun-brick:nth-child(1){left:-12%;top:1%;--turn:-8deg}
 .fun-brick:nth-child(2){left:75%;top:38%;--turn:12deg;animation-duration:20s}
 .fun-brick:nth-child(3){left:-7%;top:78%;--turn:6deg;animation-duration:18s}
@@ -138,7 +138,7 @@
 :root:has(dialog[open]) :is(.tabbar,.rail)::before,:root:has(dialog[open]) :is(.tabbar,.rail)::after,:root:has(.dashboard-editing) :is(.tabbar,.rail)::before,:root:has(.dashboard-editing) :is(.tabbar,.rail)::after{visibility:hidden}
 .theme-card:is([data-skin-set=mario],[data-skin-set=bricks],[data-skin-set=minnie]) .tc-prev{position:relative;overflow:hidden}
 .theme-card[data-skin-set=mario] .tc-prev::before{content:"";position:absolute;right:9px;top:10px;width:16px;height:18px;background:#ffe07b;border:2px solid #d39b17;box-shadow:-80px 8px 0 -3px #fff}
-.theme-card[data-skin-set=bricks] .tc-prev::before{content:"";position:absolute;right:0;top:0;width:65px;height:50px;background:url('assets/themes/brick-cluster-v2.webp') center/contain no-repeat}
+.theme-card[data-skin-set=bricks] .tc-prev::before{content:"";position:absolute;right:0;top:0;width:65px;height:50px;background:url('assets/themes/brick-pencil-v3.webp') center/contain no-repeat}
 .theme-card[data-skin-set=minnie] .tc-prev{background-image:radial-gradient(circle,#b45a7e33 2px,transparent 3px)!important;background-size:16px 16px!important}
 :root[data-skin=bricks] .appbar,:root[data-skin=bricks] .sec-head{background:var(--bg)}
 
@@ -192,3 +192,14 @@
 :root:has(dialog[open])[data-skin=vader] .hero-flip::before{visibility:hidden}
 
 :root[data-skin=vader] .hero-flip.vader-retreated::before{opacity:0;animation:none}
+/* Sketchbook revision: actual colored-pencil artwork, including a visible card illustration. */
+:root[data-skin=bricks]{--hero-bg:#fffdf0;--hero-ink:#182d4b;--card-line:#d6cdb5;--shadow:0 3px 0 #5b4c2e20}
+:root[data-skin=bricks] .hero{position:relative;isolation:isolate;overflow:hidden;border:1px solid #b8ad8d;border-bottom:3px double #b8ad8d;box-shadow:2px 4px 0 #79664415}
+:root[data-skin=bricks] .hero-tiles>div{background:#164bb20b;border:1px solid #182d4b20}
+:root[data-skin=bricks] .hero .flip-ic{background:#182d4b0d;border:1px solid #182d4b26}
+:root[data-skin=bricks] .hero::after{content:"";position:absolute;right:14px;bottom:8px;width:142px;height:95px;background:url('assets/themes/brick-pencil-v3.webp') center/contain no-repeat;pointer-events:none;z-index:-1;opacity:.8;animation:sketch-brick-sway 14s ease-in-out infinite}
+:root[data-skin=bricks] .fun-brick{width:clamp(280px,32vw,420px);height:clamp(187px,21.4vw,280px);opacity:.66}
+@keyframes sketch-brick-sway{0%,100%{transform:rotate(-5deg) translateY(0)}50%{transform:rotate(3deg) translateY(-5px)}}
+:root[data-skin=bricks][data-fun-motion=still] .hero::after{animation:none}
+:root[data-skin=bricks] .hero-back::after{display:none}
+:root[data-skin=bricks] :is(.dash-small,.dash-medium) .hero::after{display:none}

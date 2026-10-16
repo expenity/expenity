@@ -1,6 +1,18 @@
 {
-  "version": "0.12.3",
+  "version": "0.12.4",
   "releases": [
+    {
+      "version": "0.12.4",
+      "date": "2026-10-17",
+      "en": [
+        "Brick party now uses colored-pencil illustrations with visible graphite contours and hand-shaded texture, replacing the glossy rendered pieces.",
+        "Paper-like balance cards and a visible brick illustration bring the sketchbook style into the dashboard. Floating scenery still respects animation settings; financial controls and records are unchanged."
+      ],
+      "el": [
+        "Το Πάρτι με τουβλάκια χρησιμοποιεί πλέον εικονογράφηση με ξυλομπογιές, περιγράμματα μολυβιού και χειροποίητη σκίαση, αντί για γυαλιστερές τρισδιάστατες αποδόσεις.",
+        "Η κάρτα υπολοίπου θυμίζει χαρτί και περιλαμβάνει ζωγραφισμένα τουβλάκια. Το αιωρούμενο φόντο συνεχίζει να τηρεί τις ρυθμίσεις κίνησης· τα οικονομικά χειριστήρια και οι εγγραφές παραμένουν ίδια."
+      ]
+    },
     {
       "version": "0.12.3",
       "date": "2026-10-17",
