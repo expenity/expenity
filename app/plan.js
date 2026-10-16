@@ -64,7 +64,7 @@
 	};
 	P.contribute = ( g, amount, account, direction = 'add', photo = '' ) => {
 		const before = P.goal( g ).pct;
-		S().txs.push( { id: uid(), type: direction === 'add' ? 'expense' : 'income', amount: String( amount ), account, category: 'goal', date: today(), name: g.name, goalId: g.id, photo } );
+		S().txs.push( { id: uid(), type: direction === 'add' ? 'expense' : 'income', amount: String( amount ), account, category: 'goal', date: today(), name: g.name, goalId: g.id, photo, tags: g.tags || [] } );
 		EX.save();
 		const after = P.goal( g ).pct;
 		if ( direction === 'add' ) { const hit = [ 100, 75, 50, 25 ].find( ( m ) => before < m && after >= m ); if ( hit ) { UI.haptic(); toast( hit === 100 ? t( 'goalDone', { name: g.name } ) : t( 'goalMilestone', { n: hit, name: g.name } ) ); if ( hit === 100 ) UI.confetti(); return; } }
@@ -72,7 +72,7 @@
 	};
 	P.receive = ( inc, amount, account ) => {
 		const before = JSON.parse( JSON.stringify( inc ) );
-		const tx = { id: uid(), type: 'income', amount: String( amount ), account: account || inc.account || ( EX.activeAccounts()[ 0 ] || {} ).id, category: inc.category || 'salary', date: today(), name: inc.name, incomeId: inc.id, due: inc.next, photo: inc.photo || '' };
+		const tx = { id: uid(), type: 'income', amount: String( amount ), account: account || inc.account || ( EX.activeAccounts()[ 0 ] || {} ).id, category: inc.category || 'salary', date: today(), name: inc.name, incomeId: inc.id, due: inc.next, photo: inc.photo || '', tags: inc.tags || [], scheduleBefore: {next: before.next, done: !!before.done} };
 		S().txs.push( tx );
 		const nx = EX.nextAfter( inc, inc.next );
 		if ( nx ) inc.next = nx; else inc.done = true;
@@ -176,7 +176,7 @@
 			<div class="grid2"><label class="f"><span>${ esc( t( 'budgetAmount' ) ) } (${ esc( main() ) })</span><input name="amount" inputmode="decimal" autocomplete="off" placeholder="0.00" value="${ esc( v.amount ) }"></label>
 			<label class="f"><span>${ esc( t( 'budgetPeriod' ) ) }</span><select name="period">${ [ 'monthly', 'weekly', 'yearly' ].map( ( p ) => `<option value="${ p }"${ v.period === p ? ' selected' : '' }>${ esc( t( 'p_' + p ) ) }</option>` ).join( '' ) }</select></label></div>
 			<label class="f chk"><input type="checkbox" name="rollover"${ v.rollover ? ' checked' : '' }> <span>${ esc( t( 'budgetRoll' ) ) }</span></label>
-			${ EXA.photos.slot( typeof v !== 'undefined' ? v.photo : '' ) }<p class="err" id="planErr" role="alert" hidden></p>
+			${ EXA.tagsField(typeof v !== 'undefined' ? v.tags : g.tags) }${ EXA.photos.slot( typeof v !== 'undefined' ? v.photo : '' ) }<p class="err" id="planErr" role="alert" hidden></p>
 			<div class="btn-row sticky-actions">${ b ? `<button type="button" class="btn btn-danger" data-plan="del-budget">${ esc( t( 'del' ) ) }</button>` : '' }<span class="sp"></span><button type="submit" class="btn btn-primary">${ esc( t( 'saveTx' ) ) }</button></div></form>`, { cls: 'small' } );
 	}
 	const GOAL_ICONS = [ 'target', 'trophy', 'plane', 'home', 'car', 'gift', 'heart', 'school', 'device-laptop', 'beach', 'rocket', 'pig-money' ];
@@ -188,7 +188,7 @@
 			<div class="grid2"><label class="f"><span>${ esc( t( 'goalTarget' ) ) } (${ esc( main() ) })</span><input name="target" inputmode="decimal" autocomplete="off" placeholder="0.00" value="${ esc( v.target ) }"></label>
 			<label class="f"><span>${ esc( t( 'goalDeadline' ) ) }</span><input name="deadline" type="date" value="${ esc( v.deadline || '' ) }"></label></div>
 			<div class="lbl">${ esc( t( 'goalIcon' ) ) }</div><div class="icon-pick" id="goalIcons">${ GOAL_ICONS.map( ( n ) => `<button type="button" class="ipick${ v.icon === n ? ' on' : '' }" data-plan="pick-icon" data-icon="${ n }" aria-label="${ n }">${ UI.icon( n, 24 ) }</button>` ).join( '' ) }</div><input type="hidden" name="icon" value="${ esc( v.icon ) }">
-			${ EXA.photos.slot( typeof v !== 'undefined' ? v.photo : '' ) }<p class="err" id="planErr" role="alert" hidden></p>
+			${ EXA.tagsField(typeof v !== 'undefined' ? v.tags : g.tags) }${ EXA.photos.slot( typeof v !== 'undefined' ? v.photo : '' ) }<p class="err" id="planErr" role="alert" hidden></p>
 			<div class="btn-row sticky-actions">${ g ? `<button type="button" class="btn btn-danger" data-plan="del-goal">${ esc( t( 'del' ) ) }</button>` : '' }<span class="sp"></span><button type="submit" class="btn btn-primary">${ esc( t( 'saveTx' ) ) }</button></div></form>`, { cls: 'small' } );
 	}
 	function openContribute( g ) {
@@ -199,7 +199,7 @@
 			<div class="segm" role="tablist"><button type="button" class="on" data-plan="dir" data-dir="add" role="tab">${ esc( t( 'goalAddMoney' ) ) }</button><button type="button" data-plan="dir" data-dir="take" role="tab">${ esc( t( 'goalTake' ) ) }</button></div><input type="hidden" name="dir" value="add">
 			<label class="f"><span>${ esc( t( 'fAmount' ) ) }</span><input name="amount" inputmode="decimal" autocomplete="off" placeholder="0.00" value=""></label>
 			<label class="f"><span>${ esc( t( 'goalFrom' ) ) }</span><select name="account">${ walletOpts( ( wallets()[ 0 ] || {} ).id ) }</select></label>
-			${ EXA.photos.slot( typeof v !== 'undefined' ? v.photo : '' ) }<p class="err" id="planErr" role="alert" hidden></p><div class="btn-row"><button type="submit" class="btn btn-primary wide">${ esc( t( 'saveTx' ) ) }</button></div></form>`, { cls: 'small' } );
+			${ EXA.tagsField(typeof v !== 'undefined' ? v.tags : g.tags) }${ EXA.photos.slot( typeof v !== 'undefined' ? v.photo : '' ) }<p class="err" id="planErr" role="alert" hidden></p><div class="btn-row"><button type="submit" class="btn btn-primary wide">${ esc( t( 'saveTx' ) ) }</button></div></form>`, { cls: 'small' } );
 	}
 	function openIncome( inc ) {
 		editing = inc || null;
@@ -210,7 +210,7 @@
 			<label class="f"><span>${ esc( t( 'fAmount' ) ) }</span><input name="amount" inputmode="decimal" autocomplete="off" placeholder="0.00" value="${ esc( v.amount ) }"></label>
 			<div class="grid2"><label class="f"><span>${ esc( t( 'incNext' ) ) }</span><input name="next" type="date" value="${ esc( v.next ) }"></label>
 			<label class="f"><span>${ esc( t( 'fRepeats' ) ) }</span><select name="repeat">${ EX.REPEATS.map( ( r ) => `<option value="${ r }"${ v.repeat === r ? ' selected' : '' }>${ esc( t( 'r' + r.charAt( 0 ).toUpperCase() + r.slice( 1 ) ) ) }</option>` ).join( '' ) }</select></label></div>
-			${ EXA.photos.slot( typeof v !== 'undefined' ? v.photo : '' ) }<p class="err" id="planErr" role="alert" hidden></p>
+			${ EXA.tagsField(typeof v !== 'undefined' ? v.tags : g.tags) }${ EXA.photos.slot( typeof v !== 'undefined' ? v.photo : '' ) }<p class="err" id="planErr" role="alert" hidden></p>
 			<div class="btn-row sticky-actions">${ inc ? `<button type="button" class="btn btn-danger" data-plan="del-income">${ esc( t( 'del' ) ) }</button>` : '' }<span class="sp"></span><button type="submit" class="btn btn-primary">${ esc( t( 'saveTx' ) ) }</button></div></form>`, { cls: 'small' } );
 	}
 	EXA.openBudget = openBudget; EXA.openGoal = openGoal; EXA.openIncome = openIncome; EXA.openContribute = openContribute;
@@ -246,13 +246,13 @@
 		if ( f.id === 'budgetForm' ) {
 			const amount = amt( el.amount.value );
 			if ( ! ok( amount ) ) return err( 'errAmount' );
-			const v = { photo: el.photo.value, category: el.category.value, amount, period: el.period.value, rollover: el.rollover.checked };
+			const v = { tags: EXA.readTags(f), photo: el.photo.value, category: el.category.value, amount, period: el.period.value, rollover: el.rollover.checked };
 			if ( editing ) Object.assign( editing, v ); else S().budgets.push( Object.assign( { id: uid() }, v ) );
 		} else if ( f.id === 'goalForm' ) {
 			const name = el.gname.value.trim(), target = amt( el.target.value );
 			if ( ! name ) return err( 'errNameReq' );
 			if ( ! ok( target ) ) return err( 'errAmount' );
-			const v = { photo: el.photo.value, name, target, deadline: el.deadline.value || '', icon: el.icon.value };
+			const v = { tags: EXA.readTags(f), photo: el.photo.value, name, target, deadline: el.deadline.value || '', icon: el.icon.value };
 			if ( editing ) Object.assign( editing, v ); else S().goals.push( Object.assign( { id: uid() }, v ) );
 		} else if ( f.id === 'contribForm' ) {
 			const amount = amt( el.amount.value );
@@ -266,7 +266,7 @@
 			if ( ! ok( amount ) ) return err( 'errAmount' );
 			if ( ! el.next.value ) return err( 'errNext' );
 			const acc = EX.account( el.account.value ) || {};
-			const v = { photo: el.photo.value, name, amount, account: el.account.value, currency: acc.currency || main(), repeat: el.repeat.value, next: el.next.value, day: parse( el.next.value ).getDate(), category: 'salary' };
+			const v = { tags: EXA.readTags(f), photo: el.photo.value, name, amount, account: el.account.value, currency: acc.currency || main(), repeat: el.repeat.value, next: el.next.value, day: parse( el.next.value ).getDate(), category: 'salary' };
 			if ( editing ) { Object.assign( editing, v ); delete editing.done; } else S().incomes.push( Object.assign( { id: uid() }, v ) );
 		} else return false;
 		UI.closeSheet(); EX.save();

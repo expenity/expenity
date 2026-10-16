@@ -12,7 +12,7 @@
 	const $ = ( s, r = document ) => r.querySelector( s );
 	const $$ = ( s, r = document ) => [ ...r.querySelectorAll( s ) ];
 	const toast = UI.toast;
-	window.EXPENITY_VERSION = '0.5';
+	window.EXPENITY_VERSION = '0.6.0';
 
 	/* ------------------------------------------------------------------ Drawing the shell */
 
@@ -191,7 +191,7 @@
 			case 'flip-hero': st.heroFlip = ! el.classList.contains( 'flipped' ); el.classList.toggle( 'flipped', st.heroFlip ); el.setAttribute( 'aria-pressed', String( st.heroFlip ) ); UI.haptic(); break;
 			case 'delete-photos': await EXA.photos.deleteAll(); break;
 			case 'check-update': checkUpdate( el ); break;
-			case 'apply-update': try { const reg = await navigator.serviceWorker.getRegistration(); if ( reg ) await reg.update(); } catch ( err ) { /* reload anyway */ } location.reload(); break;
+			case 'apply-update': await EXA.applyRelease(); break;
 			case 'sign-out': {
 				if ( ! await EXA.confirm( { title: t( 'signOut' ), text: t( EX.sync.pending() ? 'confirmSignOutUnsynced' : 'confirmSignOut' ), confirm: t( 'signOut' ) } ) ) break;
 				await EX.auth.logout(); st.devCache = null; toast( t( 'tSignedOut' ) ); go( 'home' ); break;
@@ -206,28 +206,9 @@
 		}
 	}
 
-	/** Which build is running: the cache name in sw.js at the time the page loaded. A different one on the server means a new version. */
-	const buildOf = ( text ) => ( /const CACHE = '([^']+)'/.exec( text ) || [] )[ 1 ] || '';
-	const fetchBuild = () => fetch( 'sw.js?check=' + Date.now(), { cache: 'no-store' } ).then( ( r ) => ( r.ok ? r.text() : '' ) ).then( buildOf );
-	async function checkUpdate( btn ) {
-		const line = $( '#updLine' ), b = btn || $( '#updBtn' );
-		const say = ( k, vars ) => { if ( line ) line.textContent = t( k, vars ); };
-		if ( b ) b.disabled = true; say( 'updChecking' );
-		try {
-			const now = await fetchBuild();
-			if ( ! now ) throw new Error( 'offline' );
-			if ( ! EXA.loadedBuild ) EXA.loadedBuild = now;
-			if ( now !== EXA.loadedBuild ) {
-				say( 'updAvailable' );
-				if ( b ) { b.disabled = false; b.dataset.act = 'apply-update'; b.innerHTML = `${ UI.icon( 'download', 20 ) } ${ esc( t( 'updNow' ) ) }`; b.classList.remove( 'btn-ghost' ); b.classList.add( 'btn-primary' ); }
-				return;
-			}
-			say( 'updLatest', { v: window.EXPENITY_VERSION || '0.4' } );
-		} catch ( err ) { say( 'updFail' ); }
-		if ( b ) b.disabled = false;
-	}
+	async function checkUpdate(btn) { await EXA.checkRelease(btn); }
+
 	function init() {
-		fetchBuild().then( ( x ) => { EXA.loadedBuild = x; } ).catch( () => {} );
 		EX.load();
 		fetch( 'favicon.svg' ).then( ( r ) => r.text() ).then( ( svg ) => { logoSvg = svg.replace( '<svg ', '<svg width="34" height="34" aria-hidden="true" ' ); EXA.logoSvg = logoSvg; $$( '#logo' ).forEach( ( l ) => { l.innerHTML = logoSvg; } ); } ).catch( () => {} );
 		UI.initSheet();
@@ -238,6 +219,7 @@
 		EXA.applyMotion();
 		render();
 		EXA.flow.init();
+		EXA.enhancementsInit();
 		if ( ! EXA.flow.active() ) enter();
 		EXA.tryJoin();
 		EXA.push.check();
@@ -253,7 +235,7 @@
 		EX.on( 'savefail', () => toast( t( 'tSaveFail' ) ) );
 
 		window.addEventListener( 'beforeinstallprompt', ( e ) => { e.preventDefault(); EXA.installEvent = e; render(); } );
-		window.addEventListener( 'appinstalled', () => { EXA.installEvent = null; S().device.installDismissed = true; EX.persist(); render(); } );
+		window.addEventListener( 'appinstalled', () => { EXA.installEvent = null; if(EXA.flow.active() && S().device.stage === 'install') EXA.installHandoff(); else { S().device.installDismissed = true; EX.persist(); render(); } } );
 		window.matchMedia( '(min-width: 1200px)' ).addEventListener( 'change', () => { st.sel = null; render(); } );
 
 		document.addEventListener( 'click', async ( e ) => {

@@ -23,6 +23,7 @@
 		if ( ! b || ! b.next ) return;
 		const before = JSON.parse( JSON.stringify( b ) );
 		const tx = EX.payBill( b, { amount, date: paidOn || today(), account } );
+		tx.scheduleBefore = { next: before.next, done: !!before.done, snooze: before.snooze || '' };
 		const nx = EX.nextAfter( b, b.next );
 		if ( ! nx || ( b.end && nx > b.end ) ) { b.done = true; } else { b.next = nx; }
 		delete b.snooze;
@@ -133,13 +134,14 @@
 				: `<div class="cats" role="group" aria-label="${ esc( t( 'fCategory' ) ) }">${ catGrid( cats, T.category, 'data-tx-cat', T.catsOpen, 'data-tx-catsmore' ) }</div><div class="lbl">${ esc( t( 'fWallet' ) ) }</div><div class="chip-scroll">${ wallets.map( ( a ) => wchip( a, T.account, 'data-tx-wallet' ) ).join( '' ) }</div>` }
 			<div class="chip-scroll dates"><button type="button" class="chip${ dm === 'today' ? ' on' : '' }" data-tx-date="today">${ esc( t( 'relToday' ) ) }</button><button type="button" class="chip${ dm === 'yesterday' ? ' on' : '' }" data-tx-date="yesterday">${ esc( t( 'relYesterday' ) ) }</button><button type="button" class="chip${ dm === 'other' ? ' on' : '' }" data-tx-date="other">${ UI.icon( 'calendar', 18 ) } ${ dm === 'other' ? esc( dayName( T.date ) ) : esc( t( 'pickDate' ) ) }</button><button type="button" class="chip${ T.note || T.noteOpen ? ' on' : '' }" data-tx="note">${ UI.icon( 'notes', 18 ) } ${ esc( t( 'addNote' ) ) }</button></div>
 			${ dm === 'other' ? `<div class="sheet-pad tight"><input type="date" id="txDate" value="${ esc( T.date ) }" aria-label="${ esc( t( 'fDate' ) ) }"></div>` : '' }
-			${ EXA.photos.slot( T.photo ) }
+			<div class="sheet-pad tight">${ EXA.tagsField(T.tags) }</div>${ EXA.photos.slot( T.photo ) }
 			${ T.noteOpen || T.note ? `<div class="sheet-pad tight"><textarea id="txNote" rows="2" maxlength="400" placeholder="${ esc( t( 'notePh' ) ) }" aria-label="${ esc( t( 'fNote' ) ) }">${ esc( T.note ) }</textarea></div>` : '' }
 			<p class="err sheet-pad tight" id="txErr" role="alert" hidden></p>
 			</div><div class="tx-field-actions"${ T.editingField ? '' : ' hidden' }><button type="button" class="btn btn-primary" data-tx="field-done">${ UI.icon( 'check', 20 ) } ${ esc( t( 'entryDone' ) ) }</button></div><div id="txKeypad" class="keypad"${ T.keypadOpen ? '' : ' hidden' } role="group" aria-label="${ esc( t( 'fAmount' ) ) }"><div class="keypad-head"><span>${ esc( t( T.target === 'toAmount' ? 'fToAmount' : 'fAmount' ) ) }</span><button type="button" class="btn btn-primary" data-tx="amount-done">${ UI.icon( 'check', 20 ) } ${ esc( t( 'entryDone' ) ) }</button></div>${ [ '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '0', '<' ].map( ( k ) => `<button type="button" class="key" data-key="${ k }" aria-label="${ k === '<' ? esc( t( 'del' ) ) : k === '.' ? esc( decimalMark() ) : k }">${ k === '<' ? UI.icon( 'backspace', 26 ) : k === '.' ? esc( decimalMark() ) : k }</button>` ).join( '' ) }</div>`;
 	}
 	function readTxFields() {
 		const d = $( '#txDesc' ); if ( d ) T.name = d.value;
+		T.tags = EXA.readTags(document.querySelector('#sheet'));
 		const remember = $('#rememberName'); if(remember) T.rememberName = remember.checked;
 		const ph = $( '.photo-slot' ); if ( ph ) T.photo = EXA.photos.value( ph );
 		const n = $( '#txNote' ); if ( n ) T.note = n.value;
@@ -156,7 +158,7 @@
 		EX.ensureWallet();
 		const base = { type: 'expense', date: today(), account: ( EX.writableAccounts()[ 0 ] || {} ).id, amount: '', toAmount: '', name: '', note: '', category: null };
 		const v = Object.assign( base, tx || preset );
-		T = { type: v.type, amount: v.amount || '', toAmount: v.toAmount || '', account: v.account, toAccount: v.toAccount || '', category: v.category || null, date: v.date, name: v.name || '', note: v.note || '', photo: v.photo || '', editId: tx ? tx.id : null, target: 'amount', keypadOpen: false, editingField: false, rememberName: false, quick: false, quickText: '', noteOpen: false };
+		T = { type: v.type, amount: v.amount || '', toAmount: v.toAmount || '', account: v.account, toAccount: v.toAccount || '', category: v.category || null, date: v.date, name: v.name || '', note: v.note || '', photo: v.photo || '', tags: v.tags || [], editId: tx ? tx.id : null, target: 'amount', keypadOpen: false, editingField: false, rememberName: false, quick: false, quickText: '', noteOpen: false };
 		T.dateMode = T.date === today() ? 'today' : T.date === addDays( today(), -1 ) ? 'yesterday' : 'other';
 		if ( T.type !== 'transfer' && ! T.category ) T.category = ( EX.catList( T.type === 'income' ? 'income' : 'expense' )[ 0 ] || {} ).key;
 		if ( T.type === 'transfer' && ! T.toAccount ) T.toAccount = ( EX.peerAccount( T.account ) || {} ).id || '';
@@ -193,7 +195,7 @@
 		$( '.sheet-body' ).focus( { preventScroll: true } );
 	}
 	document.addEventListener( 'focusin', e => {
-		if ( ! T || ! [ 'txDesc', 'txQuick', 'txNote', 'txDate' ].includes( e.target.id ) ) return;
+		if ( ! T || !( [ 'txDesc', 'txQuick', 'txNote', 'txDate' ].includes( e.target.id ) || (e.target.name === 'tags' && e.target.closest('#sheet')) ) ) return;
 		T.keypadOpen = false; T.editingField = true;
 		$( '#txKeypad' ).hidden = true;
 		$( '.tx-field-actions' ).hidden = false;
@@ -223,7 +225,7 @@
 		if ( ! amount || EX.cents( amount ) <= 0 ) return err( 'errAmountReq' );
 		if ( ! T.date ) return err( 'errDate' );
 		if ( ! T.account ) return err( 'errWallet' );
-		const tx = { type: T.type, amount, account: T.account, date: T.date, name: T.name.trim(), note: T.note.trim(), photo: T.photo || '' };
+		const tx = { type: T.type, amount, account: T.account, date: T.date, name: T.name.trim(), note: T.note.trim(), photo: T.photo || '', tags: T.tags || [] };
 		if ( T.type === 'transfer' ) {
 			if ( ! T.toAccount || T.toAccount === T.account ) return err( 'errTransferSame' );
 			if ( ! EX.sameScope( EX.account( T.account ), EX.account( T.toAccount ) ) ) return err( 'errTransferSpace' );
@@ -237,7 +239,7 @@
 		if(T.rememberName)EX.rememberName(T.type,tx.name,tx.category);
 		const editing = T.editId ? S().txs.find( ( x ) => x.id === T.editId ) : null;
 		if ( editing ) {
-			const keep = { id: editing.id, u: editing.u, billId: editing.billId, due: editing.due };
+			const keep = { id: editing.id, u: editing.u, billId: editing.billId, due: editing.due, incomeId: editing.incomeId, goalId: editing.goalId, scheduleBefore: editing.scheduleBefore };
 			Object.keys( editing ).forEach( ( k ) => { delete editing[ k ]; } );
 			Object.assign( editing, tx, keep );
 			Object.keys( editing ).forEach( ( k ) => { if ( editing[ k ] === undefined ) delete editing[ k ]; } );
@@ -324,14 +326,15 @@
 		const v = bill ? Object.assign( {}, bill ) : Object.assign( { currency: S().settings.currency, repeat: 'monthly', category: 'other', lead: null, next: addDays( today(), 7 ), amount: '', name: '', account: '' }, prefill || {} );
 		const wallets = EX.writableAccounts();
 		UI.openSheet( `${ head( t( bill ? 'editTitle' : 'addTitle' ) ) }<form id="billForm" novalidate class="sheet-pad">
-			${ bill ? '' : `<div class="quick"><label for="quick">${ esc( t( 'quickLabel' ) ) }</label><input id="quick" type="text" autocomplete="off" placeholder="${ esc( t( 'quickPh' ) ) }" spellcheck="false"><div class="chips-out" id="chips" aria-live="polite"></div><div class="chip-scroll" id="tpls">${ EX.TEMPLATES.map( ( x, i ) => `<button type="button" class="chip" data-tpl="${ i }">${ UI.icon( EX.CAT_STYLE[ x[ 1 ] ][ 0 ], 18 ) } ${ esc( t( x[ 0 ] ) ) }</button>` ).join( '' ) }</div></div>` }
-			<label class="f"><span>${ esc( t( 'fName' ) ) }</span><input name="name" required maxlength="80" autocomplete="off" value="${ esc( v.name ) }"></label>
+			<label class="f"><span>${ esc( t( 'fName' ) ) }</span><input name="name" required maxlength="80" autocomplete="off" placeholder="${esc(EXA.label('ownName'))}" value="${ esc( v.name ) }"></label>
+			${ bill ? '' : `<div class="quick"><label for="quick">${ esc( t( 'quickLabel' ) ) }</label><input id="quick" type="text" autocomplete="off" placeholder="${ esc( t( 'quickPh' ) ) }" spellcheck="false"><div class="chips-out" id="chips" aria-live="polite"></div><details class="name-suggestions"><summary>${UI.icon('chevron-down',18)} ${esc(EXA.label('suggestions'))}</summary><div class="chip-scroll" id="tpls">${ EX.TEMPLATES.map( ( x, i ) => `<button type="button" class="chip" data-tpl="${ i }">${ UI.icon( EX.CAT_STYLE[ x[ 1 ] ][ 0 ], 18 ) } ${ esc( t( x[ 0 ] ) ) }</button>` ).join( '' ) }</div></details></div>` }
+
 			<label class="f"><span>${ esc( t( 'fPayFrom' ) ) }</span><select name="account">${ wallets.map( ( a ) => `<option value="${ esc( a.id ) }"${ ( v.account || ( wallets[ 0 ] || {} ).id ) === a.id ? ' selected' : '' }>${ esc( EX.accountName( a ) ) } (${ esc( a.currency ) })</option>` ).join( '' ) }</select></label>
 			<label class="f"><span>${ esc( t( 'fAmount' ) ) }</span><input name="amount" inputmode="decimal" placeholder="0.00" autocomplete="off" value="${ esc( v.amount ) }"></label>
 			<div class="grid2"><label class="f"><span>${ esc( t( 'fNext' ) ) }</span><input name="next" type="date" required value="${ esc( v.next || '' ) }"></label>
 			<label class="f"><span>${ esc( t( 'fRepeats' ) ) }</span><select name="repeat">${ EX.REPEATS.map( ( r ) => `<option value="${ r }"${ v.repeat === r ? ' selected' : '' }>${ esc( t( 'r' + r.charAt( 0 ).toUpperCase() + r.slice( 1 ) ) ) }</option>` ).join( '' ) }</select></label></div>
 			<div class="lbl">${ esc( t( 'fCategory' ) ) }</div><div class="cats" id="billCats">${ catChips( v.category ) }</div><input type="hidden" name="category" value="${ esc( v.category ) }">
-			<div><label class="f"><span>${ esc( t( 'fRemind' ) ) }</span><select name="lead"><option value="">${ esc( t( 'leadDefault' ) ) }</option>${ EX.LEADS.map( ( x ) => `<option value="${ x }"${ v.lead === x ? ' selected' : '' }>${ esc( t( 'lead' + x ) ) }</option>` ).join( '' ) }</select></label>
+			<div><label class="f"><span>${ esc( t( 'fRemind' ) ) }</span><select name="lead"><option value="">${ esc( t( 'leadDefault' ) ) }</option>${ EX.LEADS.map( ( x ) => `<option value="${ x }"${ v.lead === x ? ' selected' : '' }>${ esc( t( 'lead' + x ) ) }</option>` ).join( '' ) }</select></label>${EXA.reminderNotice()}
 </div>
 			<label class="f chk"><input type="checkbox" name="variable"${ v.variable ? ' checked' : '' }> <span>${ esc( t( 'fVariable' ) ) }</span></label>
 			<label class="f chk"><input type="checkbox" name="autopay"${ v.autopay ? ' checked' : '' }> <span>${ esc( t( 'fAutopay' ) ) }</span></label>
@@ -340,7 +343,7 @@
 			<label class="f"><span>${ esc( t( 'fRef' ) ) }</span><input name="reference" maxlength="80" autocomplete="off" placeholder="${ esc( t( 'fRefPh' ) ) }" value="${ esc( v.reference || '' ) }"></label>
 			<label class="f"><span>${ esc( t( 'fUrl' ) ) }</span><input name="payUrl" type="url" placeholder="https://" autocomplete="off" value="${ esc( v.payUrl || '' ) }"></label>
 			<label class="f"><span>${ esc( t( 'fNotes' ) ) }</span><textarea name="notes" rows="2" maxlength="400">${ esc( v.notes || '' ) }</textarea></label></details>
-			${ EXA.photos.slot( v.photo ) }<p class="err" id="formErr" role="alert" hidden></p>
+			${ EXA.tagsField(v.tags) }${ EXA.photos.slot( v.photo ) }<p class="err" id="formErr" role="alert" hidden></p>
 			<div class="btn-row sticky-actions">${ bill ? `<button type="button" class="btn btn-danger" id="delBtn">${ esc( t( 'del' ) ) }</button>` : '' }<span class="sp"></span><button type="submit" class="btn btn-primary" id="saveBtn">${ esc( t( 'saveBill' ) ) }</button></div></form>`, { tall: true, cls: 'billsheet' } );
 		if ( ! bill && matchMedia( '(min-width: 600px) and (pointer: fine)' ).matches ) $( '#quick' ).focus();
 	};
@@ -389,7 +392,7 @@
 		const payUrl = g( 'payUrl' ).value.trim();
 		if ( payUrl && ! /^https?:\/\//i.test( payUrl ) ) return err( t( 'errUrl' ) );
 		const b = { name, amount: amountRaw, currency: cur, next, repeat: g( 'repeat' ).value, category: g( 'category' ).value || 'other', end: end || '', account: g( 'account' ).value || '',
-			lead: g( 'lead' ).value === '' ? null : Number( g( 'lead' ).value ), variable: g( 'variable' ).checked, autopay: g( 'autopay' ).checked, reference: g( 'reference' ).value.trim(), payUrl, notes: g( 'notes' ).value.trim(), photo: g( 'photo' ).value };
+			lead: g( 'lead' ).value === '' ? null : Number( g( 'lead' ).value ), variable: g( 'variable' ).checked, autopay: g( 'autopay' ).checked, reference: g( 'reference' ).value.trim(), payUrl, notes: g( 'notes' ).value.trim(), photo: g( 'photo' ).value, tags: EXA.readTags(f) };
 		const was = !! editingBill;
 		if ( editingBill ) { const keepDay = editingBill.next === b.next && editingBill.day ? editingBill.day : null; Object.assign( editingBill, b, { day: keepDay || parse( b.next ).getDate() } ); delete editingBill.done; }
 		else S().bills.push( Object.assign( { id: uid(), day: quickDay || parse( b.next ).getDate(), created: today() }, b ) );
@@ -431,7 +434,7 @@
 			<div class="grid2"><label class="f"><span>${ esc( t( 'wCurrency' ) ) }</span><input name="currency" list="curList" maxlength="3" autocomplete="off" value="${ esc( v.currency ) }"></label><label class="f"><span>${ esc( t( 'wOpening' ) ) }</span><input name="opening" inputmode="decimal" placeholder="0.00" autocomplete="off" value="${ esc( v.opening === '0' ? '' : v.opening ) }"></label></div>
 			<label class="f chk"><input type="checkbox" name="archived"${ v.archived ? ' checked' : '' }> <span>${ esc( t( 'wArchived' ) ) }</span></label>
 			${ a ? EXA.shareRow( a ) : '' }
-			${ EXA.photos.slot( v.photo ) }<p class="err" id="walletErr" role="alert" hidden></p>
+			${ EXA.tagsField(v.tags) }${ EXA.photos.slot( v.photo ) }<p class="err" id="walletErr" role="alert" hidden></p>
 			<div class="btn-row sticky-actions">${ a ? `<button type="button" class="btn btn-danger" id="walletDel">${ esc( t( 'del' ) ) }</button>` : '' }<span class="sp"></span><button type="submit" class="btn btn-primary">${ esc( t( 'saveTx' ) ) }</button></div></form>`, { cls: 'small' } );
 	};
 	EXA.walletClick = ( e ) => {
@@ -460,7 +463,7 @@
 		if ( ! name ) return err( 'errNameReq' );
 		if ( ! /^[A-Z]{3}$/.test( cur ) ) return err( 'errCur' );
 		if ( ! /^-?\d+(\.\d{1,2})?$/.test( opening ) ) return err( 'errAmount' );
-		const v = { name, type: f.type.value, currency: cur, opening, archived: f.archived.checked, photo: f.photo.value };
+		const v = { name, type: f.type.value, currency: cur, opening, archived: f.archived.checked, photo: f.photo.value, tags: EXA.readTags(document.querySelector('#walletForm')) };
 		if ( editingWallet ) { Object.assign( editingWallet, v ); delete editingWallet.auto; } else S().accounts.push( Object.assign( { id: uid() }, v ) );
 		EX.repairCurrencies();
 		UI.closeSheet(); EX.save(); toast( t( 'tWalletSaved' ) );
@@ -545,13 +548,13 @@
 		const sign = x.type === 'income' ? '+' : x.type === 'expense' ? '−' : '';
 		const rows = [ [ t( 'dDate' ), dayName( x.date ) ], [ t( 'dWallet' ), x.type === 'transfer' ? `${ EXA.walletName( x.account ) } → ${ EXA.walletName( x.toAccount ) }` : EXA.walletName( x.account ) ], x.type === 'transfer' ? null : [ t( 'dCategory' ), info.name ], x.note ? [ t( 'dNote' ), x.note ] : null, x.billId ? [ t( 'dBill' ), ( S().bills.find( ( b ) => b.id === x.billId ) || {} ).name || '' ] : null, x.by && ( EX.account( x.account ) || {} ).space ? [ t( 'dAddedBy' ), EX.spaces.nameOf( x.by, EX.account( x.account ).space ) ] : null ].filter( Boolean );
 		return `<div class="detail"><div class="detail-top">${ UI.catCi( info.iconName ? info : EX.catInfo( x.category ), 64 ) }<h3>${ esc( x.name || info.name ) }</h3><div class="big ${ x.type }">${ sign }${ esc( money( Number( x.amount ), cur ) ) }</div></div>
-			${ EXA.photos.button( x.photo ) }<dl class="facts">${ rows.map( ( [ k, v ] ) => `<div><dt>${ esc( k ) }</dt><dd>${ esc( v ) }</dd></div>` ).join( '' ) }</dl>
-			<div class="btn-row stack"><button type="button" class="btn btn-primary" data-act="edit-tx" data-id="${ esc( x.id ) }">${ UI.icon( 'pencil', 20 ) } ${ esc( t( 'actEdit' ) ) }</button><button type="button" class="btn btn-danger-ghost" data-act="del-tx" data-id="${ esc( x.id ) }">${ UI.icon( 'trash', 20 ) } ${ esc( t( 'actDelete' ) ) }</button></div></div>`;
+			${ EXA.tagsDisplay(x.tags) }${ EXA.photos.button( x.photo ) }<dl class="facts">${ rows.map( ( [ k, v ] ) => `<div><dt>${ esc( k ) }</dt><dd>${ esc( v ) }</dd></div>` ).join( '' ) }</dl>
+			<div class="btn-row stack"><button type="button" class="btn btn-ghost" data-reverse-tx="${esc(x.id)}">${UI.icon('refresh',20)} ${esc(EXA.label(x.billId ? 'unpaid' : x.incomeId ? 'unreceived' : 'reverse'))}</button><button type="button" class="btn btn-primary" data-act="edit-tx" data-id="${ esc( x.id ) }">${ UI.icon( 'pencil', 20 ) } ${ esc( t( 'actEdit' ) ) }</button><button type="button" class="btn btn-danger-ghost" data-act="del-tx" data-id="${ esc( x.id ) }">${ UI.icon( 'trash', 20 ) } ${ esc( t( 'actDelete' ) ) }</button></div></div>`;
 	}
 	function billDetailHtml( b ) {
 		const rows = [ [ t( 'dDue' ), `${ EXA.rel( b.next ) } · ${ dayName( b.next ) }` ], [ t( 'dRepeats' ), EX.repeatLabel( b.repeat ) ], b.account ? [ t( 'dWallet' ), EXA.walletName( b.account ) ] : null, [ t( 'fRemind' ), t( 'lead' + EXA.lead( b ) ) ], b.reference ? [ t( 'dReference' ), b.reference ] : null, b.notes ? [ t( 'dNote' ), b.notes ] : null, b.by && ( EX.account( b.account ) || {} ).space ? [ t( 'dAddedBy' ), EX.spaces.nameOf( b.by, EX.account( b.account ).space ) ] : null ].filter( Boolean );
 		return `<div class="detail"><div class="detail-top">${ UI.catCi( EX.catInfo( b.category ), 64 ) }<h3>${ esc( b.name ) }</h3><div class="big">${ esc( EXA.amountText( b ) ) }</div></div>
-			${ EXA.photos.button( b.photo ) }<dl class="facts">${ rows.map( ( [ k, v ] ) => `<div><dt>${ esc( k ) }</dt><dd>${ esc( v ) }</dd></div>` ).join( '' ) }</dl>
+			${ EXA.tagsDisplay(b.tags) }${ EXA.photos.button( b.photo ) }<dl class="facts">${ rows.map( ( [ k, v ] ) => `<div><dt>${ esc( k ) }</dt><dd>${ esc( v ) }</dd></div>` ).join( '' ) }</dl>
 			<div class="btn-row stack"><button type="button" class="btn btn-primary" data-act="pay-bill" data-id="${ esc( b.id ) }">${ UI.icon( 'check', 20 ) } ${ esc( b.autopay ? t( 'checked' ) : t( 'actPaid' ) ) }</button>
 			<div class="btn-row two"><button type="button" class="btn btn-ghost" data-act="snooze1" data-id="${ esc( b.id ) }">${ UI.icon( 'clock-pause', 20 ) } ${ esc( t( 'snooze1' ) ) }</button>${ b.repeat !== 'once' ? `<button type="button" class="btn btn-ghost" data-act="skip" data-id="${ esc( b.id ) }">${ UI.icon( 'player-skip-forward', 20 ) } ${ esc( t( 'skipThis' ) ) }</button>` : '' }</div>
 			<div class="btn-row two">${ b.payUrl ? `<a class="btn btn-ghost" href="${ esc( b.payUrl ) }" target="_blank" rel="noopener noreferrer">${ UI.icon( 'link', 20 ) } ${ esc( t( 'openLink' ) ) }</a>` : '' }${ b.reference ? `<button type="button" class="btn btn-ghost" data-act="copyref" data-id="${ esc( b.id ) }">${ UI.icon( 'copy', 20 ) } ${ esc( t( 'copyRef' ) ) }</button>` : '' }</div>

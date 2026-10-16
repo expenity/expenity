@@ -25,6 +25,7 @@
 	flow.active = () => [ 'welcome', 'install', 'setup', 'loading' ].includes( D().stage );
 	flow.init = () => {
 		const d = D();
+		if ( UI.isStandalone() && d.stage === 'install' ) { d.installDismissed = true; d.stage = S().settings.setupDone ? 'done' : 'setup'; }
 		if ( d.onboarded && ! d.stage ) d.stage = 'done'; // devices from before this flow
 		if ( EX.auth.isSignedIn() && ! d.stage ) d.stage = 'done';
 		if ( ! d.stage ) d.stage = ( S().bills.length || S().txs.length || S().accounts.some( ( a ) => ! a.auto ) ) ? 'done' : 'welcome'; // people who already had data on this device keep it
@@ -116,8 +117,9 @@
 			if ( a === 'signin' ) login();
 			else if ( a === 'recover' ) EXA.openAuth( 'recover' );
 			else if ( a === 'guest' ) { D().guest = true; afterAuth(); }
-			else if ( a === 'install-done' || a === 'install-skip' ) { if ( a === 'install-skip' ) D().installDismissed = true; S().settings.setupDone ? finish() : startSetup(); }
-			else if ( a === 'install-now' && EXA.installEvent ) { EXA.installEvent.prompt(); EXA.installEvent.userChoice.finally( () => { EXA.installEvent = null; S().settings.setupDone ? finish() : startSetup(); } ); }
+			else if ( a === 'install-done' ) { if(UI.isStandalone()) { D().installDismissed=true; S().settings.setupDone ? finish() : startSetup(); } else EXA.installHandoff(); }
+			else if ( a === 'install-skip' ) { EXA.confirm({title: EXA.label('browserTitle'), text: EXA.label('browserWarning'), confirm: t('instSkip'), danger:false}).then(ok=>{if(ok){D().installDismissed=true; S().settings.setupDone ? finish() : startSetup();}}); }
+			else if ( a === 'install-now' && EXA.installEvent ) { EXA.installEvent.prompt(); EXA.installEvent.userChoice.then( choice => { EXA.installEvent = null; if(choice.outcome === 'accepted') EXA.installHandoff(); else flow.show(); } ).catch(()=>flow.show()); }
 			else if ( a === 'skip-setup' ) finish();
 			else if ( a === 'next' ) next();
 			else if ( a === 'back' ) back();

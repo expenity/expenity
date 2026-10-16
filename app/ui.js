@@ -37,7 +37,7 @@
 	let toastTimer = null;
 	UI.toast = ( msg, undo ) => {
 		const el = $( '#toast' );
-		el.innerHTML = `<span>${ EX.esc( msg ) }</span>${ undo ? `<button type="button" class="link">${ EX.esc( EX.t( 'undo' ) ) }</button>` : '' }`;
+		el.innerHTML = `${ undo ? '' : `<span>${ EX.esc( msg ) }</span>` }${ undo ? `<button type="button" class="link">${ EX.esc( EX.t( 'undo' ) ) }</button>` : '' }`;
 		el.hidden = false;
 		el.classList.remove( 'show' ); void el.offsetWidth; el.classList.add( 'show' );
 		if ( undo ) $( 'button', el ).onclick = () => { undo(); el.hidden = true; };
