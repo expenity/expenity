@@ -12,7 +12,7 @@
 	const $ = ( s, r = document ) => r.querySelector( s );
 	const $$ = ( s, r = document ) => [ ...r.querySelectorAll( s ) ];
 	const toast = UI.toast;
-	window.EXPENITY_VERSION = '0.12.5';
+	window.EXPENITY_VERSION = '0.12.6';
 
 	/* ------------------------------------------------------------------ Drawing the shell */
 
