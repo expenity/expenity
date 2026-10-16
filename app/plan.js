@@ -109,13 +109,13 @@
 		const i = P.goal( g );
 		const eta = i.remaining === 0 ? t( 'goalReached' ) : i.eta ? t( 'goalEta', { date: dateShort( i.eta ) } ) : t( 'goalNoEta' );
 		return `<div class="gcard">${ ring( i.pct, 72, UI.icon( g.icon || 'target', 26 ) ) }
-			<button type="button" class="mid" data-plan="edit-goal" data-id="${ esc( g.id ) }"><b>${ esc( g.name ) }</b><small>${ esc( t( 'goalSaved', { a: m$( i.saved ), b: m$( i.target ) } ) ) }</small><small class="st">${ i.pct }% · ${ esc( eta ) }${ i.needMonthly ? ' · ' + esc( t( 'goalNeed', { a: m$( i.needMonthly ) } ) ) : '' }</small></button>
+			<button type="button" class="mid" data-plan="edit-goal" data-id="${ esc( g.id ) }"><b>${ esc( g.name ) }</b>${EXA.tagsInline(g.tags)}<small>${ esc( t( 'goalSaved', { a: m$( i.saved ), b: m$( i.target ) } ) ) }</small><small class="st">${ i.pct }% · ${ esc( eta ) }${ i.needMonthly ? ' · ' + esc( t( 'goalNeed', { a: m$( i.needMonthly ) } ) ) : '' }</small></button>
 			<button type="button" class="btn btn-ghost sm" data-plan="goal-money" data-id="${ esc( g.id ) }">${ UI.icon( 'plus', 18 ) } ${ esc( t( 'goalAddMoney' ) ) }</button></div>`;
 	}
 	function incomeRow( i ) {
 		const days = Math.round( ( parse( i.next ) - parse( today() ) ) / 864e5 );
 		const due = days < 0 ? t( 'relLate', { n: -days } ) : days === 0 ? t( 'relToday' ) : days === 1 ? t( 'relTomorrow' ) : t( 'relIn', { n: days } );
-		return `<li class="irow"><button type="button" class="mrow" data-plan="edit-income" data-id="${ esc( i.id ) }">${ UI.ci( 'briefcase', 'green', 44 ) }<span class="mid"><b>${ esc( i.name ) }</b><small>${ esc( due ) } · ${ esc( EX.repeatLabel( i.repeat ) ) }</small></span><span class="amt">${ esc( money( num( i.amount ), i.currency || main() ) ) }</span></button>
+		return `<li class="irow"><button type="button" class="mrow" data-plan="edit-income" data-id="${ esc( i.id ) }">${ UI.ci( 'briefcase', 'green', 44 ) }<span class="mid"><b>${ esc( i.name ) }</b><small>${ esc( due ) } · ${ esc( EX.repeatLabel( i.repeat ) ) }</small>${EXA.tagsInline(i.tags)}</span><span class="amt">${ esc( money( num( i.amount ), i.currency || main() ) ) }</span></button>
 			<button type="button" class="btn btn-ghost sm" data-plan="receive" data-id="${ esc( i.id ) }">${ UI.icon( 'check', 18 ) } ${ esc( t( 'incMark' ) ) }</button></li>`;
 	}
 

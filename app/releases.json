@@ -1,6 +1,24 @@
 {
-  "version": "0.6.1",
+  "version": "0.7.0",
   "releases": [
+    {
+      "version": "0.7.0",
+      "date": "2026-10-16",
+      "en": [
+        "New 12-second captioned installation videos for iPhone, Android and desktop, in English and Greek, available in onboarding and Account settings.",
+        "Small, Medium and Full dashboard sizes with visibly different widths and compact summaries.",
+        "Touch-and-hold dashboard editing with a tutorial and a Settings fallback for desktop. The selected card pulses in the theme colour; other cards turn grey.",
+        "Visible tag icons and labels on transaction, bill and recurring-income rows.",
+        "My custom theme is separate from templates, with starting palettes, colour and hex controls, visible preview icons and contrast checks."
+      ],
+      "el": [
+        "Νέα βίντεο εγκατάστασης 12 δευτερολέπτων για iPhone, Android και υπολογιστή, στα ελληνικά και στα αγγλικά, στην αρχική ρύθμιση και στις ρυθμίσεις Λογαριασμού.",
+        "Μικρό, Μεσαίο και Πλήρες μέγεθος ενοτήτων, με διαφορετικά πλάτη και συνοπτικές κάρτες.",
+        "Προσαρμογή Αρχικής με παρατεταμένο πάτημα αφής, οδηγό και εναλλακτική πρόσβαση από τις Ρυθμίσεις σε υπολογιστή. Η επιλεγμένη κάρτα τονίζεται στο χρώμα του θέματος, ενώ οι υπόλοιπες γίνονται γκρι.",
+        "Ορατά εικονίδια και ονόματα ετικετών στις κινήσεις, στους λογαριασμούς και στα επαναλαμβανόμενα έσοδα.",
+        "Το δικό μου θέμα ξεχωρίζει από τα έτοιμα θέματα, με αρχικές παλέτες, επιλογή χρώματος και δεκαεξαδικών τιμών, ορατά εικονίδια προεπισκόπησης και έλεγχο αντίθεσης."
+      ]
+    },
     {
       "version": "0.6.1",
       "date": "2026-10-16",
