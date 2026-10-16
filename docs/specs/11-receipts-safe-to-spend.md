@@ -47,3 +47,9 @@ Additional spending, additional savings and protected buffer are user-editable n
 Deterministic forecast tests cover unreceived income, default wallet exclusions, bills already paid, overlapping budgets, future expenses/transfers/goals, missing currency rates, unknown bill amounts, deficits and fallback horizons. Responsive checks cover both languages at phone/tablet/desktop sizes. Existing app/entry/update/dashboard checks guard regressions. Real receipt quality, memory limits and native iPhone/Android camera/keyboard behavior remain device-dependent.
 
 Version 0.10.1 also fixes the existing dashboard editor’s quick-Cancel suppression after resizing, found by deployment verification. Synthetic long-press release suppression remains limited to its own brief toolbar window.
+
+### 0.10.3 — real-photo receipt recognition
+
+The original clean synthetic fixtures did not cover thermal receipts photographed on textured surfaces. Added automatic light-paper detection with a guarded crop, local luminance normalization, a wider thermal-print fallback, sparse/automatic segmentation retries, and bounding-box row reconstruction. Greek total-label confusions are handled only when classifying labels; amounts are not guessed from the largest number. Merchant suggestions rank header confidence and glyph height. Currency signs are checked beside amounts on total rows to avoid spurious background symbols.
+
+Opt-in local photo regression: `node dev/test-receipt-photo.mjs /absolute/path/receipt.jpg 3.30 YUCCA`. The user's receipt is not committed or sent to a recognition service. The supplied RAW/DNG was converted locally to JPEG for browser testing; direct RAW decoding remains unsupported. All fields still require review.
