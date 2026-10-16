@@ -5,9 +5,11 @@ cd "$(dirname "$0")/.."
 work="$(mktemp -d)"
 git clone --quiet --single-branch --branch gh-pages https://github.com/expenity/expenity.git "$work"
 mkdir -p "$work/app"
-for f in index.html icons.js ui.js views.js forms.js photos.js reports.js plan.js insights.js share.js push.js flow.js installation.js themes.js enhancements.js dashboard.js releases.json app.js core.js sync.js i18n.js theme.js style.css themes.css favicon.svg manifest.webmanifest sw.js icon-192.png icon-512.png; do cp "$f" "$work/app/$f"; done
+for f in index.html icons.js ui.js views.js forms.js photos.js reports.js plan.js insights.js safe-spend.js receipts.js share.js push.js flow.js installation.js themes.js enhancements.js dashboard.js releases.json app.js core.js sync.js i18n.js theme.js style.css themes.css favicon.svg manifest.webmanifest sw.js icon-192.png icon-512.png; do cp "$f" "$work/app/$f"; done
 mkdir -p "$work/app/installation"
 cp installation/*.mp4 installation/*.png "$work/app/installation/"
+mkdir -p "$work/app/vendor"
+cp -R vendor/ocr "$work/app/vendor/"
 node --input-type=module - "$work/app" <<'JS'
 import {readFileSync,writeFileSync} from 'node:fs';
 import {join} from 'node:path';

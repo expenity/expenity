@@ -1,6 +1,6 @@
 {
   "name": "expenity",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "private": true,
   "description": "Expenity: know where your money goes. Expenses, income, bills, budgets and goals. Free, open source, works on every device.",
   "license": "GPL-2.0-or-later",
@@ -13,11 +13,12 @@
     "test:e2e": "node dev/test-e2e.mjs",
     "test:all": "node dev/test.mjs && node dev/test-api.mjs && node dev/test-e2e.mjs && node dev/test-enhancements.mjs && npm run test:regressions",
     "test:enhancements": "node dev/test-enhancements.mjs",
-    "test:regressions": "node dev/test-amount-entry.mjs && node dev/test-v06.mjs && node dev/test-install-handoff.mjs && node dev/test-release-update.mjs && node dev/test-v07.mjs && node dev/test-custom-theme.mjs && node dev/test-dashboard.mjs && node dev/test-entry-flow.mjs"
+    "test:regressions": "node dev/test-amount-entry.mjs && node dev/test-v06.mjs && node dev/test-install-handoff.mjs && node dev/test-release-update.mjs && node dev/test-v07.mjs && node dev/test-custom-theme.mjs && node dev/test-dashboard.mjs && node dev/test-entry-flow.mjs && node dev/test-receipts-safe.mjs"
   },
   "devDependencies": {
     "@tabler/icons": "^3.49.0",
     "markdown-it": "^14.3.2",
-    "playwright-core": "^1.48.0"
+    "playwright-core": "^1.48.0",
+    "tesseract.js": "7.0.0"
   }
 }

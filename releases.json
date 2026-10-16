@@ -1,6 +1,26 @@
 {
-  "version": "0.9.0",
+  "version": "0.10.0",
   "releases": [
+    {
+      "version": "0.10.0",
+      "date": "2026-10-17",
+      "en": [
+        "Scan a receipt from Add expense. English and Greek text recognition runs on your device, with merchant, total, currency and date suggestions to review before applying. Nothing is saved automatically.",
+        "Conflicting totals, unclear dates and refunds need review. Keep existing draft fields or replace only the selected ones. Optionally attach a compressed reference photo to your account.",
+        "Recognition files load from the app on first use and are cached for offline scanning. Receipt images are not sent to an OCR service.",
+        "New Safe to spend Home card and Reports calculation: selected wallet balances minus unpaid bills, scheduled outflows, budget allowance and your additional spending, savings and buffer reserves.",
+        "Choose the period and wallets, inspect the breakdown and adjust assumptions. Expected income sets the period but never counts as received money. Savings and shared wallets are excluded by default.",
+        "Paid bills, overlapping budgets and existing goal contributions are not deducted twice. Missing exchange rates or unknown bill amounts block the estimate rather than showing an incomplete spending allowance."
+      ],
+      "el": [
+        "Σαρώστε απόδειξη από την Προσθήκη εξόδου. Η αναγνώριση ελληνικού και αγγλικού κειμένου γίνεται στη συσκευή σας, με προτάσεις για κατάστημα, σύνολο, νόμισμα και ημερομηνία. Δεν αποθηκεύεται τίποτα αυτόματα.",
+        "Διαφορετικά σύνολα, αμφίβολες ημερομηνίες και επιστροφές χρειάζονται έλεγχο. Διατηρήστε τις υπάρχουσες τιμές ή αντικαταστήστε μόνο τα επιλεγμένα πεδία. Προαιρετικά επισυνάψτε συμπιεσμένη φωτογραφία στον λογαριασμό σας.",
+        "Τα αρχεία αναγνώρισης φορτώνονται από την εφαρμογή στην πρώτη χρήση και αποθηκεύονται για σάρωση χωρίς σύνδεση. Οι αποδείξεις δεν στέλνονται σε υπηρεσία αναγνώρισης.",
+        "Νέα κάρτα Περιθώριο εξόδων στην Αρχική και υπολογισμός στις Αναφορές: υπόλοιπα επιλεγμένων πορτοφολιών μείον απλήρωτοι λογαριασμοί, προγραμματισμένες εκροές, προβλέψεις προϋπολογισμών και πρόσθετες δεσμεύσεις εξόδων, αποταμίευσης και προστατευμένου ποσού.",
+        "Επιλέξτε περίοδο και πορτοφόλια, δείτε την ανάλυση και αλλάξτε τις παραδοχές. Το αναμενόμενο έσοδο ορίζει την περίοδο αλλά δεν θεωρείται εισπραγμένο. Αποταμιευτικά και κοινόχρηστα πορτοφόλια εξαιρούνται αρχικά.",
+        "Εξοφλημένοι λογαριασμοί, επικαλυπτόμενοι προϋπολογισμοί και υπάρχουσες εισφορές στόχων δεν αφαιρούνται δύο φορές. Αν λείπουν ισοτιμίες ή ποσά λογαριασμών, δεν εμφανίζεται ελλιπές διαθέσιμο περιθώριο."
+      ]
+    },
     {
       "version": "0.9.0",
       "date": "2026-10-17",
