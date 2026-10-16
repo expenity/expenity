@@ -4,7 +4,7 @@ Characters belong to the balance card, never the navigation. Artwork must have e
 
 ## Behavior
 
-Large character artwork appears above and behind the full balance card. A restrained nudge suggests interaction without automatically flipping the card. The existing touch, mouse and keyboard flip remains the only trigger. The character turns aside and ducks behind the card, remaining hidden through ordinary redraws until the next Home visit. No financial records change.
+Large character artwork appears above and behind the full balance card. A restrained nudge suggests interaction without automatically flipping the card. The existing touch, mouse and keyboard flip remains the only trigger. The character blurs and fades into a faint background watermark, remaining softened through ordinary redraws until the next Home visit. After two seconds the card headroom collapses. No financial records change.
 
 Hide decorative characters during dialogs, dashboard editing, compact card layouts and reduced/off motion. Artwork must not intercept taps, obscure financial controls or cause horizontal overflow. All assets are bundled locally and cached offline.
 
