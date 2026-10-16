@@ -8,6 +8,15 @@ REPO="expenity/expenity-beta"
 work="$(mktemp -d)"
 mkdir -p "$work/app"
 for f in index.html icons.js ui.js views.js forms.js photos.js reports.js plan.js insights.js share.js push.js flow.js themes.js app.js core.js sync.js i18n.js theme.js style.css themes.css favicon.svg manifest.webmanifest sw.js icon-192.png icon-512.png; do cp "$f" "$work/app/$f"; done
+# Use one build identifier for both HTML asset URLs and service-worker installation.
+node --input-type=module - "$work/app" <<'JS'
+import {readFileSync,writeFileSync} from 'node:fs';
+import {join} from 'node:path';
+const dir=process.argv[2], build=Date.now().toString(36);
+const html=join(dir,'index.html'), sw=join(dir,'sw.js');
+writeFileSync(html,readFileSync(html,'utf8').replace(/((?:src|href)="[^"?]+\.(?:js|css))"/g,'$1?v='+build+'"'));
+writeFileSync(sw,readFileSync(sw,'utf8').replace(/(const FILES = \[[^;]+\]);/, '$1.map( f => /\\.(js|css)$/.test(f) ? f + "?v='+build+'" : f );'));
+JS
 # Mark it as a beta: not indexed, and a clear name.
 sed -i.bak -e 's#<title>Expenity: #<title>[Beta] Expenity: #' -e 's#<meta name="theme-color"#<meta name="robots" content="noindex, nofollow">\n<meta name="theme-color"#' "$work/app/index.html" && rm "$work/app/index.html.bak"
 sed -i.bak -e 's#"name": "Expenity"#"name": "Expenity (beta)"#' -e 's#"short_name": "Expenity"#"short_name": "Expenity β"#' "$work/app/manifest.webmanifest" && rm "$work/app/manifest.webmanifest.bak"

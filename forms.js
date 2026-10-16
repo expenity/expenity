@@ -308,7 +308,7 @@
 			<label class="f"><span>${ esc( t( 'fNotes' ) ) }</span><textarea name="notes" rows="2" maxlength="400">${ esc( v.notes || '' ) }</textarea></label></details>
 			${ EXA.photos.slot( v.photo ) }<p class="err" id="formErr" role="alert" hidden></p>
 			<div class="btn-row sticky-actions">${ bill ? `<button type="button" class="btn btn-danger" id="delBtn">${ esc( t( 'del' ) ) }</button>` : '' }<span class="sp"></span><button type="submit" class="btn btn-primary" id="saveBtn">${ esc( t( 'saveBill' ) ) }</button></div></form>`, { tall: true, cls: 'billsheet' } );
-		if ( ! bill ) $( '#quick' ).focus();
+		if ( ! bill && matchMedia( '(min-width: 600px) and (pointer: fine)' ).matches ) $( '#quick' ).focus();
 	};
 	EXA.billClick = ( e ) => {
 		const f = $( '#billForm' ); if ( ! f ) return false;
@@ -374,7 +374,7 @@
 			<div class="grid2"><label class="f"><span>${ esc( t( 'payAmount' ) ) }</span><input name="amount" inputmode="decimal" autocomplete="off" value="${ esc( bill.amount ) }" autofocus></label><label class="f"><span>${ esc( t( 'payOn' ) ) }</span><input name="paidOn" type="date" required value="${ today() }"></label></div>
 			<label class="f"><span>${ esc( t( 'fPayFrom' ) ) }</span><select name="account">${ wallets.map( ( a ) => `<option value="${ esc( a.id ) }"${ a.id === sel ? ' selected' : '' }>${ esc( a.name ) } (${ esc( a.currency ) })</option>` ).join( '' ) }</select></label>
 			<p class="err" id="payErr" role="alert" hidden></p><div class="btn-row"><button type="submit" class="btn btn-primary wide">${ UI.icon( 'check', 22 ) } ${ esc( t( 'markPaid' ) ) }</button></div></form>`, { cls: 'small' } );
-		$( '#payForm [name=amount]' ).select();
+		if ( matchMedia( '(min-width: 600px) and (pointer: fine)' ).matches ) $( '#payForm [name=amount]' ).select();
 	};
 	EXA.paySubmit = () => {
 		const pf = $( '#payForm' ), amt = pf.elements.amount.value.trim().replace( ',', '.' );

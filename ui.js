@@ -55,13 +55,15 @@
 	UI.openSheet = ( html, o = {} ) => {
 		const d = dlg();
 		$( '.sheet-body', d ).innerHTML = html;
+		const desktopField = $( '.sheet-body [autofocus]', d );
+		// Keep focus off editable fields until the person taps one on a touch device.
+		d.querySelectorAll( '.sheet-body [autofocus]' ).forEach( el => el.removeAttribute( 'autofocus' ) );
 		d.className = 'sheet' + ( o.full ? ' full' : '' ) + ( o.tall ? ' tall' : '' ) + ( o.cls ? ' ' + o.cls : '' );
 		lock = !! o.lock;
 		onClose = o.onClose || null;
 		$( '.sheet-scroll', d ).scrollTop = 0;
 		if ( ! d.open ) { d.showModal(); history.pushState( { xsheet: 1 }, '' ); }
-		const f = $( '[autofocus]', d );
-		if ( f ) f.focus(); else $( '.sheet-body', d ).focus();
+		if ( desktopField && matchMedia( '(min-width: 600px) and (pointer: fine)' ).matches ) desktopField.focus(); else $( '.sheet-body', d ).focus();
 	};
 	UI.closeSheet = () => { const d = dlg(); if ( d.open ) d.close(); };
 

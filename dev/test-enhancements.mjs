@@ -9,7 +9,13 @@ const browser=await chromium.launch({channel:'chrome'}),ctx=await browser.newCon
 const ok=(v,label)=>{console.log(v?'ok':'FAIL',label);if(!v)fails++;};
 try{
  await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.skipFlow);
+ ok(await page.evaluate(()=>EX.state().settings.currency==='EUR'),'fresh accounts default to EUR even with a US browser locale');
  await page.evaluate(()=>{EXA.skipFlow();EXA.setMotion('full');EX.state().accounts[0].opening='4';EX.save();});
+ for(const kind of ['expense','bill','wallet']){
+ await page.evaluate(kind=>{if(kind==='expense')EXA.openTx();else if(kind==='bill')EXA.openBill();else EXA.openWallet();},kind);
+ ok(await page.evaluate(()=>!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)),kind+' does not focus an input on mobile');
+ await page.keyboard.press('Escape');await page.waitForTimeout(100);
+ }
  for(const target of [4,-4,.01,1250.43]){
  const samples=await page.evaluate(async target=>{EX.state().accounts[0].opening=String(target);EX.save();EXA.go('home');const vals=[];for(let i=0;i<65;i++){await new Promise(requestAnimationFrame);const b=document.querySelector('.hero-front>b');vals.push(Number(b.textContent.replace(/[^\d.-]/g,'').replace('−','-')));}return vals;},target);
  ok(samples.every(n=>Math.abs(n)<=Math.abs(target)+.00001),'counter stays within '+target);

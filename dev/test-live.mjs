@@ -12,7 +12,7 @@ const errors = [];
 async function device() {
 	const context = await browser.newContext( { locale: 'en-US', viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true } );
 	const page = await context.newPage();
-	page.on( 'pageerror', ( e ) => errors.push( String( e ) ) );
+	page.on( 'pageerror', ( e ) => { errors.push( String( e ) ); console.log('browser error:',String(e)); } );
 	page.on( 'console', ( m ) => { if ( m.type() === 'error' && ! /beacon|cloudflare|ERR_|Failed to load resource/.test( m.text() ) ) errors.push( m.text() ); } );
 	page.on( 'dialog', ( d ) => d.accept() );
 	const cdp = await context.newCDPSession( page );
@@ -22,6 +22,7 @@ async function device() {
 }
 const synced = ( d ) => d.page.waitForFunction( () => window.EX.sync.status === 'ok' && window.EX.sync.pending() === 0, null, { timeout: 30000 } );
 const A = await device();
+try {
 await A.page.goto( URL_ );
 await A.page.waitForSelector( '#tabbar button', { state: 'attached' } );
 await A.page.evaluate( () => { window.EXA.skipFlow(); } );
@@ -58,6 +59,9 @@ await A.page.click( '[data-act=delete-account]' ); await A.page.click( '#confirm
 await A.page.waitForFunction( () => ! window.EX.auth.isSignedIn(), null, { timeout: 30000 } );
 ok( true, 'the test account was deleted (nothing left behind)' );
 ok( ! errors.length, 'no console errors', errors.join( ' | ' ) );
-await browser.close();
+} finally {
+	try { if(await A.page.evaluate(()=>window.EX?.auth.isSignedIn())) { const removed=await A.page.evaluate(()=>EX.auth.deleteAccount()); if(!removed.ok)console.log('Temporary-account cleanup failed'); } } catch(e) { console.log('Temporary-account cleanup:',e.message); }
+	await browser.close();
+}
 console.log( fail ? `\n${ fail } failed` : '\nall passed' );
 process.exit( fail ? 1 : 0 );

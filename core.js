@@ -112,12 +112,10 @@
 	/* ------------------------------------------------------------------ State and storage */
 
 	const KEY = 'expenity.v2', OLD_KEY = 'expenity.v1';
-	const guessCurrency = () => {
-		try { const r = ( navigator.language || 'en-US' ).split( '-' )[ 1 ] || 'US'; const m = { US: 'USD', GB: 'GBP', CA: 'CAD', AU: 'AUD', CH: 'CHF', SE: 'SEK', NO: 'NOK', DK: 'DKK', PL: 'PLN', TR: 'TRY' }; return m[ r ] || 'EUR'; } catch ( e ) { return 'EUR'; }
-	};
+
 	const blank = () => ( {
 		bills: [], txs: [], accounts: [], categories: [], budgets: [], goals: [], incomes: [],
-		settings: { currency: guessCurrency(), lead: 3, name: '', setupDone: false, aims: [], tipsOff: [] }, // synced
+		settings: { currency: 'EUR', lead: 3, name: '', setupDone: false, aims: [], tipsOff: [] }, // synced
 		device: { notify: false, lastNotified: {}, onboarded: false, installDismissed: false, bannerDismissed: false, stage: '', setupStep: 0, guest: false, motion: 'auto' }, // this device only
 		sync: { rev: 0, base: {}, spaces: {} },                            // sync bookkeeping, this device only
 	} );
