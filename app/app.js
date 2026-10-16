@@ -12,7 +12,7 @@
 	const $ = ( s, r = document ) => r.querySelector( s );
 	const $$ = ( s, r = document ) => [ ...r.querySelectorAll( s ) ];
 	const toast = UI.toast;
-	window.EXPENITY_VERSION = '0.12.4';
+	window.EXPENITY_VERSION = '0.12.5';
 
 	/* ------------------------------------------------------------------ Drawing the shell */
 
@@ -44,7 +44,7 @@
 	EXA.render = render;
 	EXA.applyMotion = () => { const m = S().device.motion || 'auto'; if ( m === 'auto' ) delete document.documentElement.dataset.motion; else document.documentElement.dataset.motion = m; try { if ( m === 'auto' ) localStorage.removeItem( 'expenity.motion' ); else localStorage.setItem( 'expenity.motion', m ); } catch ( e ) { /* ignore */ } };
 	function go( view, more = 'root' ) {
-		if(view==='home'&&st.view!=='home')st.vaderRetreated=false;
+		if(view==='home'&&st.view!=='home')st.characterRetreated=false;
 		st.view = view; st.more = more; st.sel = null;
 		if ( view === 'plan' ) { S().device.goalsDiscovered = true; EX.persist(); }
 		if ( view !== 'activity' ) { st.searchOpen = false; st.txFilter.q = ''; }
@@ -189,7 +189,7 @@
 			case 'rm-passkey': { const r = await EX.auth.removePasskey( el.dataset.id ); if ( r.ok ) { toast( t( 'tPasskeyRemoved' ) ); loadDevices(); } else toast( EXA.errText( r.error ) ); break; }
 			case 'rm-session': { const r = await EX.auth.revokeSession( el.dataset.id ); if ( r.ok ) { toast( t( 'tDeviceOut' ) ); loadDevices(); } else toast( EXA.errText( r.error ) ); break; }
 			case 'new-codes': { const r = await EX.auth.regenerateCodes(); if ( r.ok ) EXA.showCodes( r.recoveryCodes, () => render() ); else toast( EXA.errText( r.error ) ); break; }
-			case 'flip-hero': if(EXA.skin()==='vader'){st.vaderRetreated=true;el.classList.add('vader-retreating');setTimeout(()=>{el.classList.remove('vader-retreating');el.classList.add('vader-retreated');},900);} st.heroFlip = ! el.classList.contains( 'flipped' ); el.classList.toggle( 'flipped', st.heroFlip ); el.setAttribute( 'aria-pressed', String( st.heroFlip ) ); UI.haptic(); break;
+			case 'flip-hero': if(['vader','mario','minnie'].includes(EXA.skin())){st.characterRetreated=true;el.classList.add('character-retreating');setTimeout(()=>{el.classList.remove('character-retreating');el.classList.add('character-retreated');},900);} st.heroFlip = ! el.classList.contains( 'flipped' ); el.classList.toggle( 'flipped', st.heroFlip ); el.setAttribute( 'aria-pressed', String( st.heroFlip ) ); UI.haptic(); break;
 			case 'delete-photos': await EXA.photos.deleteAll(); break;
 			case 'check-update': checkUpdate( el ); break;
 			case 'apply-update': await EXA.applyRelease(); break;
