@@ -181,7 +181,7 @@
 			<div class="sumrow"><div class="in"><small>${ esc( t( 'ovIncome' ) ) }</small><b>${ esc( EX.sumByCur( f.income ) ) }</b></div><div><small>${ esc( t( 'ovExpenses' ) ) }</small><b>${ esc( EX.sumByCur( f.expense ) ) }</b></div><div><small>${ esc( t( 'ovNet' ) ) }</small><b>${ esc( net ) }</b></div></div>
 			${ st.searchOpen ? `<div class="searchbar">${ UI.icon( 'search', 22 ) }<input id="txSearch" type="search" value="${ esc( fl.q ) }" placeholder="${ esc( t( 'txSearchPh' ) ) }" aria-label="${ esc( t( 'txSearchPh' ) ) }" autocomplete="off"></div>` : '' }
 			<div class="chips" role="group">${ chip( 'all', t( 'typeAll' ) ) }${ chip( 'expense', t( 'typeExpenses' ) ) }${ chip( 'income', t( 'typeIncomes' ) ) }${ chip( 'transfer', t( 'typeTransfer' ) ) }<label class="chip select${ fl.account ? ' on' : '' }">${ UI.icon( 'wallet', 18 ) }<select id="txWalletFilter" aria-label="${ esc( t( 'filterWallet' ) ) }"><option value="">${ esc( t( 'txAllWallets' ) ) }</option>${ S().accounts.map( ( a ) => `<option value="${ esc( a.id ) }"${ fl.account === a.id ? ' selected' : '' }>${ esc( a.name ) }</option>` ).join( '' ) }</select></label></div>
-			${ groups.length ? groups.map( ( g ) => `<section class="grp"><h2 class="sticky">${ esc( dayName( g.date ) ) }</h2><ul class="list">${ g.items.map( txItem ).join( '' ) }</ul></section>` ).join( '' ) + `<p class="hint">${ esc( t( 'swipeHint' ) ) }</p>` : empty( 'arrows-sort', 'teal', t( 'txNone' ), t( 'txNoneHint' ), `<button type="button" class="btn btn-primary" data-act="add">${ esc( t( 'addTx' ) ) }</button>` ) }`;
+			${ groups.length ? groups.map( ( g ) => `<section class="grp"><h2 class="sticky">${ esc( dayName( g.date ) ) }</h2><ul class="list">${ g.items.map( txItem ).join( '' ) }</ul></section>` ).join( '' ) + ( UI.isPhone() ? `<p class="hint">${ esc( t( 'swipeHint' ) ) }</p>` : '' ) : empty( 'arrows-sort', 'teal', t( 'txNone' ), t( 'txNoneHint' ), `<button type="button" class="btn btn-primary" data-act="add">${ esc( t( 'addTx' ) ) }</button>` ) }`;
 	};
 
 	/* ------------------------------------------------------------------ Bills */
@@ -205,7 +205,7 @@
 		const paid = S().txs.filter( ( x ) => x.billId ).sort( ( a, b ) => ( a.date < b.date ? 1 : -1 ) ).slice( 0, 5 );
 		return `<div class="tiles">${ tile( t( 'statOverdue' ), EX.sumByCur( late ), late.length ? t( 'billsN', { n: late.length } ) : t( 'allClear' ), late.length ? 'bad' : 'good' ) }${ tile( t( 'statWeek' ), EX.sumByCur( week ), t( 'billsN', { n: week.length } ) ) }</div>
 			${ sec( t( 'secOverdue' ), late, 'late' ) }${ sec( t( 'secWeek' ), week ) }${ sec( t( 'secLaterMonth' ), restMonth ) }${ sec( t( 'secComing' ), later ) }
-			${ list.length ? `<p class="hint">${ esc( t( 'swipeHintBills' ) ) }</p>` : `<p class="muted pad">${ esc( t( 'nothingOpen' ) ) }</p>` }
+			${ list.length ? ( UI.isPhone() ? `<p class="hint">${ esc( t( 'swipeHintBills' ) ) }</p>` : '' ) : `<p class="muted pad">${ esc( t( 'nothingOpen' ) ) }</p>` }
 			${ paid.length ? `<section class="grp"><h2 class="sticky">${ esc( t( 'recentlyPaid' ) ) }</h2><ul class="list">${ paid.map( txItem ).join( '' ) }</ul></section>` : '' }
 			<p class="muted small pad">${ esc( t( 'statMonth' ) ) }: <b>${ esc( EX.sumByCur( monthAll ) ) }</b></p>`;
 	}

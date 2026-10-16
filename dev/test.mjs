@@ -191,6 +191,9 @@ ok( ( await st() ).txs.length === before && await page.locator( '.sw.open' ).cou
 await page.click( 'h1.ab-title, .ab-title' ).catch( () => {} );
 ok( await page.locator( '.sw.open' ).count() === 0, 'tapping elsewhere closes the open row' );
 await swipe( '.sw[data-kind=tx] >> nth=0', -250 );
+await page.waitForTimeout( 1000 ); ok( await page.locator( '.sw.open' ).count() === 1, 'an opened row stays open for a moment' );
+await page.waitForTimeout( 1500 ); ok( await page.locator( '.sw.open' ).count() === 0, 'after two seconds without a touch the row slides back by itself' );
+await swipe( '.sw[data-kind=tx] >> nth=0', -250 );
 await page.click( '.sw.open .sw-act.del' );
 ok( ( await st() ).txs.length === before - 1, 'tapping Delete deletes it' );
 await page.click( '#toast .link' );
@@ -475,6 +478,22 @@ for ( const w of [ 320, 360, 390, 430 ] ) {
 	for ( const w of [ 360, 390 ] ) for ( const v of [ 'home', 'plan' ] ) { await p.setViewportSize( { width: w, height: 800 } ); await p.evaluate( ( x ) => window.EXA.go( x ), v ); ok( await p.evaluate( () => { const m = document.querySelector( '#view' ); return m.scrollWidth <= m.clientWidth + 1; } ), `budgets and goals fit at ${ w }px on ${ v } in a wide-lettered theme` ); }
 	const css = await p.evaluate( () => ( { ox: getComputedStyle( document.querySelector( '#view' ) ).overflowX, ta: getComputedStyle( document.querySelector( '#view' ) ).touchAction } ) );
 	ok( css.ox === 'hidden' && /pan-y/.test( css.ta ), 'the main view only pans vertically', JSON.stringify( css ) );
+	await c.close();
+}
+
+/* ---- Tablets and computers: no swipe rows; a click opens the details with the same actions */
+{
+	const { context: c, page: p } = await newPage( { viewport: { width: 820, height: 1180 } } );
+	const cd = await c.newCDPSession( p );
+	await p.evaluate( () => { window.EXA.skipFlow(); const X = window.EX, S = X.state(); S.bills.push( { id: 'tb', name: 'Rent', amount: '500', currency: 'EUR', category: 'housing', repeat: 'monthly', next: X.today(), day: 1, account: S.accounts[ 0 ].id } ); S.txs.push( { id: 'tt', type: 'expense', amount: '9', category: 'food', date: X.today(), name: 'Lunch', account: S.accounts[ 0 ].id } ); X.save(); window.EXA.go( 'activity' ); } );
+	ok( ! await p.locator( '.sw-back' ).first().isVisible(), 'tablet: the hidden swipe buttons are not shown' );
+	const box = await p.locator( '.sw[data-kind=tx]' ).first().boundingBox();
+	await cd.send( 'Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [ { x: box.x + 500, y: box.y + 30 } ] } );
+	for ( let i = 1; i <= 8; i++ ) await cd.send( 'Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [ { x: box.x + 500 - i * 30, y: box.y + 30 } ] } );
+	await cd.send( 'Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] } );
+	ok( await p.locator( '.sw.open' ).count() === 0, 'tablet: dragging a row does not open swipe buttons' );
+	await p.click( '.sw[data-kind=tx] .sw-front' );
+	ok( await p.locator( '#sheet[open] [data-act=edit-tx], #pane [data-act=edit-tx]' ).count() >= 1 && await p.locator( '#sheet[open] [data-act=del-tx], #pane [data-act=del-tx]' ).count() >= 1, 'tablet: a click opens the details with Edit and Delete' );
 	await c.close();
 }
 

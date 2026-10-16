@@ -51,7 +51,7 @@ Other actions, from the **⋯** menu on a bill: **Snooze** (to tomorrow or for 3
 
 ## Swipe and pull
 
-Swiping a row slides it to show buttons. **Nothing happens until you tap a button**, and tapping anywhere else closes the row again.
+On a phone, swiping a row slides it to show buttons. **Nothing happens until you tap a button**. Tapping anywhere else closes the row, and a row you leave open slides back by itself after two seconds. On a tablet or computer there is no swiping: click a row and its details open with the same Edit, Delete and Paid buttons.
 
 - On a **transaction**: swipe **left** to reveal **Edit** and **Delete**.
 - On a **bill**: swipe **right** to reveal **Paid**, or **left** to reveal **Edit** and **Delete**.

@@ -87,11 +87,15 @@
 	UI.justSwiped = false;
 	UI.initSwipe = ( root ) => {
 		// A swipe slides the row to reveal buttons. It never acts on its own: the person taps Paid, Edit or Delete.
-		let row = null, front = null, x0 = 0, y0 = 0, base = 0, dx = 0, mode = '', wL = 0, wR = 0;
+		let row = null, front = null, x0 = 0, y0 = 0, base = 0, dx = 0, mode = '', wL = 0, wR = 0, timer = null;
 		const closeAll = ( except ) => { document.querySelectorAll( '.sw.open' ).forEach( ( r ) => { if ( r === except ) return; r.classList.remove( 'open' ); const f = $( '.sw-front', r ); if ( f ) f.style.transform = ''; } ); };
 		UI.swipeClose = () => closeAll();
+		// An opened row slides back by itself after two seconds without a touch.
+		const armClose = () => { clearTimeout( timer ); timer = setTimeout( () => closeAll(), 2000 ); };
+		window.addEventListener( 'resize', () => closeAll() );
 		root.addEventListener( 'pointerdown', ( e ) => {
-			if ( e.pointerType === 'mouse' ) return;
+			if ( e.pointerType === 'mouse' || ! UI.isPhone() ) return; // swipes are for phones; larger screens click a row to open its panel
+			clearTimeout( timer );
 			const r = e.target.closest( '.sw' );
 			if ( ! r ) { closeAll(); return; }
 			if ( e.target.closest( '.sw-act' ) ) return;
@@ -116,7 +120,7 @@
 				UI.justSwiped = true; setTimeout( () => { UI.justSwiped = false; }, 120 );
 				const open = dx > wL * 0.5 ? 'l' : dx < -wR * 0.5 ? 'r' : '';
 				r.classList.remove( 'open-l', 'open-r' );
-				if ( open ) { r.classList.add( 'open', 'open-' + open ); f.style.transform = `translateX(${ open === 'l' ? wL : -wR }px)`; UI.haptic(); } else { r.classList.remove( 'open' ); f.style.transform = ''; }
+				if ( open ) { r.classList.add( 'open', 'open-' + open ); f.style.transform = `translateX(${ open === 'l' ? wL : -wR }px)`; UI.haptic(); armClose(); } else { r.classList.remove( 'open' ); f.style.transform = ''; }
 			}
 			mode = '';
 		};
