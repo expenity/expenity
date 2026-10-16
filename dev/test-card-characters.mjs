@@ -11,6 +11,7 @@ try{
   const before=await page.evaluate(()=>JSON.stringify([EX.state().txs,EX.state().bills,EX.state().incomes]));await page.locator('[data-act=flip-hero]').click();await page.waitForTimeout(950);
   ok(await page.evaluate(()=>document.querySelector('.hero-flip').classList.contains('character-retreated')&&Number(getComputedStyle(document.querySelector('.hero-flip'),'::before').opacity)<.01),skin+' turns aside and hides after flip');
   await page.evaluate(()=>EXA.render());ok(await page.evaluate(()=>Number(getComputedStyle(document.querySelector('.hero-flip'),'::before').opacity)<.01),skin+' stays hidden on redraw');
+  await page.waitForTimeout(1700);ok(await page.evaluate(()=>parseFloat(getComputedStyle(document.querySelector('.hero-flip')).marginTop)<=4),'character headroom collapses');await page.evaluate(()=>EXA.render());ok(await page.locator('.hero-flip.character-collapsed').count()===1,'collapsed headroom survives redraw');
   ok(await page.evaluate(()=>JSON.stringify([EX.state().txs,EX.state().bills,EX.state().incomes]))===before,skin+' animation changes no financial records');
   await page.evaluate(()=>{EXA.go('activity');EXA.go('home');});ok(await page.locator('.hero-flip.character-retreated').count()===0,skin+' returns on next Home visit');
   for(const lang of ['en','el'])for(const width of [320,834,1440]){await page.setViewportSize({width,height:900});await page.evaluate(l=>EX.setLang(l),lang);ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),`${skin} ${lang} ${width}px fits`);}
