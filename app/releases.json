@@ -1,6 +1,22 @@
 {
-  "version": "0.10.2",
+  "version": "0.10.3",
   "releases": [
+    {
+      "version": "0.10.3",
+      "date": "2026-10-17",
+      "en": [
+        "Improved real-photo receipt scanning: detect the paper region, reduce background texture and uneven lighting, and retry narrow thermal print with alternative text layouts when the first pass cannot identify a total.",
+        "Greek total labels tolerate common OCR letter confusions. Amounts and labels are matched by their position across columns; tax, cash tendered, change and conflicting totals are not silently treated as the final amount.",
+        "Store-name suggestions now consider header text confidence and print size instead of taking the first readable line. Verified locally against a real Greek receipt: YUCCA, EUR 3.30. Every suggestion remains editable before saving.",
+        "Photo guidance now explains supported formats and the 20 MB limit. Export RAW/DNG photos to JPEG before choosing them. Recognition remains on your device."
+      ],
+      "el": [
+        "Βελτιωμένη σάρωση πραγματικών φωτογραφιών αποδείξεων: εντοπισμός χαρτιού, περιορισμός υφής φόντου και ανομοιόμορφου φωτισμού, με πρόσθετες προσπάθειες αναγνώρισης στενών θερμικών χαρακτήρων όταν δεν εντοπίζεται σύνολο.",
+        "Οι ελληνικές ενδείξεις συνόλου αναγνωρίζονται και με συνηθισμένα λάθη ανάγνωσης γραμμάτων. Ποσά και ενδείξεις συνδέονται βάσει της θέσης τους στις στήλες· φόροι, μετρητά, ρέστα και αντικρουόμενα σύνολα δεν επιλέγονται αυτόματα ως τελικό ποσό.",
+        "Η πρόταση ονόματος καταστήματος λαμβάνει υπόψη την αξιοπιστία του κειμένου και το μέγεθος των χαρακτήρων στην επικεφαλίδα, αντί για την πρώτη αναγνώσιμη γραμμή. Ελέγχθηκε τοπικά με πραγματική ελληνική απόδειξη: YUCCA, 3,30 EUR. Όλες οι προτάσεις διορθώνονται πριν από την αποθήκευση.",
+        "Οι οδηγίες φωτογραφίας εξηγούν τις υποστηριζόμενες μορφές και το όριο των 20 MB. Εξαγάγετε τα RAW/DNG σε JPEG πριν τα επιλέξετε. Η αναγνώριση παραμένει στη συσκευή σας."
+      ]
+    },
     {
       "version": "0.10.2",
       "date": "2026-10-17",
