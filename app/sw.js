@@ -1,6 +1,6 @@
 /* Expenity service worker: the app works offline. Network first, so updates arrive as soon as you are online. */
-const CACHE = 'expenity-v12';
-const FILES = [ './', 'index.html', 'icons.js', 'i18n.js', 'core.js', 'sync.js', 'ui.js', 'views.js', 'forms.js', 'photos.js', 'reports.js', 'plan.js', 'insights.js', 'share.js', 'push.js', 'flow.js', 'themes.js', 'app.js', 'enhancements.js', 'releases.json', 'theme.js', 'style.css', 'themes.css', 'favicon.svg', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png' ].map( f => /\.(js|css)$/.test(f) ? f + "?v=mvbcjrdr" : f );
+const CACHE = 'expenity-v13';
+const FILES = [ './', 'index.html', 'icons.js', 'i18n.js', 'core.js', 'sync.js', 'ui.js', 'views.js', 'forms.js', 'photos.js', 'reports.js', 'plan.js', 'insights.js', 'share.js', 'push.js', 'flow.js', 'themes.js', 'app.js', 'enhancements.js', 'releases.json', 'theme.js', 'style.css', 'themes.css', 'favicon.svg', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png' ].map( f => /\.(js|css)$/.test(f) ? f + "?v=mvbd1gmg" : f );
 
 self.addEventListener( 'install', ( e ) => {
 	e.waitUntil( caches.open( CACHE ).then( ( c ) => c.addAll( FILES ) ).then( () => self.skipWaiting() ) );

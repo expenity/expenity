@@ -79,7 +79,7 @@
   const config=layout();const order=config.map(x=>x.id);
   if(order.length)widgets.sort((a,b)=>{const ai=order.indexOf(a.dataset.home),bi=order.indexOf(b.dataset.home);return (ai<0?99:ai)-(bi<0?99:bi);});
   const toolbar=draft?`<div class="home-editor" role="toolbar" aria-label="${L('editHome')}"><b>${L('editHome')}</b><p>${L('editHelp')}</p><div class="btn-row">${button('data-home-done','done','check')}${button('data-home-cancel','cancel')}${button('data-home-reset','reset','refresh')}</div></div>`:`<div class="home-customise"><button type="button" class="ab-btn" data-home-edit aria-label="${L('editHome')}" title="${L('editHome')}">${UI.icon('pencil',20)}</button></div>`;
-  return toolbar+`<div id="homeGrid" class="home-grid${draft?' editing':''}">`+widgets.map(el=>{
+  return toolbar+`<div id="homeGrid" class="dashboard-grid${draft?' editing':''}">`+widgets.map(el=>{
    const id=el.dataset.home,c=config.find(x=>x.id===id)||{};
    if((c.hidden||!el.innerHTML.trim())&&!draft)return '';
    el.classList.add('home-widget');if(c.size==='compact')el.classList.add('widget-compact');if(c.hidden)el.classList.add('widget-hidden');
@@ -148,7 +148,7 @@
   if(el.hasAttribute('data-home-edit'))return beginEdit();
   if(el.hasAttribute('data-home-done')){S().settings.homeLayout=copy(draft||[]);draft=null;EX.save();return;}
   if(el.hasAttribute('data-home-cancel')){draft=null;A.render();return;}
-  if(el.hasAttribute('data-home-reset')){draft=widgetKeys.map(id=>({id,size:'wide',hidden:false}));A.render();return;}
+  if(el.hasAttribute('data-home-reset')){draft=[];A.render();return;}
   if(el.dataset.homeHide){const x=entry(el.dataset.homeHide);x.hidden=!x.hidden;A.render();return;}
   const id=el.dataset.homeUp||el.dataset.homeDown;if(id){const ids=currentOrder(),i=ids.indexOf(id),j=i+(el.dataset.homeUp?-1:1);if(ids[j]){reorder(id,ids[j]);A.render();}}
  },true);

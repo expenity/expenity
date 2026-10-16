@@ -1,6 +1,22 @@
 {
-  "version": "0.6.0",
+  "version": "0.6.1",
   "releases": [
+    {
+      "version": "0.6.1",
+      "date": "2026-10-16",
+      "en": [
+        "Fixed a dashboard style collision that covered the screen, blocked navigation and distorted icons.",
+        "Home customisation now uses its own grid styles, separate from the install animation.",
+        "Fixed goal contributions dropping tags entered in the contribution form.",
+        "Resetting Home restores the automatic order for wallets and urgent bills."
+      ],
+      "el": [
+        "Διορθώθηκε σύγκρουση στυλ στην Αρχική που κάλυπτε την οθόνη, εμπόδιζε την πλοήγηση και παραμόρφωνε τα εικονίδια.",
+        "Η προσαρμογή Αρχικής χρησιμοποιεί πλέον δική της διάταξη, ανεξάρτητη από την κίνηση εγκατάστασης.",
+        "Διορθώθηκε η απώλεια ετικετών που εισάγονταν στη φόρμα προσθήκης χρημάτων σε στόχο.",
+        "Η επαναφορά Αρχικής επαναφέρει την αυτόματη σειρά πορτοφολιών και άμεσων υποχρεώσεων."
+      ]
+    },
     {
       "version": "0.6.0",
       "date": "2026-10-16",

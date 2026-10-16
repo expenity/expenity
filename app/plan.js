@@ -62,9 +62,9 @@
 		if ( g.deadline && remaining > 0 ) { const months = Math.max( 1, ( parse( g.deadline ) - parse( today() ) ) / ( 864e5 * 30.4 ) ); needMonthly = Math.ceil( remaining / months ); }
 		return { saved, target, remaining, pct: target ? Math.min( 100, Math.floor( ( saved / target ) * 100 ) ) : 0, eta, needMonthly };
 	};
-	P.contribute = ( g, amount, account, direction = 'add', photo = '' ) => {
+	P.contribute = ( g, amount, account, direction = 'add', photo = '', tags = g.tags || [] ) => {
 		const before = P.goal( g ).pct;
-		S().txs.push( { id: uid(), type: direction === 'add' ? 'expense' : 'income', amount: String( amount ), account, category: 'goal', date: today(), name: g.name, goalId: g.id, photo, tags: g.tags || [] } );
+		S().txs.push( { id: uid(), type: direction === 'add' ? 'expense' : 'income', amount: String( amount ), account, category: 'goal', date: today(), name: g.name, goalId: g.id, photo, tags } );
 		EX.save();
 		const after = P.goal( g ).pct;
 		if ( direction === 'add' ) { const hit = [ 100, 75, 50, 25 ].find( ( m ) => before < m && after >= m ); if ( hit ) { UI.haptic(); toast( hit === 100 ? t( 'goalDone', { name: g.name } ) : t( 'goalMilestone', { n: hit, name: g.name } ) ); if ( hit === 100 ) UI.confetti(); return; } }
@@ -258,7 +258,7 @@
 			const amount = amt( el.amount.value );
 			if ( ! ok( amount ) ) return err( 'errAmount' );
 			const g = editing; UI.closeSheet();
-			P.contribute( g, amount, el.account.value, el.dir.value, el.photo.value );
+			P.contribute( g, amount, el.account.value, el.dir.value, el.photo.value, EXA.readTags(f) );
 			return true;
 		} else if ( f.id === 'incomeForm' ) {
 			const name = el.iname.value.trim(), amount = amt( el.amount.value );
