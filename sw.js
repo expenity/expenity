@@ -1,5 +1,5 @@
 /* Expenity service worker: the app works offline. Network first, so updates arrive as soon as you are online. */
-const CACHE = 'expenity-v20';
+const CACHE = 'expenity-v21';
 const FILES = [ './', 'index.html', 'icons.js', 'i18n.js', 'core.js', 'sync.js', 'ui.js', 'views.js', 'forms.js', 'photos.js', 'reports.js', 'plan.js', 'insights.js', 'safe-spend.js', 'receipts.js', 'share.js', 'push.js', 'flow.js', 'installation.js', 'themes.js', 'app.js', 'enhancements.js', 'dashboard.js', 'releases.json', 'theme.js', 'style.css', 'themes.css', 'favicon.svg', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'installation/ios-en.mp4', 'installation/ios-en.png', 'installation/ios-el.mp4', 'installation/ios-el.png', 'installation/android-en.mp4', 'installation/android-en.png', 'installation/android-el.mp4', 'installation/android-el.png', 'installation/desktop-en.mp4', 'installation/desktop-en.png', 'installation/desktop-el.mp4', 'installation/desktop-el.png' ];
 
 self.addEventListener( 'install', ( e ) => {
@@ -13,7 +13,7 @@ self.addEventListener( 'fetch', ( e ) => {
 	if ( req.method !== 'GET' || new URL( req.url ).origin !== location.origin ) return; // the API is another origin and is never cached
 	// Recognition resources are large: load only on demand and keep them through ordinary app updates.
 	if(new URL(req.url).pathname.includes('/vendor/ocr/')){
-	 e.respondWith((async()=>{const cache=await caches.open('expenity-ocr-v7-fast-8741641');const hit=await cache.match(req);if(hit)return hit;
+	 e.respondWith((async()=>{const cache=await caches.open(new URL(req.url).pathname.includes('/paddle/')?'expenity-ocr-paddle-v1':'expenity-ocr-v7-fast-8741641');const hit=await cache.match(req);if(hit)return hit;
 	  try{const res=await fetch(req);if(res.ok)await cache.put(req,res.clone());return res;}catch(e){return new Response('',{status:503});}
 	 })());return;
 	}

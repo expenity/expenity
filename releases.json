@@ -1,6 +1,22 @@
 {
-  "version": "0.10.3",
+  "version": "0.11.0",
   "releases": [
+    {
+      "version": "0.11.0",
+      "date": "2026-10-17",
+      "en": [
+        "New on-device receipt recognition engine for Greek and English, with text detection and angle-aware matching of total labels to amounts. No paid OCR API, receipt upload for recognition, or per-scan charges.",
+        "Recognition files download from the app once (about 40 MB) and are cached for offline use. Processing runs in a background worker; closing the scanner cancels it. An on-device compatibility fallback remains available.",
+        "New Focus on the total: tap the printed total or drag a selection around it to read that area again. Edited fields are preserved. Large amount buttons make uncertain results easier to review and select.",
+        "Fixed purchase totals being hidden by “not refundable” footer text. Improved separation of payable totals from GST/VAT summaries, item counts, cash tendered and change. Missing or conflicting totals still require your review."
+      ],
+      "el": [
+        "Νέα μηχανή αναγνώρισης αποδείξεων για ελληνικά και αγγλικά στη συσκευή σας, με εντοπισμό κειμένου και αντιστοίχιση συνόλου και ποσού ανάλογα με τη γωνία λήψης. Χωρίς πληρωμένη υπηρεσία αναγνώρισης, αποστολή απόδειξης για αναγνώριση ή χρέωση ανά σάρωση.",
+        "Τα αρχεία αναγνώρισης κατεβαίνουν μία φορά από την εφαρμογή (περίπου 40 MB) και διατηρούνται για χρήση χωρίς σύνδεση. Η επεξεργασία γίνεται στο παρασκήνιο και ακυρώνεται όταν κλείσετε τη σάρωση. Διατηρείται εναλλακτική αναγνώριση στη συσκευή για λόγους συμβατότητας.",
+        "Νέα Εστίαση στο σύνολο: πατήστε το τυπωμένο σύνολο ή σύρετε πλαίσιο γύρω του για νέα ανάγνωση της περιοχής. Οι διορθώσεις σας διατηρούνται. Μεγάλα κουμπιά ποσών διευκολύνουν τον έλεγχο και την επιλογή αβέβαιων αποτελεσμάτων.",
+        "Διορθώθηκε η απόκρυψη συνόλων αγοράς λόγω κειμένου πολιτικής επιστροφών. Καλύτερος διαχωρισμός πληρωτέου ποσού από αναλύσεις φόρων, πλήθος ειδών, μετρητά και ρέστα. Ελλιπή ή αντικρουόμενα σύνολα εξακολουθούν να χρειάζονται τον έλεγχό σας."
+      ]
+    },
     {
       "version": "0.10.3",
       "date": "2026-10-17",

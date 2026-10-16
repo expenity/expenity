@@ -53,3 +53,22 @@ Version 0.10.1 also fixes the existing dashboard editor’s quick-Cancel suppres
 The original clean synthetic fixtures did not cover thermal receipts photographed on textured surfaces. Added automatic light-paper detection with a guarded crop, local luminance normalization, a wider thermal-print fallback, sparse/automatic segmentation retries, and bounding-box row reconstruction. Greek total-label confusions are handled only when classifying labels; amounts are not guessed from the largest number. Merchant suggestions rank header confidence and glyph height. Currency signs are checked beside amounts on total rows to avoid spurious background symbols.
 
 Opt-in local photo regression: `node dev/test-receipt-photo.mjs /absolute/path/receipt.jpg 3.30 YUCCA`. The user's receipt is not committed or sent to a recognition service. The supplied RAW/DNG was converted locally to JPEG for browser testing; direct RAW decoding remains unsupported. All fields still require review.
+
+### 0.11.0 — replace the default recognition engine
+
+Decision: adopt the official PaddleOCR.js browser SDK 0.4.2 with the official PP-OCRv5 mobile detector and Greek-English recognizer (pinned model hash manifest). A dedicated module worker runs WASM with one thread, so GitHub Pages does not need cross-origin isolation headers. Pixels are transferred from the page to the worker as ImageData; the SDK receives OpenCV matrices, avoiding DOM-only image conversion in the worker. Detection polygons supply a median text angle for aligning total labels with values. The existing Tesseract path is a local compatibility fallback. There is no paid provider, server recognition endpoint, or per-scan charge. The worker refuses cross-origin/non-GET fetches.
+
+The roughly 40 MB runtime/models load on first scan and stay in a separate on-demand offline cache. Closing/cancelling terminates the worker immediately and rejects the pending job. The adapter URL is versioned with the app release; model snapshots are immutable and hash checked. Source photo and OCR text are not uploaded or logged by the app. Optional compressed reference attachments still use the existing explicit opt-in flow.
+
+Recovery: visible buttons for candidate amounts; Focus on the total opens a photo selection tool (tap for a band, drag for a rectangle, keyboard selection supported). The selected area is read again. Merchant/date/currency edits and field selections survive cancellation/retry. No transaction is saved until the normal expense Save action. Refund-policy footer wording no longer suppresses purchases; payable/rounded totals outrank tax breakdowns and quantity summaries.
+
+Measured locally, 2026-10-17:
+
+- One real Greek receipt, tested as original, +/-5 degree rotation, dimmer exposure, 1200-pixel version, JPEG compression and a shadow gradient (seven variants, not seven independent Greek receipts). With the comparison parser, the old engine returned correct totals in 2/7 Chromium cases and 0/7 WebKit cases; the replacement returned 7/7 in both. WebKit baseline sometimes returned 3.20 rather than the printed 3.30.
+- Eight independent annotated English-language SROIE receipts: both engines returned 8/8 correct totals after parser fixes; before parser fixes, neither engine was reliable on this subset. These eight examples are a small sanity check, not a dataset accuracy claim.
+- Public corpus: first eight JPEG/JSON pairs in the `NDilanka/tessera-invoice-inbox` data/eval snapshot `6932419dbdaf972977ff53806284ae6c9b93a139`. Source dataset: ICDAR 2019 SROIE / jsdnrs HuggingFace mirror. Samples are kept outside the repo.
+- Real engine use, recovery selection, field preservation, cancellation, offline-after-reload and EN/EL layouts are checked in browser regressions. No physical iPhone performance or memory guarantee follows from desktop WebKit tests. Fresh iPhone captures remain an acceptance check; broad Greek accuracy needs more independently photographed receipts.
+
+Reproduce with `node dev/benchmark-receipt-engines.mjs /absolute/path/receipt.jpg 3.30`; set RECEIPT_BROWSER=webkit for WebKit or RECEIPT_CORPUS for a directory of JPEG/JSON annotations. Reports remain under /tmp by default; private photographs are never committed.
+
+Research: official browser SDK documentation https://github.com/PaddlePaddle/PaddleOCR/tree/main/paddleocr-js/packages/core ; Greek-English model documentation https://github.com/PaddlePaddle/PaddleOCR/blob/main/docs/version3.x/algorithm/PP-OCRv5/PP-OCRv5_multi_languages.en.md .
