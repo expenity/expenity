@@ -161,6 +161,8 @@
 			case 'rm-passkey': { const r = await EX.auth.removePasskey( el.dataset.id ); if ( r.ok ) { toast( t( 'tPasskeyRemoved' ) ); loadDevices(); } else toast( EXA.errText( r.error ) ); break; }
 			case 'rm-session': { const r = await EX.auth.revokeSession( el.dataset.id ); if ( r.ok ) { toast( t( 'tDeviceOut' ) ); loadDevices(); } else toast( EXA.errText( r.error ) ); break; }
 			case 'new-codes': { const r = await EX.auth.regenerateCodes(); if ( r.ok ) EXA.showCodes( r.recoveryCodes, () => render() ); else toast( EXA.errText( r.error ) ); break; }
+			case 'check-update': checkUpdate( el ); break;
+			case 'apply-update': try { const reg = await navigator.serviceWorker.getRegistration(); if ( reg ) await reg.update(); } catch ( err ) { /* reload anyway */ } location.reload(); break;
 			case 'sign-out': {
 				if ( ! await EXA.confirm( { title: t( 'signOut' ), text: t( EX.sync.pending() ? 'confirmSignOutUnsynced' : 'confirmSignOut' ), confirm: t( 'signOut' ) } ) ) break;
 				await EX.auth.logout(); st.devCache = null; toast( t( 'tSignedOut' ) ); go( 'home' ); break;
@@ -175,7 +177,28 @@
 		}
 	}
 
+	/** Which build is running: the cache name in sw.js at the time the page loaded. A different one on the server means a new version. */
+	const buildOf = ( text ) => ( /const CACHE = '([^']+)'/.exec( text ) || [] )[ 1 ] || '';
+	const fetchBuild = () => fetch( 'sw.js?check=' + Date.now(), { cache: 'no-store' } ).then( ( r ) => ( r.ok ? r.text() : '' ) ).then( buildOf );
+	async function checkUpdate( btn ) {
+		const line = $( '#updLine' ), b = btn || $( '#updBtn' );
+		const say = ( k, vars ) => { if ( line ) line.textContent = t( k, vars ); };
+		if ( b ) b.disabled = true; say( 'updChecking' );
+		try {
+			const now = await fetchBuild();
+			if ( ! now ) throw new Error( 'offline' );
+			if ( ! EXA.loadedBuild ) EXA.loadedBuild = now;
+			if ( now !== EXA.loadedBuild ) {
+				say( 'updAvailable' );
+				if ( b ) { b.disabled = false; b.dataset.act = 'apply-update'; b.innerHTML = `${ UI.icon( 'download', 20 ) } ${ esc( t( 'updNow' ) ) }`; b.classList.remove( 'btn-ghost' ); b.classList.add( 'btn-primary' ); }
+				return;
+			}
+			say( 'updLatest', { v: window.EXPENITY_VERSION || '0.4' } );
+		} catch ( err ) { say( 'updFail' ); }
+		if ( b ) b.disabled = false;
+	}
 	function init() {
+		fetchBuild().then( ( x ) => { EXA.loadedBuild = x; } ).catch( () => {} );
 		EX.load();
 		fetch( 'favicon.svg' ).then( ( r ) => r.text() ).then( ( svg ) => { logoSvg = svg.replace( '<svg ', '<svg width="34" height="34" aria-hidden="true" ' ); EXA.logoSvg = logoSvg; $$( '#logo' ).forEach( ( l ) => { l.innerHTML = logoSvg; } ); } ).catch( () => {} );
 		UI.initSheet();
