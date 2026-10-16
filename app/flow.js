@@ -16,7 +16,7 @@
 	let platform = null, busy = false;
 	const W = { step: 0, wallets: null, curQuery: '' };
 	// The goal step only appears for people who said they want to save for something.
-	const steps = () => [ 'name', 'currency', 'aims' ].concat( ( S().settings.aims || [] ).includes( 'save' ) ? [ 'goal' ] : [] ).concat( [ 'wallets', 'look' ] ).concat( UI.isPhone() ? [ 'tips' ] : [] ).concat( [ 'done' ] );
+	const steps = () => [ 'name', 'currency', 'aims' ].concat( ( S().settings.aims || [] ).includes( 'save' ) ? [ 'goal' ] : [] ).concat( [ 'wallets', 'look', 'tour' ] ).concat( UI.isPhone() ? [ 'tips' ] : [] ).concat( [ 'done' ] );
 	const GOAL_PRESETS = [ [ 'trip', 'plane' ], [ 'car', 'car' ], [ 'gift', 'gift' ], [ 'home', 'home' ], [ 'emergency', 'heart' ], [ 'other', 'target' ] ];
 
 	/* ------------------------------------------------------------------ Stage machine */
@@ -69,11 +69,13 @@
 	/* ------------------------------------------------------------------ 1. Welcome: sign in or create an account */
 
 	const langChips = () => `<div class="flow-lang" role="group">${ Object.keys( EX.I18N.langs ).map( ( k ) => `<button type="button" class="chip${ k === EX.lang() ? ' on' : '' }" data-lang="${ k }" lang="${ k }">${ esc( EX.I18N.langs[ k ].langName ) }</button>` ).join( '' ) }</div>`;
+	const moneyScene = () => `<div class="money-scene" aria-hidden="true"><span class="scene-glow"></span><div class="scene-balance"><small>${esc(t('ovBalance'))}</small><b>${esc(EX.money(1240,'EUR'))}</b><div class="scene-bars"><i></i><i></i><i></i><i></i><i></i><i></i></div></div><div class="scene-expense">${UI.ci('coffee','amber',36)}<span>${esc(t('tourSampleName'))}<b>−${esc(EX.money(3.5,'EUR'))}</b></span>${UI.icon('check',18)}</div><div class="scene-goal">${UI.ci('target','pink',36)}<span>${esc(t('planGoals'))}<b>64%</b><i></i></span></div></div>`;
+
 	function welcome() {
 		$( '#flow' ).innerHTML = `<div class="flow-card welcome">
 			<div class="flow-top"><span class="brand-row"><span id="flowLogo"></span><b class="brand-name">Expen<i>ity</i></b></span>${ langChips() }</div>
 			<div class="flow-body">
-				<div class="hero-art" aria-hidden="true"><span class="coin c1"></span><span class="coin c2"></span><span class="coin c3"></span>${ UI.ci( 'wallet', 'teal', 96 ) }</div>
+				${ moneyScene() }
 				<h1>${ esc( t( 'onbWelcomeTitle' ) ) }</h1><p class="lead">${ esc( t( 'flowWelcomeText' ) ) }</p>${ EXA.pendingJoin && EXA.pendingJoin() ? `<p class="joinnote">${ UI.icon( 'users', 18 ) } ${ esc( t( 'joinNeedAccount' ) ) }</p>` : '' }
 				<form id="flowRegister" novalidate><label class="f"><span class="sr">${ esc( t( 'authEmail' ) ) }</span><input name="email" type="email" autocomplete="email" placeholder="${ esc( t( 'flowEmailPh' ) ) }" required aria-label="${ esc( t( 'authEmail' ) ) }"></label>
 					<p class="err" id="flowErr" role="alert" hidden></p>
@@ -218,17 +220,20 @@
 		} else if ( id === 'wallets' ) {
 			icon = 'wallet'; color = 'green'; title = t( 'setupWalletsTitle' ); text = t( 'setupWalletsText' );
 			body = `<div class="wrows">${ W.wallets.map( ( w, i ) => `<div class="wrow${ w.on ? ' on' : '' }" data-wrow="${ i }">${ UI.ci( EX.WALLET_ICON[ w.type ] || 'wallet', 'teal', 44 ) }<label class="switch"><input type="checkbox" name="on"${ w.on ? ' checked' : '' } aria-label="${ esc( w.name || t( 'wtOther' ) ) }"><i></i></label>
-				<input name="wname" maxlength="40" value="${ esc( w.name ) }" placeholder="${ esc( t( 'wName' ) ) }" aria-label="${ esc( t( 'wName' ) ) }"><input name="wopening" inputmode="decimal" value="${ esc( w.opening ) }" placeholder="${ esc( curSym( S().settings.currency ) ) } 0.00" aria-label="${ esc( t( 'wOpening' ) ) }"></div>` ).join( '' ) }</div>
+				<input name="wname" maxlength="40" value="${ esc( EX.accountName(w) ) }" placeholder="${ esc( t( 'wName' ) ) }" aria-label="${ esc( t( 'wName' ) ) }"><input name="wopening" inputmode="decimal" value="${ esc( w.opening ) }" placeholder="${ esc( curSym( S().settings.currency ) ) } 0.00" aria-label="${ esc( t( 'wOpening' ) ) }"></div>` ).join( '' ) }</div>
 				<button type="button" class="btn btn-ghost" data-flow="add-wallet">${ UI.icon( 'plus', 20 ) } ${ esc( t( 'setupAnother' ) ) }</button><p class="err" id="setupErr" role="alert" hidden></p>`;
 		} else if ( id === 'look' ) {
 			icon = 'palette'; color = 'pink'; title = t( 'setupLookTitle' ); text = t( 'setupLookText' );
 			const mo = D().motion || 'auto';
 			const mt = ( v, label ) => `<button type="button" class="chip big${ mo === v ? ' on' : '' }" data-fstep="motion" data-motion="${ v }">${ esc( label ) }</button>`;
 			body = `${ EXA.themePicker() }<div class="lbl pad0">${ esc( t( 'setupMotion' ) ) }</div><div class="chips wrap">${ mt( 'auto', t( 'motionAuto' ) ) }${ mt( 'full', t( 'motionFull' ) ) }${ mt( 'reduced', t( 'motionReduced' ) ) }${ mt( 'off', t( 'motionOff' ) ) }</div>`;
+		} else if ( id === 'tour' ) {
+			icon='sparkles';color='purple';title=t('tourTitle');text=t('tourText');
+			body=`<div class="tour-grid">${[['home','layout-dashboard','tourHome','tourHomeText'],['activity','arrows-sort','tourActivity','tourActivityText'],['plan','target','planTitle','tourPlanText'],['reports','chart-pie','tabReports','tourReportsText']].map(([id,ic,label,copy],i)=>`<article style="--tour-i:${i}">${UI.ci(ic,['teal','blue','pink','amber'][i],44)}<div><h2>${esc(t(label))}</h2><p>${esc(t(copy))}</p></div></article>`).join('')}</div>`;
 		} else if ( id === 'tips' ) {
 			icon = 'arrows-exchange'; color = 'blue'; title = t( 'setupTipsTitle' ); text = t( 'setupTipsText' );
 			const row = ( cls, ic, tint, name, amt ) => `<div class="mock-sw ${ cls }"><div class="mb"><div class="l"><span class="mact paid">${ UI.icon( 'check', 20 ) }<b>${ esc( t( 'actPaid' ) ) }</b></span></div><div class="r"><span class="mact edit">${ UI.icon( 'pencil', 20 ) }<b>${ esc( t( 'actEdit' ) ) }</b></span><span class="mact del">${ UI.icon( 'trash', 20 ) }<b>${ esc( t( 'actDelete' ) ) }</b></span></div></div><div class="front">${ UI.ci( ic, tint, 40 ) }<span class="mid"><b>${ esc( name ) }</b><small>${ esc( t( 'relTomorrow' ) ) }</small></span><span class="a">${ amt }</span></div></div>`;
-			body = `<div class="swipe-demo" aria-hidden="true">${ row( 'a', 'device-tv', 'purple', 'Netflix', '€15.99' ) }${ row( 'b', 'home', 'blue', t( 'tplRent' ), '€850' ) }<span class="sfinger fa"></span><span class="sfinger fb"></span></div>
+			body = `<div class="swipe-demo" aria-hidden="true">${ row( 'a', 'device-tv', 'purple', t('tourSubscription'), EX.money(15.99,'EUR') ) }${ row( 'b', 'home', 'blue', t( 'tplRent' ), '€850' ) }<span class="sfinger fa"></span><span class="sfinger fb"></span></div>
 				<ul class="tip-list"><li>${ UI.icon( 'arrow-left', 20 ) } ${ esc( t( 'tipLeft' ) ) }</li><li>${ UI.icon( 'arrow-right', 20 ) } ${ esc( t( 'tipRight' ) ) }</li><li>${ UI.icon( 'hand-click', 20 ) } ${ esc( t( 'tipTap' ) ) }</li></ul>`;
 		} else {
 			icon = 'circle-check'; color = 'green'; title = t( 'setupDoneTitle', { name: ( S().settings.name || '' ).trim() } ); text = t( 'setupDoneText' );

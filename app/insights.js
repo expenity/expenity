@@ -88,7 +88,8 @@
 		<div class="acts"><button type="button" class="btn btn-ghost sm" data-idea="open" data-id="${ esc( o.id ) }" data-go="${ esc( o.go || '' ) }">${ esc( t( 'ideaOpen' ) ) }</button><button type="button" class="link" data-idea="off" data-id="${ esc( o.id ) }">${ esc( t( 'ideaOff' ) ) }</button></div></div></div>`;
 	EXA.ideasHome = () => {
 		const l = I.list().slice( 0, 2 );
-		return l.length ? `<div class="sec-head"><h2>${ esc( t( 'ideasTitle' ) ) }</h2><button type="button" class="link" data-idea="all">${ esc( t( 'seeAll' ) ) }</button></div><div class="ideas">${ l.map( card ).join( '' ) }</div>` : '';
+		if ( st.ideasExpanded ) return `<div class="sec-head"><h2>${ esc(t('ideasTitle')) }</h2><button type="button" class="link" data-idea="all">${ esc(t('ideasCollapse')) }</button></div>${ EXA.ideasTab() }`;
+		return `<div class="sec-head"><h2>${ esc( t( 'ideasTitle' ) ) }</h2><button type="button" class="link" data-idea="all">${ esc( t( 'seeAll' ) ) }</button></div>${ l.length ? `<div class="ideas">${ l.map( card ).join( '' ) }</div>` : `<p class="muted pad">${ esc(t('ideasNone')) }</p>` }`;
 	};
 	EXA.ideasTab = () => {
 		const l = I.list();
@@ -102,10 +103,10 @@
 		if ( ! el ) return false;
 		const id = el.dataset.id;
 		if ( el.dataset.idea === 'off' ) { S().settings.tipsOff = ( S().settings.tipsOff || [] ).concat( id ); EX.save(); UI.toast( t( 'ideaHidden' ) ); return true; }
-		if ( el.dataset.idea === 'all' ) { st.planTab = 'ideas'; EXA.go( 'plan' ); return true; }
+		if ( el.dataset.idea === 'all' ) { st.ideasExpanded = !st.ideasExpanded; EXA.render(); return true; }
 		const go = el.dataset.go;
 		if ( go === 'goal' ) { EXA.go( 'plan' ); st.planTab = 'goals'; EXA.render(); EXA.openGoal(); }
-		else if ( go === 'income' ) { st.planTab = 'income'; EXA.go( 'plan' ); EXA.openIncome(); }
+		else if ( go === 'income' ) { st.txFilter.type = 'income'; st.incomeMode = 'recurring'; EXA.go( 'activity' ); EXA.openIncome(); }
 		else if ( go === 'budget' ) { st.planTab = 'budgets'; EXA.go( 'plan' ); EXA.openBudget(); }
 		else if ( go ) EXA.go( go );
 		return true;

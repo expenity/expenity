@@ -112,12 +112,10 @@
 	/* ------------------------------------------------------------------ State and storage */
 
 	const KEY = 'expenity.v2', OLD_KEY = 'expenity.v1';
-	const guessCurrency = () => {
-		try { const r = ( navigator.language || 'en-US' ).split( '-' )[ 1 ] || 'US'; const m = { US: 'USD', GB: 'GBP', CA: 'CAD', AU: 'AUD', CH: 'CHF', SE: 'SEK', NO: 'NOK', DK: 'DKK', PL: 'PLN', TR: 'TRY' }; return m[ r ] || 'EUR'; } catch ( e ) { return 'EUR'; }
-	};
+
 	const blank = () => ( {
 		bills: [], txs: [], accounts: [], categories: [], budgets: [], goals: [], incomes: [],
-		settings: { currency: guessCurrency(), lead: 3, name: '', setupDone: false, aims: [], tipsOff: [] }, // synced
+		settings: { currency: 'EUR', lead: 3, name: '', setupDone: false, aims: [], tipsOff: [] }, // synced
 		device: { notify: false, lastNotified: {}, onboarded: false, installDismissed: false, bannerDismissed: false, stage: '', setupStep: 0, guest: false, motion: 'auto' }, // this device only
 		sync: { rev: 0, base: {}, spaces: {} },                            // sync bookkeeping, this device only
 	} );
@@ -220,6 +218,20 @@
 	/* ------------------------------------------------------------------ Wallets, categories, transactions */
 
 	EX.account = ( id ) => S.accounts.find( ( a ) => a.id === id );
+	// Built-in wallet labels are translated at display time; custom names stay exactly as entered.
+	EX.accountName = a => {
+		if(!a)return '';
+		const key = a.type === 'cash' ? 'wCash' : 'wt' + (a.type||'other').charAt(0).toUpperCase() + (a.type||'other').slice(1);
+		const defaults = Object.values(I18N.langs).map(l=>l[key]).filter(x=>typeof x==='string');
+		return defaults.includes(a.name) ? t(key) : a.name || t(key);
+	};
+	EX.savedNames = type => (S.settings.savedNames || []).filter(x=>x && x.type===type && typeof x.name==='string');
+	EX.rememberName = (type,name,category) => {
+		name=String(name||'').trim().slice(0,80);if(!name||!['expense','income'].includes(type))return;
+		const old=(S.settings.savedNames||[]).filter(x=>!(x.type===type&&EX.fold(x.name)===EX.fold(name)));
+		S.settings.savedNames=[{type,name,category:category||''},...old].slice(0,30);
+	};
+
 	EX.activeAccounts = () => S.accounts.filter( ( a ) => ! a.archived );
 	/** Shared wallets: the person's role in a wallet (null for their own), and what they may change. */
 	EX.role = ( a ) => ( a && a.space ? ( ( ( S.sync.spaces || {} )[ a.space ] || {} ).role || 'viewer' ) : null );
@@ -241,7 +253,7 @@
 		} );
 		return c;
 	};
-	EX.walletLabel = ( a ) => `${ ( EX.WALLET_TYPES.find( ( w ) => w[ 0 ] === a.type ) || EX.WALLET_TYPES[ 4 ] )[ 1 ] } ${ a.name }`;
+	EX.walletLabel = ( a ) => `${ ( EX.WALLET_TYPES.find( ( w ) => w[ 0 ] === a.type ) || EX.WALLET_TYPES[ 4 ] )[ 1 ] } ${ EX.accountName(a) }`;
 
 	const builtIn = ( key ) => EX.EXPENSE_CATS.concat( EX.INCOME_CATS ).find( ( c ) => c[ 0 ] === key );
 	EX.catInfo = ( key ) => {
@@ -265,7 +277,7 @@
 
 	/** Records a payment of a bill as an expense transaction. */
 	EX.payBill = ( bill, { amount, date, account } ) => {
-		const tx = { id: EX.uid(), type: 'expense', amount: String( amount ), account: account || bill.account || ( EX.activeAccounts()[ 0 ] || {} ).id, category: bill.category, date, name: bill.name, billId: bill.id, due: bill.next };
+		const tx = { id: EX.uid(), type: 'expense', amount: String( amount ), account: account || bill.account || ( EX.activeAccounts()[ 0 ] || {} ).id, category: bill.category, date, name: bill.name, billId: bill.id, due: bill.next, photo: bill.photo || '' };
 		S.txs.push( tx );
 		return tx;
 	};

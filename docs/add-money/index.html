@@ -18,11 +18,11 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
 <!-- Cloudflare Web Analytics: counts visits anonymously, no cookies --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "64332b427a604e879f82853393ebdb0d"}'></script><!-- End Cloudflare Web Analytics -->
-<link rel="stylesheet" href="../../assets/site.css?v=0.4.0.mvaxj590">
-<link rel="stylesheet" href="../../assets/brand.css?v=0.4.0.mvaxj590">
-<link rel="stylesheet" href="../../assets/home.css?v=0.4.0.mvaxj590">
+<link rel="stylesheet" href="../../assets/site.css?v=0.5.0.mvb61p1x">
+<link rel="stylesheet" href="../../assets/brand.css?v=0.5.0.mvb61p1x">
+<link rel="stylesheet" href="../../assets/home.css?v=0.5.0.mvb61p1x">
 <script>try{localStorage.removeItem('hdh-site-theme');var t=sessionStorage.getItem('hdh-site-theme');document.documentElement.dataset.theme=t==='dark'?'dark':'light';}catch(e){document.documentElement.dataset.theme='light';}</script>
-<script src="../../assets/search-index.js?v=0.4.0.mvaxj590" defer></script>
+<script src="../../assets/search-index.js?v=0.5.0.mvb61p1x" defer></script>
 </head>
 <body data-root="../../">
 <a class="skip" href="#main">Skip to content</a>
@@ -69,7 +69,7 @@
 <p>The sheet is built around the amount, so the most important thing comes first.</p>
 <ol>
 <li>Choose <strong>Expense</strong>, <strong>Income</strong> or <strong>Transfer</strong> at the top.</li>
-<li>Type the amount on the keypad.</li>
+<li>Tap the amount to open the keypad. Enter the value, then press <strong>✓ Done</strong> to collapse it.</li>
 <li>Add a <strong>description</strong> if you like, for example &quot;Lunch&quot;.</li>
 <li>Pick a <strong>category</strong>. Common ones are shown; <strong>More</strong> opens the rest, including your own categories.</li>
 <li>Pick the <strong>wallet</strong>.</li>
@@ -111,6 +111,14 @@
 <figure data-zoom><img src="../../assets/img/activity.jpg" alt="The Activity screen." width="831" height="1800" loading="lazy" decoding="async"><figcaption>The Activity screen.</figcaption></figure>
 <h2 id="edit-and-delete">Edit and delete<a class="anchor" href="#edit-and-delete" aria-label="#">#</a></h2>
 <p>Tap any row to see its details, edit it or delete it. On a tablet or computer the details show in a side panel. In a <a href="../shared-wallets/">shared wallet</a>, the details also say who added it, and a viewer can look but not change.</p>
+<h2 id="amount-entry-and-reusable-names">Amount entry and reusable names<a class="anchor" href="#amount-entry-and-reusable-names" aria-label="#">#</a></h2>
+<p>The number pad starts <strong>closed</strong>. Tap the amount, enter a value, then press <strong>✓ Done</strong> to keep the amount and collapse the pad. This does not save the transaction. Text fields also show a <strong>✓ Done</strong> control to dismiss the phone keyboard. Press the checkmark at the top only when you are ready to save the whole transaction.</p>
+<p>To reuse a name, enter a description and tick <strong>Save this name for next time</strong> before saving. The next time you add the same kind of transaction, expand <strong>Saved names</strong> and tap one. Its name and category are reused; the amount, date and wallet remain under your control. Expenses and income have separate lists. Use the × beside a saved name to remove it. Up to 30 names are saved in total and sync with your account settings. Your own names are kept in their original language.</p>
+<h2 id="reference-photos">Reference photos<a class="anchor" href="#reference-photos" aria-label="#">#</a></h2>
+<p>While signed in, choose <strong>Attach photo</strong> on an expense, income, transfer, bill, wallet, budget, goal or recurring income. JPEG, PNG and WebP work; HEIC depends on browser decoding support. The original file must be under 20 MB. Expenity re-encodes the photo as JPEG, removes original metadata, resizes the longest side to at most 1,280 pixels and compresses it to 96 KB or less. Save the item after uploading. A paperclip marks a photo; open the item and choose <strong>View photo</strong>. Editing also offers Replace and Remove.</p>
+<p>Photos require an account and internet to upload or view. Up to 100 uploads fit in an account, with roughly 9.4 MiB of storage. Shared-wallet members can see attachments in that wallet; viewers cannot change them. A photo on a bill or income schedule is carried into its recorded payment.</p>
+<p><strong>Account → Delete all photos</strong> permanently removes your uploads, including your uploads in shared wallets. Other members lose access to those images. Other people's uploads and all financial records remain. The app asks for confirmation and a fresh passkey check. Deletion reaches other devices during sync; offline edits cannot restore the removed images.</p>
+<p>Removing a photo from one item only detaches it. Unreferenced uploads older than a day are reclaimed on your next upload. JSON backups hold photo references, not image files: retain originals for an independent photo backup.</p>
 
 	<div class="help-strip"><p><strong>Still stuck?</strong> Check the <a href="../faq/">FAQ</a>, or <a href="https://github.com/expenity/expenity/issues">ask on GitHub</a>.</p></div>
 	<nav class="pager" aria-label="Previous and next guide">
@@ -118,7 +126,7 @@
 		<a class="next" href="../wallets-and-currencies/"><small>Next</small>Wallets and currencies</a>
 	</nav>
 </article>
-<nav class="on-page" aria-label="On this page" data-spy><h2>On this page</h2><ul><li><a href="#add-an-expense-or-income">Add an expense or income</a></li><li><a href="#or-type-a-sentence">Or type a sentence</a></li><li><a href="#transfers">Transfers</a></li><li><a href="#bills">Bills</a></li><li><a href="#swipe-and-pull">Swipe and pull</a></li><li><a href="#edit-and-delete">Edit and delete</a></li></ul></nav>
+<nav class="on-page" aria-label="On this page" data-spy><h2>On this page</h2><ul><li><a href="#add-an-expense-or-income">Add an expense or income</a></li><li><a href="#or-type-a-sentence">Or type a sentence</a></li><li><a href="#transfers">Transfers</a></li><li><a href="#bills">Bills</a></li><li><a href="#swipe-and-pull">Swipe and pull</a></li><li><a href="#edit-and-delete">Edit and delete</a></li><li><a href="#amount-entry-and-reusable-names">Amount entry and reusable names</a></li><li><a href="#reference-photos">Reference photos</a></li></ul></nav>
 </div>
 </main>
 <footer class="site-foot">
@@ -165,11 +173,11 @@
 		</div>
 		<div class="foot-bottom">
 			<span>Made with <span class="heart" role="img" aria-label="love">♥</span> by <a href="https://george-stathopoulos.github.io/">George Stathopoulos</a></span>
-			<span>Expenity 0.4.0 · This website uses no cookies. Visits are counted anonymously, with no personal data.</span>
+			<span>Expenity 0.5.0 · This website uses no cookies. Visits are counted anonymously, with no personal data.</span>
 		</div>
 	</div>
 </footer>
-<script src="../../assets/site.js?v=0.4.0.mvaxj590" defer></script>
+<script src="../../assets/site.js?v=0.5.0.mvb61p1x" defer></script>
 
 </body>
 </html>

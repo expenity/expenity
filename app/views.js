@@ -22,7 +22,7 @@
 	const lead = ( b ) => ( b.lead == null ? S().settings.lead : b.lead );
 	const active = () => S().bills.filter( ( b ) => ! b.done && b.next );
 	const byDue = ( a, b ) => ( a.next < b.next ? -1 : a.next > b.next ? 1 : a.name.localeCompare( b.name ) );
-	const walletName = ( id ) => { const a = EX.account( id ); return a ? a.name : ''; };
+	const walletName = ( id ) => { const a = EX.account( id ); return a ? EX.accountName(a) : ''; };
 	const amountText = ( b ) => ( b.amount !== '' && b.amount != null ? ( b.variable ? '~' : '' ) + money( Number( b.amount ), b.currency ) : '–' );
 	const mainCur = () => S().settings.currency;
 	const sumMain = ( list ) => EX.mainCents( list );
@@ -53,7 +53,7 @@
 			<div class="sw-back"><div class="sw-l"></div><div class="sw-r">${ swBtn( 'edit', 'pencil', 'actEdit', 'edit' ) }${ swBtn( 'del', 'trash', 'actDelete', 'del' ) }</div></div>
 			<button type="button" class="sw-front item" data-act="open-tx" data-id="${ esc( x.id ) }" aria-label="${ esc( title ) }, ${ esc( sign + money( Number( x.amount ), cur ) ) }">
 				${ UI.catCi( info.iconName ? info : EX.catInfo( x.category ) ) }
-				<span class="mid"><b>${ esc( title ) }</b><small>${ esc( meta || dayName( x.date ) ) }</small></span>
+				<span class="mid"><b>${ esc( title ) }${ x.photo ? UI.icon( 'paperclip', 14 ) : '' }</b><small>${ esc( meta || dayName( x.date ) ) }</small></span>
 				<span class="a ${ x.type }">${ sign }${ esc( money( Number( x.amount ), cur ) ) }</span>
 			</button></li>`;
 	}
@@ -78,6 +78,8 @@
 
 	const NAV = [ [ 'home', 'layout-dashboard', 'tabHome' ], [ 'activity', 'arrows-sort', 'tabActivity' ], [ 'bills', 'calendar-event', 'tabBills' ], [ 'reports', 'chart-pie', 'tabReports' ] ];
 	const RAIL_PLAN = [ 'plan', 'target', 'tabPlan' ]; // the Plan screen has no tab on a phone (the bar is full): Home and More lead to it
+	EXA.goalsDiscovery = () => S().device.goalsDiscovered ? '' : '<span class="goals-discovery" aria-hidden="true"><i></i></span>';
+
 	function avatar() {
 		if ( EX.auth.isSignedIn() ) {
 			const u = EX.auth.user() || {};
@@ -97,11 +99,11 @@
 		return `${ left }<span class="sp"></span>${ right }${ v === 'more' ? '' : `<span class="ab-avatar">${ avatar() }</span>` }`;
 	};
 	EXA.tabbar = () => {
-		const item = ( [ id, icon, label ] ) => `<button type="button" class="tab${ st.view === id ? ' on' : '' }" data-go="${ id }"${ st.view === id ? ' aria-current="page"' : '' }>${ UI.icon( icon, 26 ) }<span>${ esc( t( label ) ) }</span></button>`;
+		const item = ( [ id, icon, label ] ) => `<button type="button" class="tab${ st.view === id ? ' on' : '' }" data-go="${ id }"${ st.view === id ? ' aria-current="page"' : '' }>${ UI.icon( icon, 26 ) }<span>${ esc( t( label ) ) }${ id === 'plan' ? EXA.goalsDiscovery() : '' }</span></button>`;
 		return `${ item( NAV[ 0 ] ) }${ item( NAV[ 1 ] ) }<button type="button" class="fab${ S().txs.length || S().bills.length ? '' : ' nudge' }" data-act="add" aria-label="${ esc( t( 'addNew' ) ) }">${ UI.icon( 'plus', 30 ) }</button>${ item( NAV[ 2 ] ) }${ item( NAV[ 3 ] ) }`;
 	};
 	EXA.rail = () => {
-		const item = ( [ id, icon, label ] ) => `<button type="button" class="rail-item${ st.view === id ? ' on' : '' }" data-go="${ id }"${ st.view === id ? ' aria-current="page"' : '' }>${ UI.icon( icon, 24 ) }<span>${ esc( t( label ) ) }</span></button>`;
+		const item = ( [ id, icon, label ] ) => `<button type="button" class="rail-item${ st.view === id ? ' on' : '' }" data-go="${ id }"${ st.view === id ? ' aria-current="page"' : '' }>${ UI.icon( icon, 24 ) }<span>${ esc( t( label ) ) }${ id === 'plan' ? EXA.goalsDiscovery() : '' }</span></button>`;
 		return `<a class="rail-brand" href="./" aria-label="Expenity"><span id="logo"></span><b>Expen<i>ity</i></b></a>
 			<button type="button" class="rail-add" data-act="add">${ UI.icon( 'plus', 24 ) }<span>${ esc( t( 'addNew' ) ) }</span></button>
 			${ NAV.slice( 0, 3 ).map( item ).join( '' ) }${ item( RAIL_PLAN ) }${ item( NAV[ 3 ] ) }
@@ -150,7 +152,7 @@
 		const DUE = `<div class="sec-head"><h2>${ esc( t( 'dueSoon' ) ) }</h2><button type="button" class="link" data-go="bills">${ esc( t( 'seeAll' ) ) }</button></div>
 			${ upcoming.length ? `<ul class="list">${ upcoming.map( ( b ) => billItem( b ) ).join( '' ) }</ul>` : `<p class="muted pad">${ esc( t( 'noDue' ) ) }</p>` }`;
 		const WAL = `<div class="sec-head"><h2>${ esc( t( 'wallets' ) ) }</h2><button type="button" class="link" data-more="wallets">${ esc( t( 'ovManage' ) ) }</button></div>
-			<div class="wallets">${ wallets.map( ( a ) => `<button type="button" class="wc" data-act="edit-wallet" data-id="${ esc( a.id ) }">${ UI.walletCi( a, 36 ) }<span>${ a.space ? UI.icon( 'users', 14 ) + ' ' : '' }${ esc( a.name ) }</span><b>${ esc( money( EX.balance( a ) / 100, a.currency ) ) }</b></button>` ).join( '' ) }<button type="button" class="wc add" data-act="add-wallet">${ UI.icon( 'plus', 26 ) }<span>${ esc( t( 'newWallet' ) ) }</span></button></div>`;
+			<div class="wallets">${ wallets.map( ( a ) => `<button type="button" class="wc" data-act="edit-wallet" data-id="${ esc( a.id ) }">${ UI.walletCi( a, 36 ) }<span>${ a.space ? UI.icon( 'users', 14 ) + ' ' : '' }${ esc( EX.accountName( a ) ) }</span><b>${ esc( money( EX.balance( a ) / 100, a.currency ) ) }</b></button>` ).join( '' ) }<button type="button" class="wc add" data-act="add-wallet">${ UI.icon( 'plus', 26 ) }<span>${ esc( t( 'newWallet' ) ) }</span></button></div>`;
 		const recent = S().txs.slice().sort( ( a, b ) => ( a.date < b.date ? 1 : a.date > b.date ? -1 : 0 ) ).slice( 0, 5 );
 		const mC = { inc: EX.mainCents( f.income ), exp: EX.mainCents( f.expense ) }, mainCur = S().settings.currency, M = ( c ) => money( c / 100, mainCur );
 		const spark = [ 5, 4, 3, 2, 1, 0 ].map( ( k ) => { const d = new Date( y, m - k, 1 ), ff = EX.flow( EX.monthTxs( d.getFullYear(), d.getMonth() ) ); return { l: d.toLocaleDateString( EX.loc(), { month: 'short' } ), inc: EX.mainCents( ff.income ), exp: EX.mainCents( ff.expense ) }; } );
@@ -176,6 +178,8 @@
 	/* ------------------------------------------------------------------ Activity */
 
 	EXA.activity = () => {
+		const schedules = st.txFilter.type === 'income' && st.incomeMode === 'recurring';
+		const incomeNav = st.txFilter.type === 'income' ? `<div class="segm income-modes" role="tablist">${ [ ['recorded','incomeRecorded','arrows-sort'], ['recurring','incomeRecurring','repeat'] ].map(([id,label,ic]) => `<button type="button" role="tab" aria-selected="${ ( st.incomeMode || 'recorded' ) === id }" class="${ ( st.incomeMode || 'recorded' ) === id ? 'on' : '' }" data-income-mode="${ id }">${ UI.icon(ic,18) } ${ esc(t(label)) }</button>`).join('') }</div>` : '';
 		const y = Math.floor( st.txMonth / 12 ), m = st.txMonth % 12, fl = st.txFilter;
 		let list = EX.monthTxs( y, m );
 		if ( fl.type !== 'all' ) list = list.filter( ( x ) => x.type === fl.type );
@@ -187,11 +191,13 @@
 		list.forEach( ( x ) => { const g = groups[ groups.length - 1 ]; if ( g && g.date === x.date ) g.items.push( x ); else groups.push( { date: x.date, items: [ x ] } ); } );
 		const chip = ( v, label ) => `<button type="button" class="chip${ fl.type === v ? ' on' : '' }" data-txtype="${ v }">${ esc( label ) }</button>`;
 		const net = money( ( sumMain( f.income ) - sumMain( f.expense ) ) / 100, mainCur() );
-		return `<div class="monthbar"><button type="button" class="ab-btn" data-txmonth="-1" aria-label="${ esc( t( 'prevMonth' ) ) }">${ UI.icon( 'chevron-left', 24 ) }</button><b>${ esc( monthName( y, m ) ) }</b><button type="button" class="ab-btn" data-txmonth="1" aria-label="${ esc( t( 'nextMonth' ) ) }">${ UI.icon( 'chevron-right', 24 ) }</button></div>
-			<div class="sumrow"><div class="in"><small>${ esc( t( 'ovIncome' ) ) }</small><b>${ esc( EX.sumByCur( f.income ) ) }</b></div><div><small>${ esc( t( 'ovExpenses' ) ) }</small><b>${ esc( EX.sumByCur( f.expense ) ) }</b></div><div><small>${ esc( t( 'ovNet' ) ) }</small><b>${ esc( net ) }</b></div></div>
+		const monthHeader = `<div class="monthbar"><button type="button" class="ab-btn" data-txmonth="-1" aria-label="${ esc( t( 'prevMonth' ) ) }">${ UI.icon( 'chevron-left', 24 ) }</button><b>${ esc( monthName( y, m ) ) }</b><button type="button" class="ab-btn" data-txmonth="1" aria-label="${ esc( t( 'nextMonth' ) ) }">${ UI.icon( 'chevron-right', 24 ) }</button></div>
+			<div class="sumrow"><div class="in"><small>${ esc( t( 'ovIncome' ) ) }</small><b>${ esc( EX.sumByCur( f.income ) ) }</b></div><div><small>${ esc( t( 'ovExpenses' ) ) }</small><b>${ esc( EX.sumByCur( f.expense ) ) }</b></div><div><small>${ esc( t( 'ovNet' ) ) }</small><b>${ esc( net ) }</b></div></div>`;
+		return `${ schedules ? '' : monthHeader }
 			${ st.searchOpen ? `<div class="searchbar">${ UI.icon( 'search', 22 ) }<input id="txSearch" type="search" value="${ esc( fl.q ) }" placeholder="${ esc( t( 'txSearchPh' ) ) }" aria-label="${ esc( t( 'txSearchPh' ) ) }" autocomplete="off"></div>` : '' }
-			<div class="chips" role="group">${ chip( 'all', t( 'typeAll' ) ) }${ chip( 'expense', t( 'typeExpenses' ) ) }${ chip( 'income', t( 'typeIncomes' ) ) }${ chip( 'transfer', t( 'typeTransfer' ) ) }<label class="chip select${ fl.account ? ' on' : '' }">${ UI.icon( 'wallet', 18 ) }<select id="txWalletFilter" aria-label="${ esc( t( 'filterWallet' ) ) }"><option value="">${ esc( t( 'txAllWallets' ) ) }</option>${ S().accounts.map( ( a ) => `<option value="${ esc( a.id ) }"${ fl.account === a.id ? ' selected' : '' }>${ esc( a.name ) }</option>` ).join( '' ) }</select></label></div>
-			${ groups.length ? groups.map( ( g ) => `<section class="grp"><h2 class="sticky">${ esc( dayName( g.date ) ) }</h2><ul class="list">${ g.items.map( txItem ).join( '' ) }</ul></section>` ).join( '' ) + ( UI.isPhone() ? `<p class="hint">${ esc( t( 'swipeHint' ) ) }</p>` : '' ) : empty( 'arrows-sort', 'teal', t( 'txNone' ), t( 'txNoneHint' ), `<button type="button" class="btn btn-primary" data-act="add">${ esc( t( 'addTx' ) ) }</button>` ) }`;
+			<div class="chips" role="group">${ chip( 'all', t( 'typeAll' ) ) }${ chip( 'expense', t( 'typeExpenses' ) ) }${ chip( 'income', t( 'typeIncomes' ) ) }${ chip( 'transfer', t( 'typeTransfer' ) ) }<label class="chip select${ fl.account ? ' on' : '' }">${ UI.icon( 'wallet', 18 ) }<select id="txWalletFilter" aria-label="${ esc( t( 'filterWallet' ) ) }"><option value="">${ esc( t( 'txAllWallets' ) ) }</option>${ S().accounts.map( ( a ) => `<option value="${ esc( a.id ) }"${ fl.account === a.id ? ' selected' : '' }>${ esc( EX.accountName( a ) ) }</option>` ).join( '' ) }</select></label></div>
+			${ incomeNav }
+			${ schedules ? EXA.incomeSchedules() : groups.length ? groups.map( ( g ) => `<section class="grp"><h2 class="sticky">${ esc( dayName( g.date ) ) }</h2><ul class="list">${ g.items.map( txItem ).join( '' ) }</ul></section>` ).join( '' ) + ( UI.isPhone() ? `<p class="hint">${ esc( t( 'swipeHint' ) ) }</p>` : '' ) : empty( 'arrows-sort', 'teal', t( 'txNone' ), t( 'txNoneHint' ), `<button type="button" class="btn btn-primary" data-act="add">${ esc( t( 'addTx' ) ) }</button>` ) }`;
 	};
 
 	/* ------------------------------------------------------------------ Bills */
@@ -325,6 +331,7 @@
 			<section class="card"><h2>${ esc( t( 'devSessions' ) ) }</h2><ul class="plain flat">${ ss.map( ( s ) => `<li><span>${ UI.icon( 'devices', 20 ) } <small class="muted">${ esc( fmtDate( s.createdAt ) ) }</small> ${ s.current ? `<b>${ esc( t( 'devThis' ) ) }</b>` : '' }</span>${ s.current ? '' : `<button type="button" class="btn btn-ghost btn-sm" data-act="rm-session" data-id="${ esc( s.id ) }">${ esc( t( 'devSignOut' ) ) }</button>` }</li>` ).join( '' ) }</ul></section>
 			<section class="card"><h2>${ esc( t( 'devCodes' ) ) }</h2><p class="muted small">${ left == null ? '' : esc( t( 'codesLeft', { n: left } ) ) }</p><div class="btn-row"><button type="button" class="btn btn-ghost" data-act="new-codes">${ esc( t( 'devCodesBtn' ) ) }</button></div></section>
 			<section class="card"><div class="btn-row"><button type="button" class="btn btn-ghost" data-act="sign-out">${ UI.icon( 'logout', 20 ) } ${ esc( t( 'signOut' ) ) }</button></div></section>
+			<section class="card"><h2>${ esc( t( 'photoStorage' ) ) }</h2><p class="muted small">${ esc( t( 'photoDeleteHelp' ) ) }</p><button type="button" class="btn btn-danger-ghost" data-act="delete-photos">${ UI.icon( 'trash', 20 ) } ${ esc( t( 'photoDeleteAll' ) ) }</button></section>
 			<section class="card danger"><h2>${ esc( t( 'devDelete' ) ) }</h2><p class="muted small">${ esc( t( 'devDeleteText' ) ) }</p><div class="btn-row"><button type="button" class="btn btn-danger" data-act="delete-account">${ esc( t( 'devDelete' ) ) }</button></div></section>
 			${ updateCard() }`;
 	}
@@ -337,7 +344,7 @@
 			<section class="card"><h2>${ esc( t( 'sClosed' ) ) }</h2><p class="muted small">${ esc( t( 'sClosedDesc' ) ) }</p><div class="btn-row"><button type="button" class="btn btn-primary" id="icsBtn">${ UI.icon( 'calendar-plus', 20 ) } ${ esc( t( 'dlIcs' ) ) }</button></div></section>`;
 	}
 	function walletsView() {
-		return `<ul class="list">${ S().accounts.map( ( a ) => `<li><button type="button" class="item" data-act="edit-wallet" data-id="${ esc( a.id ) }">${ UI.walletCi( a ) }<span class="mid"><b>${ esc( a.name ) }</b><small>${ esc( a.currency ) }${ a.archived ? ' · ' + esc( t( 'archivedTag' ) ) : '' }${ a.space ? ' · ' + esc( t( 'sharedTag' ) ) + ' · ' + esc( t( 'role' + EX.role( a ).charAt( 0 ).toUpperCase() + EX.role( a ).slice( 1 ) ) ) : '' }</small></span><span class="a">${ esc( money( EX.balance( a ) / 100, a.currency ) ) }</span></button></li>` ).join( '' ) }</ul>
+		return `<ul class="list">${ S().accounts.map( ( a ) => `<li><button type="button" class="item" data-act="edit-wallet" data-id="${ esc( a.id ) }">${ UI.walletCi( a ) }<span class="mid"><b>${ esc( EX.accountName( a ) ) }</b><small>${ esc( a.currency ) }${ a.archived ? ' · ' + esc( t( 'archivedTag' ) ) : '' }${ a.space ? ' · ' + esc( t( 'sharedTag' ) ) + ' · ' + esc( t( 'role' + EX.role( a ).charAt( 0 ).toUpperCase() + EX.role( a ).slice( 1 ) ) ) : '' }</small></span><span class="a">${ esc( money( EX.balance( a ) / 100, a.currency ) ) }</span></button></li>` ).join( '' ) }</ul>
 			<div class="btn-row"><button type="button" class="btn btn-primary" data-act="add-wallet">${ UI.icon( 'plus', 20 ) } ${ esc( t( 'walletAdd' ) ) }</button><button type="button" class="btn btn-ghost" data-act="join-wallet">${ UI.icon( 'users', 20 ) } ${ esc( t( 'joinTitle' ) ) }</button></div>`;
 	}
 	function categoriesView() {
@@ -378,7 +385,7 @@
 		const u = EX.auth.user() || {};
 		const signed = EX.auth.isSignedIn();
 		return `<button type="button" class="profile" data-more="account"><span class="avatar big${ signed ? ' on' : '' }">${ signed ? `<span class="who">${ esc( ( u.email || '?' ).charAt( 0 ).toUpperCase() ) }</span>` : UI.icon( 'user-circle', 40 ) }</span><span class="mid"><b>${ esc( signed ? u.email : t( 'signIn' ) ) }</b><small>${ signed ? syncLine() : esc( t( 'rowAccountGuest' ) ) }</small></span>${ chev }</button>
-			<div class="list mlist">${ row( 'wallets', 'wallet', 'teal', t( 'walletsTitle' ), t( 'ovManage' ) ) }<button type="button" class="mrow" data-go="plan">${ UI.ci( 'target', 'pink', 40 ) }<span class="mid"><b>${ esc( t( 'planTitle' ) ) }</b><small>${ esc( t( 'planMoreSub' ) ) }</small></span>${ UI.icon( 'chevron-right', 18 ) }</button>${ row( 'categories', 'tag', 'purple', t( 'catsTitle' ) ) }${ row( 'reminders', 'bell', 'amber', t( 'rowReminders' ) ) }${ row( 'data', 'database-export', 'blue', t( 'rowData' ) ) }${ row( 'appearance', 'palette', 'pink', t( 'rowAppearance' ) ) }${ UI.isStandalone() ? '' : row( 'install', 'device-mobile', 'green', t( 'rowInstall' ) ) }${ row( 'about', 'info-circle', 'gray', t( 'rowAbout' ) ) }</div>`;
+			<div class="list mlist">${ row( 'wallets', 'wallet', 'teal', t( 'walletsTitle' ), t( 'ovManage' ) ) }<button type="button" class="mrow" data-go="plan">${ UI.ci( 'target', 'pink', 40 ) }<span class="mid"><b>${ esc( t( 'planTitle' ) ) }${ EXA.goalsDiscovery() }</b><small>${ esc( t( 'planMoreSub' ) ) }</small></span>${ UI.icon( 'chevron-right', 18 ) }</button>${ row( 'categories', 'tag', 'purple', t( 'catsTitle' ) ) }${ row( 'reminders', 'bell', 'amber', t( 'rowReminders' ) ) }${ row( 'data', 'database-export', 'blue', t( 'rowData' ) ) }${ row( 'appearance', 'palette', 'pink', t( 'rowAppearance' ) ) }${ UI.isStandalone() ? '' : row( 'install', 'device-mobile', 'green', t( 'rowInstall' ) ) }${ row( 'about', 'info-circle', 'gray', t( 'rowAbout' ) ) }</div>`;
 	};
 
 	/** The whole content of the main column for the current screen. */

@@ -12,7 +12,7 @@
 	const $ = ( s, r = document ) => r.querySelector( s );
 	const $$ = ( s, r = document ) => [ ...r.querySelectorAll( s ) ];
 	const toast = UI.toast;
-	window.EXPENITY_VERSION = '0.4';
+	window.EXPENITY_VERSION = '0.5';
 
 	/* ------------------------------------------------------------------ Drawing the shell */
 
@@ -45,6 +45,7 @@
 	EXA.applyMotion = () => { const m = S().device.motion || 'auto'; if ( m === 'auto' ) delete document.documentElement.dataset.motion; else document.documentElement.dataset.motion = m; try { if ( m === 'auto' ) localStorage.removeItem( 'expenity.motion' ); else localStorage.setItem( 'expenity.motion', m ); } catch ( e ) { /* ignore */ } };
 	function go( view, more = 'root' ) {
 		st.view = view; st.more = more; st.sel = null;
+		if ( view === 'plan' ) { S().device.goalsDiscovered = true; EX.persist(); }
 		if ( view !== 'activity' ) { st.searchOpen = false; st.txFilter.q = ''; }
 		$( '#view' ).dataset.key = '';
 		render();
@@ -64,13 +65,27 @@
 	const motionOn = () => { const m = document.documentElement.dataset.motion; return m === 'full' || ( m !== 'off' && m !== 'reduced' && ! window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches ); };
 	EXA.motionOn = motionOn;
 	/** Numbers roll up from zero when a screen opens. The real text is put back at the end, so nothing depends on the animation. */
+	const counters = new WeakMap();
 	function countUp( el ) {
+		const previous = counters.get( el );
+		if ( previous ) { cancelAnimationFrame( previous.frame ); el.textContent = previous.text; }
 		if ( ! motionOn() ) return;
-		const to = Number( el.dataset.count ), cur = el.dataset.cur, orig = el.textContent, t0 = performance.now(), dur = 850;
-		if ( ! Number.isFinite( to ) || ! to ) return;
-		const tick = ( now ) => { const p = Math.min( 1, ( now - t0 ) / dur ), e = 1 - Math.pow( 1 - p, 3 ); el.textContent = p < 1 ? money( to * e, cur ) : orig; if ( p < 1 && el.isConnected ) requestAnimationFrame( tick ); else el.textContent = orig; };
-		requestAnimationFrame( tick );
+		const target = Math.round( Number( el.dataset.count ) * 100 ), cur = el.dataset.cur;
+		if ( ! Number.isSafeInteger( target ) || ! target ) return;
+		const state = { text: el.textContent, frame: 0, start: null, last: 0 };
+		counters.set( el, state );
+		const tick = ( now ) => {
+			if ( counters.get( el ) !== state || ! el.isConnected ) return;
+			if ( state.start === null ) state.start = now;
+			const p = Math.max( 0, Math.min( 1, ( now - state.start ) / 850 ) );
+			const cents = Math.min( Math.abs( target ), Math.max( state.last, Math.floor( Math.abs( target ) * ( 1 - Math.pow( 1 - p, 3 ) ) ) ) );
+			state.last = cents;
+			el.textContent = p < 1 && motionOn() ? money( Math.sign( target ) * cents / 100, cur ) : state.text;
+			if ( p < 1 && motionOn() ) state.frame = requestAnimationFrame( tick ); else counters.delete( el );
+		};
+		state.frame = requestAnimationFrame( tick );
 	}
+	EXA.enter = enter;
 	async function loadDevices() {
 		if ( ! EX.auth.isSignedIn() ) return;
 		const r = await EX.auth.devices();
@@ -174,6 +189,7 @@
 			case 'rm-session': { const r = await EX.auth.revokeSession( el.dataset.id ); if ( r.ok ) { toast( t( 'tDeviceOut' ) ); loadDevices(); } else toast( EXA.errText( r.error ) ); break; }
 			case 'new-codes': { const r = await EX.auth.regenerateCodes(); if ( r.ok ) EXA.showCodes( r.recoveryCodes, () => render() ); else toast( EXA.errText( r.error ) ); break; }
 			case 'flip-hero': st.heroFlip = ! el.classList.contains( 'flipped' ); el.classList.toggle( 'flipped', st.heroFlip ); el.setAttribute( 'aria-pressed', String( st.heroFlip ) ); UI.haptic(); break;
+			case 'delete-photos': await EXA.photos.deleteAll(); break;
 			case 'check-update': checkUpdate( el ); break;
 			case 'apply-update': try { const reg = await navigator.serviceWorker.getRegistration(); if ( reg ) await reg.update(); } catch ( err ) { /* reload anyway */ } location.reload(); break;
 			case 'sign-out': {
@@ -222,6 +238,7 @@
 		EXA.applyMotion();
 		render();
 		EXA.flow.init();
+		if ( ! EXA.flow.active() ) enter();
 		EXA.tryJoin();
 		EXA.push.check();
 		checkNotifications();
@@ -245,6 +262,7 @@
 			if ( e.target.id === 'authLogin' ) { EXA.authLogin(); return; }
 			if ( EXA.flow.onClick( e ) || EXA.flow.onStepClick( e ) || EXA.pushClick( e ) || EXA.ideasClick( e ) || EXA.shareClick( e ) || EXA.planClick( e ) || EXA.repClick( e ) ) return;
 			let el;
+			if ( ( el = e.target.closest( '[data-income-mode]' ) ) ) { st.incomeMode = el.dataset.incomeMode; render(); return; }
 			if ( ( el = e.target.closest( '[data-go]' ) ) ) { UI.closeSheet(); go( el.dataset.go ); return; }
 			if ( ( el = e.target.closest( '[data-more]' ) ) ) { st.view = 'more'; st.more = el.dataset.more; render(); $( '#view' ).scrollTop = 0; if ( st.more === 'account' ) loadDevices(); return; }
 			if ( ( el = e.target.closest( '[data-lang]' ) ) ) { EX.setLang( el.dataset.lang ); return; }
