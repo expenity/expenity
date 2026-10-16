@@ -81,4 +81,4 @@ English is the default. Greek is complete (app, help center, website). The gloss
 
 ## Licence
 
-GPL-2.0-or-later. By [George Stathopoulos](https://george-stathopoulos.github.io/). See the other projects there.
+Application code: GPL-2.0-or-later. Third-party theme artwork has separate terms listed in [artwork credits](assets/themes/ARTWORK.md). By [George Stathopoulos](https://george-stathopoulos.github.io/). See the other projects there.

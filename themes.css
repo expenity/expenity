@@ -176,3 +176,17 @@
 :root[data-skin=vader] .hero{background-image:radial-gradient(circle at 70% 16%,#ffffff99 0 1px,transparent 1.8px),radial-gradient(circle at 87% 39%,#ffffff66 0 1px,transparent 1.6px),radial-gradient(circle at 54% 70%,#ffffff55 0 .7px,transparent 1.6px),radial-gradient(circle at 15% 90%,#ffffff66 0 1px,transparent 1.8px),radial-gradient(circle at 36% 54%,#ffffff44 0 .7px,transparent 1.6px),var(--hero-bg)}
 :root[data-skin=vader] .hero::before{content:"";position:absolute;pointer-events:none;right:-45px;top:75px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle at 25% 20%,#585858,#171717 33%,#050505 62%);box-shadow:inset 4px 1px 4px #ffffff66;opacity:.35;z-index:-1}
 :root[data-skin=vader] .hero::after{animation-delay:-4s;opacity:.5}
+/* User-selected portrait: locally bundled; grayscale is limited to this decorative artwork. */
+:root[data-skin=vader] .hero-flip{position:relative;isolation:isolate;margin-top:156px}
+:root[data-skin=vader] .hero-flip>.hero{position:relative;z-index:1}
+:root[data-skin=vader] .hero-flip::before{content:"";position:absolute;pointer-events:none;right:16px;bottom:calc(100% - 27px);width:156px;height:190px;background:url('assets/themes/vader-portrait-v1.webp') center 18%/cover no-repeat;filter:grayscale(1) contrast(1.65) brightness(1.12);mix-blend-mode:screen;mask-image:linear-gradient(to right,transparent,#000 18% 82%,transparent);transform-origin:50% 100%;animation:vader-breathe 5s ease-in-out infinite;z-index:0}
+:root[data-skin=vader] #view.enter .hero-flip:not(.vader-retreated)::before{animation:vader-emerge 1s .15s both}
+:root[data-skin=vader] .hero-flip.vader-retreated::before{animation:vader-retreat .85s ease-in forwards}
+@keyframes vader-breathe{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-3px) scale(1.015)}}
+@keyframes vader-emerge{from{opacity:0;transform:translateY(75px) rotateY(-35deg)}to{opacity:1;transform:translateY(0) rotateY(0)}}
+@keyframes vader-retreat{0%{opacity:1;transform:translateY(0) rotateY(0)}45%{opacity:.8;transform:translateY(12px) rotateY(65deg)}100%{opacity:0;transform:translateY(115px) rotateY(85deg)}}
+:root[data-fun-motion=still][data-skin=vader] .hero-flip{margin-top:4px}
+:root[data-fun-motion=still][data-skin=vader] .hero-flip::before{display:none}
+:root[data-skin=vader] :is(.dash-small,.dash-medium,.dashboard-editing) .hero-flip{margin-top:4px}
+:root[data-skin=vader] :is(.dash-small,.dash-medium,.dashboard-editing) .hero-flip::before{display:none}
+:root:has(dialog[open])[data-skin=vader] .hero-flip::before{visibility:hidden}

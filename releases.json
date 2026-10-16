@@ -1,6 +1,20 @@
 {
-  "version": "0.12.2",
+  "version": "0.12.3",
   "releases": [
+    {
+      "version": "0.12.3",
+      "date": "2026-10-17",
+      "en": [
+        "New Vader · Dark orbit theme: pure black, charcoal cards and white controls, with drifting stars, eclipsed planets, an orbital station, fighter patrols and a slow cruiser.",
+        "Includes the user-selected Vader portrait, bundled locally. The larger monochrome character appears behind the balance card, subtly moves and retreats when you flip it. Ordinary redraws do not restart his reveal; returning to Home resets it.",
+        "The theme supports English and Greek, restores on launch, and respects Off/Reduced and system motion preferences. Decorative artwork never intercepts taps or changes records. User receipt photos keep their original colors."
+      ],
+      "el": [
+        "Νέο θέμα Vader · Σκοτεινή τροχιά: απόλυτο μαύρο, ανθρακί κάρτες και λευκά χειριστήρια, με κινούμενα αστέρια, σκιασμένους πλανήτες, διαστημικό σταθμό, καταδιωκτικά και ένα αργό καταδρομικό.",
+        "Περιλαμβάνει την εικόνα του Vader που επέλεξε ο χρήστης, αποθηκευμένη μέσα στην εφαρμογή. Ο μεγαλύτερος ασπρόμαυρος χαρακτήρας εμφανίζεται πίσω από την κάρτα υπολοίπου, κινείται διακριτικά και αποσύρεται όταν τη γυρίζετε. Δεν εμφανίζεται ξανά σε μια απλή ανανέωση της οθόνης· η επιστροφή στην Αρχική επαναφέρει την κίνηση.",
+        "Το θέμα υποστηρίζει ελληνικά και αγγλικά, διατηρείται στο άνοιγμα και τηρεί την απενεργοποιημένη/μειωμένη κίνηση και τις προτιμήσεις της συσκευής. Τα διακοσμητικά δεν εμποδίζουν τα πατήματα ούτε αλλάζουν εγγραφές. Οι φωτογραφίες αποδείξεων διατηρούν τα αρχικά χρώματά τους."
+      ]
+    },
     {
       "version": "0.12.2",
       "date": "2026-10-17",
