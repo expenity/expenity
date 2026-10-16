@@ -180,8 +180,8 @@
 :root[data-skin=vader] .hero-flip{position:relative;isolation:isolate;margin-top:156px}
 :root[data-skin=vader] .hero-flip>.hero{position:relative;z-index:1}
 :root[data-skin=vader] .hero-flip::before{content:"";position:absolute;pointer-events:none;right:16px;bottom:calc(100% - 27px);width:156px;height:190px;background:url('assets/themes/vader-portrait-v1.webp') center 18%/cover no-repeat;filter:grayscale(1) contrast(1.65) brightness(1.12);mix-blend-mode:screen;mask-image:linear-gradient(to right,transparent,#000 18% 82%,transparent);transform-origin:50% 100%;animation:vader-breathe 5s ease-in-out infinite;z-index:0}
-:root[data-skin=vader] #view.enter .hero-flip:not(.vader-retreated):not(.vader-retreating)::before{animation:vader-emerge 1s .15s both}
-:root[data-skin=vader] .hero-flip.vader-retreating::before{animation:vader-retreat .85s ease-in forwards}
+:root[data-skin=vader] #view.enter .hero-flip:not(.character-retreated):not(.character-retreating)::before{animation:vader-emerge 1s .15s both}
+:root[data-skin=vader] .hero-flip.character-retreating::before{animation:vader-retreat .85s ease-in forwards}
 @keyframes vader-breathe{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-3px) scale(1.015)}}
 @keyframes vader-emerge{from{opacity:0;transform:translateY(75px) rotateY(-35deg)}to{opacity:1;transform:translateY(0) rotateY(0)}}
 @keyframes vader-retreat{0%{opacity:1;transform:translateY(0) rotateY(0)}45%{opacity:.8;transform:translateY(12px) rotateY(65deg)}100%{opacity:0;transform:translateY(115px) rotateY(85deg)}}
@@ -191,7 +191,7 @@
 :root[data-skin=vader] :is(.dash-small,.dash-medium,.dashboard-editing) .hero-flip::before{display:none}
 :root:has(dialog[open])[data-skin=vader] .hero-flip::before{visibility:hidden}
 
-:root[data-skin=vader] .hero-flip.vader-retreated::before{opacity:0;animation:none}
+:root[data-skin=vader] .hero-flip.character-retreated::before{opacity:0;animation:none}
 /* Sketchbook revision: actual colored-pencil artwork, including a visible card illustration. */
 :root[data-skin=bricks]{--hero-bg:#fffdf0;--hero-ink:#182d4b;--card-line:#d6cdb5;--shadow:0 3px 0 #5b4c2e20}
 :root[data-skin=bricks] .hero{position:relative;isolation:isolate;overflow:hidden;border:1px solid #b8ad8d;border-bottom:3px double #b8ad8d;box-shadow:2px 4px 0 #79664415}
@@ -203,3 +203,36 @@
 :root[data-skin=bricks][data-fun-motion=still] .hero::after{animation:none}
 :root[data-skin=bricks] .hero-back::after{display:none}
 :root[data-skin=bricks] :is(.dash-small,.dash-medium) .hero::after{display:none}
+
+/* Character illustrations belong to the balance card, never navigation or data controls. */
+:root:is([data-skin=mario],[data-skin=minnie]) .hero-flip{position:relative;isolation:isolate;margin-top:178px}
+:root:is([data-skin=mario],[data-skin=minnie]) .hero-flip>.hero{position:relative;z-index:1}
+:root:is([data-skin=mario],[data-skin=minnie]) .hero-flip::before{content:"";position:absolute;pointer-events:none;right:10px;bottom:calc(100% - 22px);width:214px;height:206px;background:var(--card-character-image) center/290px 290px no-repeat;mix-blend-mode:multiply;transform-origin:50% 100%;animation:card-character-nudge 6s ease-in-out infinite;z-index:0}
+:root[data-skin=mario]{--card-character-image:url('assets/themes/mario-pencil-v4.png')}
+:root[data-skin=minnie]{--card-character-image:url('assets/themes/mickey-minnie-pencil-v1.webp')}
+:root[data-skin=minnie] .hero-flip::before{right:8px;width:248px;height:206px;background-size:248px auto;background-position:center 34%;mask-image:linear-gradient(to right,transparent,#000 5% 95%,transparent)}
+:root:is([data-skin=mario],[data-skin=minnie]) #view.enter .hero-flip:not(.character-retreated):not(.character-retreating)::before{animation:vader-emerge 1s .15s both}
+:root:is([data-skin=mario],[data-skin=minnie]) .hero-flip.character-retreating::before{animation:vader-retreat .85s ease-in forwards}
+:root:is([data-skin=mario],[data-skin=minnie]) .hero-flip.character-retreated::before{opacity:0;animation:none}
+@keyframes card-character-nudge{0%,45%,100%{transform:translateY(0) rotate(0)}54%{transform:translateY(-4px) rotate(-2deg)}62%{transform:translateY(0) rotate(1deg)}72%{transform:translateY(-2px) rotate(-1deg)}}
+:root:is([data-skin=mario],[data-skin=minnie])[data-fun-motion=still] .hero-flip{margin-top:4px}
+:root:is([data-skin=mario],[data-skin=minnie])[data-fun-motion=still] .hero-flip::before{display:none}
+:root:is([data-skin=mario],[data-skin=minnie]) :is(.dash-small,.dash-medium,.dashboard-editing) .hero-flip{margin-top:4px}
+:root:is([data-skin=mario],[data-skin=minnie]) :is(.dash-small,.dash-medium,.dashboard-editing) .hero-flip::before{display:none}
+:root:has(dialog[open]):is([data-skin=mario],[data-skin=minnie]) .hero-flip::before{visibility:hidden}
+@media(max-width:359px){:root[data-skin=minnie] .hero-flip::before{right:0;width:236px;background-size:236px auto}}
+/* Blend the source paper with the selected theme instead of showing white rectangles. */
+:root:is([data-skin=mario],[data-skin=minnie]) .hero-flip::before{background-color:var(--bg);background-blend-mode:multiply;mix-blend-mode:normal;mask-image:linear-gradient(to right,transparent,#000 5% 95%,transparent)}
+
+:root[data-skin=mario] .hero-flip::before{width:214px;height:206px;background-size:214px auto;background-position:center top}
+
+/* User-supplied transparent sketches; decorative and never interactive. */
+:root[data-skin=mario] .hero-flip::before{background-size:auto 206px;background-position:center;background-color:transparent;background-blend-mode:normal;mask-image:none}
+.mario-scene{background:radial-gradient(circle at 10% 15%,#ffffff80,transparent 48%)}
+.mario-scene>i{width:clamp(100px,17vw,190px);height:clamp(120px,20vw,220px);background:center/contain no-repeat;opacity:.16;animation:fun-brick-float 19s ease-in-out infinite}
+.mario-scene>.fun-sketch-goomba{left:-24px;top:16%;background-image:url('assets/themes/goomba-pencil-v1.png')}
+.mario-scene>.fun-sketch-mushroom{left:auto;right:-22px;top:47%;background-image:url('assets/themes/mushroom-pencil-v1.png');animation-duration:24s}
+.mario-scene>.fun-sketch-boo{left:-30px;top:76%;background-image:url('assets/themes/boo-pencil-v1.png');animation-duration:27s}
+.mario-scene>.fun-sketch-star{left:auto;right:2%;top:5%;width:90px;height:100px;background-image:url('assets/themes/star-pencil-v1.png');opacity:.24;animation-duration:21s}
+:root:has(dialog[open]) .mario-scene{visibility:hidden}
+:root[data-fun-motion=still] .mario-scene>i{animation:none}

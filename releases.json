@@ -1,6 +1,20 @@
 {
-  "version": "0.12.4",
+  "version": "0.12.5",
   "releases": [
+    {
+      "version": "0.12.5",
+      "date": "2026-10-17",
+      "en": [
+        "Mario uses your supplied pencil artwork on the balance card, with Goomba, mushroom, Boo and star sketches gently floating in the background. Mickey and Minnie also appear in pencil above their balance card.",
+        "Characters gently move and retreat when the balance card is flipped, staying hidden through redraws and respecting motion settings and compact layouts.",
+        "Scrollbars are hidden throughout the app, including sheets. Touch, wheel and keyboard scrolling remain available."
+      ],
+      "el": [
+        "Ο Mario εμφανίζεται με το σχέδιο μολυβιού που παραχωρήσατε στην κάρτα υπολοίπου, με Goomba, μανιτάρι, Boo και αστέρι να αιωρούνται διακριτικά στο φόντο. Ο Mickey και η Minnie εμφανίζονται επίσης με μολύβι πάνω από τη δική τους κάρτα.",
+        "Οι χαρακτήρες κινούνται διακριτικά και κρύβονται όταν γυρίζετε την κάρτα. Παραμένουν κρυμμένοι στις ανανεώσεις και τηρούν τις ρυθμίσεις κίνησης και τις μικρές διατάξεις.",
+        "Οι γραμμές κύλισης κρύβονται σε όλη την εφαρμογή και στα παράθυρα. Η κύλιση με αφή, ποντίκι και πληκτρολόγιο παραμένει διαθέσιμη."
+      ]
+    },
     {
       "version": "0.12.4",
       "date": "2026-10-17",

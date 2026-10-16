@@ -1,0 +1,21 @@
+import {chromium} from 'playwright-core';import {createServer} from 'node:http';import {readFileSync,existsSync} from 'node:fs';import {join,extname} from 'node:path';import assert from 'node:assert/strict';
+const server=createServer((req,res)=>{const f=join(process.cwd(),req.url.split('?')[0]==='/'?'index.html':req.url.split('?')[0]);if(!existsSync(f)){res.writeHead(404).end();return;}res.setHeader('Content-Type',({'.html':'text/html','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.webp':'image/webp','.json':'application/json'})[extname(f)]||'application/octet-stream');res.end(readFileSync(f));}).listen(0);
+const browser=await chromium.launch({channel:'chrome'}),page=await browser.newPage({viewport:{width:390,height:844},hasTouch:true,isMobile:true,serviceWorkers:'block'}),errors=[];page.on('pageerror',e=>errors.push(e.message));const ok=(v,m)=>{assert(v,m);console.log('ok',m);};
+try{
+ await page.route('**/api/**',r=>r.abort());await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.skipFlow);await page.evaluate(()=>{EXA.skipFlow();EXA.setMotion('full');const s=EX.state();s.accounts[0].opening='1250';s.device.bannerDismissed=true;s.device.installDismissed=true;EX.save();});
+ for(const [skin,file] of [['mario','mario-pencil-v4.png'],['minnie','mickey-minnie-pencil-v1.webp'],['vader','vader-portrait-v1.webp']]){
+  await page.evaluate(s=>{EXA.go('activity');EXA.setSkin(s);EXA.st.heroFlip=false;EX.setLang('el');EXA.go('home');},skin);await page.waitForTimeout(1200);
+  ok(await page.evaluate(f=>getComputedStyle(document.querySelector('.hero-flip'),'::before').backgroundImage.includes(f),file),skin+' has bundled character artwork');
+  ok(await page.evaluate(()=>{const p=getComputedStyle(document.querySelector('.hero-flip'),'::before');return parseFloat(p.width)>=150&&p.pointerEvents==='none';}),skin+' larger artwork never intercepts taps');
+  if(skin!=='vader')await page.screenshot({path:`/Users/georgestathopoulos/Documents/ChatGPT/Expenity/previews/${skin}-characters.png`});
+  const before=await page.evaluate(()=>JSON.stringify([EX.state().txs,EX.state().bills,EX.state().incomes]));await page.locator('[data-act=flip-hero]').click();await page.waitForTimeout(950);
+  ok(await page.evaluate(()=>document.querySelector('.hero-flip').classList.contains('character-retreated')&&Number(getComputedStyle(document.querySelector('.hero-flip'),'::before').opacity)<.01),skin+' turns aside and hides after flip');
+  await page.evaluate(()=>EXA.render());ok(await page.evaluate(()=>Number(getComputedStyle(document.querySelector('.hero-flip'),'::before').opacity)<.01),skin+' stays hidden on redraw');
+  ok(await page.evaluate(()=>JSON.stringify([EX.state().txs,EX.state().bills,EX.state().incomes]))===before,skin+' animation changes no financial records');
+  await page.evaluate(()=>{EXA.go('activity');EXA.go('home');});ok(await page.locator('.hero-flip.character-retreated').count()===0,skin+' returns on next Home visit');
+  for(const lang of ['en','el'])for(const width of [320,834,1440]){await page.setViewportSize({width,height:900});await page.evaluate(l=>EX.setLang(l),lang);ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),`${skin} ${lang} ${width}px fits`);}
+  await page.setViewportSize({width:390,height:844});await page.evaluate(()=>EXA.setMotion('off'));ok(await page.evaluate(()=>getComputedStyle(document.querySelector('.hero-flip'),'::before').display==='none'),skin+' motion off hides animated character');await page.evaluate(()=>EXA.setMotion('full'));
+ }
+ await page.evaluate(()=>{EXA.go('more','appearance');});ok(await page.evaluate(()=>getComputedStyle(document.querySelector('#view')).scrollbarWidth==='none'),'scrollbars hidden');ok(await page.evaluate(()=>{const v=document.querySelector('#view');v.scrollTop=180;return v.scrollTop>0;}),'hidden scrollbar still allows scrolling');
+ await page.evaluate(()=>EXA.openTx());ok(await page.evaluate(()=>getComputedStyle(document.querySelector('.entry-scroll')).scrollbarWidth==='none'),'dialog scrollbar hidden');ok(!errors.length,'no runtime exceptions');
+}finally{await browser.close();server.close();}
