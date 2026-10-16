@@ -181,17 +181,16 @@
 :root[data-skin=vader] .hero-flip>.hero{position:relative;z-index:1}
 :root[data-skin=vader] .hero-flip::before{content:"";position:absolute;pointer-events:none;right:16px;bottom:calc(100% - 27px);width:156px;height:190px;background:url('assets/themes/vader-portrait-v1.webp') center 18%/cover no-repeat;filter:grayscale(1) contrast(1.65) brightness(1.12);mix-blend-mode:screen;mask-image:linear-gradient(to right,transparent,#000 18% 82%,transparent);transform-origin:50% 100%;animation:vader-breathe 5s ease-in-out infinite;z-index:0}
 :root[data-skin=vader] #view.enter .hero-flip:not(.character-retreated):not(.character-retreating)::before{animation:vader-emerge 1s .15s both}
-:root[data-skin=vader] .hero-flip.character-retreating::before{animation:vader-retreat .85s ease-in forwards}
+:root[data-skin=vader] .hero-flip.character-retreating::before{animation:character-blur-away .85s ease-in forwards}
 @keyframes vader-breathe{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-3px) scale(1.015)}}
 @keyframes vader-emerge{from{opacity:0;transform:translateY(75px) rotateY(-35deg)}to{opacity:1;transform:translateY(0) rotateY(0)}}
-@keyframes vader-retreat{0%{opacity:1;transform:translateY(0) rotateY(0)}45%{opacity:.8;transform:translateY(12px) rotateY(65deg)}100%{opacity:0;transform:translateY(115px) rotateY(85deg)}}
 :root[data-fun-motion=still][data-skin=vader] .hero-flip{margin-top:4px}
 :root[data-fun-motion=still][data-skin=vader] .hero-flip::before{display:none}
 :root[data-skin=vader] :is(.dash-small,.dash-medium,.dashboard-editing) .hero-flip{margin-top:4px}
 :root[data-skin=vader] :is(.dash-small,.dash-medium,.dashboard-editing) .hero-flip::before{display:none}
 :root:has(dialog[open])[data-skin=vader] .hero-flip::before{visibility:hidden}
 
-:root[data-skin=vader] .hero-flip.character-retreated::before{opacity:0;animation:none}
+:root[data-skin=vader] .hero-flip.character-retreated::before{opacity:.12;animation:none;filter:var(--character-base-filter,brightness(1)) blur(6px);transform:none;top:16px;bottom:auto;z-index:2}
 /* Sketchbook revision: actual colored-pencil artwork, including a visible card illustration. */
 :root[data-skin=bricks]{--hero-bg:#fffdf0;--hero-ink:#182d4b;--card-line:#d6cdb5;--shadow:0 3px 0 #5b4c2e20}
 :root[data-skin=bricks] .hero{position:relative;isolation:isolate;overflow:hidden;border:1px solid #b8ad8d;border-bottom:3px double #b8ad8d;box-shadow:2px 4px 0 #79664415}
@@ -212,8 +211,8 @@
 :root[data-skin=minnie]{--card-character-image:url('assets/themes/mickey-minnie-pencil-v1.webp')}
 :root[data-skin=minnie] .hero-flip::before{right:8px;width:248px;height:206px;background-size:248px auto;background-position:center 34%;mask-image:linear-gradient(to right,transparent,#000 5% 95%,transparent)}
 :root:is([data-skin=mario],[data-skin=minnie]) #view.enter .hero-flip:not(.character-retreated):not(.character-retreating)::before{animation:vader-emerge 1s .15s both}
-:root:is([data-skin=mario],[data-skin=minnie]) .hero-flip.character-retreating::before{animation:vader-retreat .85s ease-in forwards}
-:root:is([data-skin=mario],[data-skin=minnie]) .hero-flip.character-retreated::before{opacity:0;animation:none}
+:root:is([data-skin=mario],[data-skin=minnie]) .hero-flip.character-retreating::before{animation:character-blur-away .85s ease-in forwards}
+:root:is([data-skin=mario],[data-skin=minnie]) .hero-flip.character-retreated::before{opacity:.12;animation:none;filter:var(--character-base-filter,brightness(1)) blur(6px);transform:none;top:16px;bottom:auto;z-index:2}
 @keyframes card-character-nudge{0%,45%,100%{transform:translateY(0) rotate(0)}54%{transform:translateY(-4px) rotate(-2deg)}62%{transform:translateY(0) rotate(1deg)}72%{transform:translateY(-2px) rotate(-1deg)}}
 :root:is([data-skin=mario],[data-skin=minnie])[data-fun-motion=still] .hero-flip{margin-top:4px}
 :root:is([data-skin=mario],[data-skin=minnie])[data-fun-motion=still] .hero-flip::before{display:none}
@@ -242,3 +241,7 @@
 :root:is([data-skin=vader],[data-skin=mario],[data-skin=minnie]) .hero-flip.character-collapsed{margin-top:4px}
 :root[data-fun-motion=still] .hero-flip{transition:none}
 @media(prefers-reduced-motion:reduce){:root:is([data-skin=vader],[data-skin=mario],[data-skin=minnie]) .hero-flip{transition:none}}
+
+/* Keep a soft character watermark rather than turning or removing the artwork. */
+:root[data-skin=vader] .hero-flip{--character-base-filter:grayscale(1) contrast(1.65) brightness(1.12)}
+@keyframes character-blur-away{from{opacity:1;filter:var(--character-base-filter,brightness(1)) blur(0);transform:none}to{opacity:.12;filter:var(--character-base-filter,brightness(1)) blur(6px);transform:none}}
