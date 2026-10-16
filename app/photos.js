@@ -43,13 +43,13 @@
   const b=e.target.closest('[data-photo-add],[data-photo-remove],[data-photo-view]');if(!b)return;e.preventDefault();e.stopImmediatePropagation();
   const slot=b.closest('.photo-slot');
   if(b.hasAttribute('data-photo-add')){if(!EX.auth.isSignedIn()){UI.toast(t('photoSignIn'));return;}slot.querySelector('input[type=file]').click();}
-  else if(b.hasAttribute('data-photo-remove')){if(slot.dataset.busy)return;slot.outerHTML=P.slot();}
+  else if(b.hasAttribute('data-photo-remove')){if(slot.dataset.busy)return;slot.outerHTML=P.slot();EX.emit('photochange');}
   else view(b.dataset.photoView);
  },true);
  document.addEventListener('change',async e=>{
   if(!e.target.matches('.photo-file'))return;const slot=e.target.closest('.photo-slot'),file=e.target.files[0];if(!file)return;
   const status=slot.querySelector('.photo-status');P.busy++;slot.dataset.busy='true';status.textContent=t('photoWorking');
-  try{const data=await P.compress(file);if(!slot.isConnected)return;const r=await EX.api('POST','/api/photos',{data});if(!r.ok)throw Error(r.error==='photo_limit'?'photoLimit':'photoUnavailable');if(slot.isConnected)slot.outerHTML=P.slot(r.json.id);}
+  try{const data=await P.compress(file);if(!slot.isConnected)return;const r=await EX.api('POST','/api/photos',{data});if(!r.ok)throw Error(r.error==='photo_limit'?'photoLimit':'photoUnavailable');if(slot.isConnected){slot.outerHTML=P.slot(r.json.id);EX.emit('photochange');}}
   catch(err){if(status.isConnected)status.textContent=t(err.message==='photoType'?'photoType':err.message==='photoLimit'?'photoLimit':'photoUnavailable');}
   finally{P.busy--;delete slot.dataset.busy;e.target.value='';}
  });

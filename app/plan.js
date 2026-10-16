@@ -72,7 +72,7 @@
 	};
 	P.receive = ( inc, amount, account ) => {
 		const before = JSON.parse( JSON.stringify( inc ) );
-		const tx = { id: uid(), type: 'income', amount: String( amount ), account: account || inc.account || ( EX.activeAccounts()[ 0 ] || {} ).id, category: inc.category || 'salary', date: today(), name: inc.name, incomeId: inc.id, due: inc.next, photo: inc.photo || '', tags: inc.tags || [], scheduleBefore: {next: before.next, done: !!before.done} };
+		const tx = { id: uid(), type: 'income', amount: String( amount ), account: account || inc.account || ( EX.activeAccounts()[ 0 ] || {} ).id, category: inc.category || 'salary', date: today(), name: inc.name, note:inc.note||'', incomeId: inc.id, due: inc.next, photo: inc.photo || '', tags: inc.tags || [], scheduleBefore: {next: before.next, done: !!before.done} };
 		S().txs.push( tx );
 		const nx = EX.nextAfter( inc, inc.next );
 		if ( nx ) inc.next = nx; else inc.done = true;
@@ -164,7 +164,7 @@
 
 	/* ------------------------------------------------------------------ Sheets */
 
-	const wallets = () => EX.activeAccounts();
+	const wallets = () => EX.writableAccounts();
 	const walletOpts = ( sel ) => wallets().map( ( a ) => `<option value="${ esc( a.id ) }"${ sel === a.id ? ' selected' : '' }>${ esc( EX.accountName( a ) ) } (${ esc( a.currency ) })</option>` ).join( '' );
 	let editing = null;
 	function openBudget( b ) {
@@ -201,17 +201,19 @@
 			<label class="f"><span>${ esc( t( 'goalFrom' ) ) }</span><select name="account">${ walletOpts( ( wallets()[ 0 ] || {} ).id ) }</select></label>
 			${ EXA.tagsField(typeof v !== 'undefined' ? v.tags : g.tags) }${ EXA.photos.slot( typeof v !== 'undefined' ? v.photo : '' ) }<p class="err" id="planErr" role="alert" hidden></p><div class="btn-row"><button type="submit" class="btn btn-primary wide">${ esc( t( 'saveTx' ) ) }</button></div></form>`, { cls: 'small' } );
 	}
-	function openIncome( inc ) {
+	function openIncome( inc, prefill = {} ) {
 		editing = inc || null;
-		const v = inc || { name: '', amount: '', account: ( wallets()[ 0 ] || {} ).id, repeat: 'monthly', next: addDays( today(), 7 ), category: 'salary' };
+		const defaultWallet=wallets().find(a=>a.id===S().settings.defaultAccount)?.id||(wallets().length===1?wallets()[0].id:'');
+		const v = inc || { name: '', amount: '', account: defaultWallet, repeat: 'monthly', next: addDays( today(), 7 ), category: 'salary', ...prefill };
 		UI.openSheet( `${ head( t( inc ? 'incEdit' : 'incAdd' ) ) }<form id="incomeForm" novalidate class="sheet-pad">
 			<label class="f"><span>${ esc( t( 'incName' ) ) }</span><input name="iname" maxlength="60" autocomplete="off" value="${ esc( v.name ) }"></label>
-			<label class="f"><span>${ esc( t( 'incTo' ) ) }</span><select name="account">${ walletOpts( v.account ) }</select></label>
+			<label class="f"><span>${ esc( t( 'incTo' ) ) }</span><select name="account"><option value="">${esc(t('entryChooseWallet'))}</option>${ walletOpts( v.account ) }</select></label>
 			<label class="f"><span>${ esc( t( 'fAmount' ) ) }</span><input name="amount" inputmode="decimal" autocomplete="off" placeholder="0.00" value="${ esc( v.amount ) }"></label>
 			<div class="grid2"><label class="f"><span>${ esc( t( 'incNext' ) ) }</span><input name="next" type="date" value="${ esc( v.next ) }"></label>
 			<label class="f"><span>${ esc( t( 'fRepeats' ) ) }</span><select name="repeat">${ EX.REPEATS.map( ( r ) => `<option value="${ r }"${ v.repeat === r ? ' selected' : '' }>${ esc( t( 'r' + r.charAt( 0 ).toUpperCase() + r.slice( 1 ) ) ) }</option>` ).join( '' ) }</select></label></div>
+			<input type="hidden" name="incomeCategory" value="${esc(v.category||'salary')}"><label class="f"><span>${esc(t('fNote'))}</span><textarea name="incomeNote" maxlength="400" rows="2">${esc(v.note||v.notes||'')}</textarea></label>
 			${ EXA.tagsField(typeof v !== 'undefined' ? v.tags : g.tags) }${ EXA.photos.slot( typeof v !== 'undefined' ? v.photo : '' ) }<p class="err" id="planErr" role="alert" hidden></p>
-			<div class="btn-row sticky-actions">${ inc ? `<button type="button" class="btn btn-danger" data-plan="del-income">${ esc( t( 'del' ) ) }</button>` : '' }<span class="sp"></span><button type="submit" class="btn btn-primary">${ esc( t( 'saveTx' ) ) }</button></div></form>`, { cls: 'small' } );
+			<div class="btn-row sticky-actions">${ inc ? `<button type="button" class="btn btn-danger" data-plan="del-income">${ esc( t( 'del' ) ) }</button>` : '' }<span class="sp"></span><button type="submit" class="btn btn-primary">${ esc( t(inc?'entrySaveChanges':'entryScheduleIncome') ) }</button></div></form>`, { cls: 'small' } );
 	}
 	EXA.openBudget = openBudget; EXA.openGoal = openGoal; EXA.openIncome = openIncome; EXA.openContribute = openContribute;
 
@@ -265,8 +267,9 @@
 			if ( ! name ) return err( 'errNameReq' );
 			if ( ! ok( amount ) ) return err( 'errAmount' );
 			if ( ! el.next.value ) return err( 'errNext' );
-			const acc = EX.account( el.account.value ) || {};
-			const v = { tags: EXA.readTags(f), photo: el.photo.value, name, amount, account: el.account.value, currency: acc.currency || main(), repeat: el.repeat.value, next: el.next.value, day: parse( el.next.value ).getDate(), category: 'salary' };
+			const acc = EX.account( el.account.value );
+			if(!acc||!wallets().some(a=>a.id===acc.id))return err('entryWalletGone');
+			const v = { tags: EXA.readTags(f), photo: el.photo.value, name, amount, account: el.account.value, currency: acc.currency || main(), repeat: el.repeat.value, next: el.next.value, day: parse( el.next.value ).getDate(), category: el.incomeCategory.value||'salary', note:el.incomeNote.value.trim() };
 			if ( editing ) { Object.assign( editing, v ); delete editing.done; } else S().incomes.push( Object.assign( { id: uid() }, v ) );
 		} else return false;
 		UI.closeSheet(); EX.save();
