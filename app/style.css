@@ -370,3 +370,37 @@ body, .card, .list, .hero, .wc, .promo, .tabbar, .appbar, .rail, .chip, .theme-c
 
 /* Swipe actions are for phones: on tablets and computers a click opens the details (panel or sheet) with the same buttons */
 @media (min-width: 600px) { .sw-back { display: none; } .sw-front { touch-action: auto; } }
+
+/* Setup: choosing aims and goals */
+.aim { position: relative; padding-right: 48px; } .aim .tick { position: absolute; right: 12px; top: 50%; width: 26px; height: 26px; margin-top: -13px; display: grid; place-items: center; border: 2px solid var(--line); border-radius: 50%; color: var(--accent-ink); } .aim.on .tick { background: var(--accent); border-color: var(--accent); }
+.multi-hint { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; padding: 8px 12px; border-radius: calc(12px * var(--rk)); background: var(--accent-soft); color: var(--accent-2); font-weight: 700; font-size: 14px; }
+.grows { display: grid; gap: 8px; margin: 8px 0; } .grow { display: grid; grid-template-columns: auto minmax(0, 1fr) 96px auto; gap: 8px; align-items: center; padding: 8px; border: 1.5px solid var(--line); border-radius: calc(16px * var(--rk)); background: var(--surface); } .grow input { min-width: 0; min-height: 46px; padding: 0 10px; border: 1.5px solid var(--line); border-radius: calc(12px * var(--rk)); background: var(--bg); font-size: 16px; color: var(--ink); }
+
+/* ---------------------------------------------------------------- More effects (all off with the Animations setting) */
+/* A balance card that flips over to this month's summary */
+.hero-flip { display: grid; perspective: 1400px; margin: 4px 0 6px; cursor: pointer; border-radius: calc(28px * var(--rk)); outline-offset: 3px; } .hero-flip > .hero { grid-area: 1 / 1; margin: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; transition: transform 0.75s cubic-bezier(0.3, 0.9, 0.3, 1); }
+.hero-flip .hero-back { transform: rotateY(180deg); } .hero-flip.flipped .hero-front { transform: rotateY(-180deg); } .hero-flip.flipped .hero-back { transform: rotateY(0); }
+.hero-flip .flip-ic { position: absolute; right: 14px; top: 14px; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: rgba(255, 255, 255, 0.18); opacity: 0.9; } .hero-flip:hover .flip-ic svg, .hero-flip:focus-visible .flip-ic svg { transform: rotate(180deg); } .flip-ic svg { transition: transform 0.5s; }
+.mini-bars { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; height: 64px; margin: 2px 0 12px; align-items: end; } .mini-bars > div { position: relative; display: flex; justify-content: center; align-items: flex-end; gap: 3px; height: 100%; padding-bottom: 14px; } .mini-bars span { width: 8px; border-radius: 3px 3px 1px 1px; } .mb-in { background: rgba(255, 255, 255, 0.95); } .mb-out { background: rgba(255, 255, 255, 0.45); } .mini-bars em { position: absolute; bottom: 0; left: 0; right: 0; text-align: center; font-style: normal; font-size: 10px; opacity: 0.85; }
+.hero-back > b { margin-bottom: 8px; }
+/* Fade and slide in: list rows one after another, wallet cards popping in, bars and rings drawing themselves */
+#view.enter .list > li { animation: rowin 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both; } #view.enter .list > li:nth-child(1) { animation-delay: 0.08s; } #view.enter .list > li:nth-child(2) { animation-delay: 0.14s; } #view.enter .list > li:nth-child(3) { animation-delay: 0.2s; } #view.enter .list > li:nth-child(4) { animation-delay: 0.26s; } #view.enter .list > li:nth-child(n+5) { animation-delay: 0.32s; }
+@keyframes rowin { from { opacity: 0; transform: translateX(-14px); } }
+#view.enter .wc { animation: cardpop 0.5s cubic-bezier(0.3, 1.4, 0.5, 1) both; } #view.enter .wc:nth-child(2) { animation-delay: 0.06s; } #view.enter .wc:nth-child(3) { animation-delay: 0.12s; } #view.enter .wc:nth-child(4) { animation-delay: 0.18s; } #view.enter .wc:nth-child(n+5) { animation-delay: 0.24s; }
+@keyframes cardpop { from { opacity: 0; transform: scale(0.85) translateY(10px); } }
+#view.enter .pbar i { animation: barin 0.8s 0.15s cubic-bezier(0.2, 0.8, 0.2, 1) both; } @keyframes barin { from { width: 0; } }
+#view.enter .rg-fg { animation: ringin 1s 0.15s cubic-bezier(0.2, 0.8, 0.2, 1) both; } @keyframes ringin { from { stroke-dasharray: 0 400; } }
+#view.enter .donut-svg .slice { animation: slicein 0.9s both; } #view.enter .donut-svg .slice:nth-of-type(2) { animation-delay: 0.08s; } #view.enter .donut-svg .slice:nth-of-type(3) { animation-delay: 0.16s; } #view.enter .donut-svg .slice:nth-of-type(n+4) { animation-delay: 0.24s; } @keyframes slicein { from { opacity: 0; stroke-width: 0; } }
+#view.enter .idea, #view.enter .bcard, #view.enter .gcard { animation: rise 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+/* A row that is deleted fades and collapses; one that is paid turns green and slides away */
+.sw.leaving { animation: leave 0.28s ease forwards; } @keyframes leave { to { opacity: 0; transform: translateX(-40px); max-height: 0; } }
+.sw.paid-out .sw-front { background: color-mix(in srgb, var(--ok) 35%, var(--surface)); transition: background 0.15s, transform 0.28s ease-in; transform: translateX(110%) !important; } .sw.paid-out { animation: paidfade 0.28s ease forwards; } @keyframes paidfade { 60% { opacity: 1; } to { opacity: 0; } }
+/* The tab you pressed bounces; the + button nudges until there is something to show */
+.tab svg.pop, .rail-item svg.pop { animation: tabpop 0.45s cubic-bezier(0.3, 1.6, 0.5, 1); } @keyframes tabpop { 40% { transform: translateY(-5px) scale(1.2); } }
+.fab.nudge { animation: nudge 2.6s ease-in-out infinite; } @keyframes nudge { 0%, 60%, 100% { transform: scale(1); box-shadow: 0 10px 20px -8px rgba(7, 127, 95, 0.8); } 70% { transform: scale(1.1); } 80% { transform: scale(1); box-shadow: 0 0 0 14px rgba(20, 176, 138, 0); } }
+/* A calm drift in the balance card, and a lift on cards under a mouse */
+.hero-front { background-size: 160% 160%; animation: drift 14s ease-in-out infinite alternate; } @keyframes drift { from { background-position: 0% 40%; } to { background-position: 100% 60%; } }
+@media (hover: hover) and (pointer: fine) { .card, .bcard, .gcard, .idea, .wc { transition: transform 0.2s, box-shadow 0.2s; } .card:hover, .bcard:hover, .gcard:hover, .idea:hover, .wc:hover { transform: translateY(-3px); } }
+/* Confetti for a goal reached */
+.confetti-burst { position: fixed; inset: 0; z-index: 500; pointer-events: none; overflow: hidden; } .confetti-burst i { position: absolute; left: 50%; top: 45%; width: 9px; height: 14px; border-radius: 2px; animation: burst 1.5s cubic-bezier(0.2, 0.7, 0.3, 1) forwards; } @keyframes burst { from { transform: translate(0, 0) rotate(0); opacity: 1; } 80% { opacity: 1; } to { transform: translate(var(--x), calc(var(--y) + 380px)) rotate(var(--r)); opacity: 0; } }
+:root[data-motion="off"] .hero-flip > .hero, :root[data-motion="reduced"] .hero-flip > .hero { transition: none; }

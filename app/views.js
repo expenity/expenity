@@ -98,7 +98,7 @@
 	};
 	EXA.tabbar = () => {
 		const item = ( [ id, icon, label ] ) => `<button type="button" class="tab${ st.view === id ? ' on' : '' }" data-go="${ id }"${ st.view === id ? ' aria-current="page"' : '' }>${ UI.icon( icon, 26 ) }<span>${ esc( t( label ) ) }</span></button>`;
-		return `${ item( NAV[ 0 ] ) }${ item( NAV[ 1 ] ) }<button type="button" class="fab" data-act="add" aria-label="${ esc( t( 'addNew' ) ) }">${ UI.icon( 'plus', 30 ) }</button>${ item( NAV[ 2 ] ) }${ item( NAV[ 3 ] ) }`;
+		return `${ item( NAV[ 0 ] ) }${ item( NAV[ 1 ] ) }<button type="button" class="fab${ S().txs.length || S().bills.length ? '' : ' nudge' }" data-act="add" aria-label="${ esc( t( 'addNew' ) ) }">${ UI.icon( 'plus', 30 ) }</button>${ item( NAV[ 2 ] ) }${ item( NAV[ 3 ] ) }`;
 	};
 	EXA.rail = () => {
 		const item = ( [ id, icon, label ] ) => `<button type="button" class="rail-item${ st.view === id ? ' on' : '' }" data-go="${ id }"${ st.view === id ? ' aria-current="page"' : '' }>${ UI.icon( icon, 24 ) }<span>${ esc( t( label ) ) }</span></button>`;
@@ -152,8 +152,18 @@
 		const WAL = `<div class="sec-head"><h2>${ esc( t( 'wallets' ) ) }</h2><button type="button" class="link" data-more="wallets">${ esc( t( 'ovManage' ) ) }</button></div>
 			<div class="wallets">${ wallets.map( ( a ) => `<button type="button" class="wc" data-act="edit-wallet" data-id="${ esc( a.id ) }">${ UI.walletCi( a, 36 ) }<span>${ a.space ? UI.icon( 'users', 14 ) + ' ' : '' }${ esc( a.name ) }</span><b>${ esc( money( EX.balance( a ) / 100, a.currency ) ) }</b></button>` ).join( '' ) }<button type="button" class="wc add" data-act="add-wallet">${ UI.icon( 'plus', 26 ) }<span>${ esc( t( 'newWallet' ) ) }</span></button></div>`;
 		const recent = S().txs.slice().sort( ( a, b ) => ( a.date < b.date ? 1 : a.date > b.date ? -1 : 0 ) ).slice( 0, 5 );
-		return `<section class="hero" aria-label="${ esc( t( 'balanceAria' ) ) }"><small>${ esc( t( 'ovBalance' ) ) }</small><b>${ esc( total ) }</b>
-				<div class="hero-tiles"><div><span class="k">${ UI.icon( 'arrow-down-left', 18 ) } ${ esc( t( 'ovIncome' ) ) }</span><b>${ esc( inc ) }</b></div><div><span class="k">${ UI.icon( 'arrow-up-right', 18 ) } ${ esc( t( 'ovExpenses' ) ) }</span><b>${ esc( exp ) }</b></div></div></section>
+		const mC = { inc: EX.mainCents( f.income ), exp: EX.mainCents( f.expense ) }, mainCur = S().settings.currency, M = ( c ) => money( c / 100, mainCur );
+		const spark = [ 5, 4, 3, 2, 1, 0 ].map( ( k ) => { const d = new Date( y, m - k, 1 ), ff = EX.flow( EX.monthTxs( d.getFullYear(), d.getMonth() ) ); return { l: d.toLocaleDateString( EX.loc(), { month: 'short' } ), inc: EX.mainCents( ff.income ), exp: EX.mainCents( ff.expense ) }; } );
+		const sMax = Math.max( 1, ...spark.map( ( s ) => Math.max( s.inc, s.exp ) ) );
+		const rate = mC.inc > 0 ? Math.round( ( ( mC.inc - mC.exp ) / mC.inc ) * 100 ) : null;
+		const count = ( str, c ) => ( str === M( c ) ? ` data-count="${ c / 100 }" data-cur="${ esc( mainCur ) }"` : '' ); // numbers roll up on entering the screen
+		const totalC = EX.mainCents( wallets.map( ( a ) => ( { amount: EX.balance( a ) / 100, currency: a.currency } ) ) );
+		return `<div class="hero-flip${ st.heroFlip ? ' flipped' : '' }" data-act="flip-hero" role="button" tabindex="0" aria-pressed="${ !! st.heroFlip }" aria-label="${ esc( t( 'balanceAria' ) + '. ' + t( 'heroFlipHint' ) ) }">
+			<section class="hero hero-front"><small>${ esc( t( 'ovBalance' ) ) }</small><b${ count( total, totalC ) }>${ esc( total ) }</b>
+				<div class="hero-tiles"><div><span class="k">${ UI.icon( 'arrow-down-left', 18 ) } ${ esc( t( 'ovIncome' ) ) }</span><b${ count( inc, mC.inc ) }>${ esc( inc ) }</b></div><div><span class="k">${ UI.icon( 'arrow-up-right', 18 ) } ${ esc( t( 'ovExpenses' ) ) }</span><b${ count( exp, mC.exp ) }>${ esc( exp ) }</b></div></div><i class="flip-ic" aria-hidden="true">${ UI.icon( 'refresh', 18 ) }</i></section>
+			<section class="hero hero-back" aria-hidden="true"><small>${ esc( t( 'heroBackTitle' ) ) }</small><b>${ esc( M( mC.inc - mC.exp ) ) }</b>
+				<div class="mini-bars">${ spark.map( ( s ) => `<div><span class="mb-in" style="height:${ Math.max( 4, Math.round( ( s.inc / sMax ) * 100 ) ) }%"></span><span class="mb-out" style="height:${ Math.max( 4, Math.round( ( s.exp / sMax ) * 100 ) ) }%"></span><em>${ esc( s.l ) }</em></div>` ).join( '' ) }</div>
+				<div class="hero-tiles"><div><span class="k">${ esc( t( 'heroRate' ) ) }</span><b>${ rate == null ? '—' : rate + '%' }</b></div><div><span class="k">${ esc( t( 'heroPerDay' ) ) }</span><b>${ esc( M( Math.round( mC.exp / Math.max( 1, now.getDate() ) ) ) ) }</b></div></div><i class="flip-ic" aria-hidden="true">${ UI.icon( 'refresh', 18 ) }</i></section></div>
 			${ promos() }
 			${ urgent ? DUE : WAL }
 			${ urgent ? EXA.ideasHome() : DUE }

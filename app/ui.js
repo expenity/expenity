@@ -20,6 +20,15 @@
 
 	UI.isPhone = () => window.matchMedia( '(max-width: 599px)' ).matches;
 	UI.isWide = () => window.matchMedia( '(min-width: 1200px)' ).matches;
+	/** A short burst of confetti, for a goal reached. Skipped when animations are off. */
+	UI.confetti = ( from ) => {
+		const m = document.documentElement.dataset.motion;
+		if ( m === 'off' || m === 'reduced' || ( m !== 'full' && window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches ) ) return;
+		const box = document.createElement( 'div' ); box.className = 'confetti-burst'; box.setAttribute( 'aria-hidden', 'true' );
+		const colors = [ '#14b08a', '#f5a524', '#ec5f95', '#8b5cf6', '#3b82f6' ];
+		for ( let i = 0; i < 36; i++ ) { const p = document.createElement( 'i' ); const a = Math.random() * Math.PI * 2, d = 120 + Math.random() * 220; p.style.cssText = `--x:${ Math.cos( a ) * d }px;--y:${ Math.sin( a ) * d - 120 }px;--r:${ Math.random() * 720 - 360 }deg;background:${ colors[ i % colors.length ] };animation-delay:${ Math.random() * 120 }ms`; box.appendChild( p ); }
+		document.body.appendChild( box ); setTimeout( () => box.remove(), 1700 );
+	};
 	UI.isStandalone = () => window.matchMedia( '(display-mode: standalone)' ).matches || window.navigator.standalone === true;
 	UI.haptic = ( ms = 12 ) => { try { if ( navigator.vibrate ) navigator.vibrate( ms ); } catch ( e ) { /* not available */ } };
 

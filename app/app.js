@@ -6,7 +6,7 @@
 ( function () {
 	'use strict';
 	const EX = window.EX, UI = window.UI, EXA = window.EXA;
-	const { t, esc, today, addDays, diffDays } = EX;
+	const { t, esc, money, today, addDays, diffDays } = EX;
 	const S = EX.state;
 	const st = EXA.st;
 	const $ = ( s, r = document ) => r.querySelector( s );
@@ -58,6 +58,18 @@
 		const v = $( '#view' );
 		v.classList.remove( 'enter' ); void v.offsetWidth; v.classList.add( 'enter' );
 		clearTimeout( enter.t ); enter.t = setTimeout( () => v.classList.remove( 'enter' ), 1000 );
+		$$( '[data-count]', v ).forEach( countUp );
+		const ic = $( '.tab.on svg, .rail-item.on svg' ); if ( ic ) { ic.classList.remove( 'pop' ); void ic.getBoundingClientRect(); ic.classList.add( 'pop' ); }
+	}
+	const motionOn = () => { const m = document.documentElement.dataset.motion; return m === 'full' || ( m !== 'off' && m !== 'reduced' && ! window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches ); };
+	EXA.motionOn = motionOn;
+	/** Numbers roll up from zero when a screen opens. The real text is put back at the end, so nothing depends on the animation. */
+	function countUp( el ) {
+		if ( ! motionOn() ) return;
+		const to = Number( el.dataset.count ), cur = el.dataset.cur, orig = el.textContent, t0 = performance.now(), dur = 850;
+		if ( ! Number.isFinite( to ) || ! to ) return;
+		const tick = ( now ) => { const p = Math.min( 1, ( now - t0 ) / dur ), e = 1 - Math.pow( 1 - p, 3 ); el.textContent = p < 1 ? money( to * e, cur ) : orig; if ( p < 1 && el.isConnected ) requestAnimationFrame( tick ); else el.textContent = orig; };
+		requestAnimationFrame( tick );
 	}
 	async function loadDevices() {
 		if ( ! EX.auth.isSignedIn() ) return;
@@ -161,6 +173,7 @@
 			case 'rm-passkey': { const r = await EX.auth.removePasskey( el.dataset.id ); if ( r.ok ) { toast( t( 'tPasskeyRemoved' ) ); loadDevices(); } else toast( EXA.errText( r.error ) ); break; }
 			case 'rm-session': { const r = await EX.auth.revokeSession( el.dataset.id ); if ( r.ok ) { toast( t( 'tDeviceOut' ) ); loadDevices(); } else toast( EXA.errText( r.error ) ); break; }
 			case 'new-codes': { const r = await EX.auth.regenerateCodes(); if ( r.ok ) EXA.showCodes( r.recoveryCodes, () => render() ); else toast( EXA.errText( r.error ) ); break; }
+			case 'flip-hero': st.heroFlip = ! el.classList.contains( 'flipped' ); el.classList.toggle( 'flipped', st.heroFlip ); el.setAttribute( 'aria-pressed', String( st.heroFlip ) ); UI.haptic(); break;
 			case 'check-update': checkUpdate( el ); break;
 			case 'apply-update': try { const reg = await navigator.serviceWorker.getRegistration(); if ( reg ) await reg.update(); } catch ( err ) { /* reload anyway */ } location.reload(); break;
 			case 'sign-out': {
@@ -261,8 +274,11 @@
 			}
 		} );
 
-		document.addEventListener( 'swipeaction', ( e ) => {
+		document.addEventListener( 'keydown', ( e ) => { const h = e.target.closest && e.target.closest( '[data-act=flip-hero]' ); if ( h && ( e.key === 'Enter' || e.key === ' ' ) ) { e.preventDefault(); h.click(); } } );
+		document.addEventListener( 'swipeaction', async ( e ) => {
 			const { action, id, kind } = e.detail;
+			const rowEl = e.target.closest ? e.target.closest( '.sw' ) : null;
+			if ( rowEl && ( action === 'del' || action === 'paid' ) && motionOn() ) { rowEl.classList.add( action === 'del' ? 'leaving' : 'paid-out' ); await new Promise( ( r ) => setTimeout( r, 280 ) ); }
 			if ( kind === 'tx' ) { const x = S().txs.find( ( z ) => z.id === id ); if ( action === 'edit' && x ) EXA.openTx( x ); else if ( action === 'del' ) EXA.removeTx( id ); }
 			else { const b = S().bills.find( ( z ) => z.id === id ); if ( action === 'paid' && b ) quickPay( b ); else if ( action === 'edit' && b ) EXA.openBill( b ); else if ( action === 'del' ) EXA.removeBill( id ); }
 		} );
