@@ -142,3 +142,10 @@ CREATE TABLE IF NOT EXISTS push_subs (
   created_at  INTEGER NOT NULL
 );
 CREATE INDEX IF NOT EXISTS push_subs_user ON push_subs(user_id);
+
+-- Small re-encoded reference photos, separate from the lightweight sync records.
+CREATE TABLE IF NOT EXISTS photos (
+ id TEXT PRIMARY KEY, user_id TEXT NOT NULL, data TEXT NOT NULL,
+ bytes INTEGER NOT NULL, created_at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS photos_user ON photos(user_id);

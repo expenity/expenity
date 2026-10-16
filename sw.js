@@ -1,6 +1,6 @@
 /* Expenity service worker: the app works offline. Network first, so updates arrive as soon as you are online. */
 const CACHE = 'expenity-v10';
-const FILES = [ './', 'index.html', 'icons.js', 'i18n.js', 'core.js', 'sync.js', 'ui.js', 'views.js', 'forms.js', 'reports.js', 'plan.js', 'insights.js', 'share.js', 'push.js', 'flow.js', 'themes.js', 'app.js', 'theme.js', 'style.css', 'themes.css', 'favicon.svg', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png' ];
+const FILES = [ './', 'index.html', 'icons.js', 'i18n.js', 'core.js', 'sync.js', 'ui.js', 'views.js', 'forms.js', 'photos.js', 'reports.js', 'plan.js', 'insights.js', 'share.js', 'push.js', 'flow.js', 'themes.js', 'app.js', 'theme.js', 'style.css', 'themes.css', 'favicon.svg', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png' ];
 
 self.addEventListener( 'install', ( e ) => {
 	e.waitUntil( caches.open( CACHE ).then( ( c ) => c.addAll( FILES ) ).then( () => self.skipWaiting() ) );

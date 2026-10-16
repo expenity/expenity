@@ -68,6 +68,8 @@
 	UI.initSheet = () => {
 		const d = dlg();
 		d.addEventListener( 'close', () => {
+			// A native close event is queued: it must not clear a sheet that has already reopened.
+			if ( d.open ) return;
 			const cb = onClose; onClose = null; lock = false;
 			if ( ! fromPop && history.state && history.state.xsheet ) { pendingBack = true; history.back(); }
 			if ( cb ) cb();

@@ -7,7 +7,7 @@ cd "$(dirname "$0")/.."
 REPO="expenity/expenity-beta"
 work="$(mktemp -d)"
 mkdir -p "$work/app"
-for f in index.html icons.js ui.js views.js forms.js reports.js plan.js insights.js share.js push.js flow.js themes.js app.js core.js sync.js i18n.js theme.js style.css themes.css favicon.svg manifest.webmanifest sw.js icon-192.png icon-512.png; do cp "$f" "$work/app/$f"; done
+for f in index.html icons.js ui.js views.js forms.js photos.js reports.js plan.js insights.js share.js push.js flow.js themes.js app.js core.js sync.js i18n.js theme.js style.css themes.css favicon.svg manifest.webmanifest sw.js icon-192.png icon-512.png; do cp "$f" "$work/app/$f"; done
 # Mark it as a beta: not indexed, and a clear name.
 sed -i.bak -e 's#<title>Expenity: #<title>[Beta] Expenity: #' -e 's#<meta name="theme-color"#<meta name="robots" content="noindex, nofollow">\n<meta name="theme-color"#' "$work/app/index.html" && rm "$work/app/index.html.bak"
 sed -i.bak -e 's#"name": "Expenity"#"name": "Expenity (beta)"#' -e 's#"short_name": "Expenity"#"short_name": "Expenity β"#' "$work/app/manifest.webmanifest" && rm "$work/app/manifest.webmanifest.bak"
@@ -19,9 +19,7 @@ HTML
 touch "$work/.nojekyll"
 git -C "$work" init -q -b gh-pages
 git -C "$work" add -A
-git -C "$work" -c user.name="George" -c user.email="george@wp-media.me" commit -q -m "Beta build $(date +%Y-%m-%d)
-
-Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>"
+git -C "$work" -c user.name="George" -c user.email="george@wp-media.me" commit -q -m "Beta build $(date +%Y-%m-%d)"
 if ! gh repo view "$REPO" >/dev/null 2>&1; then
 	gh repo create "$REPO" --public --description "Test copy of the next Expenity version. Not the real site: https://github.com/expenity/expenity" >/dev/null
 fi

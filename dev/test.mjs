@@ -310,7 +310,7 @@ for ( const [ w, h, name ] of [ [ 744, 1133, 'iPad mini' ], [ 1133, 744, 'iPad m
 	const { context: c, page: p } = await newPage( { viewport: { width: 390, height: 844 } } );
 	await p.evaluate( () => { window.EXA.skipFlow(); const X = window.EX, S = X.state(), td = X.today(); for ( let i = 0; i < 6; i++ ) { S.txs.push( { id: 'k' + i, type: i % 3 ? 'expense' : 'income', amount: String( 10 + i ), category: 'food', date: X.addDays( td, -i ), name: 'Item ' + i, account: S.accounts[ 0 ].id } ); S.bills.push( { id: 'kb' + i, name: 'Bill ' + i, amount: '20', currency: 'EUR', category: 'utilities', repeat: 'monthly', next: X.addDays( td, i - 2 ), day: 1, account: S.accounts[ 0 ].id } ); } X.save(); } );
 	const ids = await p.evaluate( () => window.EXA.THEMES.map( ( x ) => x.id ) );
-	ok( ids.length === 12, 'there are twelve themes' );
+	ok( ids.length === 15, 'fourteen themes and a custom palette' );
 	for ( const id of ids ) {
 		await p.evaluate( ( x ) => window.EXA.setSkin( x ), id );
 		const bad = [];

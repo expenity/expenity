@@ -64,13 +64,27 @@
 	const motionOn = () => { const m = document.documentElement.dataset.motion; return m === 'full' || ( m !== 'off' && m !== 'reduced' && ! window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches ); };
 	EXA.motionOn = motionOn;
 	/** Numbers roll up from zero when a screen opens. The real text is put back at the end, so nothing depends on the animation. */
+	const counters = new WeakMap();
 	function countUp( el ) {
+		const previous = counters.get( el );
+		if ( previous ) { cancelAnimationFrame( previous.frame ); el.textContent = previous.text; }
 		if ( ! motionOn() ) return;
-		const to = Number( el.dataset.count ), cur = el.dataset.cur, orig = el.textContent, t0 = performance.now(), dur = 850;
-		if ( ! Number.isFinite( to ) || ! to ) return;
-		const tick = ( now ) => { const p = Math.min( 1, ( now - t0 ) / dur ), e = 1 - Math.pow( 1 - p, 3 ); el.textContent = p < 1 ? money( to * e, cur ) : orig; if ( p < 1 && el.isConnected ) requestAnimationFrame( tick ); else el.textContent = orig; };
-		requestAnimationFrame( tick );
+		const target = Math.round( Number( el.dataset.count ) * 100 ), cur = el.dataset.cur;
+		if ( ! Number.isSafeInteger( target ) || ! target ) return;
+		const state = { text: el.textContent, frame: 0, start: null, last: 0 };
+		counters.set( el, state );
+		const tick = ( now ) => {
+			if ( counters.get( el ) !== state || ! el.isConnected ) return;
+			if ( state.start === null ) state.start = now;
+			const p = Math.max( 0, Math.min( 1, ( now - state.start ) / 850 ) );
+			const cents = Math.min( Math.abs( target ), Math.max( state.last, Math.floor( Math.abs( target ) * ( 1 - Math.pow( 1 - p, 3 ) ) ) ) );
+			state.last = cents;
+			el.textContent = p < 1 && motionOn() ? money( Math.sign( target ) * cents / 100, cur ) : state.text;
+			if ( p < 1 && motionOn() ) state.frame = requestAnimationFrame( tick ); else counters.delete( el );
+		};
+		state.frame = requestAnimationFrame( tick );
 	}
+	EXA.enter = enter;
 	async function loadDevices() {
 		if ( ! EX.auth.isSignedIn() ) return;
 		const r = await EX.auth.devices();
@@ -222,6 +236,7 @@
 		EXA.applyMotion();
 		render();
 		EXA.flow.init();
+		if ( ! EXA.flow.active() ) enter();
 		EXA.tryJoin();
 		EXA.push.check();
 		checkNotifications();

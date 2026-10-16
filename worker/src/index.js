@@ -375,6 +375,7 @@ async function deleteAccount( req, env, user ) {
 	await env.DB.prepare( 'DELETE FROM space_members WHERE user_id = ?' ).bind( user.id ).run();
 	await env.DB.batch( [ 'records', 'sessions', 'credentials', 'recovery_codes', 'step_ups', 'email_codes', 'challenges', 'push_subs' ].map( ( t ) => env.DB.prepare( `DELETE FROM ${ t } WHERE user_id = ?` ).bind( user.id ) )
 		.concat( [ env.DB.prepare( 'DELETE FROM users WHERE id = ?' ).bind( user.id ) ] ) );
+	await env.DB.prepare("DELETE FROM photos WHERE user_id=? AND NOT EXISTS (SELECT 1 FROM records r WHERE r.deleted=0 AND json_extract(CASE WHEN json_valid(r.data) THEN r.data ELSE '{}' END,'$.photo')=photos.id)").bind(user.id).run();
 	return reply( req, env, { ok: true } );
 }
 async function emailStart( req, env, user ) {
@@ -387,6 +388,34 @@ async function emailVerify( req, env, user, body ) {
 	if ( ! await checkCode( env, user.id, 'verify', body.code ) ) return fail( req, env, 'bad_code', 401 );
 	await env.DB.prepare( 'UPDATE users SET email_verified = 1 WHERE id = ?' ).bind( user.id ).run();
 	return reply( req, env, { ok: true } );
+}
+
+/* Reference photos: private unless referenced by a wallet the requesting user can currently access. */
+async function photoAccess( env, user, id ) {
+	return env.DB.prepare( `SELECT p.id FROM photos p WHERE p.id = ? AND (
+	 EXISTS (SELECT 1 FROM records r WHERE r.deleted = 0 AND json_extract(CASE WHEN json_valid(r.data) THEN r.data ELSE '{}' END, '$.photo') = p.id AND
+	 (r.user_id = ? OR EXISTS (SELECT 1 FROM space_members sm WHERE 'sp_' || sm.space_id = r.user_id AND sm.user_id = ?)))
+	 OR (p.user_id = ? AND NOT EXISTS (SELECT 1 FROM records r WHERE r.deleted = 0 AND json_extract(CASE WHEN json_valid(r.data) THEN r.data ELSE '{}' END, '$.photo') = p.id)))` ).bind( id, user.id, user.id, user.id ).first();
+}
+function jpegSize( b ) {
+	if ( b.length < 20 || b[0] !== 255 || b[1] !== 216 || b.at(-2) !== 255 || b.at(-1) !== 217 ) return null;
+	let i=2;
+	while(i+4<b.length){if(b[i++]!==255)return null;let marker=b[i++];while(marker===255)marker=b[i++];if(marker===218||marker===217)break;const n=(b[i]<<8)|b[i+1];if(n<2||i+n>b.length)return null;if([192,193,194].includes(marker))return {h:(b[i+3]<<8)|b[i+4],w:(b[i+5]<<8)|b[i+6]};i+=n;}
+	return null;
+}
+async function uploadPhoto( req, env, user, body ) {
+	if(typeof body.data!=='string'||body.data.length>131095||!/^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(body.data))return fail(req,env,'bad_photo');
+	let bytes;try{bytes=Uint8Array.from(atob(body.data.split(',')[1]),c=>c.charCodeAt(0));}catch(e){return fail(req,env,'bad_photo');}
+	const size=jpegSize(bytes);if(bytes.length>96*1024||!size||size.w<1||size.h<1||size.w>1280||size.h>1280)return fail(req,env,'bad_photo');
+	await env.DB.prepare("DELETE FROM photos WHERE user_id=? AND created_at<? AND NOT EXISTS (SELECT 1 FROM records r WHERE r.deleted=0 AND json_extract(CASE WHEN json_valid(r.data) THEN r.data ELSE '{}' END,'$.photo')=photos.id)").bind(user.id,now()-86400000).run();
+	const id=randomToken('ph_',18);
+	const r=await env.DB.prepare(`INSERT INTO photos(id,user_id,data,bytes,created_at) SELECT ?,?,?,?,? WHERE (SELECT COUNT(*) FROM photos WHERE user_id=?)<100 AND (SELECT COALESCE(SUM(bytes),0) FROM photos WHERE user_id=?) + ? <= 9830400`).bind(id,user.id,body.data,bytes.length,now(),user.id,user.id,bytes.length).run();
+	return r.meta.changes ? reply(req,env,{id,bytes:bytes.length}) : fail(req,env,'photo_limit',413);
+}
+async function readPhoto(req,env,user,id){
+	if(!await photoAccess(env,user,id))return fail(req,env,'not_found',404);
+	const p=await env.DB.prepare('SELECT data, bytes FROM photos WHERE id=?').bind(id).first();
+	return reply(req,env,p);
 }
 
 /* ------------------------------------------------------------------ Sync */
@@ -407,6 +436,7 @@ async function sync( req, env, user, body, scope = personalScope( user ) ) {
 		let data = '';
 		if ( ! deleted ) {
 			if ( ! c.data || typeof c.data !== 'object' || Array.isArray( c.data ) ) return fail( req, env, 'bad_request' );
+			if ( c.data.photo && ( typeof c.data.photo !== 'string' || ! /^ph_[A-Za-z0-9_-]{24}$/.test(c.data.photo) || ! await photoAccess(env,user,c.data.photo) ) ) return fail(req,env,'bad_photo');
 			data = JSON.stringify( c.data );
 			if ( data.length > MAX_DATA ) return fail( req, env, 'too_large', 413 );
 		}
@@ -635,6 +665,7 @@ export default {
 		if ( path === '/api/export' && M === 'GET' ) return exportAll( req, env, user );
 		if ( path === '/api/devices' && M === 'GET' ) return devices( req, env, user );
 		let m;
+		if ( ( m = /^\/api\/photos\/(ph_[A-Za-z0-9_-]{24})$/.exec(path) ) && M === 'GET' ) return readPhoto(req,env,user,m[1]);
 		if ( ( m = /^\/api\/devices\/passkey\/([A-Za-z0-9_-]{1,200})$/.exec( path ) ) && M === 'DELETE' ) return deletePasskey( req, env, user, m[ 1 ] );
 		if ( ( m = /^\/api\/devices\/session\/([A-Za-z0-9_-]{12})$/.exec( path ) ) && M === 'DELETE' ) return deleteSession( req, env, user, m[ 1 ] );
 
@@ -646,6 +677,7 @@ export default {
 			if ( r.tooLarge ) return fail( req, env, 'too_large', 413 );
 			if ( r.bad ) return fail( req, env, 'bad_request' );
 			const b = r.body;
+			if ( path === '/api/photos' && M === 'POST' ) return uploadPhoto(req,env,user,b);
 			if ( path === '/api/sync' && M === 'POST' ) return sync( req, env, user, b );
 			if ( path === '/api/spaces' && M === 'POST' ) return createSpace( req, env, user, b );
 			if ( path === '/api/push/subscribe' && M === 'POST' ) return pushSubscribe( req, env, user, b );

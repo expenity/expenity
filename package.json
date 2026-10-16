@@ -11,7 +11,8 @@
     "screenshots": "node dev/screenshots.mjs",
     "test:api": "node dev/test-api.mjs",
     "test:e2e": "node dev/test-e2e.mjs",
-    "test:all": "node dev/test.mjs && node dev/test-api.mjs && node dev/test-e2e.mjs"
+    "test:all": "node dev/test.mjs && node dev/test-api.mjs && node dev/test-e2e.mjs",
+    "test:enhancements": "node dev/test-enhancements.mjs"
   },
   "devDependencies": {
     "@tabler/icons": "^3.49.0",

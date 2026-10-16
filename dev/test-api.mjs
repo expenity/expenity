@@ -63,6 +63,16 @@ const wrongOrigin = new SoftPasskey( { rpId: 'localhost', origin: 'https://evil.
 ok( ( await call( 'POST', '/api/auth/register/verify', { challengeId: forged.json.challengeId, response: wrongOrigin.create( forged.json.options ) } ) ).status === 400, 'a passkey made for another origin is refused' );
 const A = reg.json.token;
 
+// Photos are separate, size-limited and authenticated; record sync never accepts someone else's private image.
+const jpeg = 'data:image/jpeg;base64,' + Buffer.from([255,216,255,192,0,17,8,0,1,0,1,3,1,17,0,2,17,0,3,17,0,255,217]).toString('base64');
+ok((await call('POST','/api/photos',{data:jpeg})).status===401,'photos require sign-in');
+ok((await call('POST','/api/photos',{data:'data:image/svg+xml;base64,PHN2Zz4='},A)).status===400,'SVG attachments are rejected');
+ok((await call('POST','/api/photos',{data:jpeg+'A'.repeat(140000)},A)).status===400,'oversized photos are rejected');
+const photoUpload=await call('POST','/api/photos',{data:jpeg},A);
+ok(photoUpload.status===200&&photoUpload.json.id.startsWith('ph_'),'a small JPEG uploads separately');
+const photoId=photoUpload.json.id;
+ok((await call('GET','/api/photos/'+photoId,null,A)).json.data===jpeg,'the owner can read an uploaded photo');
+
 // Sign-in with the passkey, on a second "device".
 const s2 = await signIn( key1 );
 ok( s2.status === 200 && s2.json.user.email === email, 'signs in with the passkey (no email needed)' );
@@ -111,6 +121,9 @@ const other = ( await signUp( `other${ Date.now() }@example.com`, key2 ) ).json.
 ok( ( await call( 'POST', '/api/sync', { since: 0, changes: [] }, other ) ).json.changes.length === 0, 'another account sees none of this account\'s data' );
 ok( ( await call( 'GET', '/api/export', null, A ) ).json.records.some( ( r ) => r.id === 'b1' ), 'export lists the live records' );
 
+ok((await call('GET','/api/photos/'+photoId,null,other)).status===404,'another account cannot read a private photo');
+ok((await call('POST','/api/sync',{changes:[{id:'stolenphoto',kind:'tx',data:{photo:photoId},updatedAt:Date.now()}]},other)).status===400,'sync rejects stolen private photo IDs');
+
 // Shared wallets: spaces, invites, roles, permissions.
 {
 	const viewerKey = newKey();
@@ -143,6 +156,11 @@ ok( ( await call( 'GET', '/api/export', null, A ) ).json.records.some( ( r ) => 
 	ok( ( await call( 'POST', `/api/spaces/${ sid }/sync`, { since: 0, changes: [ { id: 'tx3', kind: 'tx', data: { id: 'tx3', type: 'expense', amount: '1', account: 'wa', category: 'food', date: '2026-01-03' }, updatedAt: Date.now() } ] }, V ) ).status === 403, 'a viewer cannot write' );
 	ok( ( await call( 'POST', `/api/spaces/${ sid }/sync`, { since: 0, changes: [] }, V ) ).json.changes.length === 3, 'a viewer can read' );
 	const mem = await call( 'GET', `/api/spaces/${ sid }/members`, null, A );
+ const sharedPhoto=(await call('POST','/api/photos',{data:jpeg},other)).json.id;
+ const photoTx={id:'phototx',kind:'tx',data:{id:'phototx',type:'expense',amount:'2',account:'wa',photo:sharedPhoto},updatedAt:Date.now()};
+ ok((await call('POST',`/api/spaces/${sid}/sync`,{changes:[photoTx]},other)).status===200,'an editor attaches a photo to a shared transaction');
+ ok((await call('GET','/api/photos/'+sharedPhoto,null,V)).status===200,'a viewer can open a shared photo');
+ ok((await call('POST',`/api/spaces/${sid}/sync`,{changes:[photoTx]},V)).status===403,'a viewer cannot replace a photo');
 	ok( mem.json.members.length === 3 && mem.json.members.some( ( m ) => m.role === 'viewer' ), 'the owner lists members' );
 	ok( ( await call( 'GET', '/api/spaces', null, other ) ).json.spaces[ 0 ].role === 'editor', 'a member lists the spaces they belong to' );
 	ok( ( await call( 'POST', `/api/spaces/${ sid }/members/${ mem.json.members.find( ( m ) => m.role === 'viewer' ).id }`, { role: 'editor' }, other ) ).status === 403, 'only the owner changes roles' );
@@ -153,6 +171,7 @@ ok( ( await call( 'GET', '/api/export', null, A ) ).json.records.some( ( r ) => 
 	ok( ( await call( 'DELETE', `/api/spaces/${ sid }`, null, other ) ).status === 403, 'only the owner deletes a space' );
 	const oid = ( await call( 'GET', `/api/spaces/${ sid }/members`, null, other ) ).json.members.find( ( m ) => m.you ).id;
 	ok( ( await call( 'DELETE', `/api/spaces/${ sid }/members/${ oid }`, null, other ) ).status === 200, 'a member can leave' );
+	ok((await call('GET','/api/photos/'+sharedPhoto,null,other)).status===404,'leaving removes access even to the shared photo they uploaded');
 	ok( ( await call( 'DELETE', `/api/spaces/${ sid }`, null, A ) ).status === 200 && ( await call( 'GET', '/api/spaces', null, A ) ).json.spaces.length === 0, 'the owner deletes the space' );
 }
 
