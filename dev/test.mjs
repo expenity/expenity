@@ -443,6 +443,25 @@ for ( const w of [ 320, 360, 390, 430 ] ) {
 	await c.close();
 }
 
+/* ---- Dragging a finger sideways on the page does not move the page: only swipe rows react */
+{
+	const { context: c, page: p } = await newPage( { viewport: { width: 390, height: 844 } } );
+	const cd = await c.newCDPSession( p );
+	await p.evaluate( () => { window.EXA.skipFlow(); window.EXA.setSkin( 'synthwave' ); window.EXA.go( 'home' ); } );
+	const before = await p.evaluate( () => ( { x: document.querySelector( '.hero' ).getBoundingClientRect().x, sl: document.querySelector( '#view' ).scrollLeft } ) );
+	const y = 220;
+	await cd.send( 'Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [ { x: 300, y } ] } );
+	for ( let i = 1; i <= 10; i++ ) await cd.send( 'Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [ { x: 300 - i * 25, y } ] } );
+	const during = await p.evaluate( () => ( { x: document.querySelector( '.hero' ).getBoundingClientRect().x, sl: document.querySelector( '#view' ).scrollLeft, bl: document.scrollingElement.scrollLeft } ) );
+	await cd.send( 'Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] } );
+	ok( during.x === before.x && during.sl === 0 && during.bl === 0, 'a sideways drag on the page does not move it', JSON.stringify( [ before, during ] ) );
+	await p.evaluate( () => { const X = window.EX, S = X.state(); S.budgets.push( { id: 'bx', category: 'food', amount: '20', period: 'monthly' } ); S.goals.push( { id: 'gx', name: 'A very long goal name for a trip with the whole family', target: '5000', icon: 'plane' } ); X.save(); window.EXA.setSkin( 'terminal' ); } );
+	for ( const w of [ 360, 390 ] ) for ( const v of [ 'home', 'plan' ] ) { await p.setViewportSize( { width: w, height: 800 } ); await p.evaluate( ( x ) => window.EXA.go( x ), v ); ok( await p.evaluate( () => { const m = document.querySelector( '#view' ); return m.scrollWidth <= m.clientWidth + 1; } ), `budgets and goals fit at ${ w }px on ${ v } in a wide-lettered theme` ); }
+	const css = await p.evaluate( () => ( { ox: getComputedStyle( document.querySelector( '#view' ) ).overflowX, ta: getComputedStyle( document.querySelector( '#view' ) ).touchAction } ) );
+	ok( css.ox === 'hidden' && /pan-y/.test( css.ta ), 'the main view only pans vertically', JSON.stringify( css ) );
+	await c.close();
+}
+
 /* ---- Migration from version 0.1 */
 {
 	const ctx2 = await browser.newContext( { locale: 'en-US' } );

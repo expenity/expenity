@@ -30,7 +30,7 @@
 
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; height: 100%; }
-body { margin: 0; height: 100%; font: 16px/1.45 var(--font); color: var(--ink); background-color: var(--bg); background-image: var(--bg-img, none); background-attachment: fixed; overscroll-behavior: none; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+body { margin: 0; height: 100%; font: 16px/1.45 var(--font); color: var(--ink); background-color: var(--bg); background-image: var(--bg-img, none); background-attachment: fixed; overscroll-behavior: none; -webkit-tap-highlight-color: transparent; touch-action: pan-y pinch-zoom; }
 button { font: inherit; color: inherit; cursor: pointer; -webkit-user-select: none; user-select: none; }
 input, select, textarea { font: inherit; color: inherit; }
 h1, h2, h3 { letter-spacing: -0.02em; line-height: 1.2; font-family: var(--font-head); }
@@ -58,7 +58,7 @@ a { color: var(--accent-2); }
 .dot.ok { background: var(--ok); } .dot.syncing, .dot.idle { background: var(--warn); animation: pulse 1s infinite; } .dot.error { background: var(--late); } .dot.off { background: var(--line); }
 @keyframes pulse { 50% { opacity: 0.35; } }
 
-main#view { flex: 1; overflow-y: auto; overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; padding: 4px 16px 28px; outline: none; }
+main#view { flex: 1; overflow-x: hidden; overscroll-behavior-x: none; touch-action: pan-y pinch-zoom; overflow-y: auto; overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; padding: 4px 16px 28px; outline: none; }
 .ptr { position: absolute; z-index: 6; top: calc(var(--safe-t) + 60px); left: 50%; opacity: 0; pointer-events: none; padding: 7px 16px; border-radius: calc(20px * var(--rk)); background: var(--surface); box-shadow: var(--shadow); font-size: 13px; font-weight: 600; color: var(--muted); transform: translate(-50%, 0); }
 .ptr.ready { color: var(--accent-2); }
 
@@ -351,3 +351,5 @@ body, .card, .list, .hero, .wc, .promo, .tabbar, .appbar, .rail, .chip, .theme-c
 /* The details pane never scrolls sideways: its content shrinks, and long button labels wrap */
 .pane { overflow-x: hidden; } .pane > * { min-width: 0; max-width: 100%; } .detail { min-width: 0; }
 .btn-row.two { grid-template-columns: repeat(2, minmax(0, 1fr)); } .btn-row.two > .btn, .btn-row.stack > .btn { min-width: 0; max-width: 100%; white-space: normal; text-align: center; line-height: 1.2; padding-block: 8px; }
+.bgrid, .ggrid { grid-template-columns: minmax(0, 1fr); } @media (min-width: 600px) { .bgrid, .ggrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.bcard, .gcard { min-width: 0; } .bcard .mid, .gcard .mid { overflow-wrap: anywhere; } .bcard small, .gcard small { overflow-wrap: anywhere; }
