@@ -526,3 +526,5 @@ body, .card, .list, .hero, .wc, .promo, .tabbar, .appbar, .rail, .chip, .theme-c
 /* Hide scrollbar chrome everywhere without disabling any scrolling mechanism. */
 *,*::before,*::after{scrollbar-width:none}
 *::-webkit-scrollbar{display:none;width:0;height:0}
+
+.dash-editbar{flex-wrap:wrap;gap:6px}.dash-editbar>.btn{flex:1 1 auto;min-width:0;white-space:normal;min-height:44px}.custom-theme-editor .grid2{grid-template-columns:repeat(2,minmax(0,1fr))}.custom-theme-editor select{width:100%;min-height:48px;min-width:0}

@@ -32,3 +32,7 @@ Final prompt:
 - Mario theme: `mario-pencil-v4.png`, `goomba-pencil-v1.png`, `mushroom-pencil-v1.png`, `boo-pencil-v1.png`, `star-pencil-v1.png` are the five PNG illustrations supplied directly by the user on 2026-10-17. Copied without editing; original transparency retained. They replace the rejected colored vector and the provisional sourced Mario sketch. Original artist and general reuse license were not supplied. No GPL relicensing or independent reuse permission is asserted. Preserve this provenance note.
 - `mickey-minnie-pencil-v1.webp`: the reference explicitly selected by the user, https://www.pinterest.com/pin/mickey-and-minnie-valentines-day-drawing--5348093303221313/, pin credited to Junior / junior_nbs. Original drawing authorship and any general reuse license are not established by the pin. Included at the user's direction for this theme; no GPL relicensing or independent reuse permission is asserted. Preserve the source reference and obtain the original artist's terms before independent reuse.
 - Retrieved 2026-10-17. Both assets are local WebP files, not runtime Pinterest/Pixabay embeds. Preserve these provenance notes with the assets.
+
+## Locally bundled fonts
+
+Noto Sans, Noto Serif, Roboto, Roboto Slab, Open Sans, Fira Sans, Comfortaa, Alegreya, Literata and Geologica: obtained from the Google Fonts CSS API on 2026-10-17. Latin/Greek subsets at weights 400/700, unmodified WOFF2 files. Individual upstream license notices are bundled in fonts/. Fonts load locally and are cached offline; there is no runtime Google Fonts request.
