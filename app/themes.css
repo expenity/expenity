@@ -141,3 +141,52 @@
 .theme-card[data-skin-set=bricks] .tc-prev::before{content:"";position:absolute;right:0;top:0;width:65px;height:50px;background:url('assets/themes/brick-cluster-v2.webp') center/contain no-repeat}
 .theme-card[data-skin-set=minnie] .tc-prev{background-image:radial-gradient(circle,#b45a7e33 2px,transparent 3px)!important;background-size:16px 16px!important}
 :root[data-skin=bricks] .appbar,:root[data-skin=bricks] .sec-head{background:var(--bg)}
+
+/* Vader: monochrome command deck. No colour filter is applied to user photos. */
+:root[data-skin=vader]{color-scheme:dark;--bg:#000;--bg-img:none;--surface:#0b0b0b;--ink:#f3f3f3;--ink-2:#dedede;--muted:#ababab;--line:#3d3d3d;--accent:#fff;--accent-2:#fff;--accent-ink:#000;--accent-soft:#232323;--late:#fff;--late-soft:#252525;--warn:#d6d6d6;--ok:#ededed;--shadow:0 7px 30px #0009;--rk:.65;--bw:1px;--card-line:#4b4b4b;--font-head:var(--mono);--brand:#fff;--brand-ink:#000;--brand-glow:0 0 22px #ffffff16;--fab-bg:#fff;--hero-bg:linear-gradient(125deg,#171717,#050505 70%);--hero-ink:#fff;--bar-in:#fff;--bar-out:#8a8a8a;--tbg:#222;--tfg:#eee}
+:root[data-skin=vader] [class*="tint-"]{--tbg:#202020;--tfg:#e9e9e9}
+:root[data-skin=vader] :is(.appbar,.tabbar,.rail,.sheet,.pane){background:#080808}
+:root[data-skin=vader] .hero{border:1px solid #666;box-shadow:inset 3px 0 #f6f6f6,inset 6px 0 12px #ffffff12,0 15px 36px #0008}
+:root[data-skin=vader] .hero .flip-ic{background:#ffffff12;border:1px solid #ffffff40}
+:root[data-skin=vader] :is(.chart,.ring,.donut,.legend-dot){filter:grayscale(1)}
+:root[data-skin=vader] .sec-head{background:#000}
+:root[data-skin=vader] .ab-title.home b i{color:#fff}
+:root[data-skin=vader] .theme-card.on{outline:2px solid #fff;outline-offset:2px}
+.vader-scene{background:radial-gradient(ellipse at 85% 20%,#ffffff06,transparent 45%)}
+.fun-star{width:2px;height:2px;border-radius:50%;background:#fff;opacity:.42;box-shadow:0 0 5px #ffffff45;animation:orbit-star-drift 38s linear infinite}
+.fun-star:nth-child(3n){width:1px;height:1px;opacity:.22;animation-duration:55s}.fun-star:nth-child(7n){width:3px;height:3px;opacity:.58;animation-duration:42s}
+.fun-planet{width:clamp(200px,35vw,480px);aspect-ratio:1;left:72%!important;top:8%!important;border-radius:50%;background:radial-gradient(circle at 28% 24%,#555,#1c1c1c 27%,#080808 56%,#000 74%);box-shadow:inset 7px 2px 8px #ffffff35,-3px -1px 4px #ffffff12;animation:orbit-world-drift 55s ease-in-out infinite}
+.fun-moon{width:90px;height:90px;left:-35px!important;top:68%!important;border-radius:50%;background:radial-gradient(circle at 20% 20%,#747474,#252525 30%,#050505 65%);box-shadow:inset 2px 1px 3px #aaa;opacity:.6;animation:orbit-world-drift 65s ease-in-out infinite reverse}
+.fun-station{width:85px;height:85px;left:82%!important;top:54%!important;border-radius:50%;background:linear-gradient(0deg,transparent 48%,#000 49% 51%,transparent 52%),repeating-linear-gradient(0deg,#ffffff0a 0 1px,transparent 1px 6px),radial-gradient(circle at 25% 25%,#666,#181818 50%,#010101 74%);box-shadow:inset 2px 1px 3px #aaa;animation:orbit-world-drift 45s ease-in-out infinite}
+.fun-station::after{content:"";position:absolute;left:20%;top:22%;width:26%;height:26%;border:1px solid #666;border-radius:50%;background:radial-gradient(circle at 60% 60%,#121212,#666);transform:rotate(-18deg) scaleY(.8)}
+.fun-fighter,.fun-cruiser{left:-180px!important;width:76px;height:52px;background:url('assets/themes/orbit-fighter.svg') center/contain no-repeat;opacity:.72;animation:orbit-patrol 27s linear infinite;will-change:transform}
+.fun-fighter:nth-last-child(3){width:43px;height:32px;opacity:.45;animation-duration:39s;animation-direction:reverse}
+.fun-fighter:nth-last-child(2){width:61px;height:42px;opacity:.6;animation-duration:32s}
+.fun-cruiser{width:170px;height:90px;background-image:url('assets/themes/orbit-cruiser.svg');opacity:.3;animation:orbit-patrol 70s linear infinite reverse}
+@keyframes orbit-star-drift{0%{transform:translate3d(0,0,0)}100%{transform:translate3d(-25px,50px,0)}}
+@keyframes orbit-world-drift{0%,100%{transform:translate3d(0,0,0) rotate(-7deg)}50%{transform:translate3d(-15px,20px,0) rotate(7deg)}}
+@keyframes orbit-patrol{0%{transform:translate3d(-160px,35px,0) rotate(-15deg)}100%{transform:translate3d(calc(100vw + 340px),-90px,0) rotate(15deg)}}
+:root[data-fun-motion=still] .vader-scene :is(.fun-fighter,.fun-cruiser){display:none}
+.theme-card[data-skin-set=vader] .tc-prev{background-image:radial-gradient(circle at 85% 15%,#fff 1px,transparent 2px),radial-gradient(circle at 15% 80%,#fff 1px,transparent 2px)!important}
+:root[data-skin=vader] .btn-danger{background:#e5e5e5;color:#000;border-color:#fff}
+:root[data-skin=vader] .hero{position:relative;isolation:isolate;overflow:hidden}
+:root[data-skin=vader] .hero::after{content:"";position:absolute;pointer-events:none;z-index:-1;left:-90px;bottom:18px;width:70px;height:48px;background:url('assets/themes/orbit-fighter.svg') center/contain no-repeat;opacity:.3;animation:orbit-card-patrol 23s -9s linear infinite}
+@keyframes orbit-card-patrol{from{transform:translate3d(0,10px,0) rotate(-12deg)}to{transform:translate3d(980px,-20px,0) rotate(15deg)}}
+:root[data-fun-motion=still][data-skin=vader] .hero::after{display:none}
+:root[data-skin=vader] .hero{background-image:radial-gradient(circle at 70% 16%,#ffffff99 0 1px,transparent 1.8px),radial-gradient(circle at 87% 39%,#ffffff66 0 1px,transparent 1.6px),radial-gradient(circle at 54% 70%,#ffffff55 0 .7px,transparent 1.6px),radial-gradient(circle at 15% 90%,#ffffff66 0 1px,transparent 1.8px),radial-gradient(circle at 36% 54%,#ffffff44 0 .7px,transparent 1.6px),var(--hero-bg)}
+:root[data-skin=vader] .hero::before{content:"";position:absolute;pointer-events:none;right:-45px;top:75px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle at 25% 20%,#585858,#171717 33%,#050505 62%);box-shadow:inset 4px 1px 4px #ffffff66;opacity:.35;z-index:-1}
+:root[data-skin=vader] .hero::after{animation-delay:-4s;opacity:.5}
+/* User-selected portrait: locally bundled; grayscale is limited to this decorative artwork. */
+:root[data-skin=vader] .hero-flip{position:relative;isolation:isolate;margin-top:156px}
+:root[data-skin=vader] .hero-flip>.hero{position:relative;z-index:1}
+:root[data-skin=vader] .hero-flip::before{content:"";position:absolute;pointer-events:none;right:16px;bottom:calc(100% - 27px);width:156px;height:190px;background:url('assets/themes/vader-portrait-v1.webp') center 18%/cover no-repeat;filter:grayscale(1) contrast(1.65) brightness(1.12);mix-blend-mode:screen;mask-image:linear-gradient(to right,transparent,#000 18% 82%,transparent);transform-origin:50% 100%;animation:vader-breathe 5s ease-in-out infinite;z-index:0}
+:root[data-skin=vader] #view.enter .hero-flip:not(.vader-retreated)::before{animation:vader-emerge 1s .15s both}
+:root[data-skin=vader] .hero-flip.vader-retreated::before{animation:vader-retreat .85s ease-in forwards}
+@keyframes vader-breathe{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-3px) scale(1.015)}}
+@keyframes vader-emerge{from{opacity:0;transform:translateY(75px) rotateY(-35deg)}to{opacity:1;transform:translateY(0) rotateY(0)}}
+@keyframes vader-retreat{0%{opacity:1;transform:translateY(0) rotateY(0)}45%{opacity:.8;transform:translateY(12px) rotateY(65deg)}100%{opacity:0;transform:translateY(115px) rotateY(85deg)}}
+:root[data-fun-motion=still][data-skin=vader] .hero-flip{margin-top:4px}
+:root[data-fun-motion=still][data-skin=vader] .hero-flip::before{display:none}
+:root[data-skin=vader] :is(.dash-small,.dash-medium,.dashboard-editing) .hero-flip{margin-top:4px}
+:root[data-skin=vader] :is(.dash-small,.dash-medium,.dashboard-editing) .hero-flip::before{display:none}
+:root:has(dialog[open])[data-skin=vader] .hero-flip::before{visibility:hidden}

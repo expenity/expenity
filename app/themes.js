@@ -13,6 +13,8 @@
 
  Object.assign(EX.I18N.langs.en,{theme_mario:'Mario · Pixel adventure',themeD_mario:'Drifting pixel clouds, golden coins and a bright blue sky.',theme_bricks:'Brick party',themeD_bricks:'Colourful building bricks, floating studs and playful shapes.',theme_minnie:'Minnie · Bow atelier',themeD_minnie:'Painted rose, floating bows and delicate polka dots.'});
  Object.assign(EX.I18N.langs.el,{theme_mario:'Mario · Περιπέτεια σε πίξελ',themeD_mario:'Σύννεφα σε πίξελ, χρυσά νομίσματα και γαλάζιος ουρανός.',theme_bricks:'Πάρτι με τουβλάκια',themeD_bricks:'Πολύχρωμα τουβλάκια, ανάλαφρη κίνηση και παιχνιδιάρικα σχήματα.',theme_minnie:'Minnie · Ατελιέ φιόγκων',themeD_minnie:'Ζωγραφιστό ροζ, αιωρούμενοι φιόγκοι και διακριτικά πουά.'});
+ Object.assign(EX.I18N.langs.en,{theme_vader:'Vader · Dark orbit',themeD_vader:'Absolute black, white light, distant worlds and patrolling fighters.'});
+ Object.assign(EX.I18N.langs.el,{theme_vader:'Vader · Σκοτεινή τροχιά',themeD_vader:'Απόλυτο μαύρο, λευκό φως, μακρινοί πλανήτες και διαστημικές περιπολίες.'});
 	// swatch: page color, card color, accent, text. mode: the theme also has a light and a dark version.
 	const THEMES = [
 		{ id: 'emerald', mode: true, sw: [ '#eef6f3', '#ffffff', '#0a8f6a', '#0f1f1a' ] },
@@ -23,6 +25,7 @@
 		{ id: 'synthwave', sw: [ '#120726', '#1f0f45', '#ff3ea5', '#2de2e6' ] },
 		{ id: 'amberwave', sw: [ '#120c07', '#24160d', '#ffbd59', '#fff2d6' ] },
 		{ id: 'ion', sw: [ '#04131d', '#092735', '#61eeff', '#dcfbff' ] },
+		{ id: 'vader', sw: [ '#000000', '#0b0b0b', '#ffffff', '#f3f3f3' ] },
 		{ id: 'mario', sw: [ '#dcf3ff', '#fffdf2', '#c52b32', '#172b49' ] },
 		{ id: 'bricks', sw: [ '#fff5d8', '#ffffff', '#164bb2', '#182d4b' ] },
 		{ id: 'minnie', sw: [ '#fff0f3', '#fffafd', '#a7194c', '#35202d' ] },
@@ -60,7 +63,7 @@
 		const [ bg, sf, ac, ink ] = palette ? [ palette.bg, palette.surface, palette.accent, palette.ink ] : th.sw;
 		return `<button type="button" class="theme-card${ th.id === cur ? ' on' : '' }" data-skin-set="${ th.id }" role="radio" aria-checked="${ th.id === cur }">
 			<span class="tc-prev" aria-hidden="true" style="background:${ bg }"><i style="background:${ sf };border-color:${ ink }33"><b style="background:${ ac }"></b><u style="background:${ ink }"></u><u style="background:${ ink };width:42%"></u></i></span>
-			<span class="tc-name">${UI.icon(({mario:'device-gamepad-2',bricks:'category-2',minnie:'heart'})[th.id]||'palette',16)} ${ esc( t( 'theme_' + th.id ) ) }</span><small>${ esc( t( 'themeD_' + th.id ) ) }</small></button>`;
+			<span class="tc-name">${UI.icon(({vader:'shield',mario:'device-gamepad-2',bricks:'category-2',minnie:'heart'})[th.id]||'palette',16)} ${ esc( t( 'theme_' + th.id ) ) }</span><small>${ esc( t( 'themeD_' + th.id ) ) }</small></button>`;
 	};
 	/** The picker: theme cards, then light/dark chips for themes that have both. */
 	EXA.themePicker = () => {
@@ -127,12 +130,12 @@
  // Decorative scenery only. Character artwork will be integrated with the balance card.
  let funScene,funSkin;
  EXA.updateFunThemes=on=>{
-  const skin=EXA.skin(),active=['mario','bricks','minnie'].includes(skin);
+  const skin=EXA.skin(),active=['mario','bricks','minnie','vader'].includes(skin);
   if(!active){funScene?.remove();funScene=null;funSkin=null;delete root.dataset.funMotion;root.style.removeProperty('--theme-cameo');root.style.removeProperty('--theme-friend');return;}
   root.dataset.funMotion=on?'on':'still';
   if(funSkin!==skin||!funScene){funScene?.remove();funSkin=skin;funScene=document.createElement('div');funScene.className='fun-scene '+skin+'-scene';funScene.setAttribute('aria-hidden','true');
-   const kinds=skin==='mario'?['cloud','cloud','cloud','hill','hill','coin','coin','coin','block','block']:skin==='bricks'?Array(3).fill('brick'):Array.from({length:13},(_,i)=>i%3===0?'bow':i%3===1?'confetti':'petal');
-   kinds.forEach((kind,i)=>{const el=document.createElement('i');el.className='fun-'+kind;el.style.setProperty('--n',i);el.style.setProperty('--x',((i*29+7)%94)+'%');el.style.setProperty('--y',((i*19+8)%88)+'%');el.style.setProperty('--delay',(-i*1.7)+'s');el.style.setProperty('--turn',((i%2?-1:1)*(6+i%4*4))+'deg');funScene.append(el);});document.body.prepend(funScene);
+   const kinds=skin==='vader'?[...Array(48).fill('star'),'planet','moon','station','fighter','fighter','fighter','cruiser']:skin==='mario'?['cloud','cloud','cloud','hill','hill','coin','coin','coin','block','block']:skin==='bricks'?Array(3).fill('brick'):Array.from({length:13},(_,i)=>i%3===0?'bow':i%3===1?'confetti':'petal');
+   kinds.forEach((kind,i)=>{const el=document.createElement('i');el.className='fun-'+kind;el.style.setProperty('--n',i);el.style.setProperty('--x',((i*29+7)%94)+'%');el.style.setProperty('--y',((i*19+8)%88)+'%');el.style.setProperty('--delay',(-i*1.7)+'s');if(skin==='vader')el.style.setProperty('--y',((i*23+13)%89)+'%');el.style.setProperty('--turn',((i%2?-1:1)*(6+i%4*4))+'deg');funScene.append(el);});document.body.prepend(funScene);
   }
  };
 
