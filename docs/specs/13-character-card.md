@@ -4,7 +4,7 @@ Characters belong to the balance card, never the navigation. Artwork must have e
 
 ## Behavior
 
-Large character artwork appears above and behind the full balance card. A restrained nudge suggests interaction without automatically flipping the card. The existing touch, mouse and keyboard flip remains the only trigger. Mickey/Minnie blur and disappear completely. Mario and Vader remain as a faint blurred background watermark. This state survives redraws until the next Home visit. After two seconds the card headroom collapses. No financial records change.
+Large character artwork appears above and behind the full balance card. A restrained nudge suggests interaction without automatically flipping the card. The existing touch, mouse and keyboard flip remains the only trigger. All characters, including Mario and Vader, blur and disappear completely. This state survives redraws until the next Home visit. After one second the card headroom collapses. No financial records change.
 
 Hide decorative characters during dialogs, dashboard editing, compact card layouts and reduced/off motion. Artwork must not intercept taps, obscure financial controls or cause horizontal overflow. All assets are bundled locally and cached offline.
 

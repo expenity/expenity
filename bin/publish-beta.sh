@@ -6,6 +6,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 REPO="expenity/expenity-beta"
 work="$(mktemp -d)"
+git clone --quiet --single-branch --branch gh-pages "https://github.com/$REPO.git" "$work"
 mkdir -p "$work/app"
 for f in index.html icons.js ui.js views.js forms.js photos.js reports.js plan.js insights.js safe-spend.js receipts.js share.js push.js flow.js installation.js themes.js enhancements.js dashboard.js productivity.js releases.json app.js core.js sync.js i18n.js theme.js style.css themes.css favicon.svg manifest.webmanifest sw.js icon-192.png icon-512.png; do cp "$f" "$work/app/$f"; done
 mkdir -p "$work/app/installation"
@@ -32,13 +33,12 @@ cat > "$work/index.html" <<'HTML'
 <!doctype html><html lang="en"><head><meta charset="utf-8"><title>Expenity beta</title><meta name="robots" content="noindex, nofollow"><meta http-equiv="refresh" content="0; url=app/"></head><body style="font-family:system-ui,sans-serif;margin:3rem auto;max-width:30rem;padding:0 1rem"><h1>Expenity beta</h1><p>A test copy of the next version. <a href="app/">Open the app</a>.</p></body></html>
 HTML
 touch "$work/.nojekyll"
-git -C "$work" init -q -b gh-pages
 git -C "$work" add -A
 git -C "$work" -c user.name="George" -c user.email="george@wp-media.me" commit -q -m "Beta build $(date +%Y-%m-%d)"
 if ! gh repo view "$REPO" >/dev/null 2>&1; then
 	gh repo create "$REPO" --public --description "Test copy of the next Expenity version. Not the real site: https://github.com/expenity/expenity" >/dev/null
 fi
-git -C "$work" push -q -f "https://github.com/$REPO.git" gh-pages
+git -C "$work" push -q origin gh-pages
 gh api "repos/$REPO/pages" >/dev/null 2>&1 || gh api -X POST "repos/$REPO/pages" -f "source[branch]=gh-pages" -f "source[path]=/" >/dev/null
 rm -rf "$work"
 echo "https://expenity.github.io/expenity-beta/app/"

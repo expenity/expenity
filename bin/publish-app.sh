@@ -23,5 +23,7 @@ JS
 git -C "$work" add app
 git -C "$work" commit --quiet -m "Update app build"
 git -C "$work" push --quiet origin gh-pages
+# Keep existing beta installations on the same release as the main app.
+bash bin/publish-beta.sh
 printf 'App pushed: https://expenity.github.io/expenity/app/\n'
 # Keep the temporary checkout available if a push fails; remove on success.

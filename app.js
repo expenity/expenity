@@ -12,7 +12,7 @@
 	const $ = ( s, r = document ) => r.querySelector( s );
 	const $$ = ( s, r = document ) => [ ...r.querySelectorAll( s ) ];
 	const toast = UI.toast;
-	window.EXPENITY_VERSION = '0.13.0';
+	window.EXPENITY_VERSION = '0.13.1';
 
 	/* ------------------------------------------------------------------ Drawing the shell */
 
@@ -190,7 +190,7 @@
 			case 'rm-passkey': { const r = await EX.auth.removePasskey( el.dataset.id ); if ( r.ok ) { toast( t( 'tPasskeyRemoved' ) ); loadDevices(); } else toast( EXA.errText( r.error ) ); break; }
 			case 'rm-session': { const r = await EX.auth.revokeSession( el.dataset.id ); if ( r.ok ) { toast( t( 'tDeviceOut' ) ); loadDevices(); } else toast( EXA.errText( r.error ) ); break; }
 			case 'new-codes': { const r = await EX.auth.regenerateCodes(); if ( r.ok ) EXA.showCodes( r.recoveryCodes, () => render() ); else toast( EXA.errText( r.error ) ); break; }
-			case 'flip-hero': if(['vader','mario','minnie'].includes(EXA.skin())){if(!st.characterRetreated){st.characterCollapseTimer=setTimeout(()=>{st.characterCollapsed=true;if(st.view==='home')document.querySelector('.hero-flip')?.classList.add('character-collapsed');},2000);}st.characterRetreated=true;el.classList.add('character-retreating');setTimeout(()=>{el.classList.remove('character-retreating');el.classList.add('character-retreated');},900);} st.heroFlip = ! el.classList.contains( 'flipped' ); el.classList.toggle( 'flipped', st.heroFlip ); el.setAttribute( 'aria-pressed', String( st.heroFlip ) ); UI.haptic(); break;
+			case 'flip-hero': if(['vader','mario','minnie'].includes(EXA.skin())){if(!st.characterRetreated){st.characterCollapseTimer=setTimeout(()=>{st.characterCollapsed=true;if(st.view==='home')document.querySelector('.hero-flip')?.classList.add('character-collapsed');},1000);}st.characterRetreated=true;el.classList.add('character-retreating');setTimeout(()=>{el.classList.remove('character-retreating');el.classList.add('character-retreated');},900);} st.heroFlip = ! el.classList.contains( 'flipped' ); el.classList.toggle( 'flipped', st.heroFlip ); el.setAttribute( 'aria-pressed', String( st.heroFlip ) ); UI.haptic(); break;
 			case 'delete-photos': await EXA.photos.deleteAll(); break;
 			case 'check-update': checkUpdate( el ); break;
 			case 'apply-update': await EXA.applyRelease(); break;

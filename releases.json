@@ -1,6 +1,18 @@
 {
-  "version": "0.13.0",
+  "version": "0.13.1",
   "releases": [
+    {
+      "version": "0.13.1",
+      "date": "2026-10-17",
+      "en": [
+        "All balance-card characters, including Mario and Vader, now blur and disappear completely after flipping. The empty space starts collapsing after one second instead of two.",
+        "Updated the legacy beta app to the current release. App publishing now updates both URLs so existing beta installs no longer remain on version 0.5."
+      ],
+      "el": [
+        "Όλοι οι χαρακτήρες της κάρτας, μαζί με Mario και Vader, θολώνουν και εξαφανίζονται εντελώς μετά το γύρισμα. Ο κενός χώρος αρχίζει να μαζεύεται μετά από ένα δευτερόλεπτο αντί για δύο.",
+        "Η παλιά δοκιμαστική εφαρμογή ενημερώθηκε στην τρέχουσα έκδοση, ώστε οι υπάρχουσες εγκαταστάσεις της να μην παραμένουν στην έκδοση 0.5."
+      ]
+    },
     {
       "version": "0.13.0",
       "date": "2026-10-17",
