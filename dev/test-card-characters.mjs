@@ -14,7 +14,7 @@ try{
   ok(await page.evaluate(s=>{const p=getComputedStyle(document.querySelector('.hero-flip'),'::before');return Number(p.opacity)<.01&&p.filter.includes('blur');},skin),skin+' follows the requested background visibility');
   await page.waitForTimeout(800);ok(await page.evaluate(()=>parseFloat(getComputedStyle(document.querySelector('.hero-flip')).marginTop)<=4),'character headroom collapses');await page.evaluate(()=>EXA.render());ok(await page.locator('.hero-flip.character-collapsed').count()===1,'collapsed headroom survives redraw');
   ok(await page.evaluate(()=>JSON.stringify([EX.state().txs,EX.state().bills,EX.state().incomes]))===before,skin+' animation changes no financial records');
-  await page.evaluate(()=>{EXA.go('activity');EXA.go('home');});ok(await page.locator('.hero-flip.character-retreated').count()===0,skin+' returns on next Home visit');
+  await page.evaluate(()=>{EXA.go('activity');EXA.go('home');});ok(await page.locator('.hero-flip.character-retreated').count()===1,skin+' stays hidden for the session');
   for(const lang of ['en','el'])for(const width of [320,834,1440]){await page.setViewportSize({width,height:900});await page.evaluate(l=>EX.setLang(l),lang);ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),`${skin} ${lang} ${width}px fits`);}
   await page.setViewportSize({width:390,height:844});await page.evaluate(()=>EXA.setMotion('off'));ok(await page.evaluate(()=>getComputedStyle(document.querySelector('.hero-flip'),'::before').display==='none'),skin+' motion off hides animated character');await page.evaluate(()=>EXA.setMotion('full'));
  }
