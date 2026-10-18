@@ -47,3 +47,13 @@
 .xp-limit { margin-top: 10px; font-size: 13.5px; color: var(--muted); } .xp-limit b { color: var(--ink-2); }
 
 .xp-chip.is-anim::after { content: '✦'; font-size: 11px; color: var(--accent); margin-left: -2px; }
+
+/* Preview built from pictures: no flicker, only scrolling and one action */
+.xp-img { display: block; width: 100%; height: auto; transition: opacity .2s; -webkit-user-drag: none; user-select: none; } .xp-img.is-fade { opacity: 0; }
+.xp-pscroll { position: absolute; inset: 0; overflow-y: auto; scrollbar-width: none; overscroll-behavior: contain; } .xp-pscroll::-webkit-scrollbar { display: none; }
+.xp-barimg { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; pointer-events: none; }
+.xp-hot { position: absolute; z-index: 4; border: 0; background: transparent; cursor: pointer; padding: 0; border-radius: 50%; } .xp-hot:focus-visible { outline: 3px solid var(--accent); }
+.xp-sheet { position: absolute; inset: 0; z-index: 5; background: #fff; } .xp-sheet[hidden] { display: none; }
+.xp-view .xp-img { position: relative; } .xp-sheet .xp-img { height: 100%; object-fit: cover; object-position: top; }
+.xp-view .xp-barimg { position: absolute; left: 0; right: 0; bottom: 0; top: auto; width: 100%; height: auto; z-index: 3; } .xp-view .xp-pscroll .xp-img { position: static; }
+.xp-view .xp-sheet .xp-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; }

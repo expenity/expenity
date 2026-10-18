@@ -1,42 +1,26 @@
 (function () {
 	'use strict';
 	const sec = document.getElementById( 'try' ); if ( ! sec ) return;
-	const reduce = matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
-	const lang = document.documentElement.lang === 'el' ? 'el' : 'en';
-	const appUrl = ( () => { const b = document.querySelector( 'link[rel=icon]' ).getAttribute( 'href' ).replace( 'assets/favicon.svg', '' ); return b + 'app/'; } )();
-	const screens = [ ...sec.querySelectorAll( '.xp-screen' ) ], tabs = [ ...sec.querySelectorAll( '[data-device]' ) ].filter( ( x ) => x.getAttribute( 'role' ) === 'tab' );
-	const chips = [ ...sec.querySelectorAll( '.xp-chip' ) ], modeBtn = sec.querySelector( '[data-mode]' );
-	let device = 'phone', skin = 'emerald', dark = false, touched = false, touchedDevice = false, themeClicks = 0;
-	const frameOf = ( s ) => s.querySelector( 'iframe' );
-	const apply = ( f ) => {
-		let n = 0; const go = () => { try { const w = f.contentWindow; if ( w && w.EXA && w.EXA.setSkin && w.document.documentElement.dataset.demoReady === '1' ) { w.EXA.setSkin( skin ); w.EXA.setMode( dark ? 'dark' : 'light' ); setTimeout( () => tint( f ), 450 ); return; } } catch ( e ) { return; } if ( n++ < 80 ) setTimeout( go, 100 ); }; go();
-	};
-	// The strip above the phone's screen takes the app's own background, with a clock in a readable colour.
-	const tint = ( f ) => { try { const bg = f.contentWindow.getComputedStyle( f.contentWindow.document.body ).backgroundColor, m = /(\d+)\D+(\d+)\D+(\d+)/.exec( bg ), v = f.closest( '.xp-view' ); if ( ! m ) return; v.style.background = bg; v.style.setProperty( '--st-ink', ( 0.299 * m[ 1 ] + 0.587 * m[ 2 ] + 0.114 * m[ 3 ] ) > 150 ? '#111' : '#fff' ); } catch ( e ) { /* ignore */ } };
-	const fit = () => { screens.forEach( ( s ) => {
-		const w = Number( s.dataset.w ), h = Number( s.dataset.h ), avail = s.parentElement.clientWidth || 600;
-		const target = s.dataset.device === 'phone' ? 330 : s.dataset.device === 'ipad' ? 520 : Math.min( avail, 980 );
-		const k = Math.min( 1, target / w ), v = s.querySelector( '.xp-view' ), f = frameOf( s );
-		const strip = s.dataset.device === 'phone' ? 44 : 0; s.style.setProperty( '--k', k ); v.style.width = Math.round( w * k ) + 'px'; v.style.height = Math.round( h * k ) + 'px'; f.style.height = ( h - strip ) + 'px'; f.style.top = Math.round( strip * k ) + 'px'; f.style.transform = 'scale(' + k + ')';
+	const lang = document.documentElement.lang === 'el' ? 'el' : 'en', base = ( document.querySelector( 'link[rel=icon]' ).getAttribute( 'href' ).replace( 'assets/favicon.svg', '' ) ) + sec.dataset.base;
+	const screens = [ ...sec.querySelectorAll( '.xp-screen' ) ], tabs = [ ...sec.querySelectorAll( '.xp-tabs [data-device]' ) ], chips = [ ...sec.querySelectorAll( '.xp-chip' ) ];
+	const INK = { sunset: '#111', emerald: '#111', synthwave: '#fff', candy: '#111' };
+	let device = 'phone', skin = 'sunset', meta = null, touched = false, deviceTouched = false;
+	const src = ( dev, part ) => `${ base }${ dev }-${ skin }-${ lang }-${ part }.jpg`;
+	const swap = ( img, url ) => { if ( img.getAttribute( 'src' ) === url ) return; const pre = new Image(); pre.onload = () => { img.classList.add( 'is-fade' ); setTimeout( () => { img.src = url; img.classList.remove( 'is-fade' ); }, 120 ); }; pre.src = url; if ( ! img.getAttribute( 'src' ) ) img.src = url; };
+	const paint = () => { const s = screens.find( ( x ) => x.dataset.device === device ); s.querySelectorAll( '.xp-img' ).forEach( ( i ) => swap( i, src( device, i.dataset.part ) ) ); s.querySelector( '.xp-view' ).style.setProperty( '--st-ink', INK[ skin ] || '#111' ); };
+	const place = ( el, r, w, h ) => { el.style.left = ( r.x / w * 100 ) + '%'; el.style.top = ( r.y / h * 100 ) + '%'; el.style.width = ( r.w / w * 100 ) + '%'; el.style.height = ( r.h / h * 100 ) + '%'; };
+	const fit = () => { if ( ! meta ) return; screens.forEach( ( s ) => {
+		const dev = s.dataset.device, m = meta[ dev ], avail = s.parentElement.clientWidth || 600, target = dev === 'phone' ? 330 : dev === 'ipad' ? 520 : Math.min( avail, 980 ), k = Math.min( 1, target / m.w ), v = s.querySelector( '.xp-view' );
+		s.style.setProperty( '--k', k ); v.style.width = Math.round( m.w * k ) + 'px'; v.style.height = Math.round( m.h * k ) + 'px';
+		place( s.querySelector( '.xp-hot-add' ), m.add, m.w, m.h ); place( s.querySelector( '.xp-hot-close' ), m.close, m.w, m.h );
+		if ( dev === 'phone' ) { const bar = s.querySelector( '.xp-barimg' ); bar.style.height = ( m.barH / m.h * 100 ) + '%'; s.querySelector( '.xp-pscroll img' ).style.marginBottom = ( m.barH * k ) + 'px'; }
 	} ); };
-	const show = ( d ) => {
-		device = d; tabs.forEach( ( t ) => t.setAttribute( 'aria-selected', String( t.dataset.device === d ) ) );
-		screens.forEach( ( s ) => { const on = s.dataset.device === d; s.hidden = ! on; if ( on ) { const f = frameOf( s ); if ( ! f.src || f.src === 'about:blank' ) { f.addEventListener( 'load', () => apply( f ) ); f.src = appUrl + '?demo=1&lang=' + lang + '&skin=' + skin; } else apply( f ); } } );
-		fit();
-	};
-	const setSkin = ( id, user ) => {
-		skin = id; chips.forEach( ( c ) => c.setAttribute( 'aria-checked', String( c.dataset.skin === id ) ) );
-		screens.forEach( ( s ) => { const f = frameOf( s ); if ( f.src ) apply( f ); } );
-		if ( user ) { touched = true; themeClicks++; sec.classList.add( 'xp-touched' ); if ( themeClicks >= 1 && ! touchedDevice ) sec.classList.add( 'xp-nudge-device' ); }
-	};
-	chips.forEach( ( c ) => c.addEventListener( 'click', () => setSkin( c.dataset.skin, true ) ) );
-	tabs.forEach( ( t ) => t.addEventListener( 'click', () => { touched = true; touchedDevice = true; sec.classList.remove( 'xp-nudge-device' ); sec.classList.add( 'xp-touched', 'xp-device-done' ); show( t.dataset.device ); } ) );
-	modeBtn.addEventListener( 'click', () => { dark = ! dark; touched = true; modeBtn.setAttribute( 'aria-pressed', String( dark ) ); screens.forEach( ( s ) => { const f = frameOf( s ); if ( f.src ) apply( f ); } ); } );
-	[ 'pointerdown', 'keydown' ].forEach( ( e ) => sec.addEventListener( e, ( ev ) => { if ( ev.target.closest( '.xp-chips,.xp-tabs,.xp-mode,.xp-view' ) ) touched = true; } ) );
+	const show = ( d ) => { device = d; tabs.forEach( ( t ) => t.setAttribute( 'aria-selected', String( t.dataset.device === d ) ) ); screens.forEach( ( s ) => { s.hidden = s.dataset.device !== d; s.querySelector( '.xp-sheet' ).hidden = true; } ); paint(); fit(); };
+	chips.forEach( ( c ) => c.addEventListener( 'click', () => { skin = c.dataset.skin; chips.forEach( ( x ) => x.setAttribute( 'aria-checked', String( x === c ) ) ); paint(); touched = true; sec.classList.add( 'xp-touched' ); if ( ! deviceTouched ) sec.classList.add( 'xp-nudge-device' ); } ) );
+	tabs.forEach( ( t ) => t.addEventListener( 'click', () => { touched = deviceTouched = true; sec.classList.remove( 'xp-nudge-device' ); sec.classList.add( 'xp-touched', 'xp-device-done' ); show( t.dataset.device ); } ) );
+	sec.addEventListener( 'click', ( e ) => { const add = e.target.closest( '.xp-hot-add' ), close = e.target.closest( '.xp-hot-close' ); if ( ! add && ! close ) return; const sh = e.target.closest( '.xp-screen' ).querySelector( '.xp-sheet' ); sh.hidden = ! add; touched = true; sec.classList.add( 'xp-touched' ); } );
 	new ResizeObserver( fit ).observe( sec.querySelector( '.xp-stage-wrap' ) );
-	// Starts when the section is on screen: the app loads, then dresses itself in a few themes until the visitor takes over.
 	let started = false;
-	const start = () => { if ( started ) return; started = true; show( 'phone' ); if ( reduce ) return; const order = [ 'synthwave', 'paper', 'sunset', 'amberwave', 'candy', 'ion', 'terminal', 'emerald' ]; let i = 0;
-		const tick = () => { if ( touched ) return; setSkin( order[ i++ % order.length ], false ); if ( i === 3 ) sec.classList.add( 'xp-nudge-device' ); setTimeout( tick, 3200 ); }; setTimeout( tick, 4200 ); };
-	if ( 'IntersectionObserver' in window ) new IntersectionObserver( ( es, o ) => { if ( es.some( ( e ) => e.isIntersecting ) ) { start(); o.disconnect(); } }, { rootMargin: '200px' } ).observe( sec ); else start();
+	const start = () => { if ( started ) return; started = true; fetch( base + 'preview.json' ).then( ( r ) => r.json() ).then( ( j ) => { meta = j; show( 'phone' ); setTimeout( () => { if ( ! touched ) sec.classList.add( 'xp-nudge-device' ); }, 9000 ); } ).catch( () => {} ); };
+	if ( 'IntersectionObserver' in window ) new IntersectionObserver( ( es, o ) => { if ( es.some( ( e ) => e.isIntersecting ) ) { start(); o.disconnect(); } }, { rootMargin: '300px' } ).observe( sec ); else start();
 }() );
