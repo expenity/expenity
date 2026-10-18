@@ -22,5 +22,11 @@
 	new ResizeObserver( fit ).observe( sec.querySelector( '.xp-stage-wrap' ) );
 	let started = false;
 	const start = () => { if ( started ) return; started = true; fetch( base + 'preview.json' ).then( ( r ) => r.json() ).then( ( j ) => { meta = j; show( 'phone' ); } ).catch( () => {} ); };
-	if ( 'IntersectionObserver' in window ) new IntersectionObserver( ( es, o ) => { if ( es.some( ( e ) => e.isIntersecting ) ) { start(); o.disconnect(); } }, { rootMargin: '300px' } ).observe( sec ); else start();
+	// Closed by default: nothing is downloaded until the section is opened for the first time.
+	const toggle = document.getElementById( 'xp-try-toggle' ), panel = document.getElementById( 'xp-try-panel' );
+	toggle.addEventListener( 'click', () => {
+		const open = toggle.getAttribute( 'aria-expanded' ) !== 'true';
+		toggle.setAttribute( 'aria-expanded', String( open ) ); sec.classList.toggle( 'is-open', open ); panel.inert = ! open;
+		if ( open ) { start(); fit(); setTimeout( fit, 450 ); }
+	} );
 }() );
