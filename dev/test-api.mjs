@@ -281,6 +281,19 @@ ok( ( await call( 'POST', '/api/email/verify', { code: '000000' }, C ) ).status 
 ok( ( await call( 'POST', '/api/email/verify', { code: emailCode }, C ) ).status === 200 && ( await call( 'GET', '/api/me', null, C ) ).json.user.emailVerified === true, 'a right email code verifies the address' );
 await call( 'POST', '/api/auth/recover/email', { email } );
 const mail2 = ( await call( 'GET', `/api/test/outbox?to=${ encodeURIComponent( email ) }` ) ).json.mails[ 0 ];
+{ // contact form: prefix, sanitising, attachments, honeypot, validation
+	const jpg = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=';
+	const sent = await call( 'POST', '/api/contact', { category: 'bug', subject: 'Crash\non save', email: 'user@example.com', html: '<p>Hello <b>there</b><script>alert(1)</script> <a href="javascript:x" onclick="y()">bad</a> <a href="https://example.com/x">ok</a> <img src=x onerror=y> &lt; 5 < 6</p>', photos: [ jpg, 'data:text/html;base64,AAAA' ], meta: { version: '9.9.9', lang: 'en', plan: 'pro', signedIn: true, ua: 'TestUA' } } );
+	ok( sent.status === 200 && sent.json.ok, 'contact: accepted' );
+	const cm = ( await call( 'GET', '/api/test/outbox?to=' + encodeURIComponent( 'mindanticipation@gmail.com' ) ) ).json.mails[ 0 ];
+	ok( cm && cm.subject === '[HABIT HERO CONTACT] bug · Crash on save', 'contact: subject has the prefix and one line', cm && cm.subject );
+	ok( cm && ! /<script|onclick|onerror|javascript:|<img/i.test( cm.body ) && /<b>there<\/b>/.test( cm.body ) && /href="https:\/\/example.com\/x"/.test( cm.body ), 'contact: html is sanitised, formatting kept' );
+	ok( cm && /ATTACHMENTS:1$/.test( cm.body ) && /user@example.com/.test( cm.body ) && /9\.9\.9/.test( cm.body ), 'contact: one valid photo, reply address and app info included' );
+	ok( ( await call( 'POST', '/api/contact', { html: '<p>hi</p>' } ) ).status === 400, 'contact: too-short message rejected' );
+	const bot = await call( 'POST', '/api/contact', { html: '<p>spam spam spam</p>', website: 'http://x' } );
+	const after = ( await call( 'GET', '/api/test/outbox?to=' + encodeURIComponent( 'mindanticipation@gmail.com' ) ) ).json.mails[ 0 ];
+	ok( bot.status === 200 && after.subject === cm.subject, 'contact: honeypot is silently dropped' );
+}
 const rc = /(\d{6})/.exec( mail2.body )[ 1 ];
 const eo = await call( 'POST', '/api/auth/recover/email/verify', { email, code: rc } );
 ok( eo.status === 200 && eo.json.options, 'an emailed code can start a recovery too' );

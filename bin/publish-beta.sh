@@ -10,7 +10,7 @@ clone_reference=()
 if [ -n "${EXPENITY_DEPLOY_REFERENCE:-}" ]; then clone_reference=(--reference-if-able "$EXPENITY_DEPLOY_REFERENCE"); fi
 git clone ${clone_reference[@]+"${clone_reference[@]}"} --quiet --depth 1 --single-branch --branch gh-pages "https://github.com/$REPO.git" "$work"
 mkdir -p "$work/app"
-for f in index.html icons.js ui.js views.js forms.js recurrence.js editor-layout.js sound-effects.js catalog.js scan-shortcut.js photos.js avatar.js features.js rowmenu.js tutorials.js fresh.js reports.js plan.js insights.js safe-spend.js extras.js receipts.js share.js push.js flow.js installation.js themes.js enhancements.js dashboard.js productivity.js releases.json app.js core.js sync.js i18n.js theme.js style.css themes.css favicon.svg manifest.webmanifest sw.js icon-192.png icon-512.png; do cp "$f" "$work/app/$f"; done
+for f in index.html icons.js ui.js views.js forms.js recurrence.js editor-layout.js sound-effects.js catalog.js scan-shortcut.js photos.js avatar.js features.js rowmenu.js tutorials.js fresh.js contact.js reports.js plan.js insights.js safe-spend.js extras.js receipts.js share.js push.js flow.js installation.js themes.js enhancements.js dashboard.js productivity.js releases.json app.js core.js sync.js i18n.js theme.js style.css themes.css favicon.svg manifest.webmanifest sw.js icon-192.png icon-512.png; do cp "$f" "$work/app/$f"; done
 mkdir -p "$work/app/installation"
 cp installation/*.mp4 installation/*.png "$work/app/installation/"
 mkdir -p "$work/app/assets"

@@ -623,6 +623,60 @@ async function pushTest( req, env, user ) {
 	return reply( req, env, { ok: true, sent: ok, devices: ( rows.results || [] ).length } );
 }
 
+
+/* ------------------------------------------------------------------ Contact form (feedback and bug reports, emailed to the owner) */
+
+const CONTACT_TAGS = new Set( [ 'b', 'strong', 'i', 'em', 'u', 's', 'p', 'br', 'ul', 'ol', 'li', 'h3', 'blockquote', 'code', 'a', 'div', 'span' ] );
+const CONTACT_CATS = [ 'feedback', 'bug', 'idea', 'question', 'other' ];
+const escText = ( s ) => s.replace( /</g, '&lt;' ).replace( />/g, '&gt;' );
+/** Keeps a small set of formatting tags and nothing else: no attributes (links keep an http(s) href), no scripts, no styles. */
+function cleanHtml( html ) {
+	const s = String( html || '' ).slice( 0, 20000 ).replace( /<!--[\s\S]*?-->/g, '' ).replace( /<(script|style|iframe|object|embed)\b[\s\S]*?<\/\1\s*>/gi, '' );
+	const re = /<(\/?)([a-zA-Z][a-zA-Z0-9]*)\b([^>]*)>/g;
+	let out = '', last = 0, m;
+	while ( ( m = re.exec( s ) ) ) {
+		out += escText( s.slice( last, m.index ) );
+		const tag = m[ 2 ].toLowerCase();
+		if ( CONTACT_TAGS.has( tag ) ) {
+			if ( m[ 1 ] ) out += `</${ tag }>`;
+			else if ( tag === 'a' ) { const h = /href\s*=\s*(?:"(https?:\/\/[^"\s<>]{1,500})"|'(https?:\/\/[^'\s<>]{1,500})')/i.exec( m[ 3 ] ); out += h ? `<a href="${ ( h[ 1 ] || h[ 2 ] ).replace( /"/g, '&quot;' ) }">` : '<a>'; }
+			else out += `<${ tag }>`;
+		}
+		last = re.lastIndex;
+	}
+	return out + escText( s.slice( last ) );
+}
+const htmlToText = ( h ) => h.replace( /<\/(p|div|li|h3|blockquote)>|<br>/gi, '\n' ).replace( /<li>/gi, '• ' ).replace( /<[^>]+>/g, '' ).replace( /&lt;/g, '<' ).replace( /&gt;/g, '>' ).replace( /&amp;/g, '&' ).replace( /&nbsp;/g, ' ' ).replace( /\n{3,}/g, '\n\n' ).trim();
+const oneLine = ( v, n ) => String( v || '' ).replace( /[\r\n\t]+/g, ' ' ).trim().slice( 0, n );
+
+async function contact( req, env, ip ) {
+	if ( await limited( env, 'AUTH_LIMITER', 'contact:' + ip ) ) return fail( req, env, 'rate_limited', 429 );
+	const r = await readJson( req );
+	if ( r.tooLarge ) return fail( req, env, 'too_large', 413 );
+	if ( r.bad ) return fail( req, env, 'bad_input' );
+	const b = r.body;
+	if ( b.website ) return reply( req, env, { ok: true } ); // honeypot: bots fill hidden fields
+	const html = cleanHtml( b.html ), text = htmlToText( html );
+	if ( text.length < 5 ) return fail( req, env, 'empty' );
+	const cat = CONTACT_CATS.includes( b.category ) ? b.category : 'other', subject = oneLine( b.subject, 100 );
+	const email = /^[^\s@<>]{1,64}@[^\s@<>]{1,190}\.[^\s@<>]{2,}$/.test( String( b.email || '' ).trim() ) ? String( b.email ).trim() : '';
+	const photos = ( Array.isArray( b.photos ) ? b.photos : [] ).slice( 0, 4 ).filter( ( p ) => typeof p === 'string' && /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test( p ) && p.length <= 600000 );
+	const meta = b.meta && typeof b.meta === 'object' ? b.meta : {};
+	const lines = [ [ 'From', oneLine( b.name, 80 ) || '(not given)' ], [ 'Reply to', email || '(not given)' ], [ 'Type', cat ], [ 'App version', oneLine( meta.version, 20 ) ], [ 'Language', oneLine( meta.lang, 10 ) ], [ 'Plan', oneLine( meta.plan, 20 ) ], [ 'Signed in', meta.signedIn ? 'yes' : 'no' ], [ 'Device', oneLine( meta.ua, 160 ) ] ].filter( ( x ) => x[ 1 ] );
+	const full = `<div style="font-family:system-ui,Arial,sans-serif;font-size:15px;line-height:1.5;color:#1b2430"><table style="font-size:13px;color:#555;border-collapse:collapse;margin-bottom:16px">${ lines.map( ( [ k, v ] ) => `<tr><td style="padding:2px 12px 2px 0"><b>${ escText( k ) }</b></td><td>${ escText( v ) }</td></tr>` ).join( '' ) }</table><div>${ html }</div>${ photos.length ? `<p style="color:#555;font-size:13px">${ photos.length } photo(s) attached.</p>` : '' }</div>`;
+	const subjectLine = `[HABIT HERO CONTACT] ${ cat }${ subject ? ' · ' + subject : '' }`;
+	const plain = lines.map( ( [ k, v ] ) => `${ k }: ${ v }` ).join( '\n' ) + '\n\n' + text;
+	const to = env.CONTACT_TO || 'mindanticipation@gmail.com';
+	if ( env.TEST_MODE === '1' ) {
+		await env.DB.prepare( 'INSERT INTO outbox (to_addr, subject, body, created_at) VALUES (?, ?, ?, ?)' ).bind( to, subjectLine, full + '\nATTACHMENTS:' + photos.length, now() ).run();
+		return reply( req, env, { ok: true } );
+	}
+	if ( ! env.RESEND_API_KEY ) return fail( req, env, 'not_configured', 503 );
+	const payload = { from: env.CONTACT_FROM || env.EMAIL_FROM, to: [ to ], subject: subjectLine, html: full, text: plain, ...( email ? { reply_to: email } : {} ), ...( photos.length ? { attachments: photos.map( ( p, i ) => ( { filename: `photo-${ i + 1 }.jpg`, content: p.slice( p.indexOf( ',' ) + 1 ) } ) ) } : {} ) };
+	const res = await fetch( 'https://api.resend.com/emails', { method: 'POST', headers: { Authorization: `Bearer ${ env.RESEND_API_KEY }`, 'Content-Type': 'application/json' }, body: JSON.stringify( payload ) } ).catch( () => null );
+	return res && res.ok ? reply( req, env, { ok: true } ) : fail( req, env, 'send_failed', 502 );
+}
+
 /* ------------------------------------------------------------------ Exchange rates */
 
 // Public and cheap: one cached row, refreshed at most every 12 hours from the ECB reference rates (units of a currency per 1 EUR).
@@ -668,6 +722,7 @@ export default {
 		if ( path === '/api/push/key' && req.method === 'GET' ) return reply( req, env, { publicKey: env.VAPID_PUBLIC || '' } );
 
 		const ip = req.headers.get( 'CF-Connecting-IP' ) || 'local';
+		if ( path === '/api/contact' && req.method === 'POST' ) return contact( req, env, ip );
 		if ( PUBLIC_POST[ path ] ) {
 			if ( req.method !== 'POST' ) return fail( req, env, 'not_found', 404 );
 			if ( await limited( env, 'AUTH_LIMITER', `${ path }:${ ip }` ) ) return fail( req, env, 'rate_limited', 429 );
