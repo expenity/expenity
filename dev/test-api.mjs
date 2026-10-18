@@ -18,7 +18,7 @@ const PORT = 8792;
 const API = `http://127.0.0.1:${ PORT }`;
 const ORIGIN = 'http://localhost:8766';
 const VAPID = await ( async () => { const k = await wc.subtle.generateKey( { name: 'ECDH', namedCurve: 'P-256' }, true, [ 'deriveBits' ] ); return { pub: Buffer.from( await wc.subtle.exportKey( 'raw', k.publicKey ) ).toString( 'base64url' ), jwk: await wc.subtle.exportKey( 'jwk', k.privateKey ) }; } )();
-const VARS = [ '--var', 'RP_ID:localhost', '--var', `RP_ORIGINS:${ ORIGIN }`, '--var', 'TEST_MODE:1', '--var', `VAPID_PUBLIC:${ VAPID.pub }`, '--var', `VAPID_PRIVATE_JWK:${ JSON.stringify( VAPID.jwk ) }` ];
+const VARS = [ '--var', 'RP_ID:localhost', '--var', `RP_ORIGINS:${ ORIGIN }`, '--var', 'TEST_MODE:1', '--var', 'STATS_TOKEN:testtoken123', '--var', `VAPID_PUBLIC:${ VAPID.pub }`, '--var', `VAPID_PRIVATE_JWK:${ JSON.stringify( VAPID.jwk ) }` ];
 execFileSync( 'npx', [ 'wrangler', 'd1', 'execute', 'expenity', '--local', '--persist-to', PERSIST, '--file=schema.sql' ], { cwd: WORKER, stdio: 'ignore' } );
 const dev = spawn( 'npx', [ 'wrangler', 'dev', '--local', '--persist-to', PERSIST, '--port', String( PORT ), ...VARS ], { cwd: WORKER, stdio: 'ignore' } );
 const stop = () => { dev.kill(); try { rmSync( PERSIST, { recursive: true, force: true } ); } catch ( e ) { /* ignore */ } };
@@ -293,6 +293,21 @@ const mail2 = ( await call( 'GET', `/api/test/outbox?to=${ encodeURIComponent( e
 	const bot = await call( 'POST', '/api/contact', { html: '<p>spam spam spam</p>', website: 'http://x' } );
 	const after = ( await call( 'GET', '/api/test/outbox?to=' + encodeURIComponent( 'mindanticipation@gmail.com' ) ) ).json.mails[ 0 ];
 	ok( bot.status === 200 && after.subject === cm.subject, 'contact: honeypot is silently dropped' );
+}
+{ // anonymous usage statistics
+	const id = 'dev-' + 'a'.repeat(20), ua = { 'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1' };
+	const ping = ( extra = {} ) => call( 'POST', '/api/usage', { id, v: '1.2.3', lang: 'el', nlang: 'el-GR', mode: 'app', cls: 'phone', plan: 'pro', skin: 'sunset', signed: true, chan: 'live', ...extra }, undefined, ua );
+	ok( ( await ping() ).status === 200, 'usage: ping accepted' );
+	ok( ( await ping() ).status === 200, 'usage: same device again the same day' );
+	ok( ( await call( 'POST', '/api/usage', { id: 'short' } ) ).status === 400, 'usage: bad id rejected' );
+	ok( ( await call( 'POST', '/api/usage', { id: 'b'.repeat(24), v: '1.0.0' }, undefined, { 'User-Agent': 'Googlebot/2.1' } ) ).status === 200, 'usage: bots are accepted but not counted' );
+	ok( ( await call( 'GET', '/api/admin/stats?days=7' ) ).status === 401, 'usage: stats need the token' );
+	const st = await call( 'GET', '/api/admin/stats?days=7', undefined, 'testtoken123' );
+	ok( st.status === 200 && st.json.active.today === 1 && st.json.active.devices === 1, 'usage: one device counted once a day', JSON.stringify( st.json && st.json.active ) );
+	const d = st.json.dims;
+	ok( d.os[ 0 ].k === 'iOS' && d.browser[ 0 ].k === 'Safari' && d.lang[ 0 ].k === 'el' && d.plan[ 0 ].k === 'pro' && d.cls[ 0 ].k === 'phone' && d.nlang[ 0 ].k === 'el-gr', 'usage: OS, browser, language, plan and device class are recorded', JSON.stringify( d.os ) );
+	ok( JSON.stringify( st.json ).indexOf( id ) < 0, 'usage: the raw device id is never returned' );
+	ok( typeof st.json.server.accounts === 'number' && Array.isArray( st.json.server.records ), 'usage: server totals are included' );
 }
 const rc = /(\d{6})/.exec( mail2.body )[ 1 ];
 const eo = await call( 'POST', '/api/auth/recover/email/verify', { email, code: rc } );

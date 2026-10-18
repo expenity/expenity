@@ -677,6 +677,68 @@ async function contact( req, env, ip ) {
 	return res && res.ok ? reply( req, env, { ok: true } ) : fail( req, env, 'send_failed', 502 );
 }
 
+
+/* ------------------------------------------------------------------ Anonymous usage statistics (one row per device per day) */
+
+const U_OS = ( ua ) => /iPhone|iPad|iPod/.test( ua ) ? 'iOS' : /Android/.test( ua ) ? 'Android' : /Windows/.test( ua ) ? 'Windows' : /CrOS/.test( ua ) ? 'ChromeOS' : /Mac OS X|Macintosh/.test( ua ) ? 'macOS' : /Linux/.test( ua ) ? 'Linux' : 'Other';
+const U_BROWSER = ( ua ) => /SamsungBrowser/.test( ua ) ? 'Samsung Internet' : /Edg\//.test( ua ) ? 'Edge' : /OPR\/|Opera/.test( ua ) ? 'Opera' : /Firefox|FxiOS/.test( ua ) ? 'Firefox' : /CriOS|Chrome\//.test( ua ) ? 'Chrome' : /Safari\//.test( ua ) ? 'Safari' : 'Other';
+const U_BOT = /bot|crawl|spider|headless|lighthouse|preview|monitor/i;
+const pick = ( v, list, d = '' ) => ( list.includes( v ) ? v : d );
+const isoDay = ( d = new Date() ) => d.toISOString().slice( 0, 10 );
+
+/** Counts a device once a day. No account, email, IP address or financial data is stored: a hashed random device id, country, coarse OS and browser, language and app settings. */
+async function usagePing( req, env, ip ) {
+	if ( await limited( env, 'AUTH_LIMITER', 'usage:' + ip ) ) return fail( req, env, 'rate_limited', 429 );
+	const r = await readJson( req ); if ( r.tooLarge || r.bad ) return fail( req, env, 'bad_request' );
+	const b = r.body, ua = req.headers.get( 'User-Agent' ) || '';
+	if ( typeof b.id !== 'string' || ! /^[A-Za-z0-9-]{16,64}$/.test( b.id ) ) return fail( req, env, 'bad_request' );
+	if ( U_BOT.test( ua ) ) return reply( req, env, { ok: true } );
+	const device = ( await sha256( b.id + ( env.USAGE_SALT || 'expenity-usage' ) ) ).slice( 0, 32 );
+	const row = {
+		country: ( req.cf && /^[A-Z]{2}$/.test( req.cf.country || '' ) ? req.cf.country : '' ), os: U_OS( ua ), browser: U_BROWSER( ua ),
+		lang: pick( String( b.lang || '' ).toLowerCase(), [ 'en', 'el' ] ), nlang: /^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})?$/.test( b.nlang || '' ) ? String( b.nlang ).toLowerCase() : '',
+		mode: pick( b.mode, [ 'app', 'browser' ] ), cls: pick( b.cls, [ 'phone', 'tablet', 'desktop' ] ), plan: pick( b.plan, [ 'basic', 'pro', 'advanced', 'custom' ] ),
+		skin: /^[a-z]{3,12}$/.test( b.skin || '' ) ? b.skin : '', version: /^\d{1,3}\.\d{1,3}\.\d{1,3}$/.test( b.v || '' ) ? b.v : '', signed: b.signed ? 1 : 0, chan: pick( b.chan, [ 'live', 'beta' ], 'live' ),
+	};
+	await env.DB.prepare( 'INSERT INTO usage_daily (day, device, country, os, browser, lang, nlang, mode, cls, plan, skin, version, signed, chan, hits) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,1) ON CONFLICT(day, device) DO UPDATE SET country=excluded.country, os=excluded.os, browser=excluded.browser, lang=excluded.lang, nlang=excluded.nlang, mode=excluded.mode, cls=excluded.cls, plan=excluded.plan, skin=excluded.skin, version=excluded.version, signed=excluded.signed, chan=excluded.chan, hits=hits+1' )
+		.bind( isoDay(), device, row.country, row.os, row.browser, row.lang, row.nlang, row.mode, row.cls, row.plan, row.skin, row.version, row.signed, row.chan ).run();
+	return reply( req, env, { ok: true } );
+}
+
+/** Read by the Mission Control dashboard with a shared secret (STATS_TOKEN). */
+async function adminStats( req, env, url ) {
+	const given = ( req.headers.get( 'Authorization' ) || '' ).replace( /^Bearer /, '' );
+	if ( ! env.STATS_TOKEN || ! given || ( await sha256( given ) ) !== ( await sha256( env.STATS_TOKEN ) ) ) return fail( req, env, 'unauthorized', 401 );
+	const days = Math.max( 1, Math.min( 365, Number( url.searchParams.get( 'days' ) ) || 30 ) ), today = isoDay();
+	const back = ( n ) => isoDay( new Date( Date.now() - n * 864e5 ) ), from = back( days - 1 );
+	const one = async ( sql, ...a ) => ( await env.DB.prepare( sql ).bind( ...a ).first() ) || {};
+	const all = async ( sql, ...a ) => ( ( await env.DB.prepare( sql ).bind( ...a ).all() ).results ) || [];
+	const active = async ( since ) => ( await one( 'SELECT COUNT(DISTINCT device) AS n FROM usage_daily WHERE day >= ?', since ) ).n || 0;
+	const latest = '(SELECT u.* FROM usage_daily u JOIN (SELECT device, MAX(day) AS d FROM usage_daily WHERE day >= ? GROUP BY device) m ON m.device = u.device AND m.d = u.day)';
+	const dim = async ( col ) => all( `SELECT COALESCE(NULLIF(${ col }, ''), 'unknown') AS k, COUNT(*) AS n FROM ${ latest } GROUP BY k ORDER BY n DESC LIMIT 25`, from );
+	const dims = {}; for ( const c of [ 'country', 'os', 'browser', 'lang', 'nlang', 'mode', 'cls', 'plan', 'skin', 'version', 'signed', 'chan' ] ) dims[ c ] = await dim( c );
+	const t = now();
+	return reply( req, env, {
+		days, from, today,
+		active: { today: await active( today ), week: await active( back( 6 ) ), month: await active( back( 29 ) ), range: await active( from ), devices: ( await one( 'SELECT COUNT(DISTINCT device) AS n FROM usage_daily' ) ).n || 0 },
+		series: await all( 'SELECT day AS t, COUNT(*) AS active FROM usage_daily WHERE day >= ? GROUP BY day ORDER BY day', from ),
+		fresh: await all( 'SELECT first AS t, COUNT(*) AS n FROM (SELECT device, MIN(day) AS first FROM usage_daily GROUP BY device) WHERE first >= ? GROUP BY first ORDER BY first', from ),
+		dims,
+		server: {
+			accounts: ( await one( 'SELECT COUNT(*) AS n FROM users' ) ).n || 0,
+			accountsNew: await all( "SELECT strftime('%Y-%m-%d', created_at / 1000, 'unixepoch') AS t, COUNT(*) AS n FROM users WHERE created_at >= ? GROUP BY t ORDER BY t", Date.now() - days * 864e5 ),
+			accountLang: await all( 'SELECT lang AS k, COUNT(*) AS n FROM users GROUP BY lang ORDER BY n DESC' ),
+			passkeys: ( await one( 'SELECT COUNT(*) AS n FROM credentials' ) ).n || 0,
+			sessions: ( await one( 'SELECT COUNT(*) AS n FROM sessions WHERE expires_at > ?', t ) ).n || 0,
+			sharedWallets: ( await one( 'SELECT COUNT(*) AS n FROM spaces' ) ).n || 0,
+			sharedMembers: ( await one( 'SELECT COUNT(*) AS n FROM space_members' ) ).n || 0,
+			pushDevices: ( await one( 'SELECT COUNT(*) AS n FROM push_subs' ) ).n || 0,
+			photos: ( await one( 'SELECT COUNT(*) AS n FROM photos' ) ).n || 0,
+			records: await all( 'SELECT kind AS k, COUNT(*) AS n FROM records WHERE deleted = 0 GROUP BY kind ORDER BY n DESC' ),
+		},
+	} );
+}
+
 /* ------------------------------------------------------------------ Exchange rates */
 
 // Public and cheap: one cached row, refreshed at most every 12 hours from the ECB reference rates (units of a currency per 1 EUR).
@@ -723,6 +785,8 @@ export default {
 
 		const ip = req.headers.get( 'CF-Connecting-IP' ) || 'local';
 		if ( path === '/api/contact' && req.method === 'POST' ) return contact( req, env, ip );
+		if ( path === '/api/usage' && req.method === 'POST' ) return usagePing( req, env, ip );
+		if ( path === '/api/admin/stats' && req.method === 'GET' ) return adminStats( req, env, url );
 		if ( PUBLIC_POST[ path ] ) {
 			if ( req.method !== 'POST' ) return fail( req, env, 'not_found', 404 );
 			if ( await limited( env, 'AUTH_LIMITER', `${ path }:${ ip }` ) ) return fail( req, env, 'rate_limited', 429 );

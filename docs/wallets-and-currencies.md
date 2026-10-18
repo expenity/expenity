@@ -25,3 +25,7 @@ To move money between wallets, press **+** and choose **Transfer**. If the two w
 ## Money set aside for goals
 
 When you add money to a [goal](budgets-goals-income.md#goals), it is taken from a wallet you choose, so the wallet balance drops. That money is not counted as spending in your reports or budgets.
+
+## Wallet colors
+
+Every wallet has a color. By default it follows your theme: the first wallet uses the theme's accent color and the others step around the color wheel from it, so they change when you change the theme. To choose your own, open **More → Wallets**, pick a wallet and choose a color (or **Theme color** to go back to the default, or the **+** swatch for any color you like).

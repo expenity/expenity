@@ -152,3 +152,24 @@ CREATE INDEX IF NOT EXISTS photos_user ON photos(user_id);
 
 -- Small tombstones prevent offline edits from restoring deleted photo references.
 CREATE TABLE IF NOT EXISTS removed_photos (id TEXT PRIMARY KEY);
+
+-- Anonymous usage statistics: one row per device per day (see usagePing in src/index.js). No account, email or IP address.
+CREATE TABLE IF NOT EXISTS usage_daily (
+  day      TEXT NOT NULL,
+  device   TEXT NOT NULL,
+  country  TEXT NOT NULL DEFAULT '',
+  os       TEXT NOT NULL DEFAULT '',
+  browser  TEXT NOT NULL DEFAULT '',
+  lang     TEXT NOT NULL DEFAULT '',
+  nlang    TEXT NOT NULL DEFAULT '',
+  mode     TEXT NOT NULL DEFAULT '',
+  cls      TEXT NOT NULL DEFAULT '',
+  plan     TEXT NOT NULL DEFAULT '',
+  skin     TEXT NOT NULL DEFAULT '',
+  version  TEXT NOT NULL DEFAULT '',
+  signed   INTEGER NOT NULL DEFAULT 0,
+  chan     TEXT NOT NULL DEFAULT 'live',
+  hits     INTEGER NOT NULL DEFAULT 1,
+  PRIMARY KEY (day, device)
+);
+CREATE INDEX IF NOT EXISTS usage_device ON usage_daily(device);
