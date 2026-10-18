@@ -21,5 +21,6 @@ try{
   const nx=page.locator('[data-flow=next]');if(await nx.count())await nx.click();}
  ok(seen.some(h=>/receipt/i.test(h)),'onboarding has the scan-receipt step: '+seen.join(' | '));
  ok(seen.some(h=>/sentence/i.test(h)),'onboarding has the one-sentence step');
+ ok(seen.some(h=>/help icon/i.test(h)),'onboarding mentions the help icon');
  ok(!errors.length,'no errors '+errors.join(';'));
 }finally{await browser.close();server.close();}

@@ -18,7 +18,7 @@ try{
  await page.click('.help-pop [data-hp-open=scan]');ok(await page.locator('.help-pop .tt-steps li').count()===3,'picking one shows it, still in the popup');
  await page.click('[data-hp-close]');ok(await page.locator('.help-pop').count()===0&&await page.inputValue('#txDesc')==='Keep me','closing returns to the form');
  await page.evaluate(()=>UI.closeSheet(true));
- await page.evaluate(()=>EXA.go('activity'));ok(await page.locator('.appbar .help-ic, #appbar .help-ic, .help-ic').count()>=1,'Activity has a help icon');
+ await page.evaluate(()=>EXA.go('activity'));ok(await page.locator('.help-ic').count()>=1,'Activity has a help icon');await page.waitForTimeout(500);await page.screenshot({path:'/tmp/help-ic.png',clip:{x:0,y:0,width:390,height:120}});
  await page.evaluate(()=>EXA.go('more','tutorials'));await page.click('[data-help-toggle]');await page.evaluate(()=>EXA.go('activity'));await page.waitForTimeout(200);
  ok(await page.locator('.help-ic').count()===0,'switching help off removes the icons');
  ok(!errors.length,'no errors '+errors.join(';'));
