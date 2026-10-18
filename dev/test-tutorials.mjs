@@ -13,6 +13,7 @@ try{
  const n=await page.locator('[data-tut]').count();ok(n===17,'seventeen tutorials listed: '+n);
  const ids=await page.evaluate(()=>EXA.tutorials.list().map(x=>x.id));
  for(const id of ids){await page.evaluate(id=>EXA.tutorials.open(id),id);ok(await page.locator('.tt-phone *').count()>5&&await page.locator('.tt-steps li').count()===3,'tutorial '+id+' renders with three steps');await page.evaluate(()=>UI.closeSheet(true));}
+ await page.evaluate(()=>EXA.tutorials.open('scan'));await page.click('[data-tut-nav=next]');ok(await page.evaluate(()=>EXA.tutorials.current==='swipe'),'next arrow goes to the next tutorial');await page.click('[data-tut-nav=prev]');ok(await page.evaluate(()=>EXA.tutorials.current==='scan'),'previous arrow goes back');ok(await page.locator('[data-tut-nav=prev]').isDisabled(),'previous is disabled on the first');await page.evaluate(()=>UI.closeSheet(true));
  await page.evaluate(()=>EXA.tutorials.start());await page.waitForSelector('[data-tour=next]');
  ok(await page.locator('.tt-count').count()===1,'tour shows step count');
  await page.click('[data-tour=skip]');ok(await page.evaluate(()=>EX.state().device.tourDone===true),'skipping ends the tour');
