@@ -3,6 +3,8 @@
 # served by GitHub Pages.
 set -euo pipefail
 cd "$(dirname "$0")/.."
+node dev/check-greek-fonts.mjs # every font stack must start with a bundled font that has Greek
+node dev/check-plan-names.mjs # Basic, Pro and Advanced are never translated
 REPO="expenity/expenity"
 node website/build.mjs
 work="$(mktemp -d)"

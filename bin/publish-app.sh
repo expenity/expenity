@@ -2,6 +2,8 @@
 # Publish only /app on Pages. Keep the landing site, documentation and blog untouched.
 set -euo pipefail
 cd "$(dirname "$0")/.."
+node dev/check-greek-fonts.mjs # every font stack must start with a bundled font that has Greek
+node dev/check-plan-names.mjs # Basic, Pro and Advanced are never translated
 work="$(mktemp -d)"
 clone_reference=()
 if [ -n "${EXPENITY_DEPLOY_REFERENCE:-}" ]; then clone_reference=(--reference-if-able "$EXPENITY_DEPLOY_REFERENCE"); fi

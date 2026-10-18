@@ -7,7 +7,7 @@
    "steps": [
     "Press and hold the + button for half a second (on a computer, click Add, then Scan receipt).",
     "Take a photo of the receipt or choose one. The merchant, total and date are read on your device.",
-    "Check the fields, then apply. Use Re-scan on the entry any time to read it again."
+    "Check the fields, then apply. Use Re-scan receipt on the entry any time to read it again."
    ],
    "demo": "<div class=\"tt-phone fancy\" aria-hidden=\"true\"><div class=\"tt-screen\"><div class=\"tt-row\"><i class=\"tt-ic c0\"></i><span><b></b><u></u></span><em></em></div><div class=\"tt-row\"><i class=\"tt-ic c1\"></i><span><b></b><u></u></span><em></em></div><div class=\"tt-row\"><i class=\"tt-ic c2\"></i><span><b></b><u></u></span><em></em></div></div><div class=\"tt-bar\"><i></i><i></i><s class=\"tt-fab\"></s><i></i><i></i></div><span class=\"tt-ring\"></span><span class=\"tt-finger scan\"></span>\n\t\t\t<div class=\"tt-sheet scan\"><div class=\"tt-receipt\"><b></b><u></u><u></u><u></u><u class=\"tot\"></u><i class=\"tt-scanline\"></i></div><div class=\"tt-fields\"><span class=\"f1\"></span><span class=\"f2\"></span></div><svg class=\"tt-check\" viewBox=\"0 0 24 24\" width=\"34\" height=\"34\"><circle cx=\"12\" cy=\"12\" r=\"11\" fill=\"#22a06b\"/><path d=\"M6.5 12.5l3.8 3.8 7.2-8\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></div></div>"
   },
@@ -17,7 +17,7 @@
    "steps": [
     "Κρατήστε πατημένο το κουμπί + για μισό δευτερόλεπτο (σε υπολογιστή, πατήστε Προσθήκη και μετά Σάρωση απόδειξης).",
     "Τραβήξτε φωτογραφία της απόδειξης ή διαλέξτε μία. Το κατάστημα, το σύνολο και η ημερομηνία διαβάζονται στη συσκευή σας.",
-    "Ελέγξτε τα πεδία και εφαρμόστε τα. Χρησιμοποιήστε Νέα σάρωση στην εγγραφή όποτε θέλετε."
+    "Ελέγξτε τα πεδία και εφαρμόστε τα. Χρησιμοποιήστε Νέα σάρωση απόδειξης στην εγγραφή όποτε θέλετε."
    ],
    "demo": "<div class=\"tt-phone fancy\" aria-hidden=\"true\"><div class=\"tt-screen\"><div class=\"tt-row\"><i class=\"tt-ic c0\"></i><span><b></b><u></u></span><em></em></div><div class=\"tt-row\"><i class=\"tt-ic c1\"></i><span><b></b><u></u></span><em></em></div><div class=\"tt-row\"><i class=\"tt-ic c2\"></i><span><b></b><u></u></span><em></em></div></div><div class=\"tt-bar\"><i></i><i></i><s class=\"tt-fab\"></s><i></i><i></i></div><span class=\"tt-ring\"></span><span class=\"tt-finger scan\"></span>\n\t\t\t<div class=\"tt-sheet scan\"><div class=\"tt-receipt\"><b></b><u></u><u></u><u></u><u class=\"tot\"></u><i class=\"tt-scanline\"></i></div><div class=\"tt-fields\"><span class=\"f1\"></span><span class=\"f2\"></span></div><svg class=\"tt-check\" viewBox=\"0 0 24 24\" width=\"34\" height=\"34\"><circle cx=\"12\" cy=\"12\" r=\"11\" fill=\"#22a06b\"/><path d=\"M6.5 12.5l3.8 3.8 7.2-8\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></div></div>"
   }
@@ -29,7 +29,7 @@
    "desc": "Drag left or right for quick actions",
    "steps": [
     "Drag an entry or bill to the left to reveal Edit, Duplicate and Delete.",
-    "Drag a bill to the right to reveal Paid.",
+    "Drag a bill to the right to reveal Mark paid.",
     "Nothing happens until you tap a button, and the row slides back after two seconds."
    ],
    "demo": "<div class=\"tt-phone fancy\" aria-hidden=\"true\"><div class=\"tt-screen\"><div class=\"tt-row\"><i class=\"tt-ic c0\"></i><span><b></b><u></u></span><em></em></div><div class=\"tt-sw\"><div class=\"tt-back\"><s class=\"g\">✓</s><s class=\"b\">✎</s><s class=\"b2\">⧉</s><s class=\"r\">✕</s></div><div class=\"tt-front\"><i class=\"tt-ic c1\"></i><span><b></b><u></u></span><em></em></div></div><div class=\"tt-row\"><i class=\"tt-ic c0\"></i><span><b></b><u></u></span><em></em></div></div><div class=\"tt-bar\"><i></i><i></i><s class=\"tt-fab dim\"></s><i></i><i></i></div><span class=\"tt-finger swipe\"></span></div>"
@@ -38,8 +38,8 @@
    "title": "Σύρσιμο εγγραφής",
    "desc": "Σύρετε αριστερά ή δεξιά για γρήγορες ενέργειες",
    "steps": [
-    "Σύρετε μια εγγραφή ή έναν λογαριασμό προς τα αριστερά για Επεξεργασία, Αντιγραφή και Διαγραφή.",
-    "Σύρετε έναν λογαριασμό προς τα δεξιά για Πληρώθηκε.",
+    "Σύρετε μια εγγραφή ή έναν λογαριασμό προς τα αριστερά για να εμφανιστούν τα Επεξεργασία, Αντιγραφή ως νέο και Διαγραφή.",
+    "Σύρετε έναν λογαριασμό προς τα δεξιά για να εμφανιστεί το Πληρώθηκε.",
     "Δεν γίνεται τίποτα μέχρι να πατήσετε κουμπί, και η γραμμή επιστρέφει μετά από δύο δευτερόλεπτα."
    ],
    "demo": "<div class=\"tt-phone fancy\" aria-hidden=\"true\"><div class=\"tt-screen\"><div class=\"tt-row\"><i class=\"tt-ic c0\"></i><span><b></b><u></u></span><em></em></div><div class=\"tt-sw\"><div class=\"tt-back\"><s class=\"g\">✓</s><s class=\"b\">✎</s><s class=\"b2\">⧉</s><s class=\"r\">✕</s></div><div class=\"tt-front\"><i class=\"tt-ic c1\"></i><span><b></b><u></u></span><em></em></div></div><div class=\"tt-row\"><i class=\"tt-ic c0\"></i><span><b></b><u></u></span><em></em></div></div><div class=\"tt-bar\"><i></i><i></i><s class=\"tt-fab dim\"></s><i></i><i></i></div><span class=\"tt-finger swipe\"></span></div>"
@@ -52,7 +52,7 @@
    "desc": "A quick menu on any entry",
    "steps": [
     "Press and hold an entry or bill for half a second.",
-    "A menu opens with Edit, Duplicate and Delete (Paid for bills).",
+    "A menu opens with Edit, Duplicate and Delete (Mark paid for bills).",
     "No need to hold: dragging the row sideways does the same."
    ],
    "demo": "<div class=\"tt-phone fancy\" aria-hidden=\"true\"><div class=\"tt-screen\"><div class=\"tt-row\"><i class=\"tt-ic c0\"></i><span><b></b><u></u></span><em></em></div><div class=\"tt-row held\"><i class=\"tt-ic c1\"></i><span><b></b><u></u></span><em></em><span class=\"tt-ring row\"></span></div><div class=\"tt-row\"><i class=\"tt-ic c0\"></i><span><b></b><u></u></span><em></em></div></div><div class=\"tt-bar\"><i></i><i></i><s class=\"tt-fab dim\"></s><i></i><i></i></div><span class=\"tt-finger hold\"></span><div class=\"tt-menu\"><p>✎</p><p>⧉</p><p class=\"d\">✕</p></div></div>"
@@ -62,7 +62,7 @@
    "desc": "Γρήγορο μενού σε κάθε εγγραφή",
    "steps": [
     "Κρατήστε πατημένη μια εγγραφή ή έναν λογαριασμό για μισό δευτερόλεπτο.",
-    "Ανοίγει μενού με Επεξεργασία, Αντιγραφή και Διαγραφή (Πληρώθηκε για λογαριασμούς).",
+    "Ανοίγει μενού με Επεξεργασία, Αντιγραφή ως νέο και Διαγραφή (Πληρώθηκε για λογαριασμούς).",
     "Δεν χρειάζεται να κρατάτε: το σύρσιμο στο πλάι κάνει το ίδιο."
    ],
    "demo": "<div class=\"tt-phone fancy\" aria-hidden=\"true\"><div class=\"tt-screen\"><div class=\"tt-row\"><i class=\"tt-ic c0\"></i><span><b></b><u></u></span><em></em></div><div class=\"tt-row held\"><i class=\"tt-ic c1\"></i><span><b></b><u></u></span><em></em><span class=\"tt-ring row\"></span></div><div class=\"tt-row\"><i class=\"tt-ic c0\"></i><span><b></b><u></u></span><em></em></div></div><div class=\"tt-bar\"><i></i><i></i><s class=\"tt-fab dim\"></s><i></i><i></i></div><span class=\"tt-finger hold\"></span><div class=\"tt-menu\"><p>✎</p><p>⧉</p><p class=\"d\">✕</p></div></div>"
@@ -120,7 +120,7 @@
    "title": "Wallets",
    "desc": "Cash, cards and accounts",
    "steps": [
-    "Open More, Money organisation, Wallets and tap Add wallet.",
+    "Open More → Money organisation → Wallets and tap Add wallet.",
     "Name it, choose its type and currency, and set the money it starts with.",
     "Every entry belongs to a wallet, and balances stay separate for each one."
    ],
@@ -130,7 +130,7 @@
    "title": "Πορτοφόλια",
    "desc": "Μετρητά, κάρτες και λογαριασμοί",
    "steps": [
-    "Ανοίξτε Περισσότερα, Οργάνωση οικονομικών, Πορτοφόλια και πατήστε Προσθήκη πορτοφολιού.",
+    "Ανοίξτε Περισσότερα → Οργάνωση οικονομικών → Πορτοφόλια και πατήστε Προσθήκη πορτοφολιού.",
     "Δώστε όνομα, διαλέξτε τύπο και νόμισμα και ορίστε τα χρήματα με τα οποία ξεκινά.",
     "Κάθε εγγραφή ανήκει σε ένα πορτοφόλι και τα υπόλοιπα μένουν χωριστά για το καθένα."
    ],
@@ -167,7 +167,7 @@
    "desc": "Never miss a due date",
    "steps": [
     "Add a bill with its due date and amount.",
-    "When it is due, swipe it right and tap Paid. The payment is recorded as an expense.",
+    "When it is due, swipe it right and tap Mark paid. The payment is recorded as an expense.",
     "Repeating bills move on to their next date by themselves."
    ],
    "demo": "<div class=\"tt-phone fancy\" aria-hidden=\"true\"><div class=\"tt-screen\"><div class=\"tt-sw\"><div class=\"tt-back\"><s class=\"g\">✓</s></div><div class=\"tt-front bill\"><i class=\"tt-ic c2\"></i><span><b></b><u></u></span><em class=\"late\"></em></div></div><div class=\"tt-row\"><i class=\"tt-ic c0\"></i><span><b></b><u></u></span><em></em></div><div class=\"tt-row\"><i class=\"tt-ic c1\"></i><span><b></b><u></u></span><em></em></div></div><div class=\"tt-bar\"><i></i><i></i><s class=\"tt-fab dim\"></s><i></i><i></i></div><span class=\"tt-finger bill\"></span></div>"
@@ -212,7 +212,7 @@
    "title": "Budgets and goals",
    "desc": "Set a limit, save for something",
    "steps": [
-    "Open Plan from Home or More and add a monthly budget for a category.",
+    "Open More → Money organisation → Budgets & goals and add a monthly budget for a category.",
     "The bar fills as you spend and warns you before the limit.",
     "Add money to a goal and watch the ring fill up."
    ],
@@ -222,7 +222,7 @@
    "title": "Προϋπολογισμοί και στόχοι",
    "desc": "Ορίστε όριο, αποταμίευσε για κάτι",
    "steps": [
-    "Ανοίξτε το Πλάνο από την Αρχική ή τα Περισσότερα και προσθέστε μηνιαίο προϋπολογισμό για μια κατηγορία.",
+    "Ανοίξτε Περισσότερα → Οργάνωση οικονομικών → Προϋπολογισμοί & στόχοι και προσθέστε μηνιαίο προϋπολογισμό για μια κατηγορία.",
     "Η μπάρα γεμίζει όσο ξοδεύετε και σας προειδοποιεί πριν από το όριο.",
     "Προσθέστε χρήματα σε έναν στόχο και δείτε τον κύκλο να γεμίζει."
    ],
@@ -246,7 +246,7 @@
    "desc": "Δείτε πού πάνε τα χρήματά σας",
    "steps": [
     "Ανοίξτε τις Αναφορές. Το Όλα δείχνει τα πάντα με μια ματιά.",
-    "Άλλαξε καρτέλες για κατηγορίες, τάσεις και συνδρομές.",
+    "Αλλάξτε καρτέλες για κατηγορίες, τάσεις και συνδρομές.",
     "Πατήστε ένα γράφημα για τα στοιχεία πίσω από αυτό."
    ],
    "demo": "<div class=\"tt-phone fancy\" aria-hidden=\"true\"><div class=\"tt-screen\"><div class=\"tt-tabs\"><s class=\"tt-hl\" style=\"--d:0s\"></s><s class=\"tt-hl\" style=\"--d:1.4s\"></s><s class=\"tt-hl\" style=\"--d:2.8s\"></s></div><div class=\"tt-bars\"><i class=\"tt-bar-i\" style=\"--h:40%;animation-delay:0s\"></i><i class=\"tt-bar-i\" style=\"--h:70%;animation-delay:0.15s\"></i><i class=\"tt-bar-i\" style=\"--h:55%;animation-delay:0.3s\"></i><i class=\"tt-bar-i\" style=\"--h:85%;animation-delay:0.44999999999999996s\"></i><i class=\"tt-bar-i\" style=\"--h:60%;animation-delay:0.6s\"></i><i class=\"tt-bar-i\" style=\"--h:95%;animation-delay:0.75s\"></i></div></div><div class=\"tt-bar\"><i></i><i></i><s class=\"tt-fab dim\"></s><i></i><i></i></div></div>"
@@ -258,7 +258,7 @@
    "title": "Notifications",
    "desc": "Reminders even when the app is closed",
    "steps": [
-    "Sign in, then open More, Reminders.",
+    "Sign in, then open More → Make it yours → Reminders and calendar.",
     "Turn notifications on and choose the hour you want your summary.",
     "On iPhone, add Expenity to your home screen first."
    ],
@@ -268,7 +268,7 @@
    "title": "Ειδοποιήσεις",
    "desc": "Υπενθυμίσεις ακόμα και με κλειστή εφαρμογή",
    "steps": [
-    "Συνδεθείτε και ανοίξτε Περισσότερα, Υπενθυμίσεις.",
+    "Συνδεθείτε και ανοίξτε Περισσότερα → Προσαρμογή εφαρμογής → Υπενθυμίσεις και ημερολόγιο.",
     "Ενεργοποιήστε τις ειδοποιήσεις και διαλέξτε την ώρα της σύνοψης.",
     "Στο iPhone, προσθέστε πρώτα το Expenity στην αρχική οθόνη."
    ],
@@ -281,7 +281,7 @@
    "title": "Themes and the pencil",
    "desc": "Make a theme your own",
    "steps": [
-    "Open More, Appearance and pick a theme.",
+    "Open More → Make it yours → Appearance and language and pick a theme.",
     "Tap the pencil on a theme to change its colors, font and roundness.",
     "Layout and positions never change, only the look."
    ],
@@ -291,7 +291,7 @@
    "title": "Θέματα και μολύβι",
    "desc": "Κάντε ένα θέμα δικό σας",
    "steps": [
-    "Ανοίξτε Περισσότερα, Εμφάνιση και διαλέξτε θέμα.",
+    "Ανοίξτε Περισσότερα → Προσαρμογή εφαρμογής → Εμφάνιση και γλώσσα και διαλέξτε θέμα.",
     "Πατήστε το μολύβι σε ένα θέμα για να αλλάξετε χρώματα, γραμματοσειρά και στρογγυλότητα.",
     "Η διάταξη και οι θέσεις δεν αλλάζουν ποτέ, μόνο η εμφάνιση."
    ],
@@ -304,8 +304,8 @@
    "title": "Features and plans",
    "desc": "Show only what you need",
    "steps": [
-    "Open More, Features and choose Basic, Pro or Advanced.",
-    "Open “Build your own” and flip any feature on or off with a toggle.",
+    "Open More → Make it yours → Features and choose Basic, Pro or Advanced.",
+    "Open Build your own and flip any feature on or off with a toggle.",
     "Nothing is deleted when you hide a feature."
    ],
    "demo": "<div class=\"tt-phone fancy\" aria-hidden=\"true\"><div class=\"tt-screen\"><div class=\"tt-plan tt-hl\" style=\"--d:0s\"><b></b><u></u></div><div class=\"tt-plan tt-hl\" style=\"--d:1.6s\"><b></b><u></u></div><div class=\"tt-plan tt-hl\" style=\"--d:3.2s\"><b></b><u></u></div><div class=\"tt-trow\"><span><b></b></span><i class=\"tt-tog\" style=\"--d:0s\"></i></div><div class=\"tt-trow\"><span><b></b></span><i class=\"tt-tog\" style=\"--d:0.8s\"></i></div><div class=\"tt-trow\"><span><b></b></span><i class=\"tt-tog\" style=\"--d:1.6s\"></i></div></div><div class=\"tt-bar\"><i></i><i></i><s class=\"tt-fab dim\"></s><i></i><i></i></div></div>"
@@ -314,8 +314,8 @@
    "title": "Λειτουργίες και πακέτα",
    "desc": "Δείτε μόνο ό,τι χρειάζεστε",
    "steps": [
-    "Ανοίξτε Περισσότερα, Λειτουργίες και διαλέξτε Βασικό, Pro ή Προχωρημένο.",
-    "Ανοίξτε το «Φτιάξτε το δικό σας» και άλλαξε οποιαδήποτε λειτουργία με διακόπτη.",
+    "Ανοίξτε Περισσότερα → Προσαρμογή εφαρμογής → Λειτουργίες και διαλέξτε Basic, Pro ή Advanced.",
+    "Ανοίξτε το Φτιάξτε το δικό σας και αλλάξτε οποιαδήποτε λειτουργία με διακόπτη.",
     "Δεν διαγράφεται τίποτα όταν κρύβετε μια λειτουργία."
    ],
    "demo": "<div class=\"tt-phone fancy\" aria-hidden=\"true\"><div class=\"tt-screen\"><div class=\"tt-plan tt-hl\" style=\"--d:0s\"><b></b><u></u></div><div class=\"tt-plan tt-hl\" style=\"--d:1.6s\"><b></b><u></u></div><div class=\"tt-plan tt-hl\" style=\"--d:3.2s\"><b></b><u></u></div><div class=\"tt-trow\"><span><b></b></span><i class=\"tt-tog\" style=\"--d:0s\"></i></div><div class=\"tt-trow\"><span><b></b></span><i class=\"tt-tog\" style=\"--d:0.8s\"></i></div><div class=\"tt-trow\"><span><b></b></span><i class=\"tt-tog\" style=\"--d:1.6s\"></i></div></div><div class=\"tt-bar\"><i></i><i></i><s class=\"tt-fab dim\"></s><i></i><i></i></div></div>"
@@ -327,7 +327,7 @@
    "title": "Profile picture",
    "desc": "A character or your own photo",
    "steps": [
-    "Open More, Profile picture.",
+    "Open More → Profile picture.",
     "Tap a character or use your photo. A green check marks your choice.",
     "Press Save. A soft pulse on the picture means you are offline."
    ],
@@ -337,7 +337,7 @@
    "title": "Εικόνα προφίλ",
    "desc": "Ένας χαρακτήρας ή η δική σας φωτογραφία",
    "steps": [
-    "Ανοίξτε Περισσότερα, Εικόνα προφίλ.",
+    "Ανοίξτε Περισσότερα → Εικόνα προφίλ.",
     "Πατήστε έναν χαρακτήρα ή βάλτε φωτογραφία. Ένα πράσινο σημάδι δείχνει την επιλογή σας.",
     "Πατήστε Αποθήκευση. Ένας απαλός παλμός στην εικόνα σημαίνει ότι είστε εκτός σύνδεσης."
    ],
@@ -347,22 +347,22 @@
  "home": {
   "fresh": false,
   "en": {
-   "title": "Edit Home",
+   "title": "Personalise Home",
    "desc": "Move, hide and resize cards",
    "steps": [
-    "Open More, Make it yours, Edit Home (or hold a card).",
-    "Drag cards to reorder them and use the size controls.",
-    "Press Done to keep your layout."
+    "Open More → Make it yours → Personalise Home (or press and hold a card).",
+    "Drag cards to reorder them. Drag a card’s corner to resize it.",
+    "When you are done, press Done to save your layout."
    ],
    "demo": "<div class=\"tt-phone fancy\" aria-hidden=\"true\"><div class=\"tt-screen\"><div class=\"tt-hcards\"><div class=\"tt-hc a\"></div><div class=\"tt-hc b\"></div><div class=\"tt-hc c\"></div></div></div><div class=\"tt-bar\"><i></i><i></i><s class=\"tt-fab dim\"></s><i></i><i></i></div><span class=\"tt-finger home\"></span></div>"
   },
   "el": {
-   "title": "Επεξεργασία Αρχικής",
+   "title": "Προσαρμογή Αρχικής",
    "desc": "Μετακίνηση, απόκρυψη και αλλαγή μεγέθους καρτών",
    "steps": [
-    "Ανοίξτε Περισσότερα, Κάν’ το δικό σας, Επεξεργασία Αρχικής (ή κρατήστε πατημένη μια κάρτα).",
-    "Σύρετε τις κάρτες για να τις αναδιατάξετε και χρησιμοποιήστε τα χειριστήρια μεγέθους.",
-    "Πατήστε Τέλος για να κρατήσεις τη διάταξή σας."
+    "Ανοίξτε Περισσότερα → Προσαρμογή εφαρμογής → Προσαρμογή Αρχικής (ή πατήστε παρατεταμένα μια κάρτα).",
+    "Σύρετε τις κάρτες για να αλλάξετε τη σειρά τους. Τραβήξτε τη γωνία μιας κάρτας για να αλλάξετε το μέγεθός της.",
+    "Όταν τελειώσετε, πατήστε Έτοιμο για να αποθηκευτεί η διάταξή σας."
    ],
    "demo": "<div class=\"tt-phone fancy\" aria-hidden=\"true\"><div class=\"tt-screen\"><div class=\"tt-hcards\"><div class=\"tt-hc a\"></div><div class=\"tt-hc b\"></div><div class=\"tt-hc c\"></div></div></div><div class=\"tt-bar\"><i></i><i></i><s class=\"tt-fab dim\"></s><i></i><i></i></div><span class=\"tt-finger home\"></span></div>"
   }
@@ -421,7 +421,7 @@
    "steps": [
     "In Activity, tap the magnifier, then Filters.",
     "Set a minimum and maximum amount and a date range. Tags work too.",
-    "The list updates at once. Clear removes every filter."
+    "The list updates at once. Clear filters removes every filter."
    ],
    "demo": "<div class=\"tt-phone fancy\" aria-hidden=\"true\"><div class=\"tt-screen\"><div class=\"tt-fgrid\"><div class=\"tt-inp tt-hl\" style=\"--d:0s\"><b>5</b></div><div class=\"tt-inp tt-hl\" style=\"--d:0.9s\"><b>50</b></div><div class=\"tt-inp tt-hl\" style=\"--d:1.8s\"><b>1/10</b></div><div class=\"tt-inp tt-hl\" style=\"--d:2.7s\"><b>31/10</b></div></div><div class=\"tt-row fade1\"><i class=\"tt-ic\"></i><span><b></b><u></u></span><em></em></div><div class=\"tt-row\"><i class=\"tt-ic c1\"></i><span><b></b><u></u></span><em></em></div><div class=\"tt-row fade2\"><i class=\"tt-ic c2\"></i><span><b></b><u></u></span><em></em></div></div><div class=\"tt-bar\"><i></i><i></i><s class=\"tt-fab dim\"></s><i></i><i></i></div></div>"
   },
@@ -431,7 +431,7 @@
    "steps": [
     "Στις Κινήσεις, πατήστε τον μεγεθυντικό φακό και μετά Φίλτρα.",
     "Ορίστε ελάχιστο και μέγιστο ποσό και εύρος ημερομηνιών. Δουλεύουν και οι ετικέτες.",
-    "Η λίστα ενημερώνεται αμέσως. Το Καθαρισμός αφαιρεί όλα τα φίλτρα."
+    "Η λίστα ενημερώνεται αμέσως. Το κουμπί Καθαρισμός φίλτρων αφαιρεί όλα τα φίλτρα."
    ],
    "demo": "<div class=\"tt-phone fancy\" aria-hidden=\"true\"><div class=\"tt-screen\"><div class=\"tt-fgrid\"><div class=\"tt-inp tt-hl\" style=\"--d:0s\"><b>5</b></div><div class=\"tt-inp tt-hl\" style=\"--d:0.9s\"><b>50</b></div><div class=\"tt-inp tt-hl\" style=\"--d:1.8s\"><b>1/10</b></div><div class=\"tt-inp tt-hl\" style=\"--d:2.7s\"><b>31/10</b></div></div><div class=\"tt-row fade1\"><i class=\"tt-ic\"></i><span><b></b><u></u></span><em></em></div><div class=\"tt-row\"><i class=\"tt-ic c1\"></i><span><b></b><u></u></span><em></em></div><div class=\"tt-row fade2\"><i class=\"tt-ic c2\"></i><span><b></b><u></u></span><em></em></div></div><div class=\"tt-bar\"><i></i><i></i><s class=\"tt-fab dim\"></s><i></i><i></i></div></div>"
   }
@@ -443,7 +443,7 @@
    "desc": "Changed your mind? Restore it",
    "steps": [
     "Delete an entry or bill: swipe, hold or use the menu.",
-    "It moves to More, Recently deleted and stays for 30 days.",
+    "It moves to More → Account & data → Recently deleted and stays for 30 days.",
     "Tap Restore to bring it back as a fresh entry."
    ],
    "demo": "<div class=\"tt-phone fancy\" aria-hidden=\"true\"><div class=\"tt-screen\"><div class=\"tt-row tt-del\"><i class=\"tt-ic\"></i><span><b></b><u></u></span><em></em></div><div class=\"tt-row\"><i class=\"tt-ic c0\"></i><span><b></b><u></u></span><em></em></div><div class=\"tt-bin\">🗑</div><div class=\"tt-back-row tt-restore\"><i class=\"tt-ic\"></i><span><b></b><u></u></span><s>↺</s></div></div><div class=\"tt-bar\"><i></i><i></i><s class=\"tt-fab dim\"></s><i></i><i></i></div></div>"
@@ -452,8 +452,8 @@
    "title": "Πρόσφατα διαγραμμένα",
    "desc": "Αλλάξατε γνώμη; Επανάφερέ το",
    "steps": [
-    "Διέγραψε μια εγγραφή ή έναν λογαριασμό: σύρσιμο, παρατεταμένο πάτημα ή μενού.",
-    "Πηγαίνει στο Περισσότερα, Πρόσφατα διαγραμμένα και μένει για 30 ημέρες.",
+    "Διαγράψτε μια εγγραφή ή έναν λογαριασμό: με σύρσιμο, με παρατεταμένο πάτημα ή από το μενού.",
+    "Πηγαίνει στο Περισσότερα → Λογαριασμός και δεδομένα → Πρόσφατα διαγραμμένα και μένει για 30 ημέρες.",
     "Πατήστε Επαναφορά για να το φέρετε πίσω ως νέα εγγραφή."
    ],
    "demo": "<div class=\"tt-phone fancy\" aria-hidden=\"true\"><div class=\"tt-screen\"><div class=\"tt-row tt-del\"><i class=\"tt-ic\"></i><span><b></b><u></u></span><em></em></div><div class=\"tt-row\"><i class=\"tt-ic c0\"></i><span><b></b><u></u></span><em></em></div><div class=\"tt-bin\">🗑</div><div class=\"tt-back-row tt-restore\"><i class=\"tt-ic\"></i><span><b></b><u></u></span><s>↺</s></div></div><div class=\"tt-bar\"><i></i><i></i><s class=\"tt-fab dim\"></s><i></i><i></i></div></div>"
@@ -498,7 +498,7 @@
    "title": "Ειδοποιήσεις αύξησης τιμής",
    "desc": "Εντόπισε λογαριασμούς που ακρίβυναν αθόρυβα",
    "steps": [
-    "Πλήρωσε έναν λογαριασμό όπως πάντα.",
+    "Πληρώστε έναν λογαριασμό όπως πάντα.",
     "Αν είναι υψηλότερος από την προηγούμενη πληρωμή, το Expenity σας λέει πόσο.",
     "Ένα μικρό κόκκινο σήμα μένει στον λογαριασμό για να τον ελέγξετε."
    ],
@@ -557,9 +557,9 @@
    "title": "Backup and reset account",
    "desc": "Export your data or begin again",
    "steps": [
-    "Open More, Data to download a backup or a spreadsheet.",
+    "Open More → Account & data → Data and backup to download a backup or a spreadsheet.",
     "Restore a backup from the same page.",
-    "Want a clean slate? Account, Reset account removes everything on all your devices and takes you through setup again."
+    "Want a clean slate? Tap your profile at the top of More, then Reset account. It removes everything on all your devices and takes you through setup again."
    ],
    "demo": "<div class=\"tt-phone fancy\" aria-hidden=\"true\"><div class=\"tt-screen\"><div class=\"tt-file tt-in\" style=\"--d:0s\">⭳</div><div class=\"tt-reset tt-in\" style=\"--d:2.4s\">↺</div><div class=\"tt-row\"><i class=\"tt-ic c0\"></i><span><b></b><u></u></span><em></em></div></div><div class=\"tt-bar\"><i></i><i></i><s class=\"tt-fab dim\"></s><i></i><i></i></div></div>"
   },
@@ -567,9 +567,9 @@
    "title": "Αντίγραφο και επαναφορά λογαριασμού",
    "desc": "Εξαγωγή δεδομένων ή ξεκίνημα από την αρχή",
    "steps": [
-    "Ανοίξτε Περισσότερα, Δεδομένα για να κατεβάσετε αντίγραφο ή λογιστικό φύλλο.",
+    "Ανοίξτε Περισσότερα → Λογαριασμός και δεδομένα → Δεδομένα και αντίγραφο για να κατεβάσετε αντίγραφο ή λογιστικό φύλλο.",
     "Επαναφέρετε αντίγραφο από την ίδια σελίδα.",
-    "Θέλετε καθαρή αρχή; Λογαριασμός, Επαναφορά λογαριασμού αφαιρεί τα πάντα σε όλες τις συσκευές σας και σας πάει ξανά στη ρύθμιση."
+    "Θέλετε καθαρή αρχή; Πατήστε το προφίλ σας στην κορυφή του Περισσότερα και μετά Επαναφορά λογαριασμού. Αφαιρεί τα πάντα σε όλες τις συσκευές σας και σας πηγαίνει ξανά στη ρύθμιση."
    ],
    "demo": "<div class=\"tt-phone fancy\" aria-hidden=\"true\"><div class=\"tt-screen\"><div class=\"tt-file tt-in\" style=\"--d:0s\">⭳</div><div class=\"tt-reset tt-in\" style=\"--d:2.4s\">↺</div><div class=\"tt-row\"><i class=\"tt-ic c0\"></i><span><b></b><u></u></span><em></em></div></div><div class=\"tt-bar\"><i></i><i></i><s class=\"tt-fab dim\"></s><i></i><i></i></div></div>"
   }
