@@ -15,7 +15,7 @@ try{
  await page.evaluate(()=>EXA.go('more','features'));
  ok(await page.locator('[data-fx-plan]').count()===3,'three plans');
  await page.click('[data-fx-plan=basic]');
- ok(await page.evaluate(()=>document.documentElement.dataset.off.split(' ').length===14),'Basic switches all fourteen optional features off');
+ ok(await page.evaluate(()=>document.documentElement.dataset.off.split(' ').length===EXA.features.list.filter(f=>f.tier!=='basic').length),'Basic switches every optional feature off');
  await page.click('[data-fx-plan=pro]');
  ok(await page.evaluate(()=>EX.feature('tags')&&!EX.feature('receipts')&&!EX.feature('sounds')),'Pro has tags, not receipts or sounds');
  await page.click('details:has(.fx-rows) summary');await page.click('[data-fx-toggle=receipts] ');

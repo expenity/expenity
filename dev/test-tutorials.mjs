@@ -10,7 +10,7 @@ const ok=(v,s)=>{assert(v,s);console.log('ok',s);};
 try{
  await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.tutorials&&!!EXA.startFresh);await page.evaluate(()=>{EXA.skipFlow();});
  await page.evaluate(()=>EXA.go('more','tutorials'));
- const n=await page.locator('[data-tut]').count();ok(n===17,'seventeen tutorials listed: '+n);
+ const n=await page.locator('[data-tut]').count();ok(n===23,'twenty-three tutorials listed: '+n);
  const ids=await page.evaluate(()=>EXA.tutorials.list().map(x=>x.id));
  for(const id of ids){await page.evaluate(id=>EXA.tutorials.open(id),id);ok(await page.locator('.tt-phone *').count()>5&&await page.locator('.tt-steps li').count()===3,'tutorial '+id+' renders with three steps');await page.evaluate(()=>UI.closeSheet(true));}
  await page.evaluate(()=>EXA.tutorials.open('scan'));await page.click('[data-tut-nav=next]');ok(await page.evaluate(()=>EXA.tutorials.current==='swipe'),'next arrow goes to the next tutorial');await page.click('[data-tut-nav=prev]');ok(await page.evaluate(()=>EXA.tutorials.current==='scan'),'previous arrow goes back');ok(await page.locator('[data-tut-nav=prev]').isDisabled(),'previous is disabled on the first');await page.evaluate(()=>UI.closeSheet(true));
