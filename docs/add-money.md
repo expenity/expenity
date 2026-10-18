@@ -80,3 +80,18 @@ Photos require an account and internet to upload or view. Up to 100 uploads fit 
 **Account → Delete all photos** permanently removes your uploads, including your uploads in shared wallets. Other members lose access to those images. Other people's uploads and all financial records remain. The app asks for confirmation and a fresh passkey check. Deletion reaches other devices during sync; offline edits cannot restore the removed images.
 
 Removing a photo from one item only detaches it. Unreferenced uploads older than a day are reclaimed on your next upload. JSON backups hold photo references, not image files: retain originals for an independent photo backup.
+
+
+## Press and hold
+
+Press and hold an entry or bill for half a second and a menu opens with **Edit**, **Duplicate** and **Delete** (and **Paid** for bills). The menu also shows a small animation: you do not have to hold, dragging the row sideways does the same.
+
+![The press-and-hold menu.](images/hold-menu.png)
+
+{{tut:hold}}
+
+## Scan, and look before you add twice
+
+Hold the **+** button to scan a receipt: see [Receipts, photos and your picture](receipts-and-photos.md). If you add something that matches an entry from the last few days, the **duplicate guard** asks before saving: see [Daily number, targets and streaks](spending-helpers.md#duplicate-guard). Deleted something by mistake? See [Search, filters, drafts and recently deleted](find-and-recover.md).
+
+{{tut:quick}}

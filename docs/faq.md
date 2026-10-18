@@ -55,3 +55,16 @@ It is a helper. Correct the fields below it. If you have a sentence that should 
 ## How do I report a bug or suggest something?
 
 On [GitHub](https://github.com/expenity/expenity/issues).
+
+
+## What is new?
+
+**How do I get help while using a screen?** Tap the pulsing **?** at the top. It opens an animated tutorial in a popup. See [Tutorials and help](tutorials-and-help.md).
+
+**Can I hide features I do not use?** Yes. Pick Basic, Pro, Advanced or build your own on the Features page. See [Features and plans](features-and-plans.md).
+
+**I started an expense and lost it.** Look on Home or in More, Drafts. See [Search, filters, drafts and recently deleted](find-and-recover.md#drafts).
+
+**I deleted something by mistake.** More, Recently deleted keeps it for 30 days.
+
+**How do I send feedback or report a problem?** More, Help & about, Contact us. See [Contact us](contact-us.md).

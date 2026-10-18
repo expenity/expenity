@@ -1,6 +1,6 @@
 # Themes and animations
 
-Expenity has fourteen themes plus a custom theme editor. A theme changes more than colour: shapes, type, borders and a few details too. Pick one in **More → Appearance and language**, or during setup.
+Expenity has eighteen themes, and every one has a pencil to adjust its colors, font and roundness. A theme changes more than colour: shapes, type, borders and a few details too. Pick one in **More → Appearance and language**, or during setup.
 
 ![Six of the themes.](images/themes-gallery.png)
 
@@ -41,3 +41,20 @@ Theme, light or dark and animations are remembered on each device. Language is t
 Amberwave combines amber neon with warm shadows; Ion uses electric cyan on deep blue. Together with Synthwave they have sparse falling dots with thin trails. The effect pauses when hidden and follows reduced/off motion settings. Select **Your theme → Create your theme** to choose background, cards, accent and text colours, corner shape and typography. Text must have readable contrast on both backgrounds before saving. Trails are optional. Custom theme choices are saved per device.
 
 The balance animation begins on launch and screen navigation, stays between zero and the true amount, and ends on the exact value.
+
+
+## Adjust any theme with the pencil
+
+Every theme card has a small **pencil**. Tap it to change that theme's **colors, font and roundness**. Layout and positions never change, only the look, and your changes are saved straight away for that theme. The old separate custom theme has been replaced by this.
+
+![Editing a theme.](images/theme-edit.png)
+
+{{tut:themes}}
+
+## Fonts
+
+Fonts are bundled with the app so it looks the same on every phone, tablet and computer, with full Greek support.
+
+## Your picture and sounds
+
+Choose a character or your own photo as your picture: see [Receipts, photos and your picture](receipts-and-photos.md). Optional sound effects can be turned on in **More → Make it yours → Sounds** (part of the Advanced plan).

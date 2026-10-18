@@ -27,9 +27,14 @@ A short setup asks a few questions. Each one can be skipped, and you can change 
 - **What you want help with**, such as tracking spending, saving for a trip, or cutting subscriptions. You can choose more than one, and one is already selected to show how. Expenity uses this to suggest things that fit you. See [Budgets, goals and income](budgets-goals-income.md#ideas-for-you).
 - **Your first goals**, if you chose to save for something. Pick as many ideas as you like (trip, car, gift, home, emergency fund) or add your own, each with a target amount.
 - **Your wallets**: cash, bank account, card, savings, with what is in each.
-- **How it looks**: a theme and whether animations are on, followed, on a phone, by a short animated tip on swiping rows. See [Themes and animations](themes-and-look.md).
+- **How much you want to see**: Basic, Pro or Advanced, or a plan of your own later. See [Features and plans](features-and-plans.md).
+- **Your daily number**: let Expenity work out what you can spend today, or set a daily, weekly or monthly target. See [Daily number, targets and streaks](spending-helpers.md).
+- **How it looks**: a theme and whether animations are on. See [Themes and animations](themes-and-look.md).
+- **Short animated lessons**: scanning a receipt, adding an entry in one sentence, a few handy extras, the help icon, and, on a phone, swiping rows. See [Tutorials and help](tutorials-and-help.md).
 
 ![Choosing what you want help with.](images/setup-aims.png)
+![Choosing a plan.](images/setup-plan.png)
+![Setting up the daily number.](images/setup-daily.png)
 
 Until the setup is finished or skipped, the app does not let you add data, so nothing ends up in a wallet you did not choose.
 
@@ -64,3 +69,8 @@ After choosing a look, an animated tour explains Home, Activity, Budgets & goals
 Built-in wallet and category labels follow the selected language. Names you write yourself, including saved transaction names, stay as written.
 
 ![The animated tour of the main sections.](images/setup-tour.png)
+
+
+## Help is always one tap away
+
+Look for the pulsing **?** at the top of a screen: it opens a short animated tutorial in a popup without taking you away from what you are doing. All tutorials are in **More → Help & about → Tutorials**, and **Contact us** is next to them. See [Tutorials and help](tutorials-and-help.md).

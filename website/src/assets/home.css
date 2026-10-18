@@ -6,3 +6,8 @@
 @media(prefers-reduced-motion:reduce){.is-home *,.is-home *::before,.is-home *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}.reveal{opacity:1!important;transform:none!important;filter:none!important}}
 
 .xp-hero h1,.xp-dark h2,.xp-dark h3,.xp-last h2{color:#edfff5}
+
+.xp-dark .xp-heading p, .xp-dark .xp-copy { color: rgba(255,255,255,.78); } .xp-dark .site-tt figcaption { color: rgba(255,255,255,.75); } .xp-dark .xp-copy a { color: #7be3bd; }
+
+.xp-tuts { grid-template-columns: repeat(3, minmax(0, 1fr)); } @media (max-width: 900px) { .xp-tuts { grid-template-columns: repeat(2, minmax(0, 1fr)); } } @media (max-width: 560px) { .xp-tuts { grid-template-columns: 1fr; } }
+.xp-bento + .xp-copy { margin-top: 26px; }

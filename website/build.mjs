@@ -74,6 +74,14 @@ for ( const f of readdirSync( join( ROOT, 'docs/images' ) ) ) {
 	IMG[ name ] = { w: Number( /pixelWidth: (\d+)/.exec( dims )[ 1 ] ), h: Number( /pixelHeight: (\d+)/.exec( dims )[ 1 ] ) };
 }
 
+// Animated tutorials exported from the app (dev/export-tutorials.mjs): pure CSS, no video.
+const TUT = JSON.parse( readFileSync( join( ROOT, 'website/tutorials.json' ), 'utf8' ) );
+function tutBlock( id, lang ) {
+	const t = TUT[ id ]; if ( ! t ) throw new Error( 'Missing tutorial: ' + id );
+	const tx = t[ lang ] || t.en;
+	return `<figure class="site-tt"><div class="site-tt-stage">${ tx.demo }</div><figcaption><b>${ esc( tx.title ) }</b> · ${ esc( tx.desc ) }</figcaption></figure>`;
+}
+
 function img( name, alt, root ) {
 	const d = IMG[ name ];
 	if ( ! d ) throw new Error( 'Missing screenshot: ' + name );
@@ -107,6 +115,10 @@ const I = {
 	key: svg( '<circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M16 7l3 3"/>' ),
 	phone: svg( '<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/>' ),
 	shield: svg( '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/>' ),
+	sparkles: svg( '<path d="M12 3l1.8 4.6L18 9.5l-4.2 1.9L12 16l-1.8-4.6L6 9.5l4.2-1.9z"/><path d="M19 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/>' ),
+	search: svg( '<circle cx="11" cy="11" r="6"/><path d="M20 20l-4.2-4.2"/>' ),
+	camera: svg( '<path d="M4 8h3l2-2h6l2 2h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>' ),
+	mail: svg( '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>' ),
 	help: svg( '<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14M12 17.5v.01"/>' ),
 };
 
@@ -116,7 +128,7 @@ const LANGS = {
 	en: {
 		code: 'en', prefix: '', label: 'EN', other: 'el', switchLabel: 'EL', switchTitle: 'Greek',
 		tagline: 'Know where your money goes', titleHome: 'Expenity: know where your money goes',
-		descHome: 'Expenity tracks your expenses, income, bills, budgets and goals on every device. Sign in with a passkey, share wallets with family, choose fourteen themes or create your own. Free, open source, in English and Greek.',
+		descHome: 'Expenity tracks your expenses, income, bills, budgets and goals on every device. Sign in with a passkey, share wallets with family, choose from eighteen themes and adjust any of them, scan receipts on your device, set daily targets. Free, open source, in English and Greek.',
 		nav: { features: 'Features', how: 'How it works', app: 'Open the app', docs: 'Help center' }, openApp: 'Open app', darkTheme: 'Dark theme', skip: 'Skip to content', menu: 'Menu', homeAria: 'Expenity home',
 		about: 'Know where your money goes, on every device. Free and open source.',
 		foot: { product: 'Product', help: 'Help', more: 'More projects', trust: 'Trust', allProjects: 'All projects', blog: 'Blog', blogTitle: 'The story behind every project',
@@ -125,11 +137,11 @@ const LANGS = {
 		docs: { title: 'Help center', hero: 'How can we help?', heroP: 'Guides and answers for Expenity: getting started, adding money, budgets and goals, reports, shared wallets, your account and privacy.', placeholder: 'Search, e.g. “reminders”, “backup”, “Greek”', searchLabel: 'Search the help center',
 			browse: 'Browse all guides', home: 'Help center home', popular: 'Popular', stuck: 'Still stuck?', stuckA: 'Check the', stuckB: 'or', stuckC: 'ask on GitHub', prev: 'Previous', next: 'Next', onPage: 'On this page', read: 'Read the guide →', crumbs: 'Help center', pagerAria: 'Previous and next guide', toc: 'On this page' },
 		str: { none: [ 'No results for “', '”. Try another word, or browse the guides below.' ], count: ' results', zoom: 'Enlarged screenshot. Press Escape to close.', enlarge: ' (enlarge)' },
-		groups: [ { label: 'Start here', pages: [ 'getting-started', 'install-on-your-device', 'add-money' ] }, { label: 'Using Expenity', pages: [ 'wallets-and-currencies', 'budgets-goals-income', 'reports', 'reminders', 'shared-wallets', 'themes-and-look' ] }, { label: 'Reference', pages: [ 'account-and-sync', 'privacy-and-your-data', 'faq' ] } ],
+		groups: [ { label: 'Start here', pages: [ 'getting-started', 'install-on-your-device', 'add-money', 'tutorials-and-help' ] }, { label: 'Using Expenity', pages: [ 'wallets-and-currencies', 'budgets-goals-income', 'spending-helpers', 'find-and-recover', 'receipts-and-photos', 'reports', 'reminders', 'shared-wallets', 'features-and-plans', 'themes-and-look' ] }, { label: 'Reference', pages: [ 'account-and-sync', 'privacy-and-your-data', 'contact-us', 'faq' ] } ],
 		blurb: {
 			'getting-started': 'Create an account, add Expenity to your home screen, set up and add your first expense.', 'install-on-your-device': 'Install Expenity on iPhone, Android or a computer, and use it offline.', 'add-money': 'The + button, the keypad, typing a sentence, bills, repeats and marking paid.',
 			'wallets-and-currencies': 'Wallets, transfers, several currencies and exchange rates.', 'budgets-goals-income': 'Limits, saving for something, recurring income and ideas from your own data.', reports: 'Overview, spending, cash flow, trends, forecast, subscriptions and a table.',
-			reminders: 'The calendar file that reminds you when the app is closed, and notifications.', 'shared-wallets': 'Share a wallet with family or friends: invites, roles and what is shared.', 'themes-and-look': 'Twelve themes, light and dark, and turning animations off.',
+			reminders: 'The calendar file that reminds you when the app is closed, and notifications.', 'shared-wallets': 'Share a wallet with family or friends: invites, roles and what is shared.', 'themes-and-look': 'Eighteen themes you can adjust with a pencil, fonts, light and dark, and motion.', 'tutorials-and-help': 'Animated tutorials, the pulsing help icon and how to switch it off.', 'spending-helpers': 'What you can spend today, your own targets, streaks, price alerts and the duplicate guard.', 'find-and-recover': 'Search and filters, drafts, recently deleted and starting fresh.', 'receipts-and-photos': 'Scan receipts on your device, attach photos and choose a profile picture.', 'features-and-plans': 'Basic, Pro, Advanced or your own mix, with a comparison table.', 'contact-us': 'Send feedback or report a problem from the app.',
 			'account-and-sync': 'Passkeys, recovery codes, your devices, how sync works and deleting your account.', 'privacy-and-your-data': 'What is stored where, backup, restore and delete.', faq: 'Quick answers to the most common questions.',
 		},
 		popular: [ [ 'getting-started', '', 'Create your account and set up' ], [ 'add-money', '', 'Add an expense in seconds' ], [ 'budgets-goals-income', '', 'Budgets, goals and ideas' ],
@@ -139,7 +151,7 @@ const LANGS = {
 	el: {
 		code: 'el', prefix: 'el/', label: 'ΕΛ', other: 'en', switchLabel: 'ΕΝ', switchTitle: 'Αγγλικά',
 		tagline: 'Τα οικονομικά σας, με καθαρό μυαλό', titleHome: 'Expenity: τα οικονομικά σας, με καθαρό μυαλό',
-		descHome: 'Το Expenity παρακολουθεί έξοδα, έσοδα, λογαριασμούς, προϋπολογισμούς και στόχους σε κάθε συσκευή. Σύνδεση με passkey, κοινά πορτοφόλια με την οικογένεια, δεκατέσσερα θέματα και δική σας παλέτα. Δωρεάν, ανοιχτού κώδικα, στα ελληνικά και στα αγγλικά.',
+		descHome: 'Το Expenity παρακολουθεί έξοδα, έσοδα, λογαριασμούς, προϋπολογισμούς και στόχους σε κάθε συσκευή. Σύνδεση με passkey, κοινά πορτοφόλια με την οικογένεια, δεκαοχτώ θέματα που προσαρμόζονται, σάρωση αποδείξεων στη συσκευή σας και ημερήσιους στόχους. Δωρεάν, ανοιχτού κώδικα, στα ελληνικά και στα αγγλικά.',
 		nav: { features: 'Δυνατότητες', how: 'Πώς λειτουργεί', app: 'Ανοίξτε την εφαρμογή', docs: 'Κέντρο βοήθειας' }, openApp: 'Άνοιγμα', darkTheme: 'Σκούρο θέμα', skip: 'Μετάβαση στο περιεχόμενο', menu: 'Μενού', homeAria: 'Expenity, αρχική',
 		about: 'Τα οικονομικά σας, με καθαρό μυαλό, σε κάθε συσκευή. Δωρεάν και ανοιχτού κώδικα.',
 		foot: { product: 'Προϊόν', help: 'Βοήθεια', more: 'Περισσότερα έργα', trust: 'Εμπιστοσύνη', allProjects: 'Όλα τα έργα', blog: 'Blog', blogTitle: 'Η ιστορία πίσω από κάθε έργο',
@@ -148,11 +160,11 @@ const LANGS = {
 		docs: { title: 'Κέντρο βοήθειας', hero: 'Πώς μπορούμε να βοηθήσουμε;', heroP: 'Οδηγοί και απαντήσεις για το Expenity: πρώτα βήματα, προσθήκη χρημάτων, προϋπολογισμοί και στόχοι, αναφορές, κοινά πορτοφόλια, λογαριασμός και ιδιωτικότητα.', placeholder: 'Αναζήτηση, π.χ. «υπενθυμίσεις», «αντίγραφο», «ημερολόγιο»', searchLabel: 'Αναζήτηση στο κέντρο βοήθειας',
 			browse: 'Όλοι οι οδηγοί', home: 'Κέντρο βοήθειας', popular: 'Δημοφιλή', stuck: 'Χρειάζεστε ακόμα βοήθεια;', stuckA: 'Δείτε τις', stuckB: 'ή', stuckC: 'ρωτήστε στο GitHub', prev: 'Προηγούμενο', next: 'Επόμενο', onPage: 'Σε αυτή τη σελίδα', read: 'Διαβάστε τον οδηγό →', crumbs: 'Κέντρο βοήθειας', pagerAria: 'Προηγούμενος και επόμενος οδηγός', toc: 'Σε αυτή τη σελίδα' },
 		str: { none: [ 'Δεν βρέθηκε τίποτα για «', '». Δοκιμάστε άλλη λέξη ή δείτε τους οδηγούς παρακάτω.' ], count: ' αποτελέσματα', zoom: 'Μεγεθυμένο στιγμιότυπο. Πατήστε Escape για κλείσιμο.', enlarge: ' (μεγέθυνση)' },
-		groups: [ { label: 'Ξεκινήστε από εδώ', pages: [ 'getting-started', 'install-on-your-device', 'add-money' ] }, { label: 'Χρήση του Expenity', pages: [ 'wallets-and-currencies', 'budgets-goals-income', 'reports', 'reminders', 'shared-wallets', 'themes-and-look' ] }, { label: 'Αναφορά', pages: [ 'account-and-sync', 'privacy-and-your-data', 'faq' ] } ],
+		groups: [ { label: 'Ξεκινήστε από εδώ', pages: [ 'getting-started', 'install-on-your-device', 'add-money', 'tutorials-and-help' ] }, { label: 'Χρήση του Expenity', pages: [ 'wallets-and-currencies', 'budgets-goals-income', 'spending-helpers', 'find-and-recover', 'receipts-and-photos', 'reports', 'reminders', 'shared-wallets', 'features-and-plans', 'themes-and-look' ] }, { label: 'Αναφορά', pages: [ 'account-and-sync', 'privacy-and-your-data', 'contact-us', 'faq' ] } ],
 		blurb: {
 			'getting-started': 'Δημιουργήστε λογαριασμό, προσθέστε το Expenity στην αρχική οθόνη, ρυθμίστε το και προσθέστε το πρώτο σας έξοδο.', 'install-on-your-device': 'Εγκαταστήστε το Expenity σε iPhone, Android ή υπολογιστή και χρησιμοποιήστε το offline.', 'add-money': 'Το κουμπί +, το πληκτρολόγιο, γραφή με πρόταση, λογαριασμοί, επαναλήψεις και σήμανση πληρωμής.',
 			'wallets-and-currencies': 'Πορτοφόλια, μεταφορές, πολλά νομίσματα και ισοτιμίες.', 'budgets-goals-income': 'Όρια, αποταμίευση για κάτι, επαναλαμβανόμενα έσοδα και ιδέες από τα δικά σας δεδομένα.', reports: 'Επισκόπηση, έξοδα, ταμειακή ροή, τάσεις, πρόβλεψη, συνδρομές και πίνακας.',
-			reminders: 'Το αρχείο ημερολογίου που σας υπενθυμίζει όταν η εφαρμογή είναι κλειστή, και οι ειδοποιήσεις.', 'shared-wallets': 'Μοιραστείτε ένα πορτοφόλι με οικογένεια ή φίλους: προσκλήσεις, ρόλοι και τι μοιράζεται.', 'themes-and-look': 'Δώδεκα θέματα, φωτεινό και σκούρο, και απενεργοποίηση των κινούμενων εφέ.',
+			reminders: 'Το αρχείο ημερολογίου που σας υπενθυμίζει όταν η εφαρμογή είναι κλειστή, και οι ειδοποιήσεις.', 'shared-wallets': 'Μοιραστείτε ένα πορτοφόλι με οικογένεια ή φίλους: προσκλήσεις, ρόλοι και τι μοιράζεται.', 'themes-and-look': 'Δεκαοχτώ θέματα που προσαρμόζονται με μολύβι, γραμματοσειρές, φωτεινό και σκούρο, και κίνηση.', 'tutorials-and-help': 'Κινούμενοι οδηγοί, το παλλόμενο εικονίδιο βοήθειας και πώς απενεργοποιείται.', 'spending-helpers': 'Τι μπορείτε να ξοδέψετε σήμερα, δικοί σας στόχοι, σερί, ειδοποιήσεις τιμής και φρουρός διπλότυπων.', 'find-and-recover': 'Αναζήτηση και φίλτρα, πρόχειρα, πρόσφατα διαγραμμένα και νέα αρχή.', 'receipts-and-photos': 'Σαρώστε αποδείξεις στη συσκευή σας, επισυνάψτε φωτογραφίες και διαλέξτε εικόνα προφίλ.', 'features-and-plans': 'Βασικό, Pro, Προχωρημένο ή δικός σας συνδυασμός, με πίνακα σύγκρισης.', 'contact-us': 'Στείλτε σχόλια ή αναφέρετε πρόβλημα από την εφαρμογή.',
 			'account-and-sync': 'Passkeys, κωδικοί ανάκτησης, οι συσκευές σας, πώς δουλεύει ο συγχρονισμός και διαγραφή λογαριασμού.', 'privacy-and-your-data': 'Τι αποθηκεύεται πού, αντίγραφο, επαναφορά και διαγραφή.', faq: 'Σύντομες απαντήσεις στις πιο συχνές ερωτήσεις.',
 		},
 		popular: [ [ 'getting-started', '', 'Φτιάξτε λογαριασμό και ρυθμίστε το' ], [ 'add-money', '', 'Προσθέστε ένα έξοδο σε δευτερόλεπτα' ], [ 'budgets-goals-income', '', 'Προϋπολογισμοί, στόχοι και ιδέες' ],
@@ -198,6 +210,7 @@ ${ alt ? `<link rel="alternate" hreflang="${ L.code }" href="${ SITE.url }${ can
 <link rel="icon" href="${ root }assets/favicon.svg" type="image/svg+xml">
 <!-- Cloudflare Web Analytics: counts visits anonymously, no cookies --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "64332b427a604e879f82853393ebdb0d"}'></script><!-- End Cloudflare Web Analytics -->
 <link rel="stylesheet" href="${ root }assets/site.css?v=${ ASSET_V }">
+<link rel="stylesheet" href="${ root }assets/tutorials.css?v=${ ASSET_V }">
 <link rel="stylesheet" href="${ root }assets/brand.css?v=${ ASSET_V }">
 <link rel="stylesheet" href="${ root }assets/home.css?v=${ ASSET_V }">
 <script>try{localStorage.removeItem('hdh-site-theme');var t=sessionStorage.getItem('hdh-site-theme');document.documentElement.dataset.theme=t==='dark'?'dark':'light';}catch(e){document.documentElement.dataset.theme='light';}</script>
@@ -284,7 +297,7 @@ function write( path, html ) {
 
 /* ------------------------------------------------------------------ Help center (docs), per language */
 
-const ICON = { 'getting-started': I.play, 'add-money': I.plus, 'wallets-and-currencies': I.wallet, 'budgets-goals-income': I.target, reports: I.chart, reminders: I.bell, 'shared-wallets': I.users, 'themes-and-look': I.palette, 'account-and-sync': I.key, 'install-on-your-device': I.phone, 'privacy-and-your-data': I.shield, faq: I.help };
+const ICON = { 'getting-started': I.play, 'add-money': I.plus, 'wallets-and-currencies': I.wallet, 'budgets-goals-income': I.target, reports: I.chart, reminders: I.bell, 'shared-wallets': I.users, 'themes-and-look': I.palette, 'account-and-sync': I.key, 'install-on-your-device': I.phone, 'privacy-and-your-data': I.shield, faq: I.help, 'tutorials-and-help': I.play, 'spending-helpers': I.chart, 'find-and-recover': I.search, 'receipts-and-photos': I.camera, 'features-and-plans': I.sparkles, 'contact-us': I.mail };
 const urls = [ '', 'app/' ];
 
 for ( const L of Object.values( LANGS ) ) {
@@ -338,6 +351,7 @@ for ( const L of Object.values( LANGS ) ) {
 		const src = readFileSync( join( ROOT, docsDir, name + '.md' ), 'utf8' );
 		let html = md.render( src );
 		html = html
+			.replace( /<p>\{\{tut:([a-z]+)\}\}<\/p>/g, ( m, id ) => tutBlock( id, L.code ) )
 			.replace( /<p>(<img [^>]*alt="([^"]*)"[^>]*>)<\/p>/g, '<figure data-zoom>$1<figcaption>$2</figcaption></figure>' )
 			.replace( /<pre>/g, '<pre tabindex="0">' )
 			.replace( /<table>/g, '<table tabindex="0">' )
@@ -431,6 +445,7 @@ ${ toc.length > 1 ? `<nav class="on-page" aria-label="${ L.docs.toc }" data-spy>
 		const file = L.code === 'el' ? 'home-el.html' : 'home.html';
 		const body = readFileSync( join( SRC, file ), 'utf8' )
 			.replace( /\{\{img:([a-z0-9-]+)\|([^}]+)\}\}/g, ( m, name, alt ) => img( name, alt, root ) )
+			.replace( /\{\{tut:([a-z]+)\}\}/g, ( m, id ) => tutBlock( id, L.code ) )
 			.replace( /\{\{root\}\}/g, root )
 			.replace( /\{\{repo\}\}/g, SITE.repo )
 			.replace( /\{\{version\}\}/g, VERSION );

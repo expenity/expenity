@@ -14,7 +14,13 @@ The same guides as the [help center on the website](https://expenity.github.io/e
 | [Reports](reports.md) | Overview, spending, cash flow, trends, forecast, subscriptions, table |
 | [Reminders](reminders.md) | The calendar file (works when the app is closed) and notifications |
 | [Shared wallets](shared-wallets.md) | Share a wallet with family or friends, roles, invites |
-| [Themes and animations](themes-and-look.md) | Fourteen looks, custom colours and motion controls |
+| [Features and plans](features-and-plans.md) | Basic, Pro, Advanced or your own mix, with a comparison table |
+| [Tutorials and help](tutorials-and-help.md) | Animated tutorials, the help icon and how to switch it off |
+| [Daily number, targets and streaks](spending-helpers.md) | What you can spend today, your own targets, streaks, price alerts, duplicate guard |
+| [Search, filters, drafts and recently deleted](find-and-recover.md) | Find anything, restore deleted items, finish unfinished entries, start fresh |
+| [Receipts, photos and your picture](receipts-and-photos.md) | Scan receipts on your device, attach photos, choose a profile picture |
+| [Themes and animations](themes-and-look.md) | Themes you can adjust with a pencil, fonts and motion controls |
+| [Contact us](contact-us.md) | Send feedback or report a problem from the app |
 | [Account and sync](account-and-sync.md) | Passkeys, recovery codes, your devices, deleting your account |
 | [Privacy and your data](privacy-and-your-data.md) | What is stored where, backup, restore, delete |
 | [FAQ](faq.md) | Quick answers |

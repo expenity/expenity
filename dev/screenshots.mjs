@@ -38,7 +38,7 @@ const DEMO = () => {
 	S.goals.push( { id: 'g1', name: t( 'goalPreset_trip' ), target: '2000', deadline: X.addDays( td, 150 ), icon: 'plane' }, { id: 'g2', name: X.lang() === 'el' ? 'Υπολογιστής' : 'Laptop', target: '1200', deadline: '', icon: 'device-laptop' } );
 	S.txs.push( { id: 'gt1', type: 'expense', amount: '700', account: 'w1', category: 'goal', date: X.addDays( td, -20 ), name: t( 'goalPreset_trip' ), goalId: 'g1' }, { id: 'gt2', type: 'expense', amount: '300', account: 'w1', category: 'goal', date: X.addDays( td, -5 ), name: t( 'goalPreset_trip' ), goalId: 'g1' }, { id: 'gt3', type: 'expense', amount: '250', account: 'w1', category: 'goal', date: X.addDays( td, -9 ), name: X.lang() === 'el' ? 'Υπολογιστής' : 'Laptop', goalId: 'g2' } );
 	S.incomes.push( { id: 'i1', name: t( 'cat_salary' ), amount: '1900', currency: 'EUR', account: 'w1', repeat: 'monthly', next: X.addDays( td, 11 ), day: 1, category: 'salary' } );
-	S.device.bannerDismissed = true; S.device.installDismissed = true; window.EXA.skipFlow();
+	S.device.bannerDismissed = true; S.device.scanHoldHintSeen = true; S.device.installDismissed = true; window.EXA.skipFlow();
 };
 
 async function open( lang, { width = 390, height = 844, dark = false, touch = true, demo = true } = {} ) {
@@ -59,7 +59,7 @@ for ( const lang of [ 'en', 'el' ] ) {
 		const { page, context } = await open( lang, { demo: false } );
 		await shot( page, 'welcome' );
 		await page.click( '[data-flow=guest]' ); await page.click( '[data-fstep=plat][data-plat=ios]' ); await page.waitForTimeout( 1500 ); await shot( page, 'install' );
-		await page.click( '[data-flow=install-skip]' ); await page.click( '[data-flow=next]' ); await page.click( '[data-flow=next]' );
+		await page.click( '[data-flow=install-skip]' ); await page.waitForTimeout( 300 ); await page.locator( '#sheet[open] .btn:not([data-close])' ).first().click().catch( () => {} ); await page.waitForTimeout( 400 ); await page.fill( '#setupForm [name=name]', 'Maria' ); await page.click( '[data-flow=next]' ); await page.click( '[data-flow=next]' );
 		await page.click( '[data-fstep=aim][data-aim=save]' ); await page.click( '[data-fstep=aim][data-aim=subs]' ); await shot( page, 'setup-aims' );
 		for ( let i = 0; i < 9 && await page.locator( '.swipe-demo' ).count() === 0; i++ ) { if(await page.locator('.tour-grid').count())await shot(page,'setup-tour'); await page.click('[data-flow=next]'); } await page.waitForTimeout( 2200 ); await shot( page, 'setup-tips' );
 		await context.close();
@@ -79,6 +79,42 @@ for ( const lang of [ 'en', 'el' ] ) {
 		await go( page, 'more', 'appearance' ); await shot( page, 'themes' );
 		await page.evaluate( () => { window.EX.auth.isSignedIn = () => true; window.EX.auth.user = () => ( { id: 'u1', email: 'maria@example.com' } ); const S = window.EX.state(); S.accounts[ 0 ].space = 'abc12345def67890'; S.sync.spaces = { abc12345def67890: { name: S.accounts[ 0 ].name, role: 'owner', owner: true, members: 2, rev: 0, base: {} } }; window.EX.spaces.members = async () => ( { ok: true, json: { members: [ { id: 'u1', email: 'maria@example.com', role: 'owner', you: true }, { id: 'u2', email: 'nikos@example.com', role: 'editor' } ], invites: [] } } ); window.EXA.openShare( S.accounts[ 0 ].id ); } );
 		await shot( page, 'share' );
+		await context.close();
+	}
+	{ // New in 0.2x: features, tutorials, help, targets, filters, recently deleted, drafts, contact, theme editor, avatar, hold menu
+		const { page, context } = await open( lang );
+		await go( page, 'home' ); await page.waitForTimeout( 600 );
+		await page.evaluate( () => { const S = window.EX.state(); S.settings.targets = { spend: { period: 'month', amount: '900' }, income: { period: 'month', amount: '2500' } }; window.EXA.render(); } );
+		await shot( page, 'home-targets' );
+		await page.click( '[data-target-edit]' ); await page.waitForSelector( '#targetForm' ); await shot( page, 'targets' ); await page.evaluate( () => window.UI.closeSheet( true ) );
+		await go( page, 'more', 'features' ); await shot( page, 'features' );
+		await page.evaluate( () => { window.EXA.features.choose( 'advanced' ); } );
+		await go( page, 'more', 'tutorials' ); await shot( page, 'tutorials' );
+		await go( page, 'home' ); await page.evaluate( () => window.EXA.help.open( 'scan', true ) ); await page.waitForTimeout( 1500 ); await shot( page, 'help-popup' ); await page.evaluate( () => document.querySelector( '[data-hp-close]' ).click() );
+		await go( page, 'activity' ); await page.evaluate( () => { window.EXA.st.searchOpen = true; Object.assign( window.EXA.st.txFilter, { min: '20', max: '300', from: '', to: '' } ); window.EXA.render(); } ); await shot( page, 'filters' );
+		await page.evaluate( () => { Object.assign( window.EXA.st.txFilter, { min: '', max: '', from: '', to: '' } ); window.EXA.st.searchOpen = false; } );
+		await page.evaluate( () => { const S = window.EX.state(); const x = S.txs.find( ( y ) => y.type === 'expense' ); window.EXA.removeTx( x.id ); } ); await go( page, 'more', 'trash' ); await page.evaluate( () => { document.getElementById( 'toast' ).hidden = true; } ); await shot( page, 'trash' );
+		await page.evaluate( () => window.EXA.openTx( null, { type: 'expense' } ) ); await page.waitForSelector( '#txDesc' ); await page.fill( '#txDesc', lang === 'el' ? 'Μανάβης' : 'Farmers market' ); await page.waitForTimeout( 900 );
+		await page.evaluate( () => window.UI.closeSheet( true ) ); await go( page, 'home' ); await page.evaluate( () => { document.getElementById( 'toast' ).hidden = true; } ); await shot( page, 'drafts' );
+		await page.evaluate( () => window.EXA.contact.open() ); await page.click( '#ctEditor' ); await page.keyboard.type( lang === 'el' ? 'Μου αρέσει πολύ η εφαρμογή!' : 'I love the app, thank you!' ); await shot( page, 'contact' ); await page.evaluate( () => window.UI.closeSheet( true ) );
+		await go( page, 'more', 'appearance' ); await page.click( '[data-theme-edit=sunset]' ); await page.waitForSelector( '#customThemeForm' ); await shot( page, 'theme-edit' ); await page.evaluate( () => window.UI.closeSheet( true ) );
+		await page.evaluate( () => { window.EX.state().settings.avatar = { type: 'preset', id: 'fox' }; window.EXA.avatar.open(); } ); await shot( page, 'avatar' ); await page.evaluate( () => window.UI.closeSheet( true ) );
+		await go( page, 'activity' ); await page.waitForSelector( '.sw .sw-front' ); { const b = await page.locator( '.sw .sw-front' ).first().boundingBox(); await page.mouse.move( b.x + 60, b.y + 25 ); await page.mouse.down(); await page.waitForTimeout( 700 ); await page.mouse.up(); } await shot( page, 'hold-menu' );
+		await context.close();
+	}
+	{ // First-run steps that are new: plan, daily number, extras, help icon
+		const { page, context } = await open( lang, { demo: false } );
+		await page.click( '[data-flow=guest]' ); await page.click( '[data-fstep=plat][data-plat=ios]' ).catch( () => {} ); await page.click( '[data-flow=install-skip]' ); await page.waitForTimeout( 300 ); await page.locator( '#sheet[open] .btn:not([data-close])' ).first().click().catch( () => {} );
+		const wanted = { plan: 'setup-plan', target: 'setup-daily', extras: 'setup-extras', help: 'setup-help', scan: 'setup-scan' };
+		for ( let i = 0; i < 22; i++ ) {
+			await page.waitForTimeout( 500 );
+			const h = await page.evaluate( () => ( document.querySelector( '#flow h1' ) || {} ).textContent || '' );
+			const key = await page.evaluate( () => ( document.querySelector( '#flow [data-fstep=plan]' ) ? 'plan' : document.querySelector( '#flow [data-fstep=tgt]' ) ? 'target' : document.querySelector( '#flow [data-car]' ) ? 'extras' : document.querySelector( '#flow .help-demo' ) ? 'help' : document.querySelector( '#flow .tt-phone' ) ? 'scan' : '' ) );
+			if ( key && wanted[ key ] ) { await shot( page, wanted[ key ] ); delete wanted[ key ]; }
+			const nm = page.locator( '#setupForm [name=name]' ); if ( await nm.count() ) await nm.fill( 'Maria' );
+			if ( await page.locator( '[data-flow=start]' ).count() ) break;
+			const nx = page.locator( '[data-flow=next]' ); if ( await nx.count() ) await nx.click();
+		}
 		await context.close();
 	}
 	{ // Themes: six looks side by side (one image)
