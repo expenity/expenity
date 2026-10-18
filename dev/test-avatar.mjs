@@ -10,7 +10,7 @@ const ok=(v,s)=>{assert(v,s);console.log('ok',s);};
 try{
  await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.avatar);await page.evaluate(()=>{EXA.skipFlow();});
  ok(await page.evaluate(()=>EXA.avatar.presets.length)===20,'twenty preset avatars');
- await page.evaluate(()=>EXA.go('more','root'));await page.click('.more-group:has([data-avatar-open]) summary');await page.click('[data-avatar-open]');
+ await page.evaluate(()=>EXA.go('more','root'));await page.click('[data-avatar-open]');
  ok(await page.locator('[data-avatar-preset]').count()===20,'picker lists all twenty');
  await page.click('[data-avatar-preset=robot]');
  ok(await page.evaluate(()=>EX.state().settings.avatar.id==='robot'),'choice saved in settings');
@@ -25,6 +25,6 @@ try{
  const d=await page.evaluate(()=>EXA.avatar.compress(window.__f));ok(/^data:image\/jpeg/.test(d)&&d.length<=3500,'photo shrinks to a tiny jpeg ('+d.length+' chars)');
  await page.evaluate(d=>{EX.state().settings.avatar={type:'photo',data:d};EXA.render();},d);
  ok(await page.locator('.ab-avatar .avatar img.av-photo').count()===1,'photo avatar renders');
- await page.screenshot({path:out+'/a.png'});
+ await page.evaluate(()=>{UI.closeSheet(true);EXA.go('more','root');});await page.screenshot({path:out+'/more.png'});
  ok(!errors.length,'no browser errors: '+errors.join('; '));
 }finally{await browser.close();server.close();}
