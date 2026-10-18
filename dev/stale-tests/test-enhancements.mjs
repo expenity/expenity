@@ -5,7 +5,7 @@ import {readFileSync,existsSync,mkdirSync} from 'node:fs';
 import {join,extname} from 'node:path';
 const root=process.cwd(), out='/tmp/expenity-enhancements';mkdirSync(out,{recursive:true});
 const server=createServer((req,res)=>{const file=join(root,req.url.split('?')[0]==='/'?'index.html':req.url.split('?')[0]);if(!existsSync(file)){res.writeHead(404).end();return;}res.setHeader('Content-Type',({'.html':'text/html','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.png':'image/png'})[extname(file)]||'application/octet-stream');res.end(readFileSync(file));}).listen(0);
-const browser=await chromium.launch({channel:'chrome'}),ctx=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,locale:'en-US'}),page=await ctx.newPage();let fails=0;const errors=[];page.on('pageerror',e=>errors.push(String(e)));
+const browser=await chromium.launch({channel:'chrome'}),ctx=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,locale:'en-US'}),page=await ctx.newPage();await ctx.addInitScript(()=>{try{if(!localStorage.getItem('expenity.skin'))localStorage.setItem('expenity.skin','emerald');}catch(e){}});let fails=0;const errors=[];page.on('pageerror',e=>errors.push(String(e)));
 const ok=(v,label)=>{console.log(v?'ok':'FAIL',label);if(!v)fails++;};
 try{
  await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.skipFlow);

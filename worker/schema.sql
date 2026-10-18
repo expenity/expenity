@@ -173,3 +173,6 @@ CREATE TABLE IF NOT EXISTS usage_daily (
   PRIMARY KEY (day, device)
 );
 CREATE INDEX IF NOT EXISTS usage_device ON usage_daily(device);
+
+-- Contact form: how many messages were accepted today (a daily cap, see contact() in src/index.js).
+CREATE TABLE IF NOT EXISTS contact_daily (day TEXT PRIMARY KEY, n INTEGER NOT NULL DEFAULT 0);

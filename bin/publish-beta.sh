@@ -34,6 +34,8 @@ sed -i.bak "s#document.title = t( 'title' );#document.title = '[Beta] ' + t( 'ti
 cat > "$work/index.html" <<'HTML'
 <!doctype html><html lang="en"><head><meta charset="utf-8"><title>Expenity beta</title><meta name="robots" content="noindex, nofollow"><meta http-equiv="refresh" content="0; url=app/"></head><body style="font-family:system-ui,sans-serif;margin:3rem auto;max-width:30rem;padding:0 1rem"><h1>Expenity beta</h1><p>A test copy of the next version. <a href="app/">Open the app</a>.</p></body></html>
 HTML
+# strip-localhost-csp: local development addresses are only for the dev server, never in a published build
+sed -i.bak "s# http://localhost:\* http://127.0.0.1:\*##" "$work/app/index.html" && rm "$work/app/index.html.bak"
 touch "$work/.nojekyll"
 git -C "$work" add -A
 git -C "$work" -c user.name="George" -c user.email="george@wp-media.me" commit -q -m "Beta build $(date +%Y-%m-%d)"

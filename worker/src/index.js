@@ -58,7 +58,7 @@ function corsHeaders( req, env ) {
 function reply( req, env, data, status = 200 ) {
 	return new Response( JSON.stringify( data ), {
 		status,
-		headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', ...corsHeaders( req, env ) },
+		headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'no-referrer', 'X-Frame-Options': 'DENY', 'Content-Security-Policy': "default-src 'none'; frame-ancestors 'none'", 'Permissions-Policy': 'interest-cohort=()', ...corsHeaders( req, env ) },
 	} );
 }
 const fail = ( req, env, error, status = 400 ) => reply( req, env, { error }, status );
@@ -660,12 +660,15 @@ async function contact( req, env, ip ) {
 	if ( text.length < 5 ) return fail( req, env, 'empty' );
 	const cat = CONTACT_CATS.includes( b.category ) ? b.category : 'other', subject = oneLine( b.subject, 100 );
 	const email = /^[^\s@<>]{1,64}@[^\s@<>]{1,190}\.[^\s@<>]{2,}$/.test( String( b.email || '' ).trim() ) ? String( b.email ).trim() : '';
-	const photos = ( Array.isArray( b.photos ) ? b.photos : [] ).slice( 0, 4 ).filter( ( p ) => typeof p === 'string' && /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test( p ) && p.length <= 600000 );
+	const photos = ( Array.isArray( b.photos ) ? b.photos : [] ).slice( 0, 4 ).filter( ( p ) => typeof p === 'string' && /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test( p ) && p.length <= 600000 && p.slice( 23, 27 ) === '/9j/' );
 	const meta = b.meta && typeof b.meta === 'object' ? b.meta : {};
 	const lines = [ [ 'From', oneLine( b.name, 80 ) || '(not given)' ], [ 'Reply to', email || '(not given)' ], [ 'Type', cat ], [ 'App version', oneLine( meta.version, 20 ) ], [ 'Language', oneLine( meta.lang, 10 ) ], [ 'Plan', oneLine( meta.plan, 20 ) ], [ 'Signed in', meta.signedIn ? 'yes' : 'no' ], [ 'Device', oneLine( meta.ua, 160 ) ] ].filter( ( x ) => x[ 1 ] );
 	const full = `<div style="font-family:system-ui,Arial,sans-serif;font-size:15px;line-height:1.5;color:#1b2430"><table style="font-size:13px;color:#555;border-collapse:collapse;margin-bottom:16px">${ lines.map( ( [ k, v ] ) => `<tr><td style="padding:2px 12px 2px 0"><b>${ escText( k ) }</b></td><td>${ escText( v ) }</td></tr>` ).join( '' ) }</table><div>${ html }</div>${ photos.length ? `<p style="color:#555;font-size:13px">${ photos.length } photo(s) attached.</p>` : '' }</div>`;
 	const subjectLine = `[HABIT HERO CONTACT] ${ cat }${ subject ? ' · ' + subject : '' }`;
 	const plain = lines.map( ( [ k, v ] ) => `${ k }: ${ v }` ).join( '\n' ) + '\n\n' + text;
+	// A daily cap for the whole form, so a flood of messages cannot use up the email quota or fill the inbox.
+	const used = await env.DB.prepare( 'INSERT INTO contact_daily (day, n) VALUES (?, 1) ON CONFLICT(day) DO UPDATE SET n = n + 1 RETURNING n' ).bind( isoDay() ).first();
+	if ( used && used.n > 60 ) return fail( req, env, 'rate_limited', 429 );
 	const to = env.CONTACT_TO || 'mindanticipation@gmail.com';
 	if ( env.TEST_MODE === '1' ) {
 		await env.DB.prepare( 'INSERT INTO outbox (to_addr, subject, body, created_at) VALUES (?, ?, ?, ?)' ).bind( to, subjectLine, full + '\nATTACHMENTS:' + photos.length, now() ).run();
@@ -784,6 +787,11 @@ const PUBLIC_POST = {
 export default {
 	async scheduled( event, env, ctx ) { ctx.waitUntil( runPush( env ) ); },
 	async fetch( req, env ) {
+		try { return await handle( req, env ); } catch ( e ) { console.error( 'unhandled', e && e.message ); return fail( req, env, 'server_error', 500 ); }
+	},
+};
+
+async function handle( req, env ) {
 		const url = new URL( req.url );
 		if ( req.method === 'OPTIONS' ) return new Response( null, { status: 204, headers: corsHeaders( req, env ) } );
 		const path = url.pathname.replace( /\/+$/, '' );
@@ -800,7 +808,7 @@ export default {
 		const ip = req.headers.get( 'CF-Connecting-IP' ) || 'local';
 		if ( path === '/api/contact' && req.method === 'POST' ) return contact( req, env, ip );
 		if ( path === '/api/usage' && req.method === 'POST' ) return usagePing( req, env, ip );
-		if ( path === '/api/admin/stats' && req.method === 'GET' ) return adminStats( req, env, url );
+		if ( path === '/api/admin/stats' && req.method === 'GET' ) { if ( await limited( env, 'AUTH_LIMITER', 'admin:' + ip ) ) return fail( req, env, 'rate_limited', 429 ); return adminStats( req, env, url ); }
 		if ( PUBLIC_POST[ path ] ) {
 			if ( req.method !== 'POST' ) return fail( req, env, 'not_found', 404 );
 			if ( await limited( env, 'AUTH_LIMITER', `${ path }:${ ip }` ) ) return fail( req, env, 'rate_limited', 429 );
@@ -860,5 +868,4 @@ export default {
 			if ( path === '/api/email/verify' && M === 'POST' ) return emailVerify( req, env, user, b );
 		}
 		return fail( req, env, 'not_found', 404 );
-	},
-};
+}

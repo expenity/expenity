@@ -56,7 +56,7 @@ cpSync(join(ROOT,'vendor'),join(OUT,'app','vendor'),{recursive:true});
 
 // HTML and offline installation use matching versioned JS/CSS URLs.
 { const html=join(OUT,'app/index.html'), sw=join(OUT,'app/sw.js');
- writeFileSync(html,readFileSync(html,'utf8').replace(/((?:src|href)="[^"?]+\.(?:js|css))"/g,'$1?v='+ASSET_V+'"'));
+ writeFileSync(html,readFileSync(html,'utf8').replace(/((?:src|href)="[^"?]+\.(?:js|css))"/g,'$1?v='+ASSET_V+'"').replace(' http://localhost:* http://127.0.0.1:*',''));
  writeFileSync(sw,readFileSync(sw,'utf8').replace(/(const FILES = \[[^;]+\]);/, '$1.map( f => /\\.(js|css)$/.test(f) ? f + "?v='+ASSET_V+'" : f );'));
 }
 

@@ -41,6 +41,7 @@ const ok = ( cond, label, extra = '' ) => { if ( ! cond ) { fail++; console.log(
 /** A "device": its own browser profile with its own virtual passkey authenticator. */
 async function device( name ) {
 	const context = await browser.newContext( { locale: 'en-US', timezoneId: 'Europe/Athens', viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true } );
+	await context.addInitScript( () => { try { if ( ! localStorage.getItem( 'expenity.skin' ) ) localStorage.setItem( 'expenity.skin', 'emerald' ); } catch ( e ) { /* ignore */ } } ); // the tests were written for the original green theme
 	const page = await context.newPage();
 	page.on( 'pageerror', ( e ) => errors.push( `${ name }: ${ e }` ) );
 	page.on( 'console', ( m ) => { if ( m.type() === 'error' && ! /beacon|cloudflare|ERR_|Failed to load resource/.test( m.text() ) ) errors.push( `${ name }: ${ m.text() }` ); } );

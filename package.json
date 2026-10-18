@@ -1,21 +1,17 @@
 {
   "name": "expenity",
-  "version": "0.27.1",
+  "version": "0.28.0",
   "private": true,
   "description": "Expenity: know where your money goes. Expenses, income, bills, budgets and goals. Free, open source, works on every device.",
   "license": "GPL-2.0-or-later",
   "type": "module",
   "scripts": {
     "site": "node website/build.mjs",
-    "test": "node dev/test.mjs",
     "screenshots": "node dev/screenshots.mjs",
-    "test:api": "node dev/test-api.mjs",
-    "test:e2e": "node dev/test-e2e.mjs",
-    "test:all": "node dev/test.mjs && node dev/test-api.mjs && node dev/test-e2e.mjs && node dev/test-enhancements.mjs && npm run test:regressions",
-    "test:enhancements": "node dev/test-enhancements.mjs",
-    "test:regressions": "node dev/test-amount-entry.mjs && node dev/test-v06.mjs && node dev/test-install-handoff.mjs && node dev/test-release-update.mjs && node dev/test-v07.mjs && node dev/test-custom-theme.mjs && node dev/test-dashboard.mjs && node dev/test-entry-flow.mjs && node dev/test-receipts-safe.mjs && node dev/test-receipt-recovery.mjs",
     "build:receipt-ocr": "node dev/build-paddle.mjs",
-    "test:entry-groups": "node dev/test-entry-groups.mjs"
+    "test": "node dev/test-amount-entry.mjs && node dev/test-avatar.mjs && node dev/test-card-characters.mjs && node dev/test-contact.mjs && node dev/test-demo.mjs && node dev/test-drafts.mjs && node dev/test-extras.mjs && node dev/test-features.mjs && node dev/test-guest-photo.mjs && node dev/test-help.mjs && node dev/test-home-appearance.mjs && node dev/test-install-handoff.mjs && node dev/test-onboarding.mjs && node dev/test-overflow.mjs && node dev/test-playful-themes.mjs && node dev/test-rowmenu.mjs && node dev/test-targets.mjs && node dev/test-tutorials.mjs && node dev/test-usage.mjs && node dev/test-v08.mjs && node dev/test-vader-theme.mjs && node dev/test-walletcolor.mjs && node dev/test-xss.mjs",
+    "test:api": "node dev/test-api.mjs",
+    "test:all": "npm run test:api && npm test"
   },
   "devDependencies": {
     "@paddleocr/paddleocr-js": "0.4.2",

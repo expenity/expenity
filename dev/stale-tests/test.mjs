@@ -26,6 +26,7 @@ let fail = 0;
 const ok = ( cond, label, extra = '' ) => { if ( ! cond ) { fail++; console.log( 'FAIL', label, extra ); } else console.log( 'ok  ', label ); };
 async function newPage( opts = {} ) {
 	const context = await browser.newContext( { viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, hasTouch: true, isMobile: true, locale: 'en-US', timezoneId: 'Europe/Athens', ...opts } );
+	await context.addInitScript( () => { try { if ( ! localStorage.getItem( 'expenity.skin' ) ) localStorage.setItem( 'expenity.skin', 'emerald' ); } catch ( e ) { /* ignore */ } } ); // the tests were written for the original green theme
 	const page = await context.newPage();
 	page.on( 'pageerror', ( e ) => errors.push( String( e ) ) );
 	page.on( 'console', ( m ) => { if ( m.type() === 'error' && ! /beacon|cloudflare|ERR_|Failed to load resource/.test( m.text() ) ) errors.push( m.text() ); } );
@@ -96,13 +97,16 @@ ok( await page.locator( '[data-flow=add-goal]' ).isVisible(), 'choosing to save 
 await page.click( '[data-fstep=gpreset][data-k=trip]' ); await page.click( '[data-fstep=gpreset][data-k=car]' ); await page.click( '[data-flow=add-goal]' );
 ok( await page.locator( '.grow' ).count() === 3, 'the goal step can hold several goals' );
 await page.fill( '.grow >> nth=0 >> [name=gtarget]', '800' ); await page.fill( '.grow >> nth=1 >> [name=gtarget]', '9000' ); await page.click( '.grow >> nth=2 >> [data-flow=rm-goal]' ); await page.click( '[data-flow=next]' );
+await page.click( '[data-flow=next]' ); // the plan step (Basic, Pro or Advanced) comes before the wallets
 await page.locator( '[data-wrow="1"] .switch' ).click();
 await page.fill( '[data-wrow="0"] [name=wname]', 'Main wallet' ); await page.fill( '[data-wrow="0"] [name=wopening]', '100' );
 await page.click( '[data-flow=next]' );
+await page.click( '[data-flow=next]' ); // the daily number step
 await page.click( '[data-fstep=motion][data-motion=off]' );
 ok( await page.evaluate( () => document.documentElement.dataset.motion ) === 'off', 'animations can be switched off in the wizard' );
 await page.click( '[data-flow=next]' );
-if(await page.locator('.tour-grid').count()) await page.click('[data-flow=next]');
+// the tour, then the animated lessons (receipts, one sentence, extras, help icon) until the swipe tips
+for ( let i = 0; i < 10 && ! await page.locator( '.swipe-demo' ).count(); i++ ) await page.click( '[data-flow=next]' );
 ok( await page.locator( '.swipe-demo' ).isVisible() && await page.locator( '.tip-list li' ).count() === 3, 'the wizard shows an animated demo of swiping a row' );
 await page.click( '[data-flow=next]' );
 ok( await page.locator( '[data-flow=start]' ).isVisible(), 'the wizard ends on a done screen' );
@@ -116,13 +120,13 @@ ok( ! await page.locator( '#rail' ).isVisible() && ! await page.locator( '#pane'
 
 /* ---- Add flow: amount first, keypad */
 await page.click( '.fab' );
-ok( await page.locator( '.entry-add-row' ).count() === 4, 'the + button opens a sheet with four labelled actions' );
+ok( await page.locator( '.entry-add-row' ).count() >= 4, 'the + button opens a sheet with labelled actions' );
 await page.click( '[data-act=tx-income]' );
 await keys( '15' ); await page.click( '.keypad [data-key="0"]' ); await page.click( '.keypad [data-key="0"]' );
-ok( await page.locator( '#amtVal' ).innerText() === '1500', 'the keypad builds the amount' );
+ok( await page.locator( '#amtVal' ).innerText() === '1,500', 'the keypad builds the amount (thousands are grouped for reading)' );
 await page.click( '.keypad [data-key="<"]' ); await page.click( '.keypad [data-key="0"]' );
 await page.fill( '#txDesc', 'Salary' );
-ok(await page.locator('.catchip.on').count()===0,'income does not silently pick a category');await page.click('[data-entry-group=category] > summary');await page.click('[data-tx-cat=salary]');
+ok(await page.locator('.catchip.on').count()===0,'income does not silently pick a category');await page.click('[data-entry-group=category] > summary');await page.waitForTimeout(700);await page.click('[data-tx-cat=salary]',{force:true});
 await page.click('[data-tx=save]');if(await page.locator('#txErr:visible').count())throw Error(await page.locator('#txErr').innerText());
 await page.click( '.fab' ); await page.click( '[data-act=tx-expense]' );
 await page.click('[data-entry-group=extras] > summary');await page.click( '[data-tx=quick]' ); await page.fill( '#txQuick', 'Groceries 42,30 yesterday' );

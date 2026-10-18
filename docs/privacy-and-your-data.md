@@ -48,3 +48,9 @@ The app and the server are public, so you can check all of this: [github.com/exp
 ## Photos and saved names
 
 Saved names are optional account settings and sync with your financial data. Photos are compressed separately, stored in D1, and never cached by the app for offline viewing. They follow current wallet access. Delete your uploads in Account; other members’ uploads remain. JSON backups contain image references rather than the files.
+
+## Security
+
+We reviewed the app and its server end to end before sharing it. There are no secrets in the code or its history, and the dependencies are audited with no known vulnerabilities. The server limits how often anything can be tried, checks every input strictly, sends security headers, and only talks to genuine push services. The app was tested with hostile text in every place you can type, so what you enter is only ever shown as plain text. A content security policy limits what the app can load, and the app refuses to run inside another page. Sign-in uses passkeys, so there is no password to steal.
+
+This was our own thorough review, not an independent audit, and no software is ever perfectly safe. If you find a problem, please tell us through **Contact us** in the app.

@@ -19,7 +19,8 @@ import {readFileSync,writeFileSync} from 'node:fs';
 import {join} from 'node:path';
 const dir=process.argv[2], build=Date.now().toString(36);
 const html=join(dir,'index.html'), sw=join(dir,'sw.js');
-writeFileSync(html,readFileSync(html,'utf8').replace(/((?:src|href)="[^"?]+\.(?:js|css))"/g,'$1?v='+build+'"'));
+// Published builds do not allow local development addresses in the content security policy.
+writeFileSync(html,readFileSync(html,'utf8').replace(/((?:src|href)="[^"?]+\.(?:js|css))"/g,'$1?v='+build+'"').replace(' http://localhost:* http://127.0.0.1:*',''));
 writeFileSync(sw,readFileSync(sw,'utf8').replace(/(const FILES = \[[^;]+\]);/, '$1.map( f => /\\.(js|css)$/.test(f) ? f + "?v='+build+'" : f );'));
 JS
 git -C "$work" add app
