@@ -19,6 +19,12 @@ try{
  await page.click('[data-hp-close]');ok(await page.locator('.help-pop').count()===0&&await page.inputValue('#txDesc')==='Keep me','closing returns to the form');
  await page.evaluate(()=>UI.closeSheet(true));
  await page.evaluate(()=>EXA.go('activity'));ok(await page.locator('.help-ic').count()>=1,'Activity has a help icon');await page.waitForTimeout(500);await page.screenshot({path:'/tmp/help-ic.png',clip:{x:0,y:0,width:390,height:120}});
+ // dismiss one icon, others stay
+ await page.evaluate(()=>EXA.go('home'));await page.waitForSelector('.help-ic');await page.click('.help-ic');await page.waitForSelector('[data-hp-never]');await page.click('[data-hp-never]');await page.waitForTimeout(300);
+ ok(await page.locator('.help-ic').count()===0&&await page.evaluate(()=>EX.state().settings.helpDismissed.includes('home')),'never-show hides the icon on that screen');
+ await page.evaluate(()=>EXA.go('activity'));ok(await page.locator('.help-ic').count()>=1,'icons on other screens stay');
+ await page.evaluate(()=>EXA.go('more','helpicons'));ok(await page.locator('[data-help-screen]').count()>=20&&!await page.locator('[data-help-screen=home]').isChecked(),'Help icons page lists screens, home unchecked');
+ await page.click('[data-help-reset]');await page.waitForTimeout(200);ok(await page.evaluate(()=>EX.state().settings.helpDismissed.length===0),'Show every help icon again restores them');
  await page.evaluate(()=>EXA.go('more','tutorials'));await page.click('[data-help-toggle]');await page.evaluate(()=>EXA.go('activity'));await page.waitForTimeout(200);
  ok(await page.locator('.help-ic').count()===0,'switching help off removes the icons');
  ok(!errors.length,'no errors '+errors.join(';'));
