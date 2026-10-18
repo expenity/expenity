@@ -1,0 +1,31 @@
+import {chromium} from 'playwright-core';
+import {createServer} from 'node:http';
+import {readFileSync,existsSync,mkdirSync} from 'node:fs';
+import {join,extname} from 'node:path';
+import assert from 'node:assert/strict';
+const out='/tmp/expenity-features';mkdirSync(out,{recursive:true});
+const server=createServer((req,res)=>{const f=join(process.cwd(),req.url.split('?')[0]==='/'?'index.html':req.url.split('?')[0]);if(!existsSync(f)){res.writeHead(404).end();return;}res.setHeader('Content-Type',({'.html':'text/html','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.json':'application/json','.png':'image/png'})[extname(f)]||'application/octet-stream');res.end(readFileSync(f));}).listen(0);
+const browser=await chromium.launch({channel:'chrome'}),ctx=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,serviceWorkers:'block'}),page=await ctx.newPage(),errors=[];page.on('pageerror',e=>errors.push(String(e)));page.setDefaultTimeout(10000);
+const ok=(v,s)=>{assert(v,s);console.log('ok',s);};
+try{
+ await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.features);await page.evaluate(()=>{EXA.skipFlow();});
+ ok(await page.evaluate(()=>EXA.features.plan()==='advanced'&&document.documentElement.dataset.off===''),'existing users keep every feature (Advanced)');
+ await page.evaluate(()=>EXA.go('more','root'));
+ ok(await page.locator('details[open]').count()===0,'nothing is expanded on More');
+ await page.evaluate(()=>EXA.go('more','features'));
+ ok(await page.locator('[data-fx-plan]').count()===3,'three plans');
+ await page.click('[data-fx-plan=basic]');
+ ok(await page.evaluate(()=>document.documentElement.dataset.off.split(' ').length===14),'Basic switches all fourteen optional features off');
+ await page.click('[data-fx-plan=pro]');
+ ok(await page.evaluate(()=>EX.feature('tags')&&!EX.feature('receipts')&&!EX.feature('sounds')),'Pro has tags, not receipts or sounds');
+ await page.click('details:has(.fx-rows) summary');await page.click('[data-fx-toggle=receipts] ');
+ ok(await page.evaluate(()=>EXA.features.plan()==='custom'&&EX.feature('receipts')&&EX.feature('tags')),'a toggle makes a custom mix');
+ ok(await page.evaluate(()=>EX.state().settings.features.tier==='custom'),'saved in settings');
+ await page.screenshot({path:out+'/fx.png'});
+ await page.evaluate(()=>{EXA.features.choose('advanced');EXA.go('more','appearance');});
+ ok(await page.locator('[data-theme-edit]').count()>=10,'every theme has a pencil');
+ await page.click('[data-theme-edit=sunset]');await page.waitForSelector('#customThemeForm');
+ await page.locator('[data-palette-hex=accent]').fill('#112233');await page.click('#customThemeForm [type=submit]');
+ ok(await page.evaluate(()=>EXA.skin()==='sunset'&&EX.state().settings.themeLooks.sunset.accent==='#112233'),'pencil saves a per-theme look straight away');
+ ok(!errors.length,'no browser errors: '+errors.join('; '));
+}finally{await browser.close();server.close();}
