@@ -1,0 +1,30 @@
+import {chromium} from 'playwright-core';
+import {createServer} from 'node:http';
+import {readFileSync,existsSync,mkdirSync} from 'node:fs';
+import {join,extname} from 'node:path';
+import assert from 'node:assert/strict';
+const out='/tmp/expenity-avatar';mkdirSync(out,{recursive:true});
+const server=createServer((req,res)=>{const f=join(process.cwd(),req.url.split('?')[0]==='/'?'index.html':req.url.split('?')[0]);if(!existsSync(f)){res.writeHead(404).end();return;}res.setHeader('Content-Type',({'.html':'text/html','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.json':'application/json','.png':'image/png'})[extname(f)]||'application/octet-stream');res.end(readFileSync(f));}).listen(0);
+const browser=await chromium.launch({channel:'chrome'}),ctx=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,serviceWorkers:'block'}),page=await ctx.newPage(),errors=[];page.on('pageerror',e=>errors.push(String(e)));page.setDefaultTimeout(10000);
+const ok=(v,s)=>{assert(v,s);console.log('ok',s);};
+try{
+ await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.avatar);await page.evaluate(()=>{EXA.skipFlow();});
+ ok(await page.evaluate(()=>EXA.avatar.presets.length)===20,'twenty preset avatars');
+ await page.evaluate(()=>EXA.go('more','root'));await page.click('[data-avatar-open]');
+ ok(await page.locator('[data-avatar-preset]').count()===20,'picker lists all twenty');
+ await page.click('[data-avatar-preset=robot]');
+ ok(await page.evaluate(()=>EX.state().settings.avatar.id==='robot'),'choice saved in settings');
+ ok(await page.locator('.profile .avatar svg.av-art').count()===1,'profile shows the chosen character');
+ await page.evaluate(()=>UI.closeSheet(true));await page.evaluate(()=>EXA.go('home'));
+ ok(await page.locator('.ab-avatar .avatar svg.av-art').count()===1,'app bar shows it too');
+ await ctx.setOffline(true);await page.evaluate(()=>window.dispatchEvent(new Event('offline')));
+ ok(await page.locator('.ab-avatar .avatar.offline').count()===1,'offline pulse appears');
+ await ctx.setOffline(false);await page.evaluate(()=>window.dispatchEvent(new Event('online')));
+ ok(await page.locator('.ab-avatar .avatar.offline').count()===0,'offline pulse disappears online');
+ await page.evaluate(()=>{const c=document.createElement('canvas');c.width=c.height=200;const g=c.getContext('2d');g.fillStyle='#e33';g.fillRect(0,0,200,200);return new Promise(r=>c.toBlob(b=>{window.__f=new File([b],'a.png',{type:'image/png'});r();}));});
+ const d=await page.evaluate(()=>EXA.avatar.compress(window.__f));ok(/^data:image\/jpeg/.test(d)&&d.length<=3500,'photo shrinks to a tiny jpeg ('+d.length+' chars)');
+ await page.evaluate(d=>{EX.state().settings.avatar={type:'photo',data:d};EXA.render();},d);
+ ok(await page.locator('.ab-avatar .avatar img.av-photo').count()===1,'photo avatar renders');
+ await page.screenshot({path:out+'/a.png'});
+ ok(!errors.length,'no browser errors: '+errors.join('; '));
+}finally{await browser.close();server.close();}
