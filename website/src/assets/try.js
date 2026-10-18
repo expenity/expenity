@@ -36,7 +36,7 @@
 	new ResizeObserver( fit ).observe( sec.querySelector( '.xp-stage-wrap' ) );
 	// Starts when the section is on screen: the app loads, then dresses itself in a few themes until the visitor takes over.
 	let started = false;
-	const start = () => { if ( started ) return; started = true; show( 'phone' ); if ( reduce ) return; const order = [ 'synthwave', 'mario', 'paper', 'vader', 'sunset', 'bricks', 'amberwave', 'minnie', 'candy', 'ion', 'terminal', 'emerald' ]; let i = 0;
+	const start = () => { if ( started ) return; started = true; show( 'phone' ); if ( reduce ) return; const order = [ 'synthwave', 'paper', 'sunset', 'amberwave', 'candy', 'ion', 'terminal', 'emerald' ]; let i = 0;
 		const tick = () => { if ( touched ) return; setSkin( order[ i++ % order.length ], false ); if ( i === 3 ) sec.classList.add( 'xp-nudge-device' ); setTimeout( tick, 3200 ); }; setTimeout( tick, 4200 ); };
 	if ( 'IntersectionObserver' in window ) new IntersectionObserver( ( es, o ) => { if ( es.some( ( e ) => e.isIntersecting ) ) { start(); o.disconnect(); } }, { rootMargin: '200px' } ).observe( sec ); else start();
 }() );
