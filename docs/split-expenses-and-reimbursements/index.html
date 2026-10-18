@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Split expenses and reimbursements · Expenity</title>
+<meta name="description" content="One payment across categories; track partial repayments without inflating income.">
+<meta name="theme-color" content="#0a8f6a">
+<link rel="canonical" href="https://expenity.github.io/expenity/docs/split-expenses-and-reimbursements/">
+<link rel="alternate" hreflang="en" href="https://expenity.github.io/expenity/docs/split-expenses-and-reimbursements/">
+<link rel="alternate" hreflang="el" href="https://expenity.github.io/expenity/el/docs/split-expenses-and-reimbursements/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Expenity">
+<meta property="og:title" content="Split expenses and reimbursements · Expenity">
+<meta property="og:description" content="One payment across categories; track partial repayments without inflating income.">
+<meta property="og:url" content="https://expenity.github.io/expenity/docs/split-expenses-and-reimbursements/">
+<meta property="og:image" content="https://expenity.github.io/expenity/assets/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<!-- Cloudflare Web Analytics: counts visits anonymously, no cookies --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "64332b427a604e879f82853393ebdb0d"}'></script><!-- End Cloudflare Web Analytics -->
+<link rel="stylesheet" href="../../assets/site.css?v=0.30.0.mvehjwnu">
+<link rel="stylesheet" href="../../assets/tutorials.css?v=0.30.0.mvehjwnu">
+<link rel="stylesheet" href="../../assets/brand.css?v=0.30.0.mvehjwnu">
+<link rel="stylesheet" href="../../assets/home.css?v=0.30.0.mvehjwnu">
+<script>try{localStorage.removeItem('hdh-site-theme');var t=sessionStorage.getItem('hdh-site-theme');document.documentElement.dataset.theme=t==='dark'?'dark':'light';}catch(e){document.documentElement.dataset.theme='light';}</script>
+<script src="../../assets/search-index.js?v=0.30.0.mvehjwnu" defer></script>
+</head>
+<body data-root="../../">
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-head">
+	<div class="wrap">
+		<a class="brand brand--logo" href="../../" aria-label="Expenity home"><svg class="logo-mark" width="32" height="32" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="dng1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#22b8a8"/><stop offset="1" stop-color="#0c5c57"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="url(#dng1)"/><rect x="13" y="16" width="38" height="36" rx="8" fill="#fff"/><path d="M13 24a8 8 0 0 1 8-8h22a8 8 0 0 1 8 8v4H13z" fill="#ffc94d"/><rect x="21" y="10" width="5" height="13" rx="2.5" fill="#fff"/><rect x="38" y="10" width="5" height="13" rx="2.5" fill="#fff"/><path d="m23 40 6.5 6.5L42 34" fill="none" stroke="#0f766e" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<span class="logo-text">Expen<b>ity</b></span></a>
+		<nav id="site-nav" class="nav" aria-label="Main">
+			<a href="../../#features">Features</a>
+			<a href="../../#how">How it works</a>
+			<a href="../../app/">Open the app</a>
+			<a href="../../docs/" aria-current="page">Help center</a>
+		</nav>
+		<div class="head-actions">
+			<a class="lang-switch" href="../../el/docs/split-expenses-and-reimbursements/" hreflang="el" lang="el" title="Αγγλικά">EL</a>
+			<button class="icon-btn" type="button" data-theme-toggle aria-label="Dark theme" aria-pressed="false"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+			<a class="btn btn-primary btn-sm" href="../../app/"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg> Open app</a>
+			<button class="icon-btn menu-btn" type="button" data-menu-toggle aria-controls="site-nav" aria-expanded="false" aria-label="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+		</div>
+	</div>
+</header>
+<main id="main">
+<div class="wrap docs-layout">
+<aside class="docs-nav" aria-label="Help center">
+	<div class="search" data-search role="search">
+	<label class="sr" for="side-search">Search the help center</label>
+	<input id="side-search" type="search" placeholder="Search help…" autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="side-search-results">
+	<ul class="search-results" id="side-search-results" role="listbox" aria-label="Search the help center" hidden></ul>
+	<p class="sr" role="status" aria-live="polite"></p>
+</div>
+	<details open>
+		<summary class="docs-nav-toggle">Browse all guides</summary>
+		<ul><li><a href="../">Help center home</a></li></ul>
+		<h2>Start here</h2><ul><li><a href="../getting-started/">Getting started</a></li><li><a href="../install-on-your-device/">Install on your device</a></li><li><a href="../add-money/">Add expenses, income and bills</a></li><li><a href="../tutorials-and-help/">Tutorials and help</a></li></ul>
+		<h2>Using Expenity</h2><ul><li><a href="../wallets-and-currencies/">Wallets and currencies</a></li><li><a href="../split-expenses-and-reimbursements/" aria-current="page">Split expenses and reimbursements</a></li><li><a href="../budgets-goals-income/">Budgets, goals and income</a></li><li><a href="../spending-helpers/">Daily number, targets and streaks</a></li><li><a href="../find-and-recover/">Search, filters, drafts and recently deleted</a></li><li><a href="../receipts-and-photos/">Receipts, photos and your picture</a></li><li><a href="../reports/">Reports</a></li><li><a href="../reminders/">Reminders</a></li><li><a href="../shared-wallets/">Shared wallets</a></li><li><a href="../features-and-plans/">Features and plans</a></li><li><a href="../themes-and-look/">Themes and animations</a></li></ul>
+		<h2>Reference</h2><ul><li><a href="../account-and-sync/">Account and sync</a></li><li><a href="../privacy-and-your-data/">Privacy and your data</a></li><li><a href="../contact-us/">Contact us</a></li><li><a href="../faq/">FAQ</a></li></ul>
+	</details>
+</aside>
+<article class="doc">
+	<nav class="crumbs" aria-label="Breadcrumb"><a href="../">Help center</a> › Split expenses and reimbursements</nav>
+	<h1 id="split-expenses-and-reimbursements">Split expenses and reimbursements</h1>
+<p>Both features belong to <strong>Advanced</strong>. You can also enable them individually in a <strong>Custom</strong> mix under More → Features. They are free features, not paid subscriptions. Turning them off does not remove records or change their calculations.</p>
+<h2 id="split-one-payment-between-categories">Split one payment between categories<a class="anchor" href="#split-one-payment-between-categories" aria-label="#">#</a></h2>
+<p>Example: you spend <strong>€60</strong> at a supermarket: <strong>€40</strong> on food and <strong>€20</strong> on household shopping.</p>
+<ol>
+<li>Add an Expense and enter the full <strong>€60</strong> payment, wallet and date.</li>
+<li>Open <strong>Split expenses</strong> and enable <strong>Split across categories</strong>.</li>
+<li>Set <strong>Food &amp; groceries · €40</strong> and <strong>Shopping · €20</strong>. Add or remove category rows as needed.</li>
+<li>Save. Every allocation must be positive and the amounts must add up exactly to €60. A difference of one cent prevents saving.</li>
+</ol>
+<p>Your wallet decreases by <strong>€60 once</strong>. Activity shows one expense, with a split icon. Open it to see every category amount. Category reports and budgets use €40 and €20 respectively. The receipt/photo and tags belong to the whole payment. To change allocations, edit the original expense.</p>
+<p><strong>Try an example</strong> populates the unsaved draft. It changes the draft amount and allocations; nothing is saved until you press Save. Split details apply to recorded expenses: for a bill, record its payment and then edit that expense. They do not create several recurring schedules.</p>
+<h2 id="track-money-someone-will-repay">Track money someone will repay<a class="anchor" href="#track-money-someone-will-repay" aria-label="#">#</a></h2>
+<p>This is money you paid on behalf of a person or organisation, not a refund from a shop and not salary.</p>
+<p>Example: you pay <strong>€90</strong> for dinner. Alex owes you <strong>€60</strong>. Your eventual personal cost is <strong>€30</strong>.</p>
+<ol>
+<li>Add the €90 expense. Open <strong>Reimbursements</strong>, enable <strong>Someone will repay me</strong>, enter <strong>Alex</strong> and the expected <strong>€60</strong>, and save.</li>
+<li>When Alex pays €20, open the original expense → <strong>Record repayment</strong>. Choose the receiving wallet and date, review the amount and confirm.</li>
+<li>The wallet increases by €20; the expense shows <strong>Received €20 · Still owed €40</strong>.</li>
+<li>Record the final €40 when it actually arrives. The remaining amount becomes zero.</li>
+</ol>
+<p>Find all outstanding requests from <strong>Activity → Money owed to you</strong>. Expected money does not increase wallet balances or safe-to-spend. You can receive it into another writable wallet with the same currency and sharing space. No exchange rate is guessed. Partial payments are supported; a new payment cannot exceed the currently known outstanding balance.</p>
+<p>Repayments stay in Activity as linked records. Open them to find the original expense. Use the original expense's <strong>Repayment history</strong> to remove an incorrect repayment; the balance decreases and the amount becomes owed again. Existing undo/history/trash tools continue to work. An expense cannot be edited to expect less than repayments already recorded.</p>
+<h2 id="reports-dates-and-data-safety">Reports, dates and data safety<a class="anchor" href="#reports-dates-and-data-safety" aria-label="#">#</a></h2>
+<p>Reports treat repayments as <strong>negative spending on the date received</strong>, not earnings. For a split expense, the credit is allocated proportionally between its categories, with the final category absorbing any rounding cent. A reimbursement received in a later month reduces that later month's spending. That period can show a negative net expense; signed amounts remain available in tables.</p>
+<p>Balances use the original payment and actual receipts once each. Deleting an original expense does not delete money already received: linked receipts keep a category snapshot and remain in history, with an explanation if the original is missing. Restore the expense from Recently deleted where available.</p>
+<p>JSON backups retain splits, requests and receipt links. Transaction CSV includes allocation and reimbursement metadata; report CSV shows category allocations. Records use the existing account/shared-wallet sync and offline queue. Two devices recording repayments simultaneously while offline can exceed the expected amount once merged; review the receipt history and remove an incorrect receipt. The app never silently discards a received payment.</p>
+<p>Animated, bilingual examples are in <strong>More → Tutorials</strong>, and the Advanced setup includes both guides. Animations respect motion preferences.</p>
+<figure data-zoom><img src="../../assets/img/split-expense-en.jpg" alt="Split expense example" width="702" height="1800" loading="lazy" decoding="async"><figcaption>Split expense example</figcaption></figure>
+<figure data-zoom><img src="../../assets/img/reimbursement-en.jpg" alt="Animated reimbursement guide" width="702" height="1800" loading="lazy" decoding="async"><figcaption>Animated reimbursement guide</figcaption></figure>
+
+	<div class="help-strip"><p><strong>Still stuck?</strong> Check the <a href="../faq/">FAQ</a>, or <a href="https://github.com/expenity/expenity/issues">ask on GitHub</a>.</p></div>
+	<nav class="pager" aria-label="Previous and next guide">
+		<a class="prev" href="../wallets-and-currencies/"><small>Previous</small>Wallets and currencies</a>
+		<a class="next" href="../budgets-goals-income/"><small>Next</small>Budgets, goals and income</a>
+	</nav>
+</article>
+<nav class="on-page" aria-label="On this page" data-spy><h2>On this page</h2><ul><li><a href="#split-one-payment-between-categories">Split one payment between categories</a></li><li><a href="#track-money-someone-will-repay">Track money someone will repay</a></li><li><a href="#reports-dates-and-data-safety">Reports, dates and data safety</a></li></ul></nav>
+</div>
+</main>
+<footer class="site-foot">
+	<div class="wrap">
+		<div class="foot-grid">
+			<div class="foot-about">
+				<a class="brand brand--logo" href="../../" aria-label="Expenity home"><svg class="logo-mark" width="32" height="32" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="dng2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#22b8a8"/><stop offset="1" stop-color="#0c5c57"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="url(#dng2)"/><rect x="13" y="16" width="38" height="36" rx="8" fill="#fff"/><path d="M13 24a8 8 0 0 1 8-8h22a8 8 0 0 1 8 8v4H13z" fill="#ffc94d"/><rect x="21" y="10" width="5" height="13" rx="2.5" fill="#fff"/><rect x="38" y="10" width="5" height="13" rx="2.5" fill="#fff"/><path d="m23 40 6.5 6.5L42 34" fill="none" stroke="#0f766e" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<span class="logo-text">Expen<b>ity</b></span></a>
+				<p>Know where your money goes, on every device. Free and open source.</p>
+			</div>
+			<div>
+				<h2>Product</h2>
+				<ul>
+					<li><a href="../../#features">Features</a></li>
+					<li><a href="../../#how">How it works</a></li>
+					<li><a href="../../app/">Open the app</a></li>
+					<li><a href="https://github.com/expenity/expenity">Source on GitHub</a></li>
+				</ul>
+			</div>
+			<div>
+				<h2>Help</h2>
+				<ul>
+					<li><a href="../../docs/">Help center</a></li>
+					<li><a href="../../docs/getting-started/">Getting started</a></li>
+					<li><a href="../../docs/reminders/">Reminders</a></li>
+					<li><a href="../../docs/faq/">FAQ</a></li>
+				</ul>
+			</div>
+			<div>
+				<h2>More projects</h2>
+				<ul>
+					<li><a href="https://george-stathopoulos.github.io/gatehouse/" title="AI governance and cost control for WordPress">Gatehouse</a></li><li><a href="https://george-stathopoulos.github.io/helpdesk-hero/" title="WordPress support with diagnostics and password-free access">Helpdesk Hero</a></li><li><a href="https://george-stathopoulos.github.io/fixpass/" title="Spotlight the problem and give support safe, temporary access">Fixpass</a></li><li><a href="https://george-stathopoulos.github.io/fixpin/" title="Point at what is broken on any website and share a private link">FixPin</a></li><li><a href="https://george-stathopoulos.github.io/sheetpilot/" title="Turn any spreadsheet into an interactive dashboard, in your browser">SheetPilot</a></li>
+					<li><a href="https://george-stathopoulos.github.io/#projects">All projects</a></li>
+					<li><a href="https://george-stathopoulos.github.io/blog/" title="The story behind every project">Blog</a></li>
+				</ul>
+			</div>
+			<div>
+				<h2>Trust</h2>
+				<ul>
+					<li><a href="../../docs/privacy-and-your-data/">Privacy and your data</a></li>
+					<li><a href="https://github.com/expenity/expenity/issues">Feedback and ideas</a></li>
+				</ul>
+			</div>
+		</div>
+		<div class="foot-bottom">
+			<span>Made with <span class="heart" role="img" aria-label="love">♥</span> by <a href="https://george-stathopoulos.github.io/">George Stathopoulos</a></span>
+			<span>Expenity 0.30.0 · This website uses no cookies. Visits are counted anonymously, with no personal data.</span>
+		</div>
+	</div>
+</footer>
+<script src="../../assets/site.js?v=0.30.0.mvehjwnu" defer></script>
+
+
+</body>
+</html>
