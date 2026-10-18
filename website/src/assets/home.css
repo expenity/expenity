@@ -57,3 +57,13 @@
 .xp-view .xp-img { position: relative; } .xp-sheet .xp-img { height: 100%; object-fit: cover; object-position: top; }
 .xp-view .xp-barimg { position: absolute; left: 0; right: 0; bottom: 0; top: auto; width: 100%; height: auto; z-index: 3; } .xp-view .xp-pscroll .xp-img { position: static; }
 .xp-view .xp-sheet .xp-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+
+/* Pulsing colours instead of arrows: every theme glows in its own colour, and the other devices pulse, until the visitor takes over */
+.xp-hint { display: none !important; }
+.xp-chip { --c: var(--accent); }
+.xp-try:not(.xp-touched) .xp-chip[aria-checked=false] { animation: xpGlow 2.6s ease-in-out infinite; } .xp-try:not(.xp-touched) .xp-chip:nth-child(2) { animation-delay: .5s; } .xp-try:not(.xp-touched) .xp-chip:nth-child(3) { animation-delay: 1s; } .xp-try:not(.xp-touched) .xp-chip:nth-child(4) { animation-delay: 1.5s; }
+.xp-try:not(.xp-device-done) .xp-tabs button[aria-selected=false] { animation: xpTabGlow 2.2s ease-in-out infinite; } .xp-try:not(.xp-device-done) .xp-tabs button[data-device=desktop] { animation-delay: .6s; }
+@keyframes xpGlow { 0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--c) 0%, transparent); border-color: var(--line); } 50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--c) 38%, transparent), 0 0 18px color-mix(in srgb, var(--c) 45%, transparent); border-color: var(--c); } }
+@keyframes xpTabGlow { 0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 0%, transparent); background: transparent; } 50% { box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 35%, transparent); background: color-mix(in srgb, var(--accent) 14%, transparent); } }
+.xp-paused .xp-chip, .xp-paused .xp-tabs button { animation: none !important; }
+@media (prefers-reduced-motion: reduce) { .xp-chip, .xp-tabs button { animation: none !important; } }

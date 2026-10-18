@@ -16,11 +16,11 @@
 		if ( dev === 'phone' ) { const bar = s.querySelector( '.xp-barimg' ); bar.style.height = ( m.barH / m.h * 100 ) + '%'; s.querySelector( '.xp-pscroll img' ).style.marginBottom = ( m.barH * k ) + 'px'; }
 	} ); };
 	const show = ( d ) => { device = d; tabs.forEach( ( t ) => t.setAttribute( 'aria-selected', String( t.dataset.device === d ) ) ); screens.forEach( ( s ) => { s.hidden = s.dataset.device !== d; s.querySelector( '.xp-sheet' ).hidden = true; } ); paint(); fit(); };
-	chips.forEach( ( c ) => c.addEventListener( 'click', () => { skin = c.dataset.skin; chips.forEach( ( x ) => x.setAttribute( 'aria-checked', String( x === c ) ) ); paint(); touched = true; sec.classList.add( 'xp-touched' ); if ( ! deviceTouched ) sec.classList.add( 'xp-nudge-device' ); } ) );
-	tabs.forEach( ( t ) => t.addEventListener( 'click', () => { touched = deviceTouched = true; sec.classList.remove( 'xp-nudge-device' ); sec.classList.add( 'xp-touched', 'xp-device-done' ); show( t.dataset.device ); } ) );
+	chips.forEach( ( c ) => c.addEventListener( 'click', () => { skin = c.dataset.skin; chips.forEach( ( x ) => x.setAttribute( 'aria-checked', String( x === c ) ) ); paint(); touched = true; sec.classList.add( 'xp-touched' ); } ) );
+	tabs.forEach( ( t ) => t.addEventListener( 'click', () => { touched = deviceTouched = true; sec.classList.add( 'xp-touched', 'xp-device-done' ); show( t.dataset.device ); } ) );
 	sec.addEventListener( 'click', ( e ) => { const add = e.target.closest( '.xp-hot-add' ), close = e.target.closest( '.xp-hot-close' ); if ( ! add && ! close ) return; const sh = e.target.closest( '.xp-screen' ).querySelector( '.xp-sheet' ); sh.hidden = ! add; touched = true; sec.classList.add( 'xp-touched' ); } );
 	new ResizeObserver( fit ).observe( sec.querySelector( '.xp-stage-wrap' ) );
 	let started = false;
-	const start = () => { if ( started ) return; started = true; fetch( base + 'preview.json' ).then( ( r ) => r.json() ).then( ( j ) => { meta = j; show( 'phone' ); setTimeout( () => { if ( ! touched ) sec.classList.add( 'xp-nudge-device' ); }, 9000 ); } ).catch( () => {} ); };
+	const start = () => { if ( started ) return; started = true; fetch( base + 'preview.json' ).then( ( r ) => r.json() ).then( ( j ) => { meta = j; show( 'phone' ); } ).catch( () => {} ); };
 	if ( 'IntersectionObserver' in window ) new IntersectionObserver( ( es, o ) => { if ( es.some( ( e ) => e.isIntersecting ) ) { start(); o.disconnect(); } }, { rootMargin: '300px' } ).observe( sec ); else start();
 }() );
