@@ -53,6 +53,8 @@ npm install
 npm run test:all               # logic and layout tests, API tests, end-to-end tests with virtual passkeys
 node dev/screenshots.mjs       # regenerate the documentation screenshots (English and Greek)
 node dev/greek-review.mjs      # regenerate the Greek review sheet
+node dev/preview-shots.mjs     # regenerate the website's theme and device preview pictures
+node dev/export-tutorials.mjs  # regenerate the animated tutorials for the website
 node website/build.mjs         # build the website into website/dist
 bin/publish-site.sh            # publish website/dist to the gh-pages branch
 bin/publish-beta.sh            # publish the working tree as a beta app
