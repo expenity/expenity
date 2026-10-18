@@ -23,5 +23,6 @@ try{
  await page.evaluate(()=>EXA.startFresh());await page.waitForTimeout(400);
  ok(await page.evaluate(()=>{const S=EX.state();return S.txs.length===0&&S.settings.name===''&&S.settings.setupDone===false&&S.device.stage==='setup'&&S.device.tourDone===false;}),'Start fresh clears everything and returns to setup');
  ok(await page.locator('#setupForm [name=name]').count()===1,'the first screen asks for the name');
+ ok(await page.evaluate(()=>{EXA.go('more','appearance');return document.querySelector('#view .card h2').textContent.length>0&&document.querySelector('#view [data-lang]').closest('.card')===document.querySelector('#view .card');}),'Language is the first card in Appearance');
  ok(!errors.length,'no errors '+errors.join(';'));
 }finally{await browser.close();server.close();}
