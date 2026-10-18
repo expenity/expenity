@@ -97,6 +97,12 @@ ok( s.status === 200 && s.json.rev === 1 && s.json.changes.length === 2, 'device
 let pull = await call( 'POST', '/api/sync', { since: 0, changes: [] }, B );
 ok( pull.json.changes.length === 2 && pull.json.changes.some( ( c ) => c.data.name === 'Salary' ), 'device B sees them' );
 const revB = pull.json.rev;
+// Advanced money fields are preserved by the existing sync envelope.
+const advancedRecords=[{id:'split-sync',kind:'tx',updatedAt:950,data:{id:'split-sync',type:'expense',amount:'60',splits:[{category:'food',amount:'40'},{category:'shopping',amount:'20'}],reimbursement:{who:'Αλέξης',amount:'30'}}},{id:'repay-sync',kind:'tx',updatedAt:951,data:{id:'repay-sync',type:'income',amount:'10',reimbursementOf:'split-sync',reimbursementWho:'Αλέξης',reimbursementCategories:[{category:'food',amount:'40'},{category:'shopping',amount:'20'}]}}];
+await call('POST','/api/sync',{since:0,changes:advancedRecords},A);
+const advancedPull=await call('POST','/api/sync',{since:0,changes:[]},B);
+ok(advancedPull.json.changes.some(r=>r.id==='split-sync'&&r.data.splits[1].amount==='20'&&r.data.reimbursement.who==='Αλέξης')&&advancedPull.json.changes.some(r=>r.id==='repay-sync'&&r.data.reimbursementOf==='split-sync'),'advanced allocation and repayment fields sync between devices');
+
 await call( 'POST', '/api/sync', { since: revB, changes: [ { ...bill, data: { ...bill.data, amount: '900' }, updatedAt: 3000 } ] }, B );
 s = await call( 'POST', '/api/sync', { since: 1, changes: [ { ...bill, data: { ...bill.data, amount: '875' }, updatedAt: 2000 } ] }, A );
 ok( s.json.changes.find( ( c ) => c.id === 'b1' )?.data.amount === '900', 'last writer wins: the newer edit survives an older one' );

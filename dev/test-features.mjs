@@ -25,7 +25,7 @@ try{
  await page.evaluate(()=>{EXA.features.choose('advanced');EXA.go('more','appearance');});
  ok(await page.locator('[data-theme-edit]').count()>=10,'every theme has a pencil');
  await page.click('[data-theme-edit=sunset]');await page.waitForSelector('#customThemeForm');
- await page.locator('[data-palette-hex=accent]').fill('#112233');await page.click('#customThemeForm [type=submit]');
- ok(await page.evaluate(()=>EXA.skin()==='sunset'&&EX.state().settings.themeLooks.sunset.accent==='#112233'),'pencil saves a per-theme look straight away');
+ await page.locator('[data-palette-hex=accent]').fill('#112233');await page.click('#customThemeForm [type=submit]');await page.click('[data-look-apply]');
+ ok(await page.evaluate(()=>EXA.skin()==='sunset'&&EX.state().settings.themeLooks.sunset.accent==='#112233'),'applying the preview saves the per-theme look');
  ok(!errors.length,'no browser errors: '+errors.join('; '));
 }finally{await browser.close();server.close();}

@@ -40,3 +40,5 @@ Product and engineering specs for what is built and what is planned:
 | [Accounts, sync and money](specs/07-v1-accounts-sync-money.md) | Passkeys, the Worker, sync, risks |
 | [Mobile-first UX](specs/08-mobile-first-ux.md) | The app shell, sheets, icons, tablet layouts |
 | [Version 0.4 plan](specs/09-v0.4-plan.md) | First-run flow, themes, reports, budgets, shared wallets, Greek |
+
+- [Split expenses and reimbursements](split-expenses-and-reimbursements.md): Advanced, examples and accounting.

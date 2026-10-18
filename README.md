@@ -9,10 +9,11 @@ Know where your money goes. A free, open-source web app that works on iPhone, iP
 
 Started as a bill reminder and grew into a money app for expenses, income, bills, budgets and goals.
 
-## What works today (version 0.25)
+## What works today (version 0.30)
 
 - **Accounts and sync:** passkey sign-in (no passwords), recovery codes, your devices, offline first, sync through a Cloudflare Worker and D1 database. Guest mode keeps data in the browser only. **Reset account** resets everything and runs the setup again.
 - **First run:** account-first welcome, an animated "add to home screen" guide, and a skippable setup: name, currency, what you want help with, **plan (Basic, Pro or Advanced)**, wallets, **daily number**, look, and animated lessons (receipt scanning, one-sentence entry, handy extras, the help icon).
+- **Advanced money:** [split one expense between categories and track reimbursements](docs/split-expenses-and-reimbursements.md), including partial repayments, worked examples, animated setup guides, and reports that keep repayments out of earnings.
 - **Money:** expenses, income, transfers, bills with flexible repeats, wallets in any currency with daily ECB exchange rates, quick add from a sentence in English or Greek, income that is already due recorded as received straight away.
 - **Receipts and photos:** on-device receipt scanning (English and Greek) with hold-to-scan and re-scan, small photos on entries, a profile picture (20 characters or your photo).
 - **Helpers:** a **daily "you can spend today" number** with your own daily, weekly or monthly spending target and an income target, **streaks** (a flame for days within budget), **duplicate guard**, **bill price-change alerts**, **search filters** (amount and dates), **recently deleted** (30 days) and **drafts** that Home points out after a closed app.
@@ -20,7 +21,7 @@ Started as a bill reminder and grew into a money app for expenses, income, bills
 - **Reports:** overview, spending, cash flow, trends, forecast, subscriptions and a sortable table, with filters, CSV export and a table view for every chart.
 - **Shared wallets:** invite codes and links, roles (owner, editor, viewer) enforced by the server, "added by" on every item.
 - **Plans and features:** a Features page with Basic, Pro and Advanced, a comparison table and a toggle for every optional feature.
-- **Help:** 25 animated tutorials (pure CSS), a pulsing help icon on every screen with a tutorial (popup, per-screen dismissal, switch in More), a welcome tour, and **Contact us** with rich text and photos.
+- **Help:** Animated tutorials (pure CSS), a pulsing help icon on every screen with a tutorial (popup, per-screen dismissal, switch in More), a welcome tour, and **Contact us** with rich text and photos.
 - **Look:** eighteen themes, each adjustable with a pencil (colors, font, roundness), bundled fonts with Greek support, light and dark, an animations setting, press-and-hold and swipe actions, tablet and desktop layouts.
 - Push notifications when the app is closed (a daily summary at your chosen hour; on iPhone for the home-screen app), calendar file with alarms, backup and restore, CSV export, installable PWA.
 

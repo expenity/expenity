@@ -95,3 +95,6 @@ Press and hold an entry or bill for half a second and a menu opens with **Edit**
 Hold the **+** button to scan a receipt: see [Receipts, photos and your picture](receipts-and-photos.md). If you add something that matches an entry from the last few days, the **duplicate guard** asks before saving: see [Daily number, targets and streaks](spending-helpers.md#duplicate-guard). Deleted something by mistake? See [Search, filters, drafts and recently deleted](find-and-recover.md).
 
 {{tut:quick}}
+
+
+For split category amounts, partial repayments and worked examples, see [Split expenses and reimbursements](split-expenses-and-reimbursements.md).

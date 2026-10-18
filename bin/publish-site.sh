@@ -9,7 +9,9 @@ REPO="expenity/expenity"
 node website/build.mjs
 work="$(mktemp -d)"
 if git ls-remote --exit-code --heads "https://github.com/$REPO.git" gh-pages >/dev/null 2>&1; then
-	git clone --quiet --branch gh-pages "https://github.com/$REPO.git" "$work"
+	clone_reference=()
+	if [ -n "${EXPENITY_DEPLOY_REFERENCE:-}" ]; then clone_reference=(--reference-if-able "$EXPENITY_DEPLOY_REFERENCE"); fi
+	git clone ${clone_reference[@]+"${clone_reference[@]}"} --quiet --depth 1 --branch gh-pages "https://github.com/$REPO.git" "$work"
 else
 	git -C "$work" init --quiet --initial-branch=gh-pages
 	git -C "$work" remote add origin "https://github.com/$REPO.git"

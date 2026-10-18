@@ -37,3 +37,6 @@ Dismiss the tour or replay it from the Tutorials page: **Replay the welcome tour
 ## Still stuck?
 
 Use **More → Help & about → Contact us**. See [Contact us](contact-us.md).
+
+
+For split category amounts, partial repayments and worked examples, see [Split expenses and reimbursements](split-expenses-and-reimbursements.md).

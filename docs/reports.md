@@ -41,3 +41,6 @@ Every chart has **Show as a table**, so the numbers are always available as text
 On a tablet or computer the charts and tiles use the extra room.
 
 ![Reports on a tablet.](images/tablet-reports.png)
+
+
+For split category amounts, partial repayments and worked examples, see [Split expenses and reimbursements](split-expenses-and-reimbursements.md).

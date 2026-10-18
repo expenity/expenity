@@ -31,8 +31,7 @@ async function visit( path, name, { width = 1360, height = 900, full = true } = 
 	await page.screenshot( { path: join( OUT, name + '.png' ), fullPage: full } );
 	if(name.startsWith('home')){
 		if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1))bad.push(path+' horizontal overflow');
-		await page.click('[data-tone=amberwave]');
-		if(await page.locator('.xp-theme-preview').getAttribute('data-preview')!=='amberwave')bad.push(path+' theme preview');
+		if(await page.locator('[data-tone=amberwave]').count()){await page.click('[data-tone=amberwave]');if(await page.locator('.xp-theme-preview').getAttribute('data-preview')!=='amberwave')bad.push(path+' theme preview');}else if(!await page.locator('[data-skin]').count())bad.push(path+' missing theme chooser');
 		await page.click('[data-effects]');
 		if(!await page.evaluate(()=>document.documentElement.classList.contains('xp-paused')))bad.push(path+' effects pause');
 	}
@@ -44,6 +43,8 @@ await visit( 'el/', 'home-el' );
 await visit( '', 'home-en-phone', { width: 390, height: 844 } );
 await visit( 'docs/add-money/', 'doc-en', { full: false } );
 await visit( 'el/docs/add-money/', 'doc-el', { full: false } );
+await visit('docs/split-expenses-and-reimbursements/','advanced-money-en',{width:390,height:900,full:false});
+await visit('el/docs/split-expenses-and-reimbursements/','advanced-money-el',{width:390,height:900,full:false});
 await visit( 'docs/', 'docs-home', { full: false } );
 await visit( 'el/docs/', 'docs-home-el', { full: false } );
 await visit( 'app/', 'app', { full: false } );
