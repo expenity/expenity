@@ -18,11 +18,12 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
 <!-- Cloudflare Web Analytics: counts visits anonymously, no cookies --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "64332b427a604e879f82853393ebdb0d"}'></script><!-- End Cloudflare Web Analytics -->
-<link rel="stylesheet" href="../../assets/site.css?v=0.5.0.mvb61p1x">
-<link rel="stylesheet" href="../../assets/brand.css?v=0.5.0.mvb61p1x">
-<link rel="stylesheet" href="../../assets/home.css?v=0.5.0.mvb61p1x">
+<link rel="stylesheet" href="../../assets/site.css?v=0.25.0.mve574c0">
+<link rel="stylesheet" href="../../assets/tutorials.css?v=0.25.0.mve574c0">
+<link rel="stylesheet" href="../../assets/brand.css?v=0.25.0.mve574c0">
+<link rel="stylesheet" href="../../assets/home.css?v=0.25.0.mve574c0">
 <script>try{localStorage.removeItem('hdh-site-theme');var t=sessionStorage.getItem('hdh-site-theme');document.documentElement.dataset.theme=t==='dark'?'dark':'light';}catch(e){document.documentElement.dataset.theme='light';}</script>
-<script src="../../assets/search-index.js?v=0.5.0.mvb61p1x" defer></script>
+<script src="../../assets/search-index.js?v=0.25.0.mve574c0" defer></script>
 </head>
 <body data-root="../../">
 <a class="skip" href="#main">Skip to content</a>
@@ -56,9 +57,9 @@
 	<details open>
 		<summary class="docs-nav-toggle">Browse all guides</summary>
 		<ul><li><a href="../">Help center home</a></li></ul>
-		<h2>Start here</h2><ul><li><a href="../getting-started/">Getting started</a></li><li><a href="../install-on-your-device/">Install on your device</a></li><li><a href="../add-money/" aria-current="page">Add expenses, income and bills</a></li></ul>
-		<h2>Using Expenity</h2><ul><li><a href="../wallets-and-currencies/">Wallets and currencies</a></li><li><a href="../budgets-goals-income/">Budgets, goals and income</a></li><li><a href="../reports/">Reports</a></li><li><a href="../reminders/">Reminders</a></li><li><a href="../shared-wallets/">Shared wallets</a></li><li><a href="../themes-and-look/">Themes and animations</a></li></ul>
-		<h2>Reference</h2><ul><li><a href="../account-and-sync/">Account and sync</a></li><li><a href="../privacy-and-your-data/">Privacy and your data</a></li><li><a href="../faq/">FAQ</a></li></ul>
+		<h2>Start here</h2><ul><li><a href="../getting-started/">Getting started</a></li><li><a href="../install-on-your-device/">Install on your device</a></li><li><a href="../add-money/" aria-current="page">Add expenses, income and bills</a></li><li><a href="../tutorials-and-help/">Tutorials and help</a></li></ul>
+		<h2>Using Expenity</h2><ul><li><a href="../wallets-and-currencies/">Wallets and currencies</a></li><li><a href="../budgets-goals-income/">Budgets, goals and income</a></li><li><a href="../spending-helpers/">Daily number, targets and streaks</a></li><li><a href="../find-and-recover/">Search, filters, drafts and recently deleted</a></li><li><a href="../receipts-and-photos/">Receipts, photos and your picture</a></li><li><a href="../reports/">Reports</a></li><li><a href="../reminders/">Reminders</a></li><li><a href="../shared-wallets/">Shared wallets</a></li><li><a href="../features-and-plans/">Features and plans</a></li><li><a href="../themes-and-look/">Themes and animations</a></li></ul>
+		<h2>Reference</h2><ul><li><a href="../account-and-sync/">Account and sync</a></li><li><a href="../privacy-and-your-data/">Privacy and your data</a></li><li><a href="../contact-us/">Contact us</a></li><li><a href="../faq/">FAQ</a></li></ul>
 	</details>
 </aside>
 <article class="doc">
@@ -119,14 +120,21 @@
 <p>Photos require an account and internet to upload or view. Up to 100 uploads fit in an account, with roughly 9.4 MiB of storage. Shared-wallet members can see attachments in that wallet; viewers cannot change them. A photo on a bill or income schedule is carried into its recorded payment.</p>
 <p><strong>Account → Delete all photos</strong> permanently removes your uploads, including your uploads in shared wallets. Other members lose access to those images. Other people's uploads and all financial records remain. The app asks for confirmation and a fresh passkey check. Deletion reaches other devices during sync; offline edits cannot restore the removed images.</p>
 <p>Removing a photo from one item only detaches it. Unreferenced uploads older than a day are reclaimed on your next upload. JSON backups hold photo references, not image files: retain originals for an independent photo backup.</p>
+<h2 id="press-and-hold">Press and hold<a class="anchor" href="#press-and-hold" aria-label="#">#</a></h2>
+<p>Press and hold an entry or bill for half a second and a menu opens with <strong>Edit</strong>, <strong>Duplicate</strong> and <strong>Delete</strong> (and <strong>Paid</strong> for bills). The menu also shows a small animation: you do not have to hold, dragging the row sideways does the same.</p>
+<figure data-zoom><img src="../../assets/img/hold-menu.jpg" alt="The press-and-hold menu." width="831" height="1800" loading="lazy" decoding="async"><figcaption>The press-and-hold menu.</figcaption></figure>
+<figure class="site-tt"><div class="site-tt-stage"><div class="tt-phone fancy" aria-hidden="true"><div class="tt-screen"><div class="tt-row"><i class="tt-ic c0"></i><span><b></b><u></u></span><em></em></div><div class="tt-row held"><i class="tt-ic c1"></i><span><b></b><u></u></span><em></em><span class="tt-ring row"></span></div><div class="tt-row"><i class="tt-ic c0"></i><span><b></b><u></u></span><em></em></div></div><div class="tt-bar"><i></i><i></i><s class="tt-fab dim"></s><i></i><i></i></div><span class="tt-finger hold"></span><div class="tt-menu"><p>✎</p><p>⧉</p><p class="d">✕</p></div></div></div><figcaption><b>Press and hold</b> · A quick menu on any entry</figcaption></figure>
+<h2 id="scan-and-look-before-you-add-twice">Scan, and look before you add twice<a class="anchor" href="#scan-and-look-before-you-add-twice" aria-label="#">#</a></h2>
+<p>Hold the <strong>+</strong> button to scan a receipt: see <a href="../receipts-and-photos/">Receipts, photos and your picture</a>. If you add something that matches an entry from the last few days, the <strong>duplicate guard</strong> asks before saving: see <a href="../spending-helpers/#duplicate-guard">Daily number, targets and streaks</a>. Deleted something by mistake? See <a href="../find-and-recover/">Search, filters, drafts and recently deleted</a>.</p>
+<figure class="site-tt"><div class="site-tt-stage"><div class="tt-phone fancy" aria-hidden="true"><div class="tt-screen"><div class="tt-input"><span class="tt-type">Coffee 3.50 yesterday</span></div><div class="tt-chips"><s class="tt-chip tt-in " style="--d:2.4s">Coffee</s><s class="tt-chip tt-in " style="--d:3s">3.50</s><s class="tt-chip tt-in " style="--d:3.6s">−1 day</s></div><div class="tt-row"><i class="tt-ic c0"></i><span><b></b><u></u></span><em></em></div></div><div class="tt-bar"><i></i><i></i><s class="tt-fab"></s><i></i><i></i></div></div></div><figcaption><b>Add in one sentence</b> · Type it the way you would say it</figcaption></figure>
 
 	<div class="help-strip"><p><strong>Still stuck?</strong> Check the <a href="../faq/">FAQ</a>, or <a href="https://github.com/expenity/expenity/issues">ask on GitHub</a>.</p></div>
 	<nav class="pager" aria-label="Previous and next guide">
 		<a class="prev" href="../install-on-your-device/"><small>Previous</small>Install on your device</a>
-		<a class="next" href="../wallets-and-currencies/"><small>Next</small>Wallets and currencies</a>
+		<a class="next" href="../tutorials-and-help/"><small>Next</small>Tutorials and help</a>
 	</nav>
 </article>
-<nav class="on-page" aria-label="On this page" data-spy><h2>On this page</h2><ul><li><a href="#add-an-expense-or-income">Add an expense or income</a></li><li><a href="#or-type-a-sentence">Or type a sentence</a></li><li><a href="#transfers">Transfers</a></li><li><a href="#bills">Bills</a></li><li><a href="#swipe-and-pull">Swipe and pull</a></li><li><a href="#edit-and-delete">Edit and delete</a></li><li><a href="#amount-entry-and-reusable-names">Amount entry and reusable names</a></li><li><a href="#reference-photos">Reference photos</a></li></ul></nav>
+<nav class="on-page" aria-label="On this page" data-spy><h2>On this page</h2><ul><li><a href="#add-an-expense-or-income">Add an expense or income</a></li><li><a href="#or-type-a-sentence">Or type a sentence</a></li><li><a href="#transfers">Transfers</a></li><li><a href="#bills">Bills</a></li><li><a href="#swipe-and-pull">Swipe and pull</a></li><li><a href="#edit-and-delete">Edit and delete</a></li><li><a href="#amount-entry-and-reusable-names">Amount entry and reusable names</a></li><li><a href="#reference-photos">Reference photos</a></li><li><a href="#press-and-hold">Press and hold</a></li><li><a href="#scan-and-look-before-you-add-twice">Scan, and look before you add twice</a></li></ul></nav>
 </div>
 </main>
 <footer class="site-foot">
@@ -173,11 +181,11 @@
 		</div>
 		<div class="foot-bottom">
 			<span>Made with <span class="heart" role="img" aria-label="love">♥</span> by <a href="https://george-stathopoulos.github.io/">George Stathopoulos</a></span>
-			<span>Expenity 0.5.0 · This website uses no cookies. Visits are counted anonymously, with no personal data.</span>
+			<span>Expenity 0.25.0 · This website uses no cookies. Visits are counted anonymously, with no personal data.</span>
 		</div>
 	</div>
 </footer>
-<script src="../../assets/site.js?v=0.5.0.mvb61p1x" defer></script>
+<script src="../../assets/site.js?v=0.25.0.mve574c0" defer></script>
 
 </body>
 </html>

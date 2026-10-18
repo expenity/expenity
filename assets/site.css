@@ -2027,3 +2027,7 @@ a.card .more {
 	object-fit: cover;
 	object-position: top left;
 }
+
+/* Animated tutorials (exported from the app) */
+.site-tt { margin: 22px auto; max-width: 340px; text-align: center; } .site-tt-stage { display: grid; place-items: center; } .site-tt figcaption { margin-top: 10px; font-size: .92rem; color: var(--muted, #6b7280); } .site-tt figcaption b { color: inherit; }
+.xp-tuts { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 28px; margin-top: 30px; } .xp-tuts .site-tt { margin: 0; }
