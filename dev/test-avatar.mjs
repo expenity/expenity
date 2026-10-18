@@ -12,10 +12,13 @@ try{
  ok(await page.evaluate(()=>EXA.avatar.presets.length)===20,'twenty preset avatars');
  await page.evaluate(()=>EXA.go('more','root'));await page.click('[data-avatar-open]');
  ok(await page.locator('[data-avatar-preset]').count()===20,'picker lists all twenty');
- await page.click('[data-avatar-preset=robot]');
- ok(await page.evaluate(()=>EX.state().settings.avatar.id==='robot'),'choice saved in settings');
+ await page.click('[data-avatar-preset=cat]');await page.click('[data-avatar-cancel]');
+ ok(await page.evaluate(()=>!EX.state().settings.avatar),'Cancel leaves the picture unchanged');
+ await page.click('[data-avatar-open]');await page.click('[data-avatar-preset=robot]');
+ ok(await page.evaluate(()=>!EX.state().settings.avatar),'choosing only previews');await page.click('[data-avatar-save]');
+ ok(await page.evaluate(()=>EX.state().settings.avatar.id==='robot'),'Save stores the choice');
  ok(await page.locator('.profile .avatar svg.av-art').count()===1,'profile shows the chosen character');
- await page.evaluate(()=>UI.closeSheet(true));await page.evaluate(()=>EXA.go('home'));
+ await page.evaluate(()=>EXA.go('home'));
  ok(await page.locator('.ab-avatar .avatar svg.av-art').count()===1,'app bar shows it too');
  await ctx.setOffline(true);await page.evaluate(()=>window.dispatchEvent(new Event('offline')));
  ok(await page.locator('.ab-avatar .avatar.offline').count()===1,'offline pulse appears');
