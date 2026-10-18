@@ -48,9 +48,3 @@ The app and the server are public, so you can check all of this: [github.com/exp
 ## Photos and saved names
 
 Saved names are optional account settings and sync with your financial data. Photos are compressed separately, stored in D1, and never cached by the app for offline viewing. They follow current wallet access. Delete your uploads in Account; other members’ uploads remain. JSON backups contain image references rather than the files.
-
-## Anonymous usage statistics
-
-Once a day the app sends a small anonymous message so the developer can see how Expenity is used. It contains a random device id (stored only as a hash on the server), the app version, your language, theme and plan, whether the app runs installed or in a browser, and a device type (phone, tablet or computer). The server adds your **country** and your **system and browser in general terms** (for example iOS and Safari) from the request. It does not store your IP address, email, name, account or anything about your money, and it is not linked to your account.
-
-You can switch it off in **More → Account → Usage statistics**. It never runs on the website's live preview.

@@ -686,8 +686,10 @@ const U_BOT = /bot|crawl|spider|headless|lighthouse|preview|monitor/i;
 const pick = ( v, list, d = '' ) => ( list.includes( v ) ? v : d );
 const isoDay = ( d = new Date() ) => d.toISOString().slice( 0, 10 );
 
-/** Counts a device once a day. No account, email, IP address or financial data is stored: a hashed random device id, country, coarse OS and browser, language and app settings. */
+/** FULLY DISABLED by default (USAGE_ENABLED). Counts a device once a day, only for people who have opted in. No account, email, IP address or financial data is stored: a hashed random device id, country, coarse OS and browser, language and app settings. */
 async function usagePing( req, env, ip ) {
+	// FULLY DISABLED: nothing is stored. Only switch on with USAGE_ENABLED = "1" if people have opted in themselves (see usage.js).
+	if ( env.USAGE_ENABLED !== '1' ) return reply( req, env, { ok: true, disabled: true } );
 	if ( await limited( env, 'AUTH_LIMITER', 'usage:' + ip ) ) return fail( req, env, 'rate_limited', 429 );
 	const r = await readJson( req ); if ( r.tooLarge || r.bad ) return fail( req, env, 'bad_request' );
 	const b = r.body, ua = req.headers.get( 'User-Agent' ) || '';
@@ -705,38 +707,50 @@ async function usagePing( req, env, ip ) {
 	return reply( req, env, { ok: true } );
 }
 
-/** Read by the Mission Control dashboard with a shared secret (STATS_TOKEN). */
+/**
+ * Read by the Mission Control dashboard with a shared secret (STATS_TOKEN). Everything here comes from what the server already
+ * holds to run sync (accounts, sessions, records). It is only ever aggregated: no email address or individual account is returned.
+ * Per-device usage statistics (usage_daily) are included only if USAGE_ENABLED = "1", which is not the case.
+ */
 async function adminStats( req, env, url ) {
 	const given = ( req.headers.get( 'Authorization' ) || '' ).replace( /^Bearer /, '' );
 	if ( ! env.STATS_TOKEN || ! given || ( await sha256( given ) ) !== ( await sha256( env.STATS_TOKEN ) ) ) return fail( req, env, 'unauthorized', 401 );
-	const days = Math.max( 1, Math.min( 365, Number( url.searchParams.get( 'days' ) ) || 30 ) ), today = isoDay();
-	const back = ( n ) => isoDay( new Date( Date.now() - n * 864e5 ) ), from = back( days - 1 );
+	const days = Math.max( 1, Math.min( 365, Number( url.searchParams.get( 'days' ) ) || 30 ) ), t = now(), DAY = 864e5;
+	const since = t - days * DAY, ymd = "strftime('%Y-%m-%d', {c} / 1000, 'unixepoch')";
 	const one = async ( sql, ...a ) => ( await env.DB.prepare( sql ).bind( ...a ).first() ) || {};
 	const all = async ( sql, ...a ) => ( ( await env.DB.prepare( sql ).bind( ...a ).all() ).results ) || [];
-	const active = async ( since ) => ( await one( 'SELECT COUNT(DISTINCT device) AS n FROM usage_daily WHERE day >= ?', since ) ).n || 0;
-	const latest = '(SELECT u.* FROM usage_daily u JOIN (SELECT device, MAX(day) AS d FROM usage_daily WHERE day >= ? GROUP BY device) m ON m.device = u.device AND m.d = u.day)';
-	const dim = async ( col ) => all( `SELECT COALESCE(NULLIF(${ col }, ''), 'unknown') AS k, COUNT(*) AS n FROM ${ latest } GROUP BY k ORDER BY n DESC LIMIT 25`, from );
-	const dims = {}; for ( const c of [ 'country', 'os', 'browser', 'lang', 'nlang', 'mode', 'cls', 'plan', 'skin', 'version', 'signed', 'chan' ] ) dims[ c ] = await dim( c );
-	const t = now();
-	return reply( req, env, {
-		days, from, today,
-		active: { today: await active( today ), week: await active( back( 6 ) ), month: await active( back( 29 ) ), range: await active( from ), devices: ( await one( 'SELECT COUNT(DISTINCT device) AS n FROM usage_daily' ) ).n || 0 },
-		series: await all( 'SELECT day AS t, COUNT(*) AS active FROM usage_daily WHERE day >= ? GROUP BY day ORDER BY day', from ),
-		fresh: await all( 'SELECT first AS t, COUNT(*) AS n FROM (SELECT device, MIN(day) AS first FROM usage_daily GROUP BY device) WHERE first >= ? GROUP BY first ORDER BY first', from ),
-		dims,
-		server: {
-			accounts: ( await one( 'SELECT COUNT(*) AS n FROM users' ) ).n || 0,
-			accountsNew: await all( "SELECT strftime('%Y-%m-%d', created_at / 1000, 'unixepoch') AS t, COUNT(*) AS n FROM users WHERE created_at >= ? GROUP BY t ORDER BY t", Date.now() - days * 864e5 ),
-			accountLang: await all( 'SELECT lang AS k, COUNT(*) AS n FROM users GROUP BY lang ORDER BY n DESC' ),
+	const activeSince = async ( ms ) => ( await one( 'SELECT COUNT(DISTINCT user_id) AS n FROM records WHERE updated_at >= ?', ms ) ).n || 0;
+	// A rough OS and browser from the user agent that each account's latest session already stores.
+	const agents = await all( 'SELECT s.agent AS a FROM sessions s JOIN (SELECT user_id, MAX(created_at) AS c FROM sessions GROUP BY user_id) m ON m.user_id = s.user_id AND m.c = s.created_at' );
+	const tally = ( f ) => { const m = new Map(); for ( const r of agents ) { const k = f( r.a || '' ); m.set( k, ( m.get( k ) || 0 ) + 1 ); } return [ ...m ].map( ( [ k, n ] ) => ( { k, n } ) ).sort( ( x, y ) => y.n - x.n ); };
+	const out = {
+		days, today: isoDay(), source: 'server',
+		accounts: {
+			total: ( await one( 'SELECT COUNT(*) AS n FROM users' ) ).n || 0,
+			withData: ( await one( "SELECT COUNT(DISTINCT user_id) AS n FROM records WHERE kind IN ('tx', 'bill') AND deleted = 0" ) ).n || 0,
+			active: { today: await activeSince( t - DAY ), week: await activeSince( t - 7 * DAY ), month: await activeSince( t - 30 * DAY ), range: await activeSince( since ) },
+			new: await all( `SELECT ${ ymd.replace( '{c}', 'created_at' ) } AS t, COUNT(*) AS n FROM users WHERE created_at >= ? GROUP BY t ORDER BY t`, since ),
+			activeSeries: await all( `SELECT ${ ymd.replace( '{c}', 'updated_at' ) } AS t, COUNT(DISTINCT user_id) AS n FROM records WHERE updated_at >= ? GROUP BY t ORDER BY t`, since ),
+			editsSeries: await all( `SELECT ${ ymd.replace( '{c}', 'updated_at' ) } AS t, COUNT(*) AS n FROM records WHERE updated_at >= ? GROUP BY t ORDER BY t`, since ),
+			signInsSeries: await all( `SELECT ${ ymd.replace( '{c}', 'created_at' ) } AS t, COUNT(*) AS n FROM sessions WHERE created_at >= ? GROUP BY t ORDER BY t`, since ),
+			language: await all( 'SELECT lang AS k, COUNT(*) AS n FROM users GROUP BY lang ORDER BY n DESC' ),
+			plan: await all( "SELECT COALESCE(json_extract(data, '$.features.tier'), 'advanced') AS k, COUNT(*) AS n FROM records WHERE kind = 'settings' AND deleted = 0 GROUP BY k ORDER BY n DESC" ),
+			currency: await all( "SELECT COALESCE(json_extract(data, '$.currency'), 'EUR') AS k, COUNT(*) AS n FROM records WHERE kind = 'settings' AND deleted = 0 GROUP BY k ORDER BY n DESC LIMIT 15" ),
+			os: tally( U_OS ), browser: tally( U_BROWSER ),
+			usingKind: await all( "SELECT kind AS k, COUNT(DISTINCT user_id) AS n FROM records WHERE deleted = 0 AND kind != 'settings' GROUP BY kind ORDER BY n DESC" ),
 			passkeys: ( await one( 'SELECT COUNT(*) AS n FROM credentials' ) ).n || 0,
+			multiPasskey: ( await one( 'SELECT COUNT(*) AS n FROM (SELECT user_id FROM credentials GROUP BY user_id HAVING COUNT(*) > 1)' ) ).n || 0,
 			sessions: ( await one( 'SELECT COUNT(*) AS n FROM sessions WHERE expires_at > ?', t ) ).n || 0,
-			sharedWallets: ( await one( 'SELECT COUNT(*) AS n FROM spaces' ) ).n || 0,
-			sharedMembers: ( await one( 'SELECT COUNT(*) AS n FROM space_members' ) ).n || 0,
-			pushDevices: ( await one( 'SELECT COUNT(*) AS n FROM push_subs' ) ).n || 0,
-			photos: ( await one( 'SELECT COUNT(*) AS n FROM photos' ) ).n || 0,
-			records: await all( 'SELECT kind AS k, COUNT(*) AS n FROM records WHERE deleted = 0 GROUP BY kind ORDER BY n DESC' ),
 		},
-	} );
+		shared: { wallets: ( await one( 'SELECT COUNT(*) AS n FROM spaces' ) ).n || 0, members: ( await one( 'SELECT COUNT(*) AS n FROM space_members' ) ).n || 0, roles: await all( 'SELECT role AS k, COUNT(*) AS n FROM space_members GROUP BY role ORDER BY n DESC' ) },
+		devices: { push: ( await one( 'SELECT COUNT(*) AS n FROM push_subs' ) ).n || 0, pushUsers: ( await one( 'SELECT COUNT(DISTINCT user_id) AS n FROM push_subs' ) ).n || 0, photos: ( await one( 'SELECT COUNT(*) AS n FROM photos' ) ).n || 0 },
+		records: { total: ( await one( 'SELECT COUNT(*) AS n FROM records WHERE deleted = 0' ) ).n || 0, byKind: await all( 'SELECT kind AS k, COUNT(*) AS n FROM records WHERE deleted = 0 GROUP BY kind ORDER BY n DESC' ) },
+	};
+	if ( env.USAGE_ENABLED === '1' ) {
+		const today = isoDay(), from = isoDay( new Date( Date.now() - ( days - 1 ) * DAY ) );
+		out.usage = { devices: ( await one( 'SELECT COUNT(DISTINCT device) AS n FROM usage_daily WHERE day >= ?', from ) ).n || 0, today: ( await one( 'SELECT COUNT(DISTINCT device) AS n FROM usage_daily WHERE day = ?', today ) ).n || 0 };
+	}
+	return reply( req, env, out );
 }
 
 /* ------------------------------------------------------------------ Exchange rates */

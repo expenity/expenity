@@ -45,5 +45,7 @@ APP_URL = "https://expenity.github.io/expenity/app/"
 # Contact form: where feedback goes. Needs only RESEND_API_KEY (wrangler secret put RESEND_API_KEY). With the default sender below,
 # Resend delivers only to the email address of the Resend account itself, which is what the contact form needs.
 CONTACT_TO = "mindanticipation@gmail.com"
+# Anonymous usage statistics are FULLY DISABLED. Only ever set to "1" if users opt in to it themselves (see usage.js).
+USAGE_ENABLED = "0"
 EMAIL_ENABLED = "0"
 EMAIL_FROM = "Expenity <onboarding@resend.dev>"
