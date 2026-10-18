@@ -710,6 +710,17 @@ async function usagePing( req, env, ip ) {
 	return reply( req, env, { ok: true } );
 }
 
+/** Danger zone, called by Mission Control only: deletes every account, wallet, record and photo (the exchange-rate cache stays). */
+async function adminReset( req, env ) {
+	const given = ( req.headers.get( 'Authorization' ) || '' ).replace( /^Bearer /, '' );
+	if ( ! env.STATS_TOKEN || ! given || ( await sha256( given ) ) !== ( await sha256( env.STATS_TOKEN ) ) ) return fail( req, env, 'unauthorized', 401 );
+	let b = {}; try { b = await req.json(); } catch ( e ) { /* handled below */ }
+	if ( b.confirm !== 'DELETE ALL EXPENITY DATA' ) return fail( req, env, 'confirmation_required', 400 );
+	const tables = [ 'photos', 'removed_photos', 'push_subs', 'space_invites', 'space_members', 'spaces', 'records', 'recovery_codes', 'step_ups', 'email_codes', 'outbox', 'challenges', 'sessions', 'credentials', 'usage_daily', 'contact_daily', 'users' ];
+	await env.DB.batch( tables.map( ( t ) => env.DB.prepare( `DELETE FROM ${ t }` ) ) );
+	return reply( req, env, { ok: true, cleared: tables } );
+}
+
 /**
  * Read by the Mission Control dashboard with a shared secret (STATS_TOKEN). Everything here comes from what the server already
  * holds to run sync (accounts, sessions, records). It is only ever aggregated: no email address or individual account is returned.
@@ -749,6 +760,50 @@ async function adminStats( req, env, url ) {
 		devices: { push: ( await one( 'SELECT COUNT(*) AS n FROM push_subs' ) ).n || 0, pushUsers: ( await one( 'SELECT COUNT(DISTINCT user_id) AS n FROM push_subs' ) ).n || 0, photos: ( await one( 'SELECT COUNT(*) AS n FROM photos' ) ).n || 0 },
 		records: { total: ( await one( 'SELECT COUNT(*) AS n FROM records WHERE deleted = 0' ) ).n || 0, byKind: await all( 'SELECT kind AS k, COUNT(*) AS n FROM records WHERE deleted = 0 GROUP BY kind ORDER BY n DESC' ) },
 	};
+	// Created versus currently alive: deleted records stay as tombstones, so "ever created" = alive + deleted.
+	const alive = await all( 'SELECT kind AS k, SUM(deleted = 0) AS alive, SUM(deleted = 1) AS gone FROM records GROUP BY kind' );
+	const J = "CASE WHEN json_valid(data) THEN data ELSE '{}' END";
+	const setting = async ( path ) => ( await one( `SELECT COUNT(*) AS n FROM records WHERE kind = 'settings' AND deleted = 0 AND ${ path }` ) ).n || 0;
+	out.features = {
+		kinds: alive,
+		walletTypes: await all( `SELECT COALESCE(json_extract(${ J }, '$.type'), 'other') AS k, COUNT(*) AS n FROM records WHERE kind = 'account' AND deleted = 0 GROUP BY k ORDER BY n DESC` ),
+		txTypes: await all( `SELECT COALESCE(json_extract(${ J }, '$.type'), 'other') AS k, COUNT(*) AS n FROM records WHERE kind = 'tx' AND deleted = 0 GROUP BY k ORDER BY n DESC` ),
+		recurringBills: ( await one( `SELECT COUNT(*) AS n FROM records WHERE kind = 'bill' AND deleted = 0 AND COALESCE(json_extract(${ J }, '$.repeat'), 'none') NOT IN ('once', 'none', '')` ) ).n || 0,
+		walletsPerAccount: await all( "SELECT c AS k, COUNT(*) AS n FROM (SELECT user_id, COUNT(*) AS c FROM records WHERE kind = 'account' AND deleted = 0 GROUP BY user_id) GROUP BY c ORDER BY c" ),
+		adoption: {
+			receiptScanner: await setting( "json_extract(data, '$.receiptScanner') IN (1, 'true')" ),
+			sounds: await setting( "json_extract(data, '$.sounds') IN (1, 'true')" ),
+			avatar: await setting( "json_extract(data, '$.avatar') IS NOT NULL AND json_extract(data, '$.avatar') != ''" ),
+			targets: await setting( "json_extract(data, '$.targets') IS NOT NULL" ),
+			homeLayout: await setting( "json_extract(data, '$.homeLayout') IS NOT NULL" ),
+			themeLooks: await setting( "json_extract(data, '$.themeLooks') IS NOT NULL" ),
+		},
+		settingsTotal: ( await one( "SELECT COUNT(*) AS n FROM records WHERE kind = 'settings' AND deleted = 0" ) ).n || 0,
+	};
+	// Which features accounts have switched on (from each account's plan) and which they actually use (from what they have saved).
+	const FEATURES = [ [ 'recurring', 1 ], [ 'plan', 1 ], [ 'tags', 1 ], [ 'presets', 1 ], [ 'photos', 1 ], [ 'avatar', 1 ], [ 'push', 1 ], [ 'shared', 1 ], [ 'drafts', 1 ], [ 'dupGuard', 1 ], [ 'daily', 1 ], [ 'filters', 1 ], [ 'trash', 1 ], [ 'priceAlert', 1 ], [ 'receipts', 2 ], [ 'streaks', 2 ], [ 'insights', 2 ], [ 'forecast', 2 ], [ 'sounds', 2 ], [ 'homeEdit', 2 ], [ 'themeEdit', 2 ] ];
+	const RANK = { basic: 0, pro: 1, advanced: 2 }, enabled = new Map(), looks = new Map();
+	for ( const r of await all( "SELECT data FROM records WHERE kind = 'settings' AND deleted = 0 LIMIT 20000" ) ) {
+		let d = {}; try { d = JSON.parse( r.data ) || {}; } catch ( e ) { /* skip */ }
+		const f = d.features && typeof d.features === 'object' ? d.features : { tier: 'advanced' }, tier = f.tier;
+		for ( const [ id, need ] of FEATURES ) if ( tier === 'custom' ? ! ( f.off || [] ).includes( id ) : need <= ( RANK[ tier ] ?? 2 ) ) enabled.set( id, ( enabled.get( id ) || 0 ) + 1 );
+		if ( d.themeLooks && typeof d.themeLooks === 'object' ) for ( const k of Object.keys( d.themeLooks ).slice( 0, 30 ) ) looks.set( String( k ).slice( 0, 20 ), ( looks.get( String( k ).slice( 0, 20 ) ) || 0 ) + 1 );
+	}
+	const rows = ( m ) => [ ...m ].map( ( [ k, n ] ) => ( { k, n } ) ).sort( ( a, b ) => b.n - a.n );
+	const users = async ( sql ) => ( await one( `SELECT COUNT(DISTINCT user_id) AS n FROM records WHERE deleted = 0 AND ${ sql }` ) ).n || 0;
+	const inUse = {
+		wallets: await users( "kind = 'account'" ), entries: await users( "kind = 'tx'" ), bills: await users( "kind = 'bill'" ), budgets: await users( "kind = 'budget'" ), goals: await users( "kind = 'goal'" ), income: await users( "kind = 'income'" ),
+		transfers: await users( `kind = 'tx' AND json_extract(${ J }, '$.type') = 'transfer'` ),
+		recurring: await users( `kind = 'bill' AND COALESCE(json_extract(${ J }, '$.repeat'), 'once') NOT IN ('once', 'none', '')` ),
+		tags: await users( `kind = 'tx' AND json_type(${ J }, '$.tags') = 'array' AND json_array_length(${ J }, '$.tags') > 0` ),
+		photos: await users( `json_extract(${ J }, '$.photo') IS NOT NULL AND json_extract(${ J }, '$.photo') != ''` ),
+		targets: await setting( "json_extract(data, '$.targets') IS NOT NULL" ), avatar: out.features.adoption.avatar, receipts: out.features.adoption.receiptScanner,
+		sounds: out.features.adoption.sounds, homeEdit: out.features.adoption.homeLayout, themeEdit: out.features.adoption.themeLooks,
+		shared: ( await one( 'SELECT COUNT(DISTINCT user_id) AS n FROM space_members' ) ).n || 0, push: out.devices.pushUsers,
+	};
+	out.features.featureEnabled = rows( enabled );
+	out.features.featureInUse = rows( new Map( Object.entries( inUse ).filter( ( [ , n ] ) => n > 0 ) ) );
+	out.features.themeCustomised = rows( looks );
 	if ( env.USAGE_ENABLED === '1' ) {
 		const today = isoDay(), from = isoDay( new Date( Date.now() - ( days - 1 ) * DAY ) );
 		out.usage = { devices: ( await one( 'SELECT COUNT(DISTINCT device) AS n FROM usage_daily WHERE day >= ?', from ) ).n || 0, today: ( await one( 'SELECT COUNT(DISTINCT device) AS n FROM usage_daily WHERE day = ?', today ) ).n || 0 };
@@ -808,6 +863,7 @@ async function handle( req, env ) {
 		const ip = req.headers.get( 'CF-Connecting-IP' ) || 'local';
 		if ( path === '/api/contact' && req.method === 'POST' ) return contact( req, env, ip );
 		if ( path === '/api/usage' && req.method === 'POST' ) return usagePing( req, env, ip );
+		if ( path === '/api/admin/reset' && req.method === 'POST' ) { if ( await limited( env, 'AUTH_LIMITER', 'admin:' + ip ) ) return fail( req, env, 'rate_limited', 429 ); return adminReset( req, env ); }
 		if ( path === '/api/admin/stats' && req.method === 'GET' ) { if ( await limited( env, 'AUTH_LIMITER', 'admin:' + ip ) ) return fail( req, env, 'rate_limited', 429 ); return adminStats( req, env, url ); }
 		if ( PUBLIC_POST[ path ] ) {
 			if ( req.method !== 'POST' ) return fail( req, env, 'not_found', 404 );

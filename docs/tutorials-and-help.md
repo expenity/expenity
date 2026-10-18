@@ -23,7 +23,7 @@ Tap it and the tutorial opens in a **popup on top of your screen**. Nothing clos
 
 ![The list of tutorials.](images/tutorials.png)
 
-Tutorials include scanning receipts, swiping rows, press and hold, adding in one sentence, your first entry, wallets, bills, repeating income, budgets and goals, reports, notifications, themes and the pencil, features and plans, profile picture, editing Home, the duplicate guard, the daily number, search and filters, recently deleted, streaks, price-change alerts, photos on entries, sync, shared wallets, and backup and start fresh.
+Tutorials include scanning receipts, swiping rows, press and hold, adding in one sentence, your first entry, wallets, bills, repeating income, budgets and goals, reports, notifications, themes and the pencil, features and plans, profile picture, editing Home, the duplicate guard, the daily number, search and filters, recently deleted, streaks, price-change alerts, photos on entries, sync, shared wallets, and backup and reset account.
 
 ## The welcome tour
 

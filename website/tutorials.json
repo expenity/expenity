@@ -554,22 +554,22 @@
  "backup": {
   "fresh": false,
   "en": {
-   "title": "Backup and start fresh",
+   "title": "Backup and reset account",
    "desc": "Export your data or begin again",
    "steps": [
     "Open More, Data to download a backup or a spreadsheet.",
     "Restore a backup from the same page.",
-    "Want a clean slate? Account, Start fresh removes everything and takes you through setup again."
+    "Want a clean slate? Account, Reset account removes everything on all your devices and takes you through setup again."
    ],
    "demo": "<div class=\"tt-phone fancy\" aria-hidden=\"true\"><div class=\"tt-screen\"><div class=\"tt-file tt-in\" style=\"--d:0s\">⭳</div><div class=\"tt-reset tt-in\" style=\"--d:2.4s\">↺</div><div class=\"tt-row\"><i class=\"tt-ic c0\"></i><span><b></b><u></u></span><em></em></div></div><div class=\"tt-bar\"><i></i><i></i><s class=\"tt-fab dim\"></s><i></i><i></i></div></div>"
   },
   "el": {
-   "title": "Αντίγραφο και νέα αρχή",
+   "title": "Αντίγραφο και επαναφορά λογαριασμού",
    "desc": "Εξαγωγή δεδομένων ή ξεκίνημα από την αρχή",
    "steps": [
     "Ανοίξτε Περισσότερα, Δεδομένα για να κατεβάσετε αντίγραφο ή λογιστικό φύλλο.",
     "Επαναφέρετε αντίγραφο από την ίδια σελίδα.",
-    "Θέλετε καθαρή αρχή; Λογαριασμός, Νέα αρχή αφαιρεί τα πάντα και σας πάει ξανά στη ρύθμιση."
+    "Θέλετε καθαρή αρχή; Λογαριασμός, Επαναφορά λογαριασμού αφαιρεί τα πάντα σε όλες τις συσκευές σας και σας πάει ξανά στη ρύθμιση."
    ],
    "demo": "<div class=\"tt-phone fancy\" aria-hidden=\"true\"><div class=\"tt-screen\"><div class=\"tt-file tt-in\" style=\"--d:0s\">⭳</div><div class=\"tt-reset tt-in\" style=\"--d:2.4s\">↺</div><div class=\"tt-row\"><i class=\"tt-ic c0\"></i><span><b></b><u></u></span><em></em></div></div><div class=\"tt-bar\"><i></i><i></i><s class=\"tt-fab dim\"></s><i></i><i></i></div></div>"
   }

@@ -44,9 +44,9 @@ Expenity stores your email to identify your account. Email verification and emai
 In Account, **Delete all photos** removes every photo you uploaded, including in shared wallets. Confirmation and a passkey check protect the action. Financial records remain. See [photos and backups](add-money.md#reference-photos).
 
 
-## Start fresh
+## Reset account
 
-**Account → Start fresh** deletes all your records and settings and takes you through the setup again, like a new user. See [Search, filters, drafts and recently deleted](find-and-recover.md#start-fresh).
+**Account → Reset account** deletes all your records and settings on all your devices and takes you through the setup again, like a new user. Your account and passkeys stay. Other devices are emptied the next time they sync. Use **Download a backup first** on the same card if you might need your data. See [Search, filters, drafts and recently deleted](find-and-recover.md#reset-account).
 
 ## Your picture and offline status
 

@@ -30,6 +30,6 @@ Started an expense and your phone died, or you closed the app by accident? Expen
 
 **More → Account & data → Drafts** lists every unfinished entry with **Continue** and **Dismiss**. Drafts stay for 24 hours and live only on the device where you started them. Continue opens the entry form with everything you had typed, ready to submit.
 
-## Start fresh
+## Reset account
 
-If you want a completely clean slate, **More → Account → Start fresh** removes all your records, wallets, budgets, goals and photos and resets your settings, as if you had just joined. It asks for confirmation (and a passkey if you have an account), and you are taken through the setup again, starting with your name. It does not work while you are in a shared wallet: leave it or stop sharing first. This cannot be undone, so [download a backup](privacy-and-your-data.md) first if you might need your data.
+If you want a completely clean slate, **More → Account and sync → Reset account** removes all your records, wallets, budgets, goals and photos and resets your settings, as if you had just joined. If you have an account, this happens on all your devices: each one is emptied the next time it syncs, and nothing comes back. Your account and passkeys stay. It asks for confirmation and a passkey, and you are taken through the setup again, starting with your name. The same card has a **Download a backup first** button. It does not work while you are in a shared wallet: leave it or stop sharing first. This cannot be undone, so [download a backup](privacy-and-your-data.md) first (the button is on the same card) if you might need your data.

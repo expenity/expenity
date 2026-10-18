@@ -30,7 +30,8 @@ Without an account, clearing the site's data (or losing the device) removes your
 
 ## Delete everything
 
-- **Delete all my data** (More → Data and backup) removes everything from this browser. If you are signed in, your data comes back from your account at the next sync, so it only clears this device.
+- **Delete all my data** (More → Data and backup) is shown only when you are not signed in. It removes everything from this browser, and because there is no account, it is gone for good.
+- **Reset account** (More → Account and sync) is the version for an account. It deletes all your data on every device, asks for your passkey, and keeps your account so you can start over. Use **Download a backup first** on the same card if you might need your data.
 - **Delete my account** (More → Account and sync) deletes your account and everything stored on the server. It asks for your passkey and cannot be undone. Wallets you own and share are deleted for everyone.
 
 ## Notifications while the app is open

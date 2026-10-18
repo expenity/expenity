@@ -11,7 +11,7 @@ Started as a bill reminder and grew into a money app for expenses, income, bills
 
 ## What works today (version 0.25)
 
-- **Accounts and sync:** passkey sign-in (no passwords), recovery codes, your devices, offline first, sync through a Cloudflare Worker and D1 database. Guest mode keeps data in the browser only. **Start fresh** resets everything and runs the setup again.
+- **Accounts and sync:** passkey sign-in (no passwords), recovery codes, your devices, offline first, sync through a Cloudflare Worker and D1 database. Guest mode keeps data in the browser only. **Reset account** resets everything and runs the setup again.
 - **First run:** account-first welcome, an animated "add to home screen" guide, and a skippable setup: name, currency, what you want help with, **plan (Basic, Pro or Advanced)**, wallets, **daily number**, look, and animated lessons (receipt scanning, one-sentence entry, handy extras, the help icon).
 - **Money:** expenses, income, transfers, bills with flexible repeats, wallets in any currency with daily ECB exchange rates, quick add from a sentence in English or Greek, income that is already due recorded as received straight away.
 - **Receipts and photos:** on-device receipt scanning (English and Greek) with hold-to-scan and re-scan, small photos on entries, a profile picture (20 characters or your photo).
