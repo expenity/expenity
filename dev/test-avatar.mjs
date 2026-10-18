@@ -24,7 +24,7 @@ try{
  await page.evaluate(()=>{const c=document.createElement('canvas');c.width=c.height=200;const g=c.getContext('2d');g.fillStyle='#e33';g.fillRect(0,0,200,200);return new Promise(r=>c.toBlob(b=>{window.__f=new File([b],'a.png',{type:'image/png'});r();}));});
  const d=await page.evaluate(()=>EXA.avatar.compress(window.__f));ok(/^data:image\/jpeg/.test(d)&&d.length<=3500,'photo shrinks to a tiny jpeg ('+d.length+' chars)');
  await page.evaluate(d=>{EX.state().settings.avatar={type:'photo',data:d};EXA.render();},d);
- ok(await page.locator('.ab-avatar .avatar img.av-photo').count()===1,'photo avatar renders');
+ ok(await page.locator('.ab-avatar .avatar img.av-photo').count()===1,'photo avatar renders');await page.evaluate(()=>{EXA.avatar.open();});await page.waitForTimeout(500);ok(await page.locator('.av-photo-row .av-check').count()===1,'photo avatar shows a green check and round preview');await page.screenshot({path:out+'/photo.png'});await page.evaluate(()=>{EX.state().settings.avatar={type:'preset',id:'fox'};EXA.avatar.open();});ok(await page.locator('.av-pick.sel .av-check').count()===1,'chosen character shows a green check');
  await page.evaluate(()=>{UI.closeSheet(true);EXA.go('more','root');});await page.screenshot({path:out+'/more.png'});
  ok(!errors.length,'no browser errors: '+errors.join('; '));
 }finally{await browser.close();server.close();}
