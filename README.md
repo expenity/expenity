@@ -9,7 +9,7 @@ Know where your money goes. A free, open-source web app that works on iPhone, iP
 
 Started as a bill reminder and grew into a money app for expenses, income, bills, budgets and goals.
 
-## What works today (version 0.30)
+## What works today (version 0.30.1)
 
 - **Accounts and sync:** passkey sign-in (no passwords), recovery codes, your devices, offline first, sync through a Cloudflare Worker and D1 database. Guest mode keeps data in the browser only. **Reset account** resets everything and runs the setup again.
 - **First run:** account-first welcome, an animated "add to home screen" guide, and a skippable setup: name, currency, what you want help with, **plan (Basic, Pro or Advanced)**, wallets, **daily number**, look, and animated lessons (receipt scanning, one-sentence entry, handy extras, the help icon).
