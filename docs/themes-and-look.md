@@ -58,3 +58,7 @@ Fonts are bundled with the app so it looks the same on every phone, tablet and c
 ## Your picture and sounds
 
 Choose a character or your own photo as your picture: see [Receipts, photos and your picture](receipts-and-photos.md). Optional sound effects can be turned on in **More → Make it yours → Sounds** (part of the Advanced plan).
+
+## Try the themes live
+
+The [Expenity website](https://expenity.github.io/expenity/#try) has the real app in an iPhone, iPad and computer frame, so you can switch themes and see them in action before you open the app.

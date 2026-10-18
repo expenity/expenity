@@ -47,7 +47,7 @@ writeFileSync( join( OUT, '.nojekyll' ), '' );
 
 // The app itself is the live demo: the same files, served from app/.
 mkdirSync( join( OUT, 'app' ), { recursive: true } );
-for ( const f of [ 'index.html', 'icons.js', 'ui.js', 'views.js', 'forms.js', 'recurrence.js', 'editor-layout.js', 'sound-effects.js', 'catalog.js', 'scan-shortcut.js', 'photos.js', 'avatar.js', 'features.js', 'rowmenu.js', 'tutorials.js', 'fresh.js', 'contact.js', 'help.js', 'reports.js', 'plan.js', 'insights.js', 'safe-spend.js', 'extras.js', 'drafts.js', 'receipts.js', 'share.js', 'push.js', 'flow.js', 'installation.js', 'themes.js', 'core.js', 'sync.js', 'theme.js', 'app.js', 'enhancements.js', 'dashboard.js', 'productivity.js', 'releases.json', 'i18n.js', 'style.css', 'themes.css', 'favicon.svg', 'manifest.webmanifest', 'sw.js', 'icon-192.png', 'icon-512.png' ] ) cpSync( join( ROOT, f ), join( OUT, 'app', f ) );
+for ( const f of [ 'index.html', 'icons.js', 'ui.js', 'views.js', 'forms.js', 'recurrence.js', 'editor-layout.js', 'sound-effects.js', 'catalog.js', 'scan-shortcut.js', 'photos.js', 'avatar.js', 'features.js', 'rowmenu.js', 'tutorials.js', 'fresh.js', 'contact.js', 'help.js', 'demo.js', 'reports.js', 'plan.js', 'insights.js', 'safe-spend.js', 'extras.js', 'drafts.js', 'receipts.js', 'share.js', 'push.js', 'flow.js', 'installation.js', 'themes.js', 'core.js', 'sync.js', 'theme.js', 'app.js', 'enhancements.js', 'dashboard.js', 'productivity.js', 'releases.json', 'i18n.js', 'style.css', 'themes.css', 'favicon.svg', 'manifest.webmanifest', 'sw.js', 'icon-192.png', 'icon-512.png' ] ) cpSync( join( ROOT, f ), join( OUT, 'app', f ) );
 cpSync(join(ROOT,'assets','themes'),join(OUT,'app','assets','themes'),{recursive:true});
 cpSync(join(ROOT,'installation'),join(OUT,'app','installation'),{recursive:true});
 cpSync(join(ROOT,'vendor'),join(OUT,'app','vendor'),{recursive:true});
@@ -128,7 +128,7 @@ const LANGS = {
 	en: {
 		code: 'en', prefix: '', label: 'EN', other: 'el', switchLabel: 'EL', switchTitle: 'Greek',
 		tagline: 'Know where your money goes', titleHome: 'Expenity: know where your money goes',
-		descHome: 'Expenity tracks your expenses, income, bills, budgets and goals on every device. Sign in with a passkey, share wallets with family, choose from eighteen themes and adjust any of them, scan receipts on your device, set daily targets. Free, open source, in English and Greek.',
+		descHome: 'Expenity tracks your expenses, income, bills, budgets and goals on iPhone, Android, iPad, Windows, Mac and Linux, with nothing to download. Sign in with a passkey, share wallets with family, choose from eighteen themes and adjust any of them, scan receipts on your device, set daily targets. Free, open source, in English and Greek.',
 		nav: { features: 'Features', how: 'How it works', app: 'Open the app', docs: 'Help center' }, openApp: 'Open app', darkTheme: 'Dark theme', skip: 'Skip to content', menu: 'Menu', homeAria: 'Expenity home',
 		about: 'Know where your money goes, on every device. Free and open source.',
 		foot: { product: 'Product', help: 'Help', more: 'More projects', trust: 'Trust', allProjects: 'All projects', blog: 'Blog', blogTitle: 'The story behind every project',
@@ -151,7 +151,7 @@ const LANGS = {
 	el: {
 		code: 'el', prefix: 'el/', label: 'ΕΛ', other: 'en', switchLabel: 'ΕΝ', switchTitle: 'Αγγλικά',
 		tagline: 'Τα οικονομικά σας, με καθαρό μυαλό', titleHome: 'Expenity: τα οικονομικά σας, με καθαρό μυαλό',
-		descHome: 'Το Expenity παρακολουθεί έξοδα, έσοδα, λογαριασμούς, προϋπολογισμούς και στόχους σε κάθε συσκευή. Σύνδεση με passkey, κοινά πορτοφόλια με την οικογένεια, δεκαοχτώ θέματα που προσαρμόζονται, σάρωση αποδείξεων στη συσκευή σας και ημερήσιους στόχους. Δωρεάν, ανοιχτού κώδικα, στα ελληνικά και στα αγγλικά.',
+		descHome: 'Το Expenity παρακολουθεί έξοδα, έσοδα, λογαριασμούς, προϋπολογισμούς και στόχους σε iPhone, Android, iPad, Windows, Mac και Linux, χωρίς λήψη. Σύνδεση με passkey, κοινά πορτοφόλια με την οικογένεια, δεκαοχτώ θέματα που προσαρμόζονται, σάρωση αποδείξεων στη συσκευή σας και ημερήσιους στόχους. Δωρεάν, ανοιχτού κώδικα, στα ελληνικά και στα αγγλικά.',
 		nav: { features: 'Δυνατότητες', how: 'Πώς λειτουργεί', app: 'Ανοίξτε την εφαρμογή', docs: 'Κέντρο βοήθειας' }, openApp: 'Άνοιγμα', darkTheme: 'Σκούρο θέμα', skip: 'Μετάβαση στο περιεχόμενο', menu: 'Μενού', homeAria: 'Expenity, αρχική',
 		about: 'Τα οικονομικά σας, με καθαρό μυαλό, σε κάθε συσκευή. Δωρεάν και ανοιχτού κώδικα.',
 		foot: { product: 'Προϊόν', help: 'Βοήθεια', more: 'Περισσότερα έργα', trust: 'Εμπιστοσύνη', allProjects: 'Όλα τα έργα', blog: 'Blog', blogTitle: 'Η ιστορία πίσω από κάθε έργο',
@@ -284,6 +284,7 @@ ${ body }
 </footer>
 <script src="${ root }assets/site.js?v=${ ASSET_V }" defer></script>
 ${ home ? `<script src="${ root }assets/home.js?v=${ ASSET_V }" defer></script>` : '' }
+${ home ? `<script src="${ root }assets/try.js?v=${ ASSET_V }" defer></script>` : '' }
 </body>
 </html>
 `;

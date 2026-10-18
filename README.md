@@ -1,9 +1,9 @@
 # Expenity
 
-Know where your money goes. A free, open-source web app that works on every device, signs you in with a passkey, syncs across your devices, lets you share a wallet, and speaks **English and Greek**.
+Know where your money goes. A free, open-source web app that works on iPhone, iPad, Android, Windows, Mac and Linux with nothing to download, signs you in with a passkey, syncs across your devices, lets you share a wallet, and speaks **English and Greek**.
 
 - **App:** https://expenity.github.io/expenity/app/ (installable, works offline)
-- **Website:** https://expenity.github.io/expenity/ ([Greek](https://expenity.github.io/expenity/el/))
+- **Website:** https://expenity.github.io/expenity/ ([Greek](https://expenity.github.io/expenity/el/)), with the real app in an iPhone, iPad and computer frame where you can try themes live
 - **Help center:** [docs/](docs/README.md) ([Greek](docs/el/README.md))
 - **Blog post:** https://george-stathopoulos.github.io/blog/
 

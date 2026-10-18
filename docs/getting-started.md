@@ -1,6 +1,6 @@
 # Getting started
 
-Expenity keeps your money, bills and goals in one place, on every device you use. This guide takes about five minutes, and every step after the account can be skipped.
+Expenity keeps your money, bills and goals in one place, on every device you use: iPhone, iPad, Android, Windows, Mac and Linux, with nothing to download from a store. This guide takes about five minutes, and every step after the account can be skipped.
 
 ## 1. Create an account (or sign in)
 

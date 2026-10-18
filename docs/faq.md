@@ -68,3 +68,5 @@ On [GitHub](https://github.com/expenity/expenity/issues).
 **I deleted something by mistake.** More, Recently deleted keeps it for 30 days.
 
 **How do I send feedback or report a problem?** More, Help & about, Contact us. See [Contact us](contact-us.md).
+
+**Which devices does Expenity work on?** iPhone, iPad, Android phones and tablets, Windows, Mac and Linux, in a current browser, with nothing to download. You can install it from the browser so it opens like an app. See [Install on your device](install-on-your-device.md#works-on-your-devices).
