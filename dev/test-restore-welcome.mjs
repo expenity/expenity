@@ -1,0 +1,16 @@
+import {chromium} from 'playwright-core';
+import {createServer} from 'node:http';import {readFileSync,existsSync,writeFileSync} from 'node:fs';import {join,extname} from 'node:path';
+const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.svg':'image/svg+xml','.png':'image/png','.webmanifest':'application/manifest+json','.woff2':'font/woff2','.webp':'image/webp'};
+const server=createServer((req,res)=>{const u=req.url.split('?')[0];const f=join(process.cwd(),u==='/'?'index.html':u);if(!existsSync(f)){res.writeHead(404).end();return;}res.setHeader('Content-Type',types[extname(f)]||'application/octet-stream');res.end(readFileSync(f));}).listen(0);
+const ok=(c,m)=>{console.log((c?'ok ':'FAIL ')+m);if(!c)process.exitCode=1;};
+const backup='/tmp/expenity-test-backup.json';writeFileSync(backup,JSON.stringify({version:2,bills:[{id:'b1',name:'Rent',amount:'500',category:'home',due:'2026-11-01',repeat:'monthly'}],txs:[],accounts:[],categories:[],budgets:[],goals:[],incomes:[],settings:{name:'Anna'}}));
+const browser=await chromium.launch({channel:'chrome'}),ctx=await browser.newContext({viewport:{width:390,height:844},serviceWorkers:'block'}),page=await ctx.newPage();const errors=[];page.on('pageerror',e=>errors.push(String(e)));
+await page.goto(`http://localhost:${server.address().port}`);await page.waitForSelector('[data-flow=restore]');
+ok(await page.evaluate(()=>EXA.flow.active()),'welcome screen is showing');
+await page.setInputFiles('#impJson',backup);await page.waitForTimeout(500);
+await page.click('dialog [data-ok], .confirm-ok, [data-confirm]').catch(async()=>{const b=page.locator('button',{hasText:/^Restore a backup$/}).last();await b.click();});
+await page.waitForTimeout(800);
+ok(await page.evaluate(()=>!EXA.flow.active()),'the welcome screen is gone after restoring');
+ok(await page.evaluate(()=>EX.state().bills.some(b=>b.name==='Rent')),'the bill is back');
+ok(errors.length===0,'no errors '+errors.join('|'));
+await browser.close();server.close();

@@ -36,7 +36,7 @@ What syncs: wallets, transactions, bills, categories, budgets, goals, recurring 
 Clearing cookies and site data signs you out, because the sign-in is kept in the browser's storage, and it removes anything Expenity stored on that device. Expenity asks the browser to keep its storage, but a manual clear always wins.
 
 - **With an account**, your data is safe on the server. Open Expenity and press **Sign in with a passkey**. Your passkey is kept by your device or password manager, not by the browser, so clearing the browser does not remove it. Everything syncs back. The email you gave at sign-up is your safety net: with it you can get back in if you also lose the passkey.
-- **Without an account**, your data exists only in that browser, so clearing it deletes everything for good. Make a backup first with **More → Data and backup**, or create an account.
+- **Without an account**, your data exists only in that browser, so clearing it deletes everything for good. Make a backup first with **More → Data and backup**, or create an account. If you have a backup file, the welcome screen has **Restore a backup**: choose the file and your data comes back.
 - Notifications on that device turn off, so turn them on again.
 - The installed app on your Home Screen keeps its own storage, so it is much less likely to be affected.
 
