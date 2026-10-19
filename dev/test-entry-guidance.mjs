@@ -21,7 +21,7 @@ try{
  ok(!r.includes('target-amount'),'the amount is no longer red once it has a value');
  ok(r.length>=1,'the category is still red');
  await page.click('[data-tx=amount-done]');await page.waitForTimeout(500);
- const active=await page.evaluate(()=>document.activeElement?.closest('[data-entry-group]')?.dataset.entryGroup||document.activeElement?.tagName);
+ const active=await page.evaluate(()=>document.activeElement?.closest('[data-entry-group]')?.dataset.entryGroup||(document.activeElement?.closest('#entryCategory')?'category':document.activeElement?.tagName));
  ok(active==='category','after the amount the person is taken to the next missing field: '+active);
  await page.evaluate(()=>{const c=document.querySelector('[data-tx-cat]');c?.click();});await page.waitForTimeout(500);
  r=await red();ok(r.length===0,'choosing a category clears the last red outline');
