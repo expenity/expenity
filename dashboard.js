@@ -3,12 +3,12 @@
  'use strict';
  const EX=window.EX,A=window.EXA,UI=window.UI,S=EX.state,esc=EX.esc;
  const $=(s,r=document)=>r.querySelector(s),all=(s,r=document)=>[...r.querySelectorAll(s)];
- const originalHome=A.home,keys=['drafts','balance','daily','streak','welcome','due','wallets','safe','ideas','goals','recent'];
+ const originalHome=A.home,keys=['drafts','balance','daily','streak','welcome','due','wallets','safe','ideas','goals','recent','where','trend','subs'],REPORT_IDS=['where','trend','subs'],EXTRA=['trend','subs'],REPORT_KEYS={where:'ovTopCats',trend:'repTrends',subs:'subs'};
  const words={en:{drafts:'Unfinished entries',daily:'Daily number',streak:'Streak',safe:'Safe to spend',title:'Personalise Home',done:'Done',cancel:'Cancel',cards:'Cards',add:'Add cards',hidden:'Hidden cards',empty:'All available cards are on Home.',reset:'Reset layout',small:'Small',medium:'Medium',full:'Full',size:'Resize',hide:'Hide',restore:'Add',hint:'Drag to move · Pull the corner to resize',dismiss:'Dismiss hint',drag:'Drag to move. Use arrow keys to move, Enter to resize.',smallHelp:'Half-width summary',mediumHelp:'Wide, short card',fullHelp:'Wide, more detail',noData:'Nothing to show yet.',balance:'Balance',welcome:'Account & install',due:'Due soon',wallets:'Wallets',ideas:'Ideas for you',goals:'Budgets & goals',recent:'Recent activity'},el:{drafts:'Ημιτελείς εγγραφές',daily:'Ημερήσιο ποσό',streak:'Σερί',safe:'Περιθώριο εξόδων',title:'Προσαρμογή Αρχικής',done:'Έτοιμο',cancel:'Ακύρωση',cards:'Κάρτες',add:'Προσθήκη καρτών',hidden:'Κρυμμένες κάρτες',empty:'Όλες οι διαθέσιμες κάρτες βρίσκονται στην Αρχική.',reset:'Επαναφορά διάταξης',small:'Μικρό',medium:'Μεσαίο',full:'Πλήρες',size:'Αλλαγή μεγέθους',hide:'Απόκρυψη',restore:'Προσθήκη',hint:'Σύρετε για μετακίνηση · Τραβήξτε τη γωνία για μέγεθος',dismiss:'Απόκρυψη οδηγίας',drag:'Σύρετε για μετακίνηση. Χρησιμοποιήστε τα βέλη για σειρά και Enter για μέγεθος.',smallHelp:'Σύνοψη στο μισό πλάτος',mediumHelp:'Οριζόντια, χαμηλή κάρτα',fullHelp:'Οριζόντια, περισσότερα στοιχεία',noData:'Δεν υπάρχει ακόμη περιεχόμενο.',balance:'Υπόλοιπο',welcome:'Λογαριασμός & εγκατάσταση',due:'Πλησιάζουν',wallets:'Πορτοφόλια',ideas:'Ιδέες για εσάς',goals:'Προϋπολογισμοί & στόχοι',recent:'Πρόσφατες κινήσεις'}};
- const t=k=>(words[EX.lang()]||words.en)[k],L=k=>esc(t(k));
+ const t=k=>(words[EX.lang()]||words.en)[k]??(REPORT_KEYS[k]?EX.t(REPORT_KEYS[k]):k),L=k=>esc(t(k));
  const copy=x=>JSON.parse(JSON.stringify(x));
  // Only the sizes that look different are offered. Before, Medium and Full were identical for several cards (and both span the full width on a phone), so resizing seemed to do nothing.
- const SIZE_SETS={balance:['small','medium','full'],wallets:['small','medium','full'],due:['small','medium','full'],recent:['small','medium','full'],goals:['small','medium','full'],daily:['small','medium','full'],streak:['small','medium','full'],safe:['small','full'],drafts:['small','full'],ideas:['small','full'],welcome:['full']};
+ const SIZE_SETS={balance:['small','medium','full'],wallets:['small','medium','full'],due:['small','medium','full'],recent:['small','medium','full'],goals:['small','medium','full'],daily:['small','medium','full'],streak:['small','medium','full'],safe:['small','full'],drafts:['small','full'],ideas:['small','full'],welcome:['full'],where:['small','medium','full'],trend:['small','medium','full'],subs:['small','medium','full']};
  const allowedSizes=(id,html)=>{const base=SIZE_SETS[id]||['small','medium','full'];const noMedium=base.filter(s=>s!=='medium'),tmp=document.createElement('template');tmp.innerHTML=html||'';
   if(id==='daily'&&!tmp.content.querySelector('.income-target'))return noMedium;
   // a list card has a Medium (the first two rows) only when Full would show more than that
@@ -22,7 +22,7 @@
  A.dashboardEditing=()=>draft!==null;
  const layout=()=>{const value=draft??S().settings.homeLayout;return Array.isArray(value)?value.filter(x=>x&&keys.includes(x.id)):[];};
  const widget=id=>all('#homeGrid>[data-home]').find(x=>x.dataset.home===id);
- const entry=id=>{let x=draft.find(x=>x.id===id);if(!x){x={id,size:'full',hidden:false};draft.push(x);}return x;};
+ const entry=id=>{let x=draft.find(x=>x.id===id);if(!x){x={id,size:'full',hidden:EXTRA.includes(id)};draft.push(x);}return x;};
  const order=()=>all('#homeGrid>[data-home]').map(x=>x.dataset.home);
  const motion=()=>{const m=document.documentElement.dataset.motion;return m!=='off'&&m!=='reduced'&&(m==='full'||!matchMedia('(prefers-reduced-motion:reduce)').matches);};
  const moneyTotal=()=>EX.sumByCur(EX.activeAccounts().map(a=>({amount:EX.balance(a)/100,currency:a.currency})))||EX.money(0);
@@ -39,6 +39,7 @@
   const [value,icon,action]=stats[id];return `<div class="dash-summary${id==='balance'?' dash-summary-balance':''}"><span>${UI.icon(icon,20)} ${L(id)}</span><strong>${esc(value)}</strong>${id==='balance'?`<small>${esc(EX.t('ovBalance'))}</small>`:`<button type="button" class="link" ${action}>${esc(EX.t('seeAll'))} ${UI.icon('chevron-right',16)}</button>`}</div>`;
  }
  function sizedContent(id,size,html){
+  if(REPORT_IDS.includes(id))return A.rep.homeCard(id,size)||html;
   if(size==='small')return smallMarkup(id,html);
   if(size!=='medium')return html;
   const tmp=document.createElement('template');tmp.innerHTML=html;
@@ -55,7 +56,9 @@
   if(id==='goals')all('.bcard,.gcard',tmp.content).slice(2).forEach(x=>x.remove());
   return tmp.innerHTML;
  }
- function readSource(){const tmp=document.createElement('template');tmp.innerHTML=originalHome();return [...tmp.content.children].filter(x=>x.hasAttribute('data-home'));}
+ function readSource(){const tmp=document.createElement('template');tmp.innerHTML=originalHome();const nodes=[...tmp.content.children].filter(x=>x.hasAttribute('data-home'));
+  // the report cards come last, so "Where it went" sits at the very bottom of Home by default; the other two wait in Cards
+  REPORT_IDS.forEach(id=>{const el=document.createElement('section');el.dataset.home=id;el.innerHTML=A.rep?.homeCard?A.rep.homeCard(id,'full'):'';nodes.push(el);});return nodes;}
  function renderWidget(el){
   const id=el.dataset.home,c=layout().find(x=>x.id===id)||{},html=el.innerHTML,size=fitSize(id,sizeOf(c.size),html),multi=allowedSizes(id,html).length>1;
   el.classList.add('home-widget','dash-widget','dash-'+size);el.dataset.size=size;
@@ -70,7 +73,7 @@
   let nodes=draft!==null&&source?source.map(x=>x.cloneNode(true)):readSource();
   const config=layout(),ids=config.map(x=>x.id);
   if(ids.length)nodes.sort((a,b)=>(ids.includes(a.dataset.home)?ids.indexOf(a.dataset.home):99)-(ids.includes(b.dataset.home)?ids.indexOf(b.dataset.home):99));
-  nodes=nodes.filter(x=>!(config.find(c=>c.id===x.dataset.home)||{}).hidden&&x.innerHTML.trim());
+  nodes=nodes.filter(x=>{const c=config.find(c=>c.id===x.dataset.home);return !(c?c.hidden:EXTRA.includes(x.dataset.home))&&x.innerHTML.trim();});
   const bar=draft!==null?`<div class="dash-editbar" role="toolbar" aria-label="${L('title')}"><button type="button" class="btn btn-ghost" data-dash-cancel>${L('cancel')}</button><button type="button" class="btn btn-ghost dash-add-cards" data-dash-cards aria-label="${L('add')}">${UI.icon('plus',20)} ${L('cards')}</button><button type="button" class="btn btn-ghost" data-dash-appearance>${UI.icon('palette',20)} ${esc(EX.t('homeAppearance'))}</button><button type="button" class="btn btn-primary" data-dash-done>${L('done')}</button></div>${!S().device.dashboardHintSeen?`<div class="dash-hint" role="status"><span>${L('hint')}</span><button type="button" class="ab-btn" data-dash-dismiss aria-label="${L('dismiss')}">${UI.icon('x',18)}</button></div>`:''}`:'';
   return bar+`<div id="homeGrid" class="dashboard-grid dash-grid${draft!==null?' dashboard-editing':''}">${nodes.map(renderWidget).join('')}</div><div id="dashAnnounce" class="sr-only" aria-live="polite"></div>`;
  };
@@ -81,7 +84,7 @@
   source.forEach(x=>entry(x.dataset.home));selected=id||null;A.render();UI.haptic(25);
  }
  function closeEditor(save){
-  stopGesture(true);if(save){const defaults=source.map(x=>x.dataset.home);const unchanged=draft.length===defaults.length&&draft.every((x,i)=>x.id===defaults[i]&&!x.hidden&&sizeOf(x.size)==='full');S().settings.homeLayout=unchanged?[]:copy(draft||[]);S().device.dashboardHintSeen=true;}
+  stopGesture(true);if(save){const defaults=source.map(x=>x.dataset.home);const unchanged=draft.length===defaults.length&&draft.every((x,i)=>x.id===defaults[i]&&!!x.hidden===EXTRA.includes(x.id)&&sizeOf(x.size)==='full');S().settings.homeLayout=unchanged?[]:copy(draft||[]);S().device.dashboardHintSeen=true;}
   if(save)S().settings.themeLooks=copy(A.homeLookDraft||{});delete A.homeLookDraft;A.applyCustomTheme();draft=null;source=null;selected=null;
   if(save)EX.save();else A.render();
  }

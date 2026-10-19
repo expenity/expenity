@@ -831,3 +831,4 @@ button, a, input, select, textarea, label, summary { touch-action: manipulation;
 /* Keep both repayments and the arithmetic visible inside the tutorial phone. */
 .am-demo-total{font-size:30px;margin:12px 0}.am-demo-part{margin:10px;padding:12px}.am-demo-result{font-size:12px;padding:4px}
 .dash-summary.dash-over strong { color: var(--late, #c0392b); } .dash-summary > small { overflow-wrap: anywhere; }
+.home-report { margin-bottom: 0; } .donut-wrap2.compact { grid-template-columns: 120px 1fr; } .donut-wrap2.compact .donut-svg { max-width: 120px; }

@@ -1,0 +1,42 @@
+import {chromium} from 'playwright-core';
+import {createServer} from 'node:http';
+import {readFileSync,existsSync} from 'node:fs';
+import {join,extname} from 'node:path';
+import assert from 'node:assert/strict';
+const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.svg':'image/svg+xml','.png':'image/png','.webmanifest':'application/manifest+json','.woff2':'font/woff2','.webp':'image/webp'};
+const server=createServer((req,res)=>{const f=join(process.cwd(),req.url.split('?')[0]==='/'?'index.html':req.url.split('?')[0]);if(!existsSync(f)){res.writeHead(404).end();return;}res.setHeader('Content-Type',types[extname(f)]||'application/octet-stream');res.end(readFileSync(f));}).listen(0);
+const browser=await chromium.launch({channel:'chrome'}),ctx=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,serviceWorkers:'block'}),page=await ctx.newPage(),errors=[];page.on('pageerror',e=>errors.push(String(e)));
+const ok=(v,s)=>{assert(v,s);console.log('ok',s);};
+try{
+ await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.dashboardEditing);await page.evaluate(()=>{EXA.skipFlow();});
+ await page.evaluate(()=>{const S=EX.state(),iso=x=>x.toISOString().slice(0,10);S.accounts.length||S.accounts.push({id:'a1',name:'Cash',type:'cash',currency:'EUR',opening:'0'});const acc=S.accounts[0];
+  const cats=['food','coffee','shopping','leisure','housing'];
+  for(let i=0;i<30;i++)S.txs.push({id:'t'+i,type:'expense',amount:String(5+(i%7)*9),account:acc.id,name:'Item '+i,category:cats[i%5],date:iso(new Date(Date.now()-i*864e5))});
+  S.bills.push({id:'s1',name:'Streamly',amount:'15.99',day:3,repeat:'monthly',next:iso(new Date(Date.now()+5*864e5)),account:acc.id,category:'subscriptions'},{id:'s2',name:'Cloudly',amount:'4.99',day:9,repeat:'monthly',next:iso(new Date(Date.now()+9*864e5)),account:acc.id,category:'subscriptions'});
+  S.settings.features={tier:'advanced'};EX.save();EXA.go('home');});
+ await page.waitForTimeout(500);
+ let ids=await page.evaluate(()=>[...document.querySelectorAll('#homeGrid>[data-home]')].map(x=>x.dataset.home));
+ ok(ids[ids.length-1]==='where'&&!ids.includes('trend')&&!ids.includes('subs'),'Where it went is the last card on Home by default, the other two are not shown: '+ids.join(','));
+ ok(await page.evaluate(()=>!!document.querySelector('[data-home=where] .donut-svg')),'it shows the donut');
+ // edit Home and add the other two from Cards
+ await page.evaluate(()=>{const el=document.querySelector('#homeGrid>[data-home]');el.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,pointerType:'touch',button:0,clientX:50,clientY:300}));});
+ await page.waitForTimeout(900);
+ ok(await page.evaluate(()=>EXA.dashboardEditing()),'the editor opens');
+ await page.evaluate(()=>document.dispatchEvent(new PointerEvent('pointerup',{bubbles:true})));await page.waitForTimeout(400);
+ await page.click('[data-dash-cards]');await page.waitForTimeout(400);
+ console.log('sheet:',(await page.evaluate(()=>document.querySelector('#sheet')?.innerText||'(none)')).slice(0,200).replace(/\n/g,' | '));
+ const offered=await page.evaluate(()=>[...document.querySelectorAll('[data-dash-restore]')].map(b=>b.dataset.dashRestore));
+ ok(offered.includes('trend')&&offered.includes('subs'),'Cards offers the spending trend and subscriptions: '+offered.join(','));
+ await page.click('[data-dash-restore="trend"]');await page.waitForTimeout(400);
+ await page.click('[data-dash-cards]');await page.waitForTimeout(400);await page.click('[data-dash-restore="subs"]');await page.waitForTimeout(400);
+ await page.evaluate(()=>document.querySelector('#sheet [data-close]')?.click());await page.waitForTimeout(200);
+ ids=await page.evaluate(()=>[...document.querySelectorAll('#homeGrid>[data-home]')].map(x=>x.dataset.home));
+ ok(ids.includes('trend')&&ids.includes('subs'),'both cards are on Home after adding: '+ids.slice(-4).join(','));
+ await page.click('[data-dash-done]');await page.waitForTimeout(500);
+ ids=await page.evaluate(()=>[...document.querySelectorAll('#homeGrid>[data-home]')].map(x=>x.dataset.home));
+ ok(ids.slice(-3).join()==='where,trend,subs','saved: the three report cards are the last three: '+ids.slice(-3).join());
+ await page.evaluate(()=>document.querySelector('#homeGrid>[data-home=where]').scrollIntoView({block:'start'}));await page.waitForTimeout(300);
+ await page.screenshot({path:'/tmp/mc/home-reports.png'});
+ ok(errors.length===0,'no errors '+errors.join('|'));
+}catch(e){console.log('FAIL',e.message,errors);process.exitCode=1;}
+await browser.close();server.close();
