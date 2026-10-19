@@ -116,3 +116,5 @@
 .xp-dressed-row img{display:block;width:100%;height:auto}
 @media(max-width:900px){.xp-dressed-row{grid-template-columns:repeat(2,1fr)}.xp-dressed-row figure:nth-child(even){transform:none}}
 @media(prefers-reduced-motion:reduce){.xp-dressed-row figure{transition:none}.xp-dressed-row figure:hover{transform:none}}
+
+.xp-dedication{margin:14px 0 0;font-size:13.5px;font-style:italic;letter-spacing:.01em;color:var(--muted);opacity:.85}.xp-dedication::before{content:"\2665\00a0";font-style:normal;color:var(--accent);opacity:.7}
