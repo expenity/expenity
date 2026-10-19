@@ -51,6 +51,14 @@ Every theme card has a small **pencil**. Tap it to change that theme's **colors,
 
 {{tut:themes}}
 
+## Preview a theme on Home
+
+In the theme editor, **Preview on Home** shows your changes on the real Home screen. A panel with **Apply** and **Keep editing** stays above the tab bar. **Apply** saves the look. **Keep editing** takes you back to the editor with your changes. If you leave without applying, your previous theme comes back.
+
+## Reports and sizes on Home
+
+**Where it went** shows this month's spending by category at the bottom of Home. From **More → Make it yours → Personalise Home** you can add **Trends** and **Subscriptions** with **Cards**. Each card can be Small, Medium or Full, and only the sizes that look different are offered. Tap a report to open Reports.
+
 ## Fonts
 
 Fonts are bundled with the app so it looks the same on every phone, tablet and computer, with full Greek support.

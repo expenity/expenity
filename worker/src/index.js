@@ -721,6 +721,13 @@ async function adminReset( req, env ) {
 	return reply( req, env, { ok: true, cleared: tables } );
 }
 
+/** Mission Control only: sends a test notification to every subscribed device right now and says how each push service answered. */
+async function adminPushRun( req, env ) {
+	const given = ( req.headers.get( 'Authorization' ) || '' ).replace( /^Bearer /, '' );
+	if ( ! env.STATS_TOKEN || ! given || ( await sha256( given ) ) !== ( await sha256( env.STATS_TOKEN ) ) ) return fail( req, env, 'unauthorized', 401 );
+	return reply( req, env, await runPush( env, Date.now(), true ) );
+}
+
 /**
  * Read by the Mission Control dashboard with a shared secret (STATS_TOKEN). Everything here comes from what the server already
  * holds to run sync (accounts, sessions, records). It is only ever aggregated: no email address or individual account is returned.
@@ -804,6 +811,13 @@ async function adminStats( req, env, url ) {
 	out.features.featureEnabled = rows( enabled );
 	out.features.featureInUse = rows( new Map( Object.entries( inUse ).filter( ( [ , n ] ) => n > 0 ) ) );
 	out.features.themeCustomised = rows( looks );
+	// Notification health, as numbers only (no endpoints, no people): how many devices, which push service, how the last send went.
+	out.push = {
+		subscriptions: ( await one( 'SELECT COUNT(*) AS n FROM push_subs' ) ).n || 0,
+		failing: ( await one( 'SELECT COUNT(*) AS n FROM push_subs WHERE fails > 0' ) ).n || 0,
+		byService: await all( "SELECT CASE WHEN endpoint LIKE '%push.apple.com%' THEN 'Apple' WHEN endpoint LIKE '%googleapis%' THEN 'Google' WHEN endpoint LIKE '%mozilla%' THEN 'Mozilla' ELSE 'Other' END AS k, COUNT(*) AS n FROM push_subs GROUP BY k ORDER BY n DESC" ),
+		lastResults: await all( "SELECT COALESCE(last_result, 'not run yet') AS k, COUNT(*) AS n FROM push_subs GROUP BY k ORDER BY n DESC" ),
+	};
 	if ( env.USAGE_ENABLED === '1' ) {
 		const today = isoDay(), from = isoDay( new Date( Date.now() - ( days - 1 ) * DAY ) );
 		out.usage = { devices: ( await one( 'SELECT COUNT(DISTINCT device) AS n FROM usage_daily WHERE day >= ?', from ) ).n || 0, today: ( await one( 'SELECT COUNT(DISTINCT device) AS n FROM usage_daily WHERE day = ?', today ) ).n || 0 };
@@ -864,6 +878,7 @@ async function handle( req, env ) {
 		if ( path === '/api/contact' && req.method === 'POST' ) return contact( req, env, ip );
 		if ( path === '/api/usage' && req.method === 'POST' ) return usagePing( req, env, ip );
 		if ( path === '/api/admin/reset' && req.method === 'POST' ) { if ( await limited( env, 'AUTH_LIMITER', 'admin:' + ip ) ) return fail( req, env, 'rate_limited', 429 ); return adminReset( req, env ); }
+		if ( path === '/api/admin/push-run' && req.method === 'POST' ) { if ( await limited( env, 'AUTH_LIMITER', 'admin:' + ip ) ) return fail( req, env, 'rate_limited', 429 ); return adminPushRun( req, env ); }
 		if ( path === '/api/admin/stats' && req.method === 'GET' ) { if ( await limited( env, 'AUTH_LIMITER', 'admin:' + ip ) ) return fail( req, env, 'rate_limited', 429 ); return adminStats( req, env, url ); }
 		if ( PUBLIC_POST[ path ] ) {
 			if ( req.method !== 'POST' ) return fail( req, env, 'not_found', 404 );

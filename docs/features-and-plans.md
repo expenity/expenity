@@ -27,4 +27,4 @@ Tutorials and help icons follow your plan: a feature that is switched off has no
 
 ## New in Advanced
 
-[Split expenses and reimbursements](split-expenses-and-reimbursements.md) add category allocations and partial repayments, with animated examples in setup and Tutorials.
+[Split expenses and reimbursements](split-expenses-and-reimbursements.md) add category allocations and partial repayments, with animated examples in setup and Tutorials. [Smart detection](add-money.md#smart-detection-advanced) fills in the category, tags and wallet from what you type.

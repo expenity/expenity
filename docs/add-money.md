@@ -27,6 +27,21 @@ Press **Type it instead** and write what happened, in English or Greek:
 
 Expenity fills the amount, description, date and type, and shows chips so you can see what it understood.
 
+## Smart detection (Advanced)
+
+With **Smart detection** on, type a description such as `Coffee with Anna` and Expenity fills in the category, up to two tags and the wallet for you. A line under the description says what it filled in, with an **Undo** button.
+
+- It looks at your own earlier entries first, then at built-in words in English and Greek, then at your own category names.
+- It never overwrites something you chose yourself, and after **Undo** it stays off for that entry.
+- Tags come from a short shared list (Coffee, Groceries, Car, Home and so on) or your own tags, so similar things always get the same tag.
+- If you have one wallet, it is picked for you.
+
+Smart detection is part of Advanced. Turn it on or off in **More → Make it yours → Features**.
+
+## When a field is missing
+
+If you press save and something is missing, every missing field stays outlined in red until you fill it in. Once you fill one in, Expenity takes you to the next missing field, from top to bottom.
+
 ## Transfers
 
 A transfer moves money between two of your wallets, for example from the bank to cash. It is not an expense. If the wallets use different currencies, Expenity asks how much arrived in the second one. A transfer works between two private wallets, or between two wallets in the same [shared wallet](shared-wallets.md), not across the two.

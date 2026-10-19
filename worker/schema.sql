@@ -139,7 +139,10 @@ CREATE TABLE IF NOT EXISTS push_subs (
   lang        TEXT NOT NULL DEFAULT 'en',
   last_day    TEXT,
   fails       INTEGER NOT NULL DEFAULT 0,
-  created_at  INTEGER NOT NULL
+  created_at  INTEGER NOT NULL,
+  last_result TEXT,      -- what happened at the last pass: ok, fail, gone, nothing due
+  last_status INTEGER,   -- the push service's HTTP code
+  last_at     INTEGER
 );
 CREATE INDEX IF NOT EXISTS push_subs_user ON push_subs(user_id);
 

@@ -55,15 +55,17 @@ export async function encryptPayload( plain, p256dh, auth ) {
 	return concat( salt, rs, new Uint8Array( [ asPublic.length ] ), asPublic, body );
 }
 
-/** Sends one message. Returns 'ok', 'gone' (the subscription is dead and should be removed) or 'fail'. */
-export async function sendPush( env, sub, message ) {
+/** Sends one message. Returns { result: 'ok' | 'gone' | 'fail', status } (status is the push service's HTTP code, 0 if it could not be reached). */
+export async function sendPushDetailed( env, sub, message ) {
 	try {
 		const body = await encryptPayload( JSON.stringify( message ), sub.p256dh, sub.auth );
 		const res = await fetch( sub.endpoint, { method: 'POST', headers: { Authorization: await vapidHeader( env, sub.endpoint ), 'Content-Encoding': 'aes128gcm', 'Content-Type': 'application/octet-stream', TTL: '43200', Urgency: 'normal' }, body } );
-		if ( res.status === 404 || res.status === 410 ) return 'gone';
-		return res.ok ? 'ok' : 'fail';
-	} catch ( e ) { return 'fail'; }
+		if ( res.status === 404 || res.status === 410 ) return { result: 'gone', status: res.status };
+		return { result: res.ok ? 'ok' : 'fail', status: res.status };
+	} catch ( e ) { return { result: 'fail', status: 0 }; }
 }
+/** Same, returning only 'ok', 'gone' or 'fail'. */
+export async function sendPush( env, sub, message ) { return ( await sendPushDetailed( env, sub, message ) ).result; }
 
 /* ------------------------------------------------------------------ What is due */
 
@@ -108,19 +110,22 @@ export function summary( due, lang ) {
 export const testMessage = ( lang ) => { const T = TEXT[ lang ] || TEXT.en; return { title: T.test, body: T.testBody, tag: 'expenity-test', url: './' }; };
 
 /** One hourly pass: for every subscription whose local time has reached the chosen hour, send today's summary once. */
-export async function runPush( env, nowMs = Date.now() ) {
+export async function runPush( env, nowMs = Date.now(), force = false ) {
 	const subs = await env.DB.prepare( 'SELECT s.endpoint, s.user_id, s.p256dh, s.auth, s.tz, s.hour, s.lang, s.last_day FROM push_subs s' ).all();
-	let sent = 0;
+	let sent = 0; const report = [];
+	const note = ( endpoint, result, status ) => env.DB.prepare( 'UPDATE push_subs SET last_result = ?, last_status = ?, last_at = ? WHERE endpoint = ?' ).bind( result, status, nowMs, endpoint ).run();
 	for ( const s of subs.results || [] ) {
 		const t = localTime( nowMs, s.tz );
-		if ( t.hour < s.hour || s.last_day === t.day ) continue;
-		const due = await dueBills( env, s.user_id, t.day );
-		if ( ! due.length ) { await env.DB.prepare( 'UPDATE push_subs SET last_day = ? WHERE endpoint = ?' ).bind( t.day, s.endpoint ).run(); continue; }
-		const r = await sendPush( env, s, summary( due, s.lang ) );
-		if ( r === 'gone' ) await env.DB.prepare( 'DELETE FROM push_subs WHERE endpoint = ?' ).bind( s.endpoint ).run();
-		else if ( r === 'ok' ) { sent++; await env.DB.prepare( 'UPDATE push_subs SET last_day = ?, fails = 0 WHERE endpoint = ?' ).bind( t.day, s.endpoint ).run(); }
+		if ( ! force && ( t.hour < s.hour || s.last_day === t.day ) ) continue;
+		const host = ( () => { try { return new URL( s.endpoint ).hostname; } catch ( e ) { return ''; } })();
+		const due = force ? [] : await dueBills( env, s.user_id, t.day );
+		if ( ! force && ! due.length ) { await env.DB.prepare( 'UPDATE push_subs SET last_day = ? WHERE endpoint = ?' ).bind( t.day, s.endpoint ).run(); await note( s.endpoint, 'nothing due', 0 ); report.push( { host, result: 'nothing due' } ); continue; }
+		const r = await sendPushDetailed( env, s, force ? testMessage( s.lang ) : summary( due, s.lang ) );
+		await note( s.endpoint, r.result, r.status ); report.push( { host, result: r.result, status: r.status } );
+		if ( r.result === 'gone' ) await env.DB.prepare( 'DELETE FROM push_subs WHERE endpoint = ?' ).bind( s.endpoint ).run();
+		else if ( r.result === 'ok' ) { sent++; if ( ! force ) await env.DB.prepare( 'UPDATE push_subs SET last_day = ?, fails = 0 WHERE endpoint = ?' ).bind( t.day, s.endpoint ).run(); }
 		else await env.DB.prepare( 'UPDATE push_subs SET fails = fails + 1 WHERE endpoint = ?' ).bind( s.endpoint ).run();
 	}
 	await env.DB.prepare( 'DELETE FROM push_subs WHERE fails >= 10' ).run(); // a subscription that keeps failing is dropped
-	return sent;
+	return force ? { sent, report } : sent;
 }

@@ -33,7 +33,7 @@ Expenity updates itself when you open it with a connection. To check right now, 
 
 ## Delete your account
 
-**More → Account and sync → Delete my account** deletes your account and all your synced data from the server. It asks you to confirm with your passkey. It cannot be undone. Wallets you own and share are deleted for everyone.
+**More → Account and sync → Delete my account** deletes your account and all your synced data from the server. It asks you to confirm with your passkey. You are also asked to type **DELETE**. It cannot be undone. Wallets you own and share are deleted for everyone.
 
 ## Email
 
@@ -46,7 +46,7 @@ In Account, **Delete all photos** removes every photo you uploaded, including in
 
 ## Reset account
 
-**Account → Reset account** deletes all your records and settings on all your devices and takes you through the setup again, like a new user. Your account and passkeys stay. Other devices are emptied the next time they sync. Use **Download a backup first** on the same card if you might need your data. See [Search, filters, drafts and recently deleted](find-and-recover.md#reset-account).
+**Account → Reset account** deletes all your records and settings on all your devices and takes you through the setup again, like a new user. Your account and passkeys stay. Other devices are emptied the next time they sync. Use **Download a backup first** on the same card if you might need your data. See [Search, filters, drafts and recently deleted](find-and-recover.md#reset-account). You are asked to type **RESET** to confirm, and then to confirm with your passkey.
 
 ## Your picture and offline status
 

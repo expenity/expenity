@@ -34,6 +34,10 @@ The first-run setup includes animated steps for the things people ask about most
 
 Dismiss the tour or replay it from the Tutorials page: **Replay the welcome tour**.
 
+## What's new
+
+After an update, a small window shows what changed. Press **Got it** to close it, or **View changes** for the full list.
+
 ## Still stuck?
 
 Use **More → Help & about → Contact us**. See [Contact us](contact-us.md).
