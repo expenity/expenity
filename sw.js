@@ -51,7 +51,9 @@ self.addEventListener( 'notificationclick', ( e ) => {
 	const url = ( e.notification.data && e.notification.data.url ) || './';
 	e.waitUntil( self.clients.matchAll( { type: 'window', includeUncontrolled: true } ).then( ( list ) => {
 		if ( ! list.length ) return self.clients.openWindow( url );
-		if ( /[?&]update=1/.test( url ) ) list[ 0 ].postMessage( { type: 'update' } ); // an open app shows the update prompt itself
-		return list[ 0 ].focus();
+		const c = list[ 0 ];
+		if ( ! /[?&]update=1/.test( url ) ) return c.focus();
+		// The update notice: bring the open app forward and reload it on the update prompt. Reloading works even if the open page is an older version that cannot receive a message.
+		return c.focus().then( ( w ) => ( w || c ).navigate( url ) ).catch( () => { c.postMessage( { type: 'update' } ); return self.clients.openWindow( url ); } );
 	} ) );
 } );
