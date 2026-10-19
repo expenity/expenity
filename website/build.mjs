@@ -299,6 +299,7 @@ ${ body }
 	</div>
 </footer>
 <script src="${ root }assets/site.js?v=${ ASSET_V }" defer></script>
+<script src="${ root }assets/share-heart.js?v=${ ASSET_V }" data-site="expenity" data-url="${ SITE.url }" data-msg="Know where your money goes? Make a friend's wallet smile too." data-msg-el="Ξέρετε πού πάνε τα χρήματά σας; Κάντε και το πορτοφόλι ενός φίλου να χαμογελάσει." defer></script>
 ${ home ? `<script src="${ root }assets/home.js?v=${ ASSET_V }" defer></script>` : '' }
 ${ home ? `<script src="${ root }assets/try.js?v=${ ASSET_V }" defer></script>` : '' }
 </body>

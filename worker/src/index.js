@@ -46,7 +46,7 @@ const enc = new TextEncoder();
 const list = ( s ) => ( s || '' ).split( ',' ).map( ( x ) => x.trim() ).filter( Boolean );
 function corsHeaders( req, env ) {
 	const o = req.headers.get( 'Origin' ) || '';
-	const ok = list( env.RP_ORIGINS ).includes( o ) || /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test( o );
+	const ok = list( env.RP_ORIGINS ).includes( o ) || ( new URL( req.url ).pathname === '/api/share/site' && list( env.SHARE_ORIGINS ).includes( o ) ) || /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test( o );
 	return {
 		'Access-Control-Allow-Origin': ok ? o : 'null',
 		'Access-Control-Allow-Headers': 'Authorization, Content-Type, X-Step-Up',
@@ -699,6 +699,28 @@ async function shareCount( req, env, ip ) {
 	await env.DB.prepare( 'INSERT INTO share_daily (day, kind, n) VALUES (?, ?, 1) ON CONFLICT(day, kind) DO UPDATE SET n = n + 1' ).bind( isoDay(), r.body.kind ).run();
 	return reply( req, env, { ok: true } );
 }
+const SHARE_SITES = [ 'expenity', 'gatehouse', 'fixpass', 'fixpin', 'helpdesk-hero', 'sheetpilot', 'blog', 'personal' ];
+/** One press of a Share heart on one of our websites or blog posts: adds one to a daily counter. Nothing about the person is stored. */
+async function siteShare( req, env, ip ) {
+	if ( await limited( env, 'AUTH_LIMITER', 'share:' + ip ) ) return fail( req, env, 'rate_limited', 429 );
+	const r = await readJson( req ); if ( r.tooLarge || r.bad ) return fail( req, env, 'bad_request' );
+	const b = r.body, post = String( b.post || '' );
+	if ( ! SHARE_SITES.includes( b.site ) || ! [ 'native', 'copy' ].includes( b.method ) || ! /^[a-z0-9-]{0,80}$/.test( post ) ) return fail( req, env, 'bad_request' );
+	await env.DB.prepare( 'INSERT INTO site_shares (day, site, post, method, n) VALUES (?, ?, ?, ?, 1) ON CONFLICT(day, site, post, method) DO UPDATE SET n = n + 1' ).bind( isoDay(), b.site, post, b.method ).run();
+	return reply( req, env, { ok: true } );
+}
+/** Mission Control only: share counts per site and per blog post, plus the app's own Share button. */
+async function adminSharing( req, env, url ) {
+	const given = ( req.headers.get( 'Authorization' ) || '' ).replace( /^Bearer /, '' );
+	if ( ! env.STATS_TOKEN || ! given || ( await sha256( given ) ) !== ( await sha256( env.STATS_TOKEN ) ) ) return fail( req, env, 'unauthorized', 401 );
+	const days = Math.max( 1, Math.min( 365, Number( url.searchParams.get( 'days' ) ) || 30 ) ), since = isoDay( new Date( Date.now() - days * 864e5 ) );
+	const all = async ( sql, ...a ) => ( ( await env.DB.prepare( sql ).bind( ...a ).all() ).results ) || [];
+	const rows = await all( 'SELECT day AS t, site, post, method, n FROM site_shares WHERE day >= ? ORDER BY day', since );
+	const app = await all( 'SELECT day AS t, kind AS k, n FROM share_daily WHERE day >= ? ORDER BY day', since );
+	const totals = await all( 'SELECT site, post, SUM(n) AS n FROM site_shares GROUP BY site, post' );
+	const appTotal = ( await env.DB.prepare( 'SELECT COALESCE(SUM(n), 0) AS n FROM share_daily' ).first() ).n || 0;
+	return reply( req, env, { days, rows, app, totals, appTotal } );
+}
 async function usagePing( req, env, ip ) {
 	// FULLY DISABLED: nothing is stored. Only switch on with USAGE_ENABLED = "1" if people have opted in themselves (see usage.js).
 	if ( env.USAGE_ENABLED !== '1' ) return reply( req, env, { ok: true, disabled: true } );
@@ -892,6 +914,8 @@ async function handle( req, env ) {
 		if ( path === '/api/contact' && req.method === 'POST' ) return contact( req, env, ip );
 		if ( path === '/api/usage' && req.method === 'POST' ) return usagePing( req, env, ip );
 		if ( path === '/api/share' && req.method === 'POST' ) return shareCount( req, env, ip );
+		if ( path === '/api/share/site' && req.method === 'POST' ) return siteShare( req, env, ip );
+		if ( path === '/api/admin/sharing' && req.method === 'GET' ) { if ( await limited( env, 'AUTH_LIMITER', 'admin:' + ip ) ) return fail( req, env, 'rate_limited', 429 ); return adminSharing( req, env, url ); }
 		if ( path === '/api/admin/reset' && req.method === 'POST' ) { if ( await limited( env, 'AUTH_LIMITER', 'admin:' + ip ) ) return fail( req, env, 'rate_limited', 429 ); return adminReset( req, env ); }
 		if ( path === '/api/admin/push-run' && req.method === 'POST' ) { if ( await limited( env, 'AUTH_LIMITER', 'admin:' + ip ) ) return fail( req, env, 'rate_limited', 429 ); return adminPushRun( req, env ); }
 		if ( path === '/api/admin/stats' && req.method === 'GET' ) { if ( await limited( env, 'AUTH_LIMITER', 'admin:' + ip ) ) return fail( req, env, 'rate_limited', 429 ); return adminStats( req, env, url ); }

@@ -36,6 +36,8 @@ crons = [ "0 * * * *" ]
 RP_ID = "expenity.github.io"
 RP_NAME = "Expenity"
 RP_ORIGINS = "https://expenity.github.io"
+# Websites allowed to send an anonymous share count (see /api/share/site).
+SHARE_ORIGINS = "https://expenity.github.io,https://george-stathopoulos.github.io"
 # Web Push (VAPID) public key. The private key is a secret: wrangler secret put VAPID_PRIVATE_JWK
 VAPID_PUBLIC = "BCfUDXBzyqy1ZIvu4iI-hVjhw-KeI0sgE9iqutYnsLFcN03-7IbYaZteX1ys9AKgUW0q5oXNRmFM3gJzoJh5kxM"
 VAPID_SUBJECT = "https://expenity.github.io/expenity/"
