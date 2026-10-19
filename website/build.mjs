@@ -282,6 +282,7 @@ ${ body }
 					${ PROJECTS.filter( ( p ) => p.name !== SITE.name ).map( ( p ) => `<li><a href="${ p.url }" title="${ esc( p.text ) }">${ esc( p.name ) }</a></li>` ).join( '' ) }
 					<li><a href="${ SITE.authorUrl }#projects">${ L.foot.allProjects }</a></li>
 					<li><a href="https://george-stathopoulos.github.io/blog/" title="${ L.foot.blogTitle }">${ L.foot.blog }</a></li>
+					<li><a href="https://george-stathopoulos.github.io/blog/posts/expenity/" title="${ L.code === 'el' ? 'Το άρθρο του blog για το έργο' : 'The blog post about this project' }">${ L.code === 'el' ? 'Διαβάστε την ιστορία' : 'Read the story' }</a></li>
 				</ul>
 			</div>
 			<div>
