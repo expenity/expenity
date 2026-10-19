@@ -465,6 +465,7 @@ ${ toc.length > 1 ? `<nav class="on-page" aria-label="${ L.docs.toc }" data-spy>
 		const body = readFileSync( join( SRC, file ), 'utf8' )
 			.replace( /\{\{img:([a-z0-9-]+)\|([^}]+)\}\}/g, ( m, name, alt ) => img( name, alt, root ) )
 			.replace( /\{\{tut:([a-z]+)\}\}/g, ( m, id ) => tutBlock( id, L.code ) )
+			.replace( /\{\{herologo\}\}/g, () => LOGO_RAW.replace( /width="32" height="32"/, 'width="112" height="112"' ).replace( 'class="logo-mark"', 'class="logo-mark hero-mark"' ) )
 			.replace( /\{\{features\}\}/g, () => featuresBlock( L.code ) )
 			.replace( /\{\{root\}\}/g, root )
 			.replace( /\{\{repo\}\}/g, SITE.repo )

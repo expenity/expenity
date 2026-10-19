@@ -2047,3 +2047,9 @@ a.card .more {
 @keyframes exPulse { 0%, 100% { box-shadow: 0 6px 18px -6px color-mix(in srgb, var(--accent) 60%, transparent), 0 0 0 0 color-mix(in srgb, var(--accent) 45%, transparent); } 50% { box-shadow: 0 6px 18px -6px color-mix(in srgb, var(--accent) 60%, transparent), 0 0 0 10px transparent; } }
 @keyframes exOpen { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .ex-btn, .ex-body { animation: none; } }
+
+/* Header: a larger logo at the top of the page that shrinks once you scroll. */
+.site-head .wrap{height:88px;transition:height .3s ease}.site-head .brand{font-size:24px;transition:font-size .3s ease}.site-head .brand .logo-mark{width:48px;height:48px;transition:width .3s ease,height .3s ease}
+.site-head.is-small .wrap{height:64px}.site-head.is-small .brand{font-size:18px}.site-head.is-small .brand .logo-mark{width:32px;height:32px}
+@media(max-width:720px){.site-head .wrap{height:72px}.site-head .brand{font-size:21px}.site-head .brand .logo-mark{width:42px;height:42px}.site-head.is-small .wrap{height:58px}}
+@media(prefers-reduced-motion:reduce){.site-head .wrap,.site-head .brand,.site-head .brand .logo-mark{transition:none}}
