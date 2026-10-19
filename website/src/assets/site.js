@@ -352,10 +352,16 @@
 	}
 } )();
 
-/* Header logo: large at the top, smaller once the page is scrolled. */
+/* Header logo: large at the top, smaller once the page is scrolled. On the home page it also fades in while you scroll through the hero. */
 ( function () {
 	const head = document.querySelector( '.site-head' ); if ( ! head ) return;
-	const hero = document.querySelector( '.xp-hero' );
-	const set = () => { head.classList.toggle( 'is-small', window.scrollY > 40 ); head.classList.toggle( 'past-hero', ! hero || hero.getBoundingClientRect().bottom < head.offsetHeight + 8 ); };
+	const hero = document.querySelector( '.xp-hero' ), reduce = window.matchMedia && window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
+	const set = () => {
+		head.classList.toggle( 'is-small', window.scrollY > 40 );
+		if ( ! hero ) return;
+		const room = Math.max( 1, hero.offsetHeight - head.offsetHeight ), p = Math.min( 1, Math.max( 0, -hero.getBoundingClientRect().top / room ) );
+		head.style.setProperty( '--hp', reduce ? ( p > .5 ? 1 : 0 ) : p.toFixed( 3 ) );
+		head.classList.toggle( 'past-hero', p >= .98 );
+	};
 	set(); window.addEventListener( 'scroll', set, { passive: true } ); window.addEventListener( 'resize', set );
 }() );
