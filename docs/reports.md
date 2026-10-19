@@ -1,6 +1,6 @@
 # Reports
 
-Reports turn your transactions into charts and tables. The **All** view shows every report one after the other, each with an **Open** link, so you can scroll through everything. The buttons under the filters (each with an icon) open one report on its own. Pick a **period** at the top (This month, Last month, 3 months, This year, 12 months, or a custom range), then a tab. **Filters** narrow everything to a wallet, a category, only expenses or only income, or a word in the description. Goal money is left out of spending.
+Reports turn your transactions into charts and tables. Open them with the chart icon in the top bar of Home, Activity, Bills and Plan, or from **More**. The **All** view shows every report one after the other, each with an **Open** link, so you can scroll through everything. The buttons under the filters (each with an icon) open one report on its own. Pick a **period** at the top (This month, Last month, 3 months, This year, 12 months, or a custom range), then a tab. **Filters** narrow everything to a wallet, a category, only expenses or only income, or a word in the description. Goal money is left out of spending.
 
 ![The Overview tab.](images/reports-overview.png)
 

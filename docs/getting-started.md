@@ -53,7 +53,7 @@ Press the green **+** button, choose **Expense**, type the amount on the keypad,
 - **Activity**: every transaction, by month, with search and filters.
 - **Bills**: what is coming, as a list or a calendar.
 - **Reports**: charts and tables. See [Reports](reports.md).
-- **Budgets & goals**: spending limits and savings targets, from Home, More or the sidebar.
+- **Plan** (budgets and goals): spending limits and savings targets, in its own tab at the bottom (and in the sidebar on a tablet or computer).
 - **Activity → Income → Recurring income**: salary and other regular income.
 - **Home → Ideas**: suggestions and your aims.
 - **More**: wallets, categories, reminders, backup, themes, your account.
@@ -67,7 +67,7 @@ Press the green **+** button, choose **Expense**, type the amount on the keypad,
 
 ## A quick tour, at your pace
 
-After choosing a look, an animated tour explains Home, Activity, Budgets & goals and Reports. On phones, the swipe guide shows how to reveal row actions: swiping never pays or deletes anything by itself. All optional setup steps can be skipped. Existing accounts that have completed setup return to their data after signing in. Blur, floating cards and transitions follow your animation setting and your device's reduced-motion preference.
+After choosing a look, an animated tour explains Home, Activity, Bills, Plan (budgets and goals) and Reports. On phones, the swipe guide shows how to reveal row actions: swiping never pays or deletes anything by itself. All optional setup steps can be skipped. Existing accounts that have completed setup return to their data after signing in. Blur, floating cards and transitions follow your animation setting and your device's reduced-motion preference.
 
 Built-in wallet and category labels follow the selected language. Names you write yourself, including saved transaction names, stay as written.
 
