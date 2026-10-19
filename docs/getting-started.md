@@ -30,6 +30,7 @@ A short setup asks a few questions. Each one can be skipped, and you can change 
 - **How much you want to see**: Basic, Pro or Advanced, or a plan of your own later. See [Features and plans](features-and-plans.md).
 - **Your daily number**: let Expenity work out what you can spend today, or set a daily, weekly or monthly target. See [Daily number, targets and streaks](spending-helpers.md).
 - **How it looks**: a theme and whether animations are on. See [Themes and animations](themes-and-look.md).
+- **Notifications**: turn on the daily bill summary and update notices, even when Expenity is closed (with an account; **Not now** skips it). See [Reminders](reminders.md).
 - **Short animated lessons**: scanning a receipt, adding an entry in one sentence, a few handy extras, the help icon, and, on a phone, swiping rows. See [Tutorials and help](tutorials-and-help.md).
 
 ![Choosing what you want help with.](images/setup-aims.png)
