@@ -28,6 +28,8 @@ Even with an account, you can keep your own copy. In **More → Data and backup*
 
 Without an account, clearing the site's data (or losing the device) removes your data, so back up regularly.
 
+> 💡 **Real-life example** Every month Nikos downloads a backup file and keeps it in his own cloud folder. At tax time Giorgos downloads last year's transactions as CSV for his accountant.
+
 ## Delete everything
 
 - **Delete all my data** (More → Data and backup) is shown only when you are not signed in. It removes everything from this browser, and because there is no account, it is gone for good.

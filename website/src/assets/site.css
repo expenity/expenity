@@ -2031,3 +2031,19 @@ a.card .more {
 /* Animated tutorials (exported from the app) */
 .site-tt { margin: 22px auto; max-width: 340px; text-align: center; } .site-tt-stage { display: grid; place-items: center; } .site-tt figcaption { margin-top: 10px; font-size: .92rem; color: var(--muted, #6b7280); } .site-tt figcaption b { color: inherit; }
 .xp-tuts { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 28px; margin-top: 30px; } .xp-tuts .site-tt { margin: 0; }
+
+/* Real-life examples: a button that is hard to miss, closed until someone wants the story. */
+.doc details.example { margin: 18px 0 28px; }
+.doc details.example > summary { list-style: none; cursor: pointer; display: inline-block; border-radius: 999px; }
+.doc details.example > summary::-webkit-details-marker { display: none; }
+.doc details.example > summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
+.ex-btn { display: inline-flex; align-items: center; gap: 10px; padding: 11px 18px 11px 14px; border-radius: 999px; font-weight: 700; font-size: 15px; line-height: 1.2; color: #fff; background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 55%, #22b8e0)); box-shadow: 0 6px 18px -6px color-mix(in srgb, var(--accent) 60%, transparent); animation: exPulse 2.8s ease-in-out infinite; transition: transform 0.15s ease, filter 0.15s ease; }
+.doc details.example > summary:hover .ex-btn { filter: brightness(1.07); transform: translateY(-1px); }
+.ex-chev { width: 8px; height: 8px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg) translateY(-2px); transition: transform 0.2s ease; margin-left: 2px; }
+.doc details.example[open] .ex-chev { transform: rotate(225deg) translateY(0); }
+.doc details.example[open] .ex-btn { animation: none; }
+.ex-body { margin-top: 12px; padding: 16px 18px; border-left: 4px solid var(--accent); background: var(--accent-soft); border-radius: 0 14px 14px 0; animation: exOpen 0.25s ease; }
+.ex-body p { margin: 0; }
+@keyframes exPulse { 0%, 100% { box-shadow: 0 6px 18px -6px color-mix(in srgb, var(--accent) 60%, transparent), 0 0 0 0 color-mix(in srgb, var(--accent) 45%, transparent); } 50% { box-shadow: 0 6px 18px -6px color-mix(in srgb, var(--accent) 60%, transparent), 0 0 0 10px transparent; } }
+@keyframes exOpen { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .ex-btn, .ex-body { animation: none; } }

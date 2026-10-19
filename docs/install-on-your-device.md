@@ -26,6 +26,8 @@ You can try the real app in an iPhone, iPad or computer frame, and change the th
 3. Choose **Add to Home Screen**.
 4. Tap **Add**, then open Expenity from your home screen.
 
+> 💡 **Real-life example** Eleni adds Expenity to her iPhone home screen and opens it like any other app, with no app store.
+
 ## Android
 
 1. Open Expenity in **Chrome**.
@@ -42,6 +44,10 @@ In Chrome or Edge, click the install icon at the right end of the address bar, o
 
 After the first visit the app files are stored on your device, so Expenity opens without a connection. Changes you make offline are saved on the device and sync when you are back online. If a new version is available, it updates the next time you open the app with a connection.
 
+> 💡 **Real-life example** On a flight without internet, Petros adds his expenses as usual. They sync when he lands.
+
 ## Several devices
 
 Sign in with the same account on each device. Your wallets, transactions, bills, budgets, goals and settings follow you. How the look is set (theme, animations, language) is remembered per device. See [Account and sync](account-and-sync.md).
+
+> 💡 **Real-life example** Anna uses her phone on the go and her computer for monthly reports. It is the same data on both.

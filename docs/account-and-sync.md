@@ -9,19 +9,27 @@ You sign in with a **passkey**: your fingerprint, face or device PIN. Your devic
 - **Create an account**: type your email and confirm on your device.
 - **Sign in**: press **Sign in with a passkey** and choose your account.
 
+> 💡 **Real-life example** Anna signs in with her fingerprint. There is no password to remember, reuse or leak.
+
 ## Recovery codes
 
 When you create an account you get ten one-time **recovery codes**. If you lose all your passkeys, enter your email and one code (**Lost your passkey?**) to get back in. You then add a new passkey, and every other device is signed out. Each code works once and they cannot be shown again, so keep them somewhere safe: a password manager or a printout. You can make a new set in **More → Account and sync**.
 
+> 💡 **Real-life example** Maria's phone falls into the sea. She signs in on a new one with a recovery code and everything comes back.
+
 ## Your devices
 
 **More → Account and sync** lists your passkeys and the devices that are signed in. You can add another passkey, remove one (you always keep at least one) and sign a device out.
+
+> 💡 **Real-life example** Nikos spots an old laptop in the device list and signs it out, so nobody can use it any more.
 
 ## How sync works
 
 Expenity saves on your device first and syncs in the background, so it works offline. When you are back online, changes go up and other devices' changes come down. If two devices change the same item, the newest change wins for that item. Pull down on a screen to sync right now. The sync dot next to your avatar shows the state: green is synced.
 
 What syncs: wallets, transactions, bills, categories, budgets, goals, recurring income and some settings. Look settings (theme, animations, language) stay per device.
+
+> 💡 **Real-life example** Maria adds an expense on her phone and a moment later it is on her laptop too.
 
 ## Check for updates
 
@@ -30,6 +38,8 @@ Expenity updates itself when you open it with a connection. To check right now, 
 ## Sign out
 
 **Sign out** removes the data from that device (it stays in your account). If something has not synced yet, Expenity tells you first.
+
+> 💡 **Real-life example** Before handing an old tablet to a relative, Kostas signs out. His data stays in his account and leaves the tablet.
 
 ## Delete your account
 

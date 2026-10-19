@@ -36,6 +36,8 @@ Theme, light or dark and animations are remembered on each device. Language is t
 
 ![Dark mode.](images/home-dark.png)
 
+> 💡 **Real-life example** Petros prefers calm, so he turns animations off in Appearance and the app stays still.
+
 ## Amberwave, Ion and your own palette
 
 Amberwave combines amber neon with warm shadows; Ion uses electric cyan on deep blue. Together with Synthwave they have sparse falling dots with thin trails. The effect pauses when hidden and follows reduced/off motion settings. Select **Your theme → Create your theme** to choose background, cards, accent and text colours, corner shape and typography. Text must have readable contrast on both backgrounds before saving. Trails are optional. Custom theme choices are saved per device.
@@ -51,13 +53,19 @@ Every theme card has a small **pencil**. Tap it to change that theme's **colors,
 
 {{tut:themes}}
 
+> 💡 **Real-life example** Anna keeps the Emerald theme but makes the corners rounder and the accent color purple, with the pencil.
+
 ## Preview a theme on Home
 
 In the theme editor, **Preview on Home** shows your changes on the real Home screen. A panel with **Apply** and **Keep editing** stays above the tab bar. **Apply** saves the look. **Keep editing** takes you back to the editor with your changes. If you leave without applying, your previous theme comes back.
 
+> 💡 **Real-life example** Before saving, Elena previews her new colors on the real Home screen to make sure the balance card is easy to read.
+
 ## Reports and sizes on Home
 
 **Where it went** shows this month's spending by category at the bottom of Home. From **More → Make it yours → Personalise Home** you can add **Trends** and **Subscriptions** with **Cards**. Each card can be Small, Medium or Full, and only the sizes that look different are offered. Tap a report to open Reports.
+
+> 💡 **Real-life example** Nikos makes Where it went full width and the daily number a small tile, so the top of Home shows what he checks most.
 
 ## Fonts
 

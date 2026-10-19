@@ -354,6 +354,8 @@ for ( const L of Object.values( LANGS ) ) {
 		let html = md.render( src );
 		html = html
 			.replace( /<p>\{\{tut:([a-z]+)\}\}<\/p>/g, ( m, id ) => tutBlock( id, L.code ) )
+			// A quote that starts with the light bulb is a real-life example: on the site it becomes an expandable button, in the Markdown (GitHub) it stays a quote.
+			.replace( /<blockquote>\s*<p>\u{1F4A1} <strong>([^<]+)<\/strong>\s*([\s\S]*?)<\/p>\s*<\/blockquote>/gu, ( m, label, text ) => `<details class="example"><summary><span class="ex-btn"><svg class="ex-ic" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 3l1.8 4.6L18.5 9l-4.7 1.4L12 15l-1.8-4.6L5.5 9l4.7-1.4z" fill="currentColor"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z" fill="currentColor"/></svg><span>${ label }</span><span class="ex-chev" aria-hidden="true"></span></span></summary><div class="ex-body"><p>${ text }</p></div></details>` )
 			.replace( /<p>(<img [^>]*alt="([^"]*)"[^>]*>)<\/p>/g, '<figure data-zoom>$1<figcaption>$2</figcaption></figure>' )
 			.replace( /<pre>/g, '<pre tabindex="0">' )
 			.replace( /<table>/g, '<table tabindex="0">' )

@@ -15,6 +15,8 @@ A budget is a limit for a category (or for everything) over a period.
 
 Each budget shows what you spent, what is left, a progress bar that turns amber at 80 percent and red at 100 percent, and an amount you can spend per day for the rest of the period.
 
+> 💡 **Real-life example** Petros sets a €250 monthly budget for eating out. When he has spent 80% the bar warns him, so he cooks at home for the last week of the month.
+
 ## Goals
 
 A goal is something you save for: a trip, a car, a gift, an emergency fund.
@@ -27,9 +29,13 @@ A goal is something you save for: a trip, a car, a gift, an emergency fund.
 
 The ring shows progress. Expenity estimates the date you will reach the goal from how you have been saving over the last 90 days, and, when you set a deadline, how much per month would get you there. You get a small celebration at 25, 50, 75 and 100 percent. The Goals tab also shows a savings overview with your savings wallets.
 
+> 💡 **Real-life example** Dimitra saves €1,200 for a new laptop by December. She adds money to the goal each payday and watches the ring fill.
+
 ## Recurring income
 
 Open **Activity → Income → Recurring income → Add recurring income**. Add your salary or other regular income as a schedule: a name, the wallet it arrives in, the amount, the next date and how often. When it arrives, press **Received**. Expenity records the income in the wallet and moves the schedule to the next date (you can undo). Expected income feeds the [forecast](reports.md#forecast).
+
+> 💡 **Real-life example** Giorgos's salary arrives on the 28th. As recurring income it is recorded as received on time, without anyone having to confirm it.
 
 ## Ideas for you
 
@@ -47,3 +53,5 @@ Expenity then looks at your own data, on your device, and offers specific ideas,
 ![Ideas, and the choice of aims.](images/plan-ideas.png)
 
 The two best ideas show on Home. You can hide any idea with **Not for me**. Ideas are suggestions, not financial advice.
+
+> 💡 **Real-life example** Expenity notices that Sofia spends more on takeaway than on groceries and suggests a budget. She can accept the idea or dismiss it.

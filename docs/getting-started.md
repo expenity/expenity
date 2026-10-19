@@ -38,6 +38,8 @@ A short setup asks a few questions. Each one can be skipped, and you can change 
 
 Until the setup is finished or skipped, the app does not let you add data, so nothing ends up in a wallet you did not choose.
 
+> 💡 **Real-life example** Anna picks Basic to start quietly and sets a daily target of €15. Home now shows what she can still spend today.
+
 ## 4. Add your first expense
 
 Press the green **+** button, choose **Expense**, type the amount on the keypad, add a description, pick a category and a wallet, and press the check mark. [More about adding money](add-money.md).

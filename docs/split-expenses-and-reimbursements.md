@@ -15,6 +15,8 @@ Your wallet decreases by **€60 once**. Activity shows one expense, with a spli
 
 **Try an example** populates the unsaved draft. It changes the draft amount and allocations; nothing is saved until you press Save. Split details apply to recorded expenses: for a bill, record its payment and then edit that expense. They do not create several recurring schedules.
 
+> 💡 **Real-life example** A €86 supermarket receipt includes €60 of groceries, €16 of cleaning products and €10 of pet food. Maria splits it across three categories with one payment from her wallet, and each report shows the right category.
+
 ## Track money someone will repay
 
 This is money you paid on behalf of a person or organisation, not a refund from a shop and not salary.
@@ -29,6 +31,8 @@ Example: you pay **€90** for dinner. Alex owes you **€60**. Your eventual pe
 Find all outstanding requests from **Activity → Money owed to you**. Expected money does not increase wallet balances or safe-to-spend. You can receive it into another writable wallet with the same currency and sharing space. No exchange rate is guessed. Partial payments are supported; a new payment cannot exceed the currently known outstanding balance.
 
 Repayments stay in Activity as linked records. Open them to find the original expense. Use the original expense's **Repayment history** to remove an incorrect repayment; the balance decreases and the amount becomes owed again. Existing undo/history/trash tools continue to work. An expense cannot be edited to expect less than repayments already recorded.
+
+> 💡 **Real-life example** Nikos pays €120 for a team dinner and his colleagues owe him €90. He tracks what is owed, and as they repay, only his own share stays in his spending.
 
 ## Reports, dates and data safety
 

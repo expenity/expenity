@@ -14,11 +14,15 @@ Photograph a receipt and Expenity reads the merchant, the total and the date **o
 
 The scanner is part of **Advanced**, and **More → Make it yours → Receipt scanning** switches it on or off.
 
+> 💡 **Real-life example** Giorgos scans a restaurant receipt. The merchant, the total and the date are read on his phone, and he can keep the photo with the entry.
+
 ## Photos on entries
 
 Attach a small reference photo or screenshot to an expense, income, bill, wallet or goal: open it, then **More → Attach photo**. Photos are shrunk to about 1000 pixels and 60 KB before upload, and a green check confirms it. An entry can show both a receipt icon and a photo icon. Tap the photo icon to view it. Photos need an account and a connection, and you can delete them all from **More → Data**.
 
 {{tut:attach}}
+
+> 💡 **Real-life example** Anna photographs the warranty receipt of a new washing machine and attaches it to the payment, so it is there the day she needs it.
 
 ## Your profile picture
 

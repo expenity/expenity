@@ -14,11 +14,15 @@ The first-run setup asks you to pick one, and **Advanced** is selected to start 
 
 ![Choosing a plan during setup.](images/setup-plan.png)
 
+> 💡 **Real-life example** A new user picks Basic to keep things simple and moves to Pro a month later, when budgets start to matter.
+
 ## Compare and customise
 
 - **What each plan includes** opens a table with a tick for every feature in every plan.
 - **Build your own** has a toggle for every optional feature. Flip any of them and your plan becomes **Custom**.
 - Some things are always on: wallets, expenses, income and transfers, categories, bills with due dates, Activity and search, Reports, themes and languages, and backup and export.
+
+> 💡 **Real-life example** Elena likes everything in Advanced except sounds, so she switches that one feature off in her own mix. Nothing is deleted.
 
 ## Plans and tutorials
 

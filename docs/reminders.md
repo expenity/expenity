@@ -18,6 +18,8 @@ Things to know:
 - To stop, press **Turn off**, or block notifications for the site in your browser settings.
 - Expenity stores the address your browser gives it for sending notifications, your time zone and the chosen hour. See [Privacy and your data](privacy-and-your-data.md).
 
+> 💡 **Real-life example** Nikos turns on reminders for 9:00. On the morning a bill is due, a notification tells him, even if he has not opened the app for days.
+
 ## 2. Your calendar (works without an account)
 
 This is the reminder to rely on.
@@ -40,6 +42,8 @@ Things to know:
 - Marking a bill paid in Expenity does not change the calendar. For a repeating bill that is fine, because the next due date is already in the repeat.
 - Reminders arrive however your calendar delivers them: notification, sound or email, as you set it up there.
 
+> 💡 **Real-life example** Anna adds her bills to her phone calendar. She needs no account, and the alarms work on every device that calendar syncs to.
+
 ## 3. Notifications while Expenity is open
 
 In **More → Reminders and calendar → Notifications while Expenity is open**, press **Turn on** and allow notifications when your browser asks. When you open Expenity or keep it in a tab, you get one notification a day for bills that are due within their reminder window and are not snoozed.
@@ -50,9 +54,13 @@ This does not work when the app is fully closed. For that, use notifications whe
 
 In More → Reminders and calendar choose the **Default reminder**, from the day itself up to two weeks before. Each bill can override it in the **Remind me** field.
 
+> 💡 **Real-life example** Rent matters most, so Maria asks to be reminded five days ahead for it and one day ahead for everything else.
+
 ## Snooze
 
 In a bill's **⋯** menu, **Snooze to tomorrow** or **Snooze 3 days** stops its notifications for a while.
+
+> 💡 **Real-life example** Petros cannot pay today, so he snoozes the reminder until Friday and it comes back then.
 
 ## What is coming
 

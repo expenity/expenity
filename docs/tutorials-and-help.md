@@ -13,6 +13,8 @@ Tap it and the tutorial opens in a **popup on top of your screen**. Nothing clos
 - open **All tutorials** and pick another one without leaving the popup, or step through them with the arrows;
 - choose **Never show this help icon again**. That hides the icon on that screen only. Other screens keep theirs until you hide them too.
 
+> 💡 **Real-life example** Stuck on filters, Maria taps the pulsing help icon and watches the short animation without leaving her screen.
+
 ## Turn help icons on or off
 
 **More → Help & about → Help icons** has one switch for all help icons, one switch for each screen, and **Show every help icon again** to bring them all back. The same master switch is on the Tutorials page.
