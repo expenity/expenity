@@ -355,6 +355,7 @@
 /* Header logo: large at the top, smaller once the page is scrolled. */
 ( function () {
 	const head = document.querySelector( '.site-head' ); if ( ! head ) return;
-	const set = () => head.classList.toggle( 'is-small', window.scrollY > 40 );
-	set(); window.addEventListener( 'scroll', set, { passive: true } );
+	const hero = document.querySelector( '.xp-hero' );
+	const set = () => { head.classList.toggle( 'is-small', window.scrollY > 40 ); head.classList.toggle( 'past-hero', ! hero || hero.getBoundingClientRect().bottom < head.offsetHeight + 8 ); };
+	set(); window.addEventListener( 'scroll', set, { passive: true } ); window.addEventListener( 'resize', set );
 }() );
