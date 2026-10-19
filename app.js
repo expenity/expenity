@@ -259,6 +259,7 @@
 		EXA.push.check();
 		checkNotifications();
 		setInterval( checkNotifications, 60000 );
+		requestAnimationFrame( () => window.EXSplashDone && window.EXSplashDone() ); // the app has drawn its first screen
 
 		EX.on( 'change', render );
 		EX.on( 'remote', () => { if ( ! S().device.stage ) EXA.flow.init(); render(); } );
