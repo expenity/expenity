@@ -69,14 +69,14 @@ In the theme editor, **Preview on Home** shows your changes on the real Home scr
 
 ## A start screen dressed in your theme
 
-When you open the app, the start screen takes the colours of your theme. In the animated themes, the theme's character comes along too, with its little friends floating by. If loading takes a moment, a playful message keeps you company. It only appears when you open the app, not when you refresh the page.
+When you open the app, the start screen takes the colours of your theme. If loading takes a moment, a playful message keeps you company. It only appears when you open the app, not when you refresh the page.
 
-![The start screen in a playful animated theme.](images/splash-mario.png)
-![The start screen in a dark animated theme.](images/splash-vader.png)
-![The start screen in a soft animated theme.](images/splash-minnie.png)
-![The start screen in a neon theme.](images/splash-synthwave.png)
+![The start screen in the Sunset theme.](images/splash-sunset.png)
+![The start screen in the Emerald theme.](images/splash-emerald.png)
+![The start screen in the Synthwave theme.](images/splash-synthwave.png)
+![The start screen in the Pastel candy theme.](images/splash-candy.png)
 
-> 💡 **Real-life example** Eleni switches to an animated theme for fun. The next morning, opening the app, she is greeted by the theme's character before her day's numbers appear.
+> 💡 **Real-life example** Eleni switches to a new theme for fun. The next morning, opening the app, she is greeted by her own colours before her day's numbers appear.
 
 ## Fonts
 
