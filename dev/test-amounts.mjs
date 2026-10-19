@@ -1,0 +1,23 @@
+import {chromium} from 'playwright-core';
+import {createServer} from 'node:http';import {readFileSync,existsSync} from 'node:fs';import {join,extname} from 'node:path';
+const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.svg':'image/svg+xml','.png':'image/png','.webmanifest':'application/manifest+json','.woff2':'font/woff2','.webp':'image/webp'};
+const server=createServer((req,res)=>{const u=req.url.split('?')[0];const f=join(process.cwd(),u==='/'?'index.html':u);if(!existsSync(f)){res.writeHead(404).end();return;}res.setHeader('Content-Type',types[extname(f)]||'application/octet-stream');res.end(readFileSync(f));}).listen(0);
+const ok=(c,m)=>{console.log((c?'ok ':'FAIL ')+m);if(!c)process.exitCode=1;};
+const browser=await chromium.launch({channel:'chrome'}),ctx=await browser.newContext({viewport:{width:390,height:844},serviceWorkers:'block',locale:'en-US'}),page=await ctx.newPage();const errors=[];page.on('pageerror',e=>errors.push(String(e)));
+await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.push);
+await page.evaluate(()=>{EXA.skipFlow();EX.setLang('en');});
+await page.evaluate(()=>{document.body.insertAdjacentHTML('beforeend','<input id="a" inputmode="decimal"><input id="b" inputmode="decimal" value="1234.5">');});await page.waitForTimeout(100);
+await page.click('#a');await page.keyboard.type('1234567.5');
+ok(await page.inputValue('#a')==='1,234,567.5','shows 1,234,567.5: '+await page.inputValue('#a'));
+ok(await page.evaluate(()=>document.getElementById('a').value)==='1234567.5','the plain number is still read: '+await page.evaluate(()=>document.getElementById('a').value));
+ok(await page.inputValue('#b')==='1,234.5','a field drawn with a value is formatted: '+await page.inputValue('#b'));
+await page.fill('#a','');await page.keyboard.type('12,5');ok(await page.inputValue('#a')==='12.5','comma typed as decimal: '+await page.inputValue('#a'));
+await page.fill('#a','');await page.keyboard.type('-2000');ok(await page.inputValue('#a')==='-2,000','negative: '+await page.inputValue('#a'));
+// caret stays put when editing in the middle
+await page.fill('#a','');await page.keyboard.type('1234');await page.evaluate(()=>document.getElementById('a').setSelectionRange(1,1));await page.keyboard.type('9');
+ok(await page.inputValue('#a')==='19,234','edit in the middle: '+await page.inputValue('#a'));
+await page.evaluate(()=>{document.getElementById('a').value='';document.getElementById('a').value='1500';});ok(await page.inputValue('#a')==='1,500','set from code is formatted');
+await page.evaluate(()=>EX.setLang('el'));await page.waitForTimeout(100);
+ok(await page.evaluate(()=>document.getElementById('a').value)==='1500','still 1500 after switching language');
+ok(errors.length===0,'no errors '+errors.join('|'));
+await browser.close();server.close();

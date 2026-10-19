@@ -31,6 +31,10 @@ Expenity fills the amount, description, date and type, and shows chips so you ca
 
 > 💡 **Real-life example** Waiting in a queue, Maria types `Coffee 3.50 yesterday` for the coffee she forgot to log. Expenity picks out the name, the amount and yesterday's date, she checks the chips and saves.
 
+## Amounts show their separators
+
+As you type an amount, the field adds the separators for your language right inside it: `1234567.5` becomes `1,234,567.5` in English and `1.234.567,5` in Greek. You can type either a dot or a comma for the decimals.
+
 ## Smart detection (Advanced)
 
 With **Smart detection** on, type a description such as `Coffee with Anna` and Expenity fills in the category, up to two tags and the wallet for you. A line under the description says what it filled in, with an **Undo** button.
