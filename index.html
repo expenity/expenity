@@ -17,21 +17,21 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <!-- Cloudflare Web Analytics: counts visits anonymously, no cookies --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "64332b427a604e879f82853393ebdb0d"}'></script><!-- End Cloudflare Web Analytics -->
 <style id="splashCss">
-#splash{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;overflow:hidden;background:#0b3f3b;color:#e6fffb;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;transition:opacity .45s ease,transform .45s ease}
+#splash{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;overflow:hidden;background-color:var(--bg,#0b3f3b);background-image:var(--bg-img,none);color:var(--ink,#e6fffb);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;transition:opacity .45s ease,transform .45s ease}
 #splash.out{opacity:0;transform:scale(1.04);pointer-events:none}
-#splash .sp-glow{position:absolute;width:140vmax;height:140vmax;left:50%;top:50%;margin:-70vmax 0 0 -70vmax;background:radial-gradient(closest-side,rgba(45,212,191,.22),transparent 70%);animation:spPulse 3.2s ease-in-out infinite}
+#splash .sp-glow{position:absolute;width:140vmax;height:140vmax;left:50%;top:50%;margin:-70vmax 0 0 -70vmax;background:radial-gradient(closest-side,color-mix(in srgb,var(--accent,#2dd4bf) 30%,transparent),transparent 70%);animation:spPulse 3.2s ease-in-out infinite}
 #splash .sp-mid{position:relative;display:flex;flex-direction:column;align-items:center;gap:22px;padding:24px;text-align:center}
 #splash .sp-logo{width:104px;height:104px;border-radius:28px;box-shadow:0 18px 50px -10px rgba(0,0,0,.55);animation:spPop .7s cubic-bezier(.2,1.4,.4,1) both}
 #splash .sp-logo svg{display:block;width:100%;height:100%}
-#splash .sp-name{font-size:30px;font-weight:800;letter-spacing:-.04em;animation:spUp .6s .15s both}#splash .sp-name i{font-style:normal;color:#ffc94d}
-#splash .sp-msg{min-height:24px;font-size:16px;font-weight:600;color:#99f6e4;opacity:0;transition:opacity .35s ease,transform .35s ease;transform:translateY(6px)}
+#splash .sp-name{font-size:30px;font-weight:800;letter-spacing:-.04em;animation:spUp .6s .15s both}#splash .sp-name i{font-style:normal;color:var(--accent,#ffc94d)}
+#splash .sp-msg{min-height:24px;font-size:16px;font-weight:600;color:var(--accent,#99f6e4);opacity:0;transition:opacity .35s ease,transform .35s ease;transform:translateY(6px)}
 #splash .sp-msg.on{opacity:1;transform:none}
-#splash .sp-bar{width:120px;height:4px;border-radius:2px;background:rgba(255,255,255,.14);overflow:hidden}#splash .sp-bar i{display:block;width:40%;height:100%;border-radius:2px;background:#ffc94d;animation:spBar 1.3s ease-in-out infinite}
-#splash .sp-f{position:absolute;display:grid;place-items:center;font-weight:800;color:#fff;opacity:0;animation:spFloat var(--d,5s) var(--w,0s) ease-in-out infinite}
-#splash .sp-coin{width:34px;height:34px;border-radius:50%;background:#ffc94d;color:#7a4b00;font-size:18px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.15)}
-#splash .sp-bill{width:52px;height:30px;border-radius:6px;background:#5eead4;color:#0f4f49;font-size:15px}
-#splash .sp-chip{padding:5px 11px;border-radius:99px;background:rgba(255,255,255,.14);font-size:13px}
-#splash .sp-bell{width:32px;height:32px;border-radius:50%;background:#fff;color:#0f766e;font-size:16px}
+#splash .sp-bar{width:120px;height:4px;border-radius:2px;background:color-mix(in srgb,var(--ink,#fff) 16%,transparent);overflow:hidden}#splash .sp-bar i{display:block;width:40%;height:100%;border-radius:2px;background:var(--accent,#ffc94d);animation:spBar 1.3s ease-in-out infinite}
+#splash .sp-f{position:absolute;display:grid;place-items:center;font-weight:800;color:var(--ink,#fff);opacity:0;animation:spFloat var(--d,5s) var(--w,0s) ease-in-out infinite}
+#splash .sp-coin{width:34px;height:34px;border-radius:50%;background:var(--accent,#ffc94d);color:var(--accent-ink,#fff);font-size:18px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.15)}
+#splash .sp-bill{width:52px;height:30px;border-radius:6px;background:color-mix(in srgb,var(--accent,#5eead4) 55%,var(--surface,#fff));color:var(--ink,#0f4f49);font-size:15px}
+#splash .sp-chip{padding:5px 11px;border-radius:99px;background:color-mix(in srgb,var(--ink,#fff) 12%,transparent);font-size:13px}
+#splash .sp-bell{width:32px;height:32px;border-radius:50%;background:var(--surface,#fff);color:var(--accent,#0f766e);font-size:16px}
 @keyframes spPop{from{transform:scale(.5) rotate(-8deg);opacity:0}to{transform:none;opacity:1}}
 @keyframes spUp{from{transform:translateY(12px);opacity:0}to{transform:none;opacity:1}}
 @keyframes spBar{0%{transform:translateX(-110%)}100%{transform:translateX(280%)}}

@@ -15,6 +15,13 @@
 		sessionStorage.setItem( 'expenity.splashSeen', '1' );
 	} catch ( e ) { /* ignore */ }
 	if ( again ) { el.remove(); window.EXSplashDone = () => {}; return; }
+	// A custom theme keeps its colours in the browser; the other themes come from the page's own style variables.
+	try {
+		if ( document.documentElement.dataset.skin === 'custom' ) {
+			const p = JSON.parse( localStorage.getItem( 'expenity.custom' ) || '{}' ), ok = ( v ) => /^#[0-9a-f]{6}$/i.test( v || '' );
+			[ 'bg', 'surface', 'ink', 'accent' ].forEach( ( k ) => { if ( ok( p[ k ] ) ) el.style.setProperty( '--' + k, p[ k ] ); } );
+		}
+	} catch ( e ) { /* ignore */ }
 	let lang = 'en';
 	try { lang = localStorage.getItem( 'expenity.lang' ) || ( /^el/i.test( navigator.language || '' ) ? 'el' : 'en' ); } catch ( e ) { /* ignore */ }
 	const MSG = {
