@@ -181,4 +181,6 @@ CREATE TABLE IF NOT EXISTS usage_daily (
 CREATE INDEX IF NOT EXISTS usage_device ON usage_daily(device);
 
 -- Contact form: how many messages were accepted today (a daily cap, see contact() in src/index.js).
+-- Share button presses: a plain anonymous counter per day and kind. No account, device, address or anything else is stored.
+CREATE TABLE IF NOT EXISTS share_daily (day TEXT NOT NULL, kind TEXT NOT NULL, n INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (day, kind));
 CREATE TABLE IF NOT EXISTS contact_daily (day TEXT PRIMARY KEY, n INTEGER NOT NULL DEFAULT 0);

@@ -40,6 +40,12 @@ Dismiss the tour or replay it from the Tutorials page: **Replay the welcome tour
 
 On a computer, right-click an entry or a bill to get a small menu with **Edit**, **Duplicate** and **Delete** (and **Paid** for a bill). Right-click on empty space to add an **Expense**, **Income** or **Bill**, or to open **Search** or **Reports**. Text fields keep the browser's own menu, and holding **Shift** while you right-click also shows it. Turn the menu off in **More → Make it yours → Features**.
 
+## Share Expenity
+
+In **More → About and help**, **Share the love** opens your phone's share sheet so you can send the link in a message. On a computer, or if the share sheet is not available, **Copy link** copies a short friendly message with the link. After about a week of use, a card on Home also offers it once. **Not now** hides it for a month. See [Privacy and your data](privacy-and-your-data.md) for what is counted.
+
+> 💡 **Real-life example** Maria tells her sister how she finally keeps track of her bills. She opens About, presses **Share the love** and sends her sister the link.
+
 ## What's new
 
 After an update, a small window shows what changed. Press **Got it** to close it, or **View changes** for the full list.

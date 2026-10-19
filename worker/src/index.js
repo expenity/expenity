@@ -691,6 +691,14 @@ const pick = ( v, list, d = '' ) => ( list.includes( v ) ? v : d );
 const isoDay = ( d = new Date() ) => d.toISOString().slice( 0, 10 );
 
 /** FULLY DISABLED by default (USAGE_ENABLED). Counts a device once a day, only for people who have opted in. No account, email, IP address or financial data is stored: a hashed random device id, country, coarse OS and browser, language and app settings. */
+const SHARE_KINDS = [ 'about_native', 'about_copy', 'prompt_native', 'prompt_copy' ];
+/** One press of a Share button: adds one to a daily counter. Nothing about the person is stored. */
+async function shareCount( req, env, ip ) {
+	if ( await limited( env, 'AUTH_LIMITER', 'share:' + ip ) ) return fail( req, env, 'rate_limited', 429 );
+	const r = await readJson( req ); if ( r.tooLarge || r.bad || ! SHARE_KINDS.includes( r.body.kind ) ) return fail( req, env, 'bad_request' );
+	await env.DB.prepare( 'INSERT INTO share_daily (day, kind, n) VALUES (?, ?, 1) ON CONFLICT(day, kind) DO UPDATE SET n = n + 1' ).bind( isoDay(), r.body.kind ).run();
+	return reply( req, env, { ok: true } );
+}
 async function usagePing( req, env, ip ) {
 	// FULLY DISABLED: nothing is stored. Only switch on with USAGE_ENABLED = "1" if people have opted in themselves (see usage.js).
 	if ( env.USAGE_ENABLED !== '1' ) return reply( req, env, { ok: true, disabled: true } );
@@ -772,6 +780,11 @@ async function adminStats( req, env, url ) {
 	const alive = await all( 'SELECT kind AS k, SUM(deleted = 0) AS alive, SUM(deleted = 1) AS gone FROM records GROUP BY kind' );
 	const J = "CASE WHEN json_valid(data) THEN data ELSE '{}' END";
 	const setting = async ( path ) => ( await one( `SELECT COUNT(*) AS n FROM records WHERE kind = 'settings' AND deleted = 0 AND ${ path }` ) ).n || 0;
+	{
+		const rows = await all( 'SELECT day AS t, kind AS k, n FROM share_daily WHERE day >= ? ORDER BY day', isoDay( new Date( since ) ) );
+		const sum = ( f ) => rows.filter( f ).reduce( ( s, x ) => s + x.n, 0 );
+		out.shares = { total: ( await one( 'SELECT COALESCE(SUM(n), 0) AS n FROM share_daily' ) ).n || 0, range: sum( () => true ), native: sum( ( x ) => /_native$/.test( x.k ) ), copy: sum( ( x ) => /_copy$/.test( x.k ) ), fromPrompt: sum( ( x ) => /^prompt_/.test( x.k ) ), series: rows };
+	}
 	out.features = {
 		kinds: alive,
 		walletTypes: await all( `SELECT COALESCE(json_extract(${ J }, '$.type'), 'other') AS k, COUNT(*) AS n FROM records WHERE kind = 'account' AND deleted = 0 GROUP BY k ORDER BY n DESC` ),
@@ -878,6 +891,7 @@ async function handle( req, env ) {
 		const ip = req.headers.get( 'CF-Connecting-IP' ) || 'local';
 		if ( path === '/api/contact' && req.method === 'POST' ) return contact( req, env, ip );
 		if ( path === '/api/usage' && req.method === 'POST' ) return usagePing( req, env, ip );
+		if ( path === '/api/share' && req.method === 'POST' ) return shareCount( req, env, ip );
 		if ( path === '/api/admin/reset' && req.method === 'POST' ) { if ( await limited( env, 'AUTH_LIMITER', 'admin:' + ip ) ) return fail( req, env, 'rate_limited', 429 ); return adminReset( req, env ); }
 		if ( path === '/api/admin/push-run' && req.method === 'POST' ) { if ( await limited( env, 'AUTH_LIMITER', 'admin:' + ip ) ) return fail( req, env, 'rate_limited', 429 ); return adminPushRun( req, env ); }
 		if ( path === '/api/admin/stats' && req.method === 'GET' ) { if ( await limited( env, 'AUTH_LIMITER', 'admin:' + ip ) ) return fail( req, env, 'rate_limited', 429 ); return adminStats( req, env, url ); }
