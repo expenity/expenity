@@ -225,7 +225,7 @@
 				await EX.auth.logout(); st.devCache = null; toast( t( 'tSignedOut' ) ); go( 'home' ); break;
 			}
 			case 'delete-account': {
-				if ( ! await EXA.confirm( { title: t( 'devDelete' ), text: t( 'confirmDeleteAcct' ), confirm: t( 'devDelete' ) } ) ) break;
+				if ( ! await EXA.confirm( { title: t( 'devDelete' ), text: t( 'confirmDeleteAcct' ), confirm: t( 'devDelete' ), word: 'DELETE' } ) ) break;
 				const r = await EX.auth.deleteAccount();
 				if ( r.ok ) { st.devCache = null; toast( t( 'tAccountDeleted' ) ); go( 'home' ); } else toast( EXA.errText( r.error ) );
 				break;

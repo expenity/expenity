@@ -820,7 +820,7 @@ button, a, input, select, textarea, label, summary { touch-action: manipulation;
 /* Editing Home: Chrome's scroll anchoring re-adjusts the scroll position every time a card is reordered, which made the cards jump up and down on Android. */
 #view:has(.dash-editbar) { overflow-anchor: none; }
 
-.release-prompt{position:fixed;z-index:90;left:50%;transform:translateX(-50%);bottom:calc(90px + env(safe-area-inset-bottom));width:min(420px,calc(100% - 32px));box-shadow:var(--shadow)}.release-prompt .btn-row{margin-top:12px}
+
 
 .am-allocation{display:grid;grid-template-columns:minmax(0,1fr) minmax(80px,.55fr) 44px;gap:8px;align-items:end;margin-bottom:12px}.am-allocation .f{margin:0;min-width:0}.am-allocation select,.am-allocation input{width:100%;min-width:0;min-height:48px}.advanced-entry>summary{display:flex;align-items:center;gap:10px}.advanced-entry>summary>span{flex:1;min-width:0;display:grid;gap:3px}.advanced-entry>summary small{font-size:12px;color:var(--muted)}.advanced-entry .btn{white-space:normal;min-height:48px}.am-badge{display:inline-flex;vertical-align:middle;margin-inline-start:5px;color:var(--accent-2)}.am-demo-total{text-align:center;font-size:36px;font-weight:800;margin:24px 0}.am-demo-part{display:flex;align-items:center;gap:12px;margin:14px;padding:16px;background:var(--accent-soft);border-radius:12px;animation:am-part 5s infinite both}.am-demo-part.b{animation-delay:.8s}.am-demo-part i{height:12px;flex:1;background:var(--accent);border-radius:6px}.am-demo-part.b i{background:var(--warn)}.am-demo-result{text-align:center;font-weight:700;animation:am-result 5s infinite both}
 @keyframes am-part{0%,10%{opacity:0;translate:0 12px}25%,85%{opacity:1;translate:0 0}100%{opacity:0;translate:0 0}}@keyframes am-result{0%,40%{opacity:0}55%,85%{opacity:1}100%{opacity:0}}
@@ -832,3 +832,16 @@ button, a, input, select, textarea, label, summary { touch-action: manipulation;
 .am-demo-total{font-size:30px;margin:12px 0}.am-demo-part{margin:10px;padding:12px}.am-demo-result{font-size:12px;padding:4px}
 .dash-summary.dash-over strong { color: var(--late, #c0392b); } .dash-summary > small { overflow-wrap: anywhere; }
 .home-report { margin-bottom: 0; } .donut-wrap2.compact { grid-template-columns: 120px 1fr; } .donut-wrap2.compact .donut-svg { max-width: 120px; }
+.card.danger .btn-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; } .card.danger .btn-row .btn { flex: 0 1 auto; width: auto; }
+.confirm-word { margin: 12px 0; } .confirm-word input { text-transform: uppercase; letter-spacing: 0.08em; text-align: center; }
+/* What's new: centred in the top layer over a grey backdrop. The dialog itself never animates its position, only the card inside fades in. */
+.whatsnew { border: 0; padding: 0; background: transparent; color: var(--ink); width: min(440px, calc(100vw - 32px)); max-width: none; max-height: none; margin: auto; overflow: visible; }
+.whatsnew::backdrop { background: rgba(14, 16, 22, 0.58); animation: fade 0.2s; }
+.whatsnew-card { display: flex; flex-direction: column; gap: 14px; max-height: min(78dvh, 620px); padding: 22px; background: var(--surface); border-radius: calc(22px * var(--rk)); border: var(--bw) var(--bs, solid) var(--card-line); box-shadow: 0 24px 64px rgba(0, 0, 0, 0.38); animation: wn-in 0.26s ease-out; }
+@keyframes wn-in { from { opacity: 0; scale: 0.96; } to { opacity: 1; scale: 1; } }
+.wn-head { display: flex; align-items: center; gap: 12px; } .wn-head h2 { margin: 0; font-size: 21px; } .wn-head small { color: var(--muted); }
+.wn-ic { width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent-2, var(--accent)); flex: none; }
+.wn-list { mask-image: linear-gradient(to bottom, #000 calc(100% - 18px), transparent); -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 18px), transparent); padding-bottom: 8px !important; list-style: none; margin: 0; padding: 0; overflow: auto; display: grid; gap: 10px; min-height: 0; }
+.wn-list li { display: grid; grid-template-columns: 20px 1fr; gap: 10px; align-items: start; line-height: 1.4; font-size: 15px; } .wn-list li .i { color: var(--accent-2, var(--accent)); margin-top: 2px; }
+.whatsnew .btn-row { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; } .whatsnew .btn-row .btn { flex: 1 1 auto; }
+@media (prefers-reduced-motion: reduce) { .whatsnew-card, .whatsnew::backdrop { animation: none; } }
