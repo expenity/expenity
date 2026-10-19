@@ -6,6 +6,7 @@ cd "$(dirname "$0")/.."
 node dev/check-greek-fonts.mjs # every font stack must start with a bundled font that has Greek
 node dev/check-plan-names.mjs # Basic, Pro and Advanced are never translated
 REPO="expenity/expenity"
+node dev/export-features.mjs # the feature tables come from the real app, so they cannot drift
 node website/build.mjs
 work="$(mktemp -d)"
 if git ls-remote --exit-code --heads "https://github.com/$REPO.git" gh-pages >/dev/null 2>&1; then

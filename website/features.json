@@ -1,0 +1,251 @@
+{
+ "core": [
+  {
+   "id": "wallets",
+   "en": "Wallets",
+   "el": "Πορτοφόλια"
+  },
+  {
+   "id": "entries",
+   "en": "Expenses, income and transfers",
+   "el": "Έξοδα, έσοδα και μεταφορές"
+  },
+  {
+   "id": "categories",
+   "en": "Categories",
+   "el": "Κατηγορίες"
+  },
+  {
+   "id": "bills",
+   "en": "Bills with due dates",
+   "el": "Λογαριασμοί με ημερομηνία λήξης"
+  },
+  {
+   "id": "activity",
+   "en": "Activity and search",
+   "el": "Κινήσεις και αναζήτηση"
+  },
+  {
+   "id": "reports",
+   "en": "Reports",
+   "el": "Αναφορές"
+  },
+  {
+   "id": "themes",
+   "en": "Themes and languages",
+   "el": "Θέματα και γλώσσες"
+  },
+  {
+   "id": "backup",
+   "en": "Backup and export",
+   "el": "Αντίγραφο και εξαγωγή"
+  }
+ ],
+ "features": [
+  {
+   "id": "recurring",
+   "tier": "pro",
+   "en": "Repeating bills and income",
+   "d_en": "Weekly, monthly, yearly and custom schedules.",
+   "el": "Επαναλαμβανόμενοι λογαριασμοί και έσοδα",
+   "d_el": "Εβδομαδιαία, μηνιαία, ετήσια και προσαρμοσμένα προγράμματα."
+  },
+  {
+   "id": "plan",
+   "tier": "pro",
+   "en": "Budgets and goals",
+   "d_en": "Monthly budgets and savings goals.",
+   "el": "Προϋπολογισμοί και στόχοι",
+   "d_el": "Μηνιαίοι προϋπολογισμοί και στόχοι αποταμίευσης."
+  },
+  {
+   "id": "tags",
+   "tier": "pro",
+   "en": "Tags",
+   "d_en": "Label entries to find them later.",
+   "el": "Ετικέτες",
+   "d_el": "Σημειώστε εγγραφές για να τις βρίσκετε αργότερα."
+  },
+  {
+   "id": "presets",
+   "tier": "pro",
+   "en": "Quick entries",
+   "d_en": "Saved and pinned names for one-tap entry.",
+   "el": "Γρήγορες καταχωρίσεις",
+   "d_el": "Αποθηκευμένα και καρφιτσωμένα ονόματα με ένα πάτημα."
+  },
+  {
+   "id": "photos",
+   "tier": "pro",
+   "en": "Photos on entries",
+   "d_en": "Attach a small photo or screenshot.",
+   "el": "Φωτογραφίες σε εγγραφές",
+   "d_el": "Επισυνάψτε μικρή φωτογραφία ή στιγμιότυπο."
+  },
+  {
+   "id": "avatar",
+   "tier": "pro",
+   "en": "Profile picture",
+   "d_en": "Characters or your own photo.",
+   "el": "Εικόνα προφίλ",
+   "d_el": "Χαρακτήρες ή δική σας φωτογραφία."
+  },
+  {
+   "id": "push",
+   "tier": "pro",
+   "en": "Notifications",
+   "d_en": "Bill reminders when the app is closed.",
+   "el": "Ειδοποιήσεις",
+   "d_el": "Υπενθυμίσεις λογαριασμών όταν η εφαρμογή είναι κλειστή."
+  },
+  {
+   "id": "shared",
+   "tier": "pro",
+   "en": "Shared wallets",
+   "d_en": "Share wallets with family or friends.",
+   "el": "Κοινά πορτοφόλια",
+   "d_el": "Μοιράσου πορτοφόλια με οικογένεια ή φίλους."
+  },
+  {
+   "id": "drafts",
+   "tier": "pro",
+   "en": "Draft reminders",
+   "d_en": "Points out unfinished entries on Home and lists them.",
+   "el": "Υπενθυμίσεις προχείρων",
+   "d_el": "Επισημαίνει ημιτελείς εγγραφές στην Αρχική και τις αναφέρει."
+  },
+  {
+   "id": "dupGuard",
+   "tier": "pro",
+   "en": "Duplicate guard",
+   "d_en": "Warns before adding an identical entry.",
+   "el": "Φρουρός διπλότυπων",
+   "d_el": "Προειδοποιεί πριν προστεθεί ίδια εγγραφή."
+  },
+  {
+   "id": "daily",
+   "tier": "pro",
+   "en": "Daily number",
+   "d_en": "A friendly “you can spend today” figure on Home.",
+   "el": "Ημερήσιο ποσό",
+   "d_el": "Ένας φιλικός αριθμός «μπορείτε να ξοδέψετε σήμερα» στην Αρχική."
+  },
+  {
+   "id": "filters",
+   "tier": "pro",
+   "en": "Search filters",
+   "d_en": "Filter Activity by amount and dates.",
+   "el": "Φίλτρα αναζήτησης",
+   "d_el": "Φιλτράρισμα Κινήσεων με ποσό και ημερομηνίες."
+  },
+  {
+   "id": "trash",
+   "tier": "pro",
+   "en": "Recently deleted",
+   "d_en": "Restore deleted entries for 30 days.",
+   "el": "Πρόσφατα διαγραμμένα",
+   "d_el": "Επαναφορά διαγραμμένων για 30 ημέρες."
+  },
+  {
+   "id": "priceAlert",
+   "tier": "pro",
+   "en": "Price-change alerts",
+   "d_en": "Flags bills that cost more than last time.",
+   "el": "Ειδοποιήσεις αύξησης τιμής",
+   "d_el": "Επισημαίνει λογαριασμούς που κοστίζουν περισσότερο."
+  },
+  {
+   "id": "splits",
+   "tier": "advanced",
+   "en": "Split expenses",
+   "d_en": "Divide one payment between categories.",
+   "el": "Κατανομή εξόδων",
+   "d_el": "Μία πληρωμή, περισσότερες κατηγορίες."
+  },
+  {
+   "id": "smartFill",
+   "tier": "advanced",
+   "en": "Smart detection",
+   "d_en": "Fills in the category, tags and wallet from what you type.",
+   "el": "Έξυπνη ανίχνευση",
+   "d_el": "Συμπληρώνει κατηγορία, ετικέτες και πορτοφόλι από όσα γράφετε."
+  },
+  {
+   "id": "reimbursements",
+   "tier": "advanced",
+   "en": "Reimbursements",
+   "d_en": "Track money owed to you and partial repayments.",
+   "el": "Επιστροφές χρημάτων από τρίτους",
+   "d_el": "Παρακολουθήστε όσα σας οφείλουν και τις τμηματικές εισπράξεις."
+  },
+  {
+   "id": "receipts",
+   "tier": "advanced",
+   "en": "Receipt scanning",
+   "d_en": "Read totals from a receipt photo on your device.",
+   "el": "Σάρωση αποδείξεων",
+   "d_el": "Ανάγνωση συνόλων από φωτογραφία απόδειξης στη συσκευή σας."
+  },
+  {
+   "id": "streaks",
+   "tier": "advanced",
+   "en": "Streaks",
+   "d_en": "A flame for days within budget.",
+   "el": "Σερί",
+   "d_el": "Μια φλόγα για μέρες εντός προϋπολογισμού."
+  },
+  {
+   "id": "insights",
+   "tier": "advanced",
+   "en": "Ideas",
+   "d_en": "Evidence-based hints about your spending.",
+   "el": "Ιδέες",
+   "d_el": "Υποδείξεις βασισμένες σε δεδομένα για τα έξοδά σας."
+  },
+  {
+   "id": "forecast",
+   "tier": "advanced",
+   "en": "Safe to spend",
+   "d_en": "A cautious estimate until your next income.",
+   "el": "Ασφαλή για δαπάνη",
+   "d_el": "Συντηρητική εκτίμηση μέχρι το επόμενο έσοδο."
+  },
+  {
+   "id": "ctxMenu",
+   "tier": "pro",
+   "en": "Right-click menu",
+   "d_en": "A menu with quick actions when you right-click on a computer.",
+   "el": "Μενού δεξιού κλικ",
+   "d_el": "Ένα μενού με γρήγορες ενέργειες όταν κάνετε δεξί κλικ σε υπολογιστή."
+  },
+  {
+   "id": "sounds",
+   "tier": "advanced",
+   "en": "Sounds",
+   "d_en": "Optional sound effects.",
+   "el": "Ήχοι",
+   "d_el": "Προαιρετικά ηχητικά εφέ."
+  },
+  {
+   "id": "homeEdit",
+   "tier": "advanced",
+   "en": "Home editing",
+   "d_en": "Move, hide and resize Home cards.",
+   "el": "Επεξεργασία Αρχικής",
+   "d_el": "Μετακίνηση, απόκρυψη και αλλαγή μεγέθους καρτών."
+  },
+  {
+   "id": "themeEdit",
+   "tier": "advanced",
+   "en": "Theme editing",
+   "d_en": "Adjust colors and fonts of any theme.",
+   "el": "Επεξεργασία θεμάτων",
+   "d_el": "Προσαρμόστε χρώματα και γραμματοσειρές κάθε θέματος."
+  }
+ ],
+ "counts": {
+  "basic": 8,
+  "pro": 23,
+  "advanced": 33
+ }
+}

@@ -37,6 +37,21 @@ const PROJECTS = [
 const ROOT = process.cwd();
 const OUT = join( ROOT, 'website/dist' );
 const SRC = join( ROOT, 'website/src' );
+/** The expandable "compare every feature" table on the home page, built from website/features.json (made by dev/export-features.mjs from the real app). */
+const FEATURES = JSON.parse( readFileSync( join( ROOT, 'website/features.json' ), 'utf8' ) );
+const FEATURES_TEXT = {
+	en: { sum: 'Compare every feature', feats: 'features', h: 'Feature', all: 'Always included', pro: 'Added in Pro', adv: 'Added in Advanced', yes: 'Included', no: 'Not included' },
+	el: { sum: 'Συγκρίνετε όλες τις λειτουργίες', feats: 'λειτουργίες', h: 'Λειτουργία', all: 'Πάντα συμπεριλαμβάνονται', pro: 'Προστίθενται στο Pro', adv: 'Προστίθενται στο Advanced', yes: 'Περιλαμβάνεται', no: 'Δεν περιλαμβάνεται' },
+};
+function featuresBlock( code ) {
+	const T = FEATURES_TEXT[ code ], n = FEATURES.counts, esc = ( s ) => String( s ).replace( /&/g, '&amp;' ).replace( /</g, '&lt;' );
+	const tick = `<span class="cmp-y" role="img" aria-label="${ T.yes }"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`;
+	const dash = `<span class="cmp-n" role="img" aria-label="${ T.no }">–</span>`;
+	const group = ( title, list, cells ) => `<tbody><tr class="cmp-group"><th colspan="4" scope="colgroup">${ title }</th></tr>${ list.map( ( f ) => `<tr><th scope="row"><b>${ esc( f[ code ] ) }</b>${ f[ 'd_' + code ] && f[ 'd_' + code ].indexOf( 'fxD_' ) !== 0 ? `<small>${ esc( f[ 'd_' + code ] ) }</small>` : '' }</th>${ cells.map( ( c ) => `<td>${ c ? tick : dash }</td>` ).join( '' ) }</tr>` ).join( '' ) }</tbody>`;
+	const pro = FEATURES.features.filter( ( f ) => f.tier === 'pro' ), adv = FEATURES.features.filter( ( f ) => f.tier === 'advanced' );
+	const tier = ( cls, name, count ) => `<th scope="col" class="cmp-tier ${ cls }"><span class="cmp-name">${ name }</span><span class="cmp-count"><b data-count="${ count }">${ count }</b> ${ T.feats }</span></th>`;
+	return `<details class="xp-compare reveal"><summary><span class="cmp-title">${ T.sum }</span><span class="cmp-pills"><i class="p0">Basic <b>${ n.basic }</b></i><i class="p1">Pro <b>${ n.pro }</b></i><i class="p2">Advanced <b>${ n.advanced }</b></i></span><span class="cmp-chev" aria-hidden="true"></span></summary><div class="cmp-wrap"><table class="cmp"><thead><tr><th scope="col" class="cmp-h">${ T.h }</th>${ tier( 't0', 'Basic', n.basic ) }${ tier( 't1', 'Pro', n.pro ) }${ tier( 't2', 'Advanced', n.advanced ) }</tr></thead>${ group( T.all, FEATURES.core, [ 1, 1, 1 ] ) }${ group( T.pro, pro, [ 0, 1, 1 ] ) }${ group( T.adv, adv, [ 0, 0, 1 ] ) }</table></div></details>`;
+}
 const VERSION = JSON.parse( readFileSync( join( ROOT, 'package.json' ), 'utf8' ) ).version;
 // Asset links change on every build, so browsers never keep a stale script or stylesheet.
 const ASSET_V = VERSION + '.' + Date.now().toString( 36 );
@@ -450,6 +465,7 @@ ${ toc.length > 1 ? `<nav class="on-page" aria-label="${ L.docs.toc }" data-spy>
 		const body = readFileSync( join( SRC, file ), 'utf8' )
 			.replace( /\{\{img:([a-z0-9-]+)\|([^}]+)\}\}/g, ( m, name, alt ) => img( name, alt, root ) )
 			.replace( /\{\{tut:([a-z]+)\}\}/g, ( m, id ) => tutBlock( id, L.code ) )
+			.replace( /\{\{features\}\}/g, () => featuresBlock( L.code ) )
 			.replace( /\{\{root\}\}/g, root )
 			.replace( /\{\{repo\}\}/g, SITE.repo )
 			.replace( /\{\{version\}\}/g, VERSION );

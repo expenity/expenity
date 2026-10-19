@@ -16,6 +16,51 @@ The first-run setup asks you to pick one, and **Advanced** is selected to start 
 
 > 💡 **Real-life example** A new user picks Basic to keep things simple and moves to Pro a month later, when budgets start to matter.
 
+## All features by plan
+
+<!-- features:start -->
+Basic has **8** features, Pro **23** and Advanced **33**. A tick means the feature is included. In your own mix you can switch any optional feature on or off.
+
+| Feature | Basic | Pro | Advanced |
+|---|:-:|:-:|:-:|
+| **Always included** | | | |
+| Wallets | ✓ | ✓ | ✓ |
+| Expenses, income and transfers | ✓ | ✓ | ✓ |
+| Categories | ✓ | ✓ | ✓ |
+| Bills with due dates | ✓ | ✓ | ✓ |
+| Activity and search | ✓ | ✓ | ✓ |
+| Reports | ✓ | ✓ | ✓ |
+| Themes and languages | ✓ | ✓ | ✓ |
+| Backup and export | ✓ | ✓ | ✓ |
+| **Added in Pro** | | | |
+| Repeating bills and income | – | ✓ | ✓ |
+| Budgets and goals | – | ✓ | ✓ |
+| Tags | – | ✓ | ✓ |
+| Quick entries | – | ✓ | ✓ |
+| Photos on entries | – | ✓ | ✓ |
+| Profile picture | – | ✓ | ✓ |
+| Notifications | – | ✓ | ✓ |
+| Shared wallets | – | ✓ | ✓ |
+| Draft reminders | – | ✓ | ✓ |
+| Duplicate guard | – | ✓ | ✓ |
+| Daily number | – | ✓ | ✓ |
+| Search filters | – | ✓ | ✓ |
+| Recently deleted | – | ✓ | ✓ |
+| Price-change alerts | – | ✓ | ✓ |
+| Right-click menu | – | ✓ | ✓ |
+| **Added in Advanced** | | | |
+| Split expenses | – | – | ✓ |
+| Smart detection | – | – | ✓ |
+| Reimbursements | – | – | ✓ |
+| Receipt scanning | – | – | ✓ |
+| Streaks | – | – | ✓ |
+| Ideas | – | – | ✓ |
+| Safe to spend | – | – | ✓ |
+| Sounds | – | – | ✓ |
+| Home editing | – | – | ✓ |
+| Theme editing | – | – | ✓ |
+<!-- features:end -->
+
 ## Compare and customise
 
 - **What each plan includes** opens a table with a tick for every feature in every plan.
