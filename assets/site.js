@@ -351,3 +351,10 @@
 		} );
 	}
 } )();
+
+/* Header logo: large at the top, smaller once the page is scrolled. */
+( function () {
+	const head = document.querySelector( '.site-head' ); if ( ! head ) return;
+	const set = () => head.classList.toggle( 'is-small', window.scrollY > 40 );
+	set(); window.addEventListener( 'scroll', set, { passive: true } );
+}() );

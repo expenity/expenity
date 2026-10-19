@@ -99,3 +99,13 @@
 .cmp-y{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--good-soft);color:var(--good)}.cmp-n{color:var(--muted);opacity:.55}
 @media(max-width:720px){.xp-compare>summary{padding:18px}.cmp .cmp-h,.cmp tbody th[scope=row],.cmp-group th{padding-left:16px}.cmp tbody th small{display:none}}
 @media(prefers-reduced-motion:reduce){.cmp-wrap{animation:none}.cmp-chev{transition:none}}
+
+/* Hero: fills the screen, scales with it, and carries the logo. */
+.xp-herologo{margin:0 0 clamp(18px,3vh,30px)}.xp-herologo svg{display:block;width:clamp(72px,9vw,128px);height:auto;border-radius:26%;box-shadow:0 20px 60px -12px rgba(0,0,0,.6);animation:logoPop .8s cubic-bezier(.2,1.4,.4,1) both}
+@keyframes logoPop{from{transform:scale(.55) rotate(-8deg);opacity:0}to{transform:none;opacity:1}}
+.xp-hero{min-height:calc(100svh - 88px);display:flex;align-items:center}.xp-hero .xp-hero-grid{width:100%}
+@media(min-width:721px){.xp-hero{padding:clamp(40px,8vh,110px) 0}.xp-hero h1{font-size:clamp(40px,min(4.8vw,9vh),92px);margin:14px 0 clamp(14px,3vh,28px)}.xp-hero .xp-lede{font-size:clamp(16px,1.35vw,22px)}.xp-hero-grid{gap:clamp(28px,4vw,72px)}}
+@media(max-width:1000px) and (min-width:721px){.xp-hero-grid{grid-template-columns:1fr;justify-items:center;text-align:left}.xp-stage{max-width:520px;width:100%}.xp-hero-grid>*{width:100%}}
+@media(max-width:720px){.xp-hero{min-height:0;display:block}.xp-herologo svg{width:76px}}
+@media(max-height:560px){.xp-hero{min-height:0}.xp-herologo svg{width:64px}}
+@media(prefers-reduced-motion:reduce){.xp-herologo svg{animation:none}}
