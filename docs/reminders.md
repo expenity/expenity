@@ -14,6 +14,7 @@ Things to know:
 
 - **iPhone and iPad:** Apple only allows this for apps added to the Home Screen. Add Expenity first ([Install on your device](install-on-your-device.md)), open it from there, then turn notifications on.
 - **Each device is separate.** Turn it on on every phone or computer where you want it.
+- **Update notifications.** When a new version of Expenity is published, every device with notifications on gets one notification: **Expenity update available**. Tap it and Expenity opens with the new version's notes and an **Update now** button. A device is told once per version, and not at all if it already runs the latest. To stop these, turn off **Notify me about updates** in the same card.
 - Bills you marked as paid or snoozed are left out, and so are bills outside their reminder window (**Default reminder**, or the **Remind me** field on a bill). Bills in a [shared wallet](shared-wallets.md) are included.
 - To stop, press **Turn off**, or block notifications for the site in your browser settings.
 - Expenity stores the address your browser gives it for sending notifications, your time zone and the chosen hour. See [Privacy and your data](privacy-and-your-data.md).

@@ -109,6 +109,37 @@ export function summary( due, lang ) {
 }
 export const testMessage = ( lang ) => { const T = TEXT[ lang ] || TEXT.en; return { title: T.test, body: T.testBody, tag: 'expenity-test', url: './' }; };
 
+const UPDATE_TEXT = {
+	en: { title: 'Expenity update available', body: ( v ) => `Version ${ v } is ready. Tap to see what's new and update.` },
+	el: { title: 'Διαθέσιμη ενημέρωση του Expenity', body: ( v ) => `Η έκδοση ${ v } είναι έτοιμη. Πατήστε για να δείτε τι νέο υπάρχει και να ενημερώσετε.` },
+};
+export const updateMessage = ( lang, v ) => { const T = UPDATE_TEXT[ lang ] || UPDATE_TEXT.en; return { title: T.title, body: T.body( v ), tag: 'expenity-update', url: './?update=1' }; };
+const vcmp = ( a, b ) => { const p = String( a ).split( '.' ).map( Number ), q = String( b ).split( '.' ).map( Number ); for ( let i = 0; i < 3; i++ ) if ( ( p[ i ] || 0 ) !== ( q[ i ] || 0 ) ) return ( p[ i ] || 0 ) - ( q[ i ] || 0 ); return 0; };
+
+/**
+ * Once an hour: reads the version of the app that is live and tells every device that runs an older one (and has not turned
+ * this off) to update. Each device is told once per version: the app reports the version it runs when it checks in, and
+ * the version told is remembered. Nothing needs to be called when a release is published.
+ */
+export async function announceUpdate( env ) {
+	let live;
+	try {
+		const r = await fetch( env.APP_RELEASES_URL || 'https://expenity.github.io/expenity/app/releases.json', { cf: { cacheTtl: 0 } } );
+		live = r.ok ? ( await r.json() ).version : '';
+	} catch ( e ) { return 0; }
+	if ( ! /^\d{1,3}\.\d{1,3}\.\d{1,3}$/.test( live || '' ) ) return 0;
+	const subs = await env.DB.prepare( 'SELECT endpoint, p256dh, auth, lang, upd_ver FROM push_subs WHERE upd_off = 0' ).all();
+	let sent = 0;
+	for ( const s of subs.results || [] ) {
+		if ( s.upd_ver && vcmp( s.upd_ver, live ) >= 0 ) continue;
+		const r = await sendPushDetailed( env, s, updateMessage( s.lang, live ) );
+		if ( r.result === 'ok' ) { sent++; await env.DB.prepare( 'UPDATE push_subs SET upd_ver = ?, fails = 0 WHERE endpoint = ?' ).bind( live, s.endpoint ).run(); }
+		else if ( r.result === 'gone' ) await env.DB.prepare( 'DELETE FROM push_subs WHERE endpoint = ?' ).bind( s.endpoint ).run();
+		else await env.DB.prepare( 'UPDATE push_subs SET fails = fails + 1 WHERE endpoint = ?' ).bind( s.endpoint ).run();
+	}
+	return sent;
+}
+
 /** One hourly pass: for every subscription whose local time has reached the chosen hour, send today's summary once. */
 export async function runPush( env, nowMs = Date.now(), force = false ) {
 	const subs = await env.DB.prepare( 'SELECT s.endpoint, s.user_id, s.p256dh, s.auth, s.tz, s.hour, s.lang, s.last_day FROM push_subs s' ).all();

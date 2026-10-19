@@ -24,7 +24,7 @@
  * record (last writer wins), numbers every accepted change, and returns what changed since.
  * Sessions are random bearer tokens, stored hashed.
  */
-import { validEndpoint, sendPush, runPush, testMessage } from './push.js';
+import { validEndpoint, sendPush, runPush, announceUpdate, testMessage } from './push.js';
 import {
 	generateRegistrationOptions, verifyRegistrationResponse,
 	generateAuthenticationOptions, verifyAuthenticationResponse,
@@ -604,11 +604,12 @@ async function pushSubscribe( req, env, user, body ) {
 	const sub = body.subscription || {}, keys = sub.keys || {};
 	if ( typeof sub.endpoint !== 'string' || ! validEndpoint( sub.endpoint, env ) || typeof keys.p256dh !== 'string' || typeof keys.auth !== 'string' || keys.p256dh.length > 200 || keys.auth.length > 100 ) return fail( req, env, 'bad_request' );
 	const tz = goodTz( body.tz ) ? body.tz : 'UTC', hour = Number.isInteger( body.hour ) && body.hour >= 0 && body.hour <= 23 ? body.hour : 9, lang = body.lang === 'el' ? 'el' : 'en';
+	const ver = /^\d{1,3}\.\d{1,3}\.\d{1,3}$/.test( body.v || '' ) ? body.v : null, updOff = body.updates === false ? 1 : 0;
 	const have = await env.DB.prepare( 'SELECT endpoint FROM push_subs WHERE user_id = ? ORDER BY created_at' ).bind( user.id ).all();
 	const list = have.results || [];
 	if ( ! list.some( ( x ) => x.endpoint === sub.endpoint ) && list.length >= MAX_PUSH_SUBS ) await env.DB.prepare( 'DELETE FROM push_subs WHERE endpoint = ?' ).bind( list[ 0 ].endpoint ).run();
-	await env.DB.prepare( `INSERT INTO push_subs (endpoint, user_id, p256dh, auth, tz, hour, lang, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-		ON CONFLICT (endpoint) DO UPDATE SET user_id = excluded.user_id, p256dh = excluded.p256dh, auth = excluded.auth, tz = excluded.tz, hour = excluded.hour, lang = excluded.lang, fails = 0` ).bind( sub.endpoint, user.id, keys.p256dh, keys.auth, tz, hour, lang, now() ).run();
+	await env.DB.prepare( `INSERT INTO push_subs (endpoint, user_id, p256dh, auth, tz, hour, lang, created_at, upd_ver, upd_off) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+		ON CONFLICT (endpoint) DO UPDATE SET user_id = excluded.user_id, p256dh = excluded.p256dh, auth = excluded.auth, tz = excluded.tz, hour = excluded.hour, lang = excluded.lang, fails = 0, upd_off = excluded.upd_off, upd_ver = COALESCE(excluded.upd_ver, push_subs.upd_ver)` ).bind( sub.endpoint, user.id, keys.p256dh, keys.auth, tz, hour, lang, now(), ver, updOff ).run();
 	return reply( req, env, { ok: true } );
 }
 async function pushUnsubscribe( req, env, user, body ) {
@@ -854,7 +855,7 @@ const PUBLIC_POST = {
 };
 
 export default {
-	async scheduled( event, env, ctx ) { ctx.waitUntil( runPush( env ) ); },
+	async scheduled( event, env, ctx ) { ctx.waitUntil( runPush( env ).then( () => announceUpdate( env ) ) ); },
 	async fetch( req, env ) {
 		try { return await handle( req, env ); } catch ( e ) { console.error( 'unhandled', e && e.message ); return fail( req, env, 'server_error', 500 ); }
 	},

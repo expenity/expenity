@@ -6,7 +6,7 @@
 
 **On Expenity's server, if you create an account.** To sync between your devices, your email address and your data (wallets, transactions, bills, budgets, goals, categories, recurring income and some settings) are stored on a Cloudflare Worker and database (D1). The connection is encrypted, and access needs your passkey. Expenity does not look at your data, sell it, share it or use it for advertising. As with most online services, it is not end-to-end encrypted.
 
-**Notifications.** If you turn on notifications when the app is closed, the server keeps the address your browser gives it for sending them, your time zone and the hour you chose, and looks at which of your bills are due to build the daily summary. Turning them off removes it.
+**Notifications.** If you turn on notifications when the app is closed, the server keeps the address your browser gives it for sending them, your time zone and the hour you chose, and looks at which of your bills are due to build the daily summary. It also keeps the app version your device runs, so it can tell you when a newer one is published. Turning them off removes it.
 
 **Passkeys.** The server stores only the public part of each passkey. Recovery codes are stored hashed.
 

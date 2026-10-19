@@ -49,5 +49,9 @@ self.addEventListener( 'push', ( e ) => {
 self.addEventListener( 'notificationclick', ( e ) => {
 	e.notification.close();
 	const url = ( e.notification.data && e.notification.data.url ) || './';
-	e.waitUntil( self.clients.matchAll( { type: 'window', includeUncontrolled: true } ).then( ( list ) => ( list.length ? list[ 0 ].focus() : self.clients.openWindow( url ) ) ) );
+	e.waitUntil( self.clients.matchAll( { type: 'window', includeUncontrolled: true } ).then( ( list ) => {
+		if ( ! list.length ) return self.clients.openWindow( url );
+		if ( /[?&]update=1/.test( url ) ) list[ 0 ].postMessage( { type: 'update' } ); // an open app shows the update prompt itself
+		return list[ 0 ].focus();
+	} ) );
 } );

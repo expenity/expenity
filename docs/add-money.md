@@ -39,6 +39,7 @@ With **Smart detection** on, type a description such as `Coffee with Anna` and E
 - It never overwrites something you chose yourself, and after **Undo** it stays off for that entry.
 - Tags come from a short shared list (Coffee, Groceries, Car, Home and so on) or your own tags, so similar things always get the same tag.
 - If you have one wallet, it is picked for you.
+- If the description clearly says income (for example `Salary for October` or `Refund from the shop`), a new entry is switched to **Income**. **Undo** switches it back. If you chose the type yourself, it is never switched.
 
 Smart detection is part of Advanced. Turn it on or off in **More → Make it yours → Features**.
 

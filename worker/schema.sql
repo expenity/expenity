@@ -142,8 +142,11 @@ CREATE TABLE IF NOT EXISTS push_subs (
   created_at  INTEGER NOT NULL,
   last_result TEXT,      -- what happened at the last pass: ok, fail, gone, nothing due
   last_status INTEGER,   -- the push service's HTTP code
-  last_at     INTEGER
+  last_at     INTEGER,
+  upd_ver     TEXT,                       -- the newest app version this device runs or was told about
+  upd_off     INTEGER NOT NULL DEFAULT 0  -- 1 = the person turned off update notifications on this device
 );
+-- Existing databases: ALTER TABLE push_subs ADD COLUMN upd_ver TEXT; ALTER TABLE push_subs ADD COLUMN upd_off INTEGER NOT NULL DEFAULT 0;
 CREATE INDEX IF NOT EXISTS push_subs_user ON push_subs(user_id);
 
 -- Small re-encoded reference photos, separate from the lightweight sync records.
