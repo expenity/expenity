@@ -67,6 +67,17 @@ In the theme editor, **Preview on Home** shows your changes on the real Home scr
 
 > 💡 **Real-life example** Nikos makes Where it went full width and the daily number a small tile, so the top of Home shows what he checks most.
 
+## A start screen dressed in your theme
+
+When you open the app, the start screen takes the colours of your theme. In the animated themes, the theme's character comes along too, with its little friends floating by. If loading takes a moment, a playful message keeps you company. It only appears when you open the app, not when you refresh the page.
+
+![The start screen in a playful animated theme.](images/splash-mario.png)
+![The start screen in a dark animated theme.](images/splash-vader.png)
+![The start screen in a soft animated theme.](images/splash-minnie.png)
+![The start screen in a neon theme.](images/splash-synthwave.png)
+
+> 💡 **Real-life example** Eleni switches to an animated theme for fun. The next morning, opening the app, she is greeted by the theme's character before her day's numbers appear.
+
 ## Fonts
 
 Fonts are bundled with the app so it looks the same on every phone, tablet and computer, with full Greek support.
