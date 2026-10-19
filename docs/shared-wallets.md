@@ -43,4 +43,6 @@ People in a shared wallet can see each other's email address and everything in t
 - The owner can **Remove** someone, who loses access and the data on their device.
 - The owner can **Stop sharing and keep a copy**: everyone else loses access, and you keep the wallet and all its transactions as a private wallet.
 
-If you delete your account, wallets you own and share are deleted for everyone.
+You do not have to hunt for these buttons: **More → Account and sync → Shared wallets** lists every wallet you share, with **Leave this wallet** for the ones you joined and **Stop sharing** for the ones you own.
+
+If you delete your account, wallets you own and share are deleted for everyone, and you leave the ones you joined. **Reset account** also deals with shared wallets for you: it shows what happens to each one, you confirm, you leave or stop sharing them, and the reset carries on.
