@@ -32,6 +32,8 @@ Expenity moves a little. The balance card on Home **flips over** when you tap it
 - **Reduced**: a very short version of each.
 - **Off**: no animations at all.
 
+Some themes also have a little ambient motion behind the content: embers rising on Sunset, leaves drifting on Emerald, bubbles and sprinkles on Pastel candy, and falling digits on Terminal. It never gets in the way of a tap, and it stops when you choose **Reduced** or **Off**.
+
 Theme, light or dark and animations are remembered on each device. Language is too: switch it any time in More → Appearance and language, or from the welcome screen.
 
 ![Dark mode.](images/home-dark.png)
