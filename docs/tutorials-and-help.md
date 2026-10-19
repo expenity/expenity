@@ -36,6 +36,10 @@ The first-run setup includes animated steps for the things people ask about most
 
 Dismiss the tour or replay it from the Tutorials page: **Replay the welcome tour**.
 
+## Right-click menu
+
+On a computer, right-click an entry or a bill to get a small menu with **Edit**, **Duplicate** and **Delete** (and **Paid** for a bill). Right-click on empty space to add an **Expense**, **Income** or **Bill**, or to open **Search** or **Reports**. Text fields keep the browser's own menu, and holding **Shift** while you right-click also shows it. Turn the menu off in **More → Make it yours → Features**.
+
 ## What's new
 
 After an update, a small window shows what changed. Press **Got it** to close it, or **View changes** for the full list.
