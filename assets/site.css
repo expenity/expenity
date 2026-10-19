@@ -2054,7 +2054,11 @@ a.card .more {
 @media(max-width:720px){.site-head .wrap{height:72px}.site-head .brand{font-size:21px}.site-head .brand .logo-mark{width:42px;height:42px}.site-head.is-small .wrap{height:58px}}
 @media(prefers-reduced-motion:reduce){.site-head .wrap,.site-head .brand,.site-head .brand .logo-mark{transition:none}}
 
-/* Home page: the hero already carries the big logo, so the header shows it only once the hero is passed. */
-.is-home .site-head .brand{opacity:0;transform:translateY(-6px);pointer-events:none;transition:opacity .3s ease,transform .3s ease}
-.is-home .site-head.past-hero .brand{opacity:1;transform:none;pointer-events:auto}
-@media(prefers-reduced-motion:reduce){.is-home .site-head .brand{transition:none}}
+/* Home page: the hero already carries the big logo. The header logo fades in as you scroll through the hero (--hp goes from 0 to 1, set in site.js) and the menu slides right to make room. */
+.is-home .site-head .brand{opacity:var(--hp,0);transform:translateX(calc((1 - var(--hp,0)) * -28px));pointer-events:none;will-change:opacity,transform;transition:none}
+.is-home .site-head.past-hero .brand{pointer-events:auto}
+@media(min-width:1101px){
+	.is-home .site-head .wrap{display:grid;grid-template-columns:1fr auto 1fr}
+	.is-home .site-head .brand{justify-self:start}.is-home .site-head .head-actions{justify-self:end}
+	.is-home .site-head .nav{margin-left:0;transform:translateX(calc(var(--hp,0) * 56px))}
+}
