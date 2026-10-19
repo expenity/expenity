@@ -28,6 +28,10 @@ Yes. With an account, turn on notifications in More → Reminders and calendar a
 
 Reading a bank account would make Expenity handle bank credentials and sensitive data, which we would rather avoid. You tell it what you spend and earn; it tells you where it goes.
 
+## What happens if I clear my browser data?
+
+You are signed out and the data stored on that device is removed. With an account, sign in again with your passkey and everything syncs back. Without an account, clearing the data deletes it for good, so back up first. See [Account and sync](account-and-sync.md#if-you-clear-your-browser-data).
+
 ## Where is my data stored? Can you read it?
 
 On your device, and, if you have an account, on Expenity's server (Cloudflare) so it can sync. The connection is encrypted and only your passkey opens your account. Expenity does not look at your data, sell it or share it. See [Privacy and your data](privacy-and-your-data.md).

@@ -31,6 +31,15 @@ What syncs: wallets, transactions, bills, categories, budgets, goals, recurring 
 
 > 💡 **Real-life example** Maria adds an expense on her phone and a moment later it is on her laptop too.
 
+## If you clear your browser data
+
+Clearing cookies and site data signs you out, because the sign-in is kept in the browser's storage, and it removes anything Expenity stored on that device. Expenity asks the browser to keep its storage, but a manual clear always wins.
+
+- **With an account**, your data is safe on the server. Open Expenity and press **Sign in with a passkey**. Your passkey is kept by your device or password manager, not by the browser, so clearing the browser does not remove it. Everything syncs back. The email you gave at sign-up is your safety net: with it you can get back in if you also lose the passkey.
+- **Without an account**, your data exists only in that browser, so clearing it deletes everything for good. Make a backup first with **More → Data and backup**, or create an account.
+- Notifications on that device turn off, so turn them on again.
+- The installed app on your Home Screen keeps its own storage, so it is much less likely to be affected.
+
 ## Check for updates
 
 Expenity updates itself when you open it with a connection. To check right now, open **More → Account and sync** (or **About and help**) and press **Check for updates**. If a newer version has been published, press **Update now** and the app reloads with it.

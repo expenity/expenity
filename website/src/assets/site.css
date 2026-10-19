@@ -2053,3 +2053,8 @@ a.card .more {
 .site-head.is-small .wrap{height:64px}.site-head.is-small .brand{font-size:18px}.site-head.is-small .brand .logo-mark{width:32px;height:32px}
 @media(max-width:720px){.site-head .wrap{height:72px}.site-head .brand{font-size:21px}.site-head .brand .logo-mark{width:42px;height:42px}.site-head.is-small .wrap{height:58px}}
 @media(prefers-reduced-motion:reduce){.site-head .wrap,.site-head .brand,.site-head .brand .logo-mark{transition:none}}
+
+/* Home page: the hero already carries the big logo, so the header shows it only once the hero is passed. */
+.is-home .site-head .brand{opacity:0;transform:translateY(-6px);pointer-events:none;transition:opacity .3s ease,transform .3s ease}
+.is-home .site-head.past-hero .brand{opacity:1;transform:none;pointer-events:auto}
+@media(prefers-reduced-motion:reduce){.is-home .site-head .brand{transition:none}}
