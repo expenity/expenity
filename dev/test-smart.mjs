@@ -37,6 +37,23 @@ try{
  await page.evaluate(()=>{EXA.openTx(null,{type:'expense'});});await page.waitForTimeout(500);
  await page.fill('#txDesc','Coffee with Anna');await page.waitForTimeout(900);
  ok(await page.evaluate(()=>!document.querySelector('.catchip.on')&&!document.querySelector('#smartNote')),'nothing is filled in on the Basic plan');
+ // 6. an income description switches a new entry to income, and Undo switches back
+ await page.evaluate(()=>{const S=EX.state();S.settings.features={tier:'advanced'};EX.save();EXA.features.apply();UI.closeSheet(true);for(let i=localStorage.length-1;i>=0;i--){const k=localStorage.key(i);if(k.startsWith('expenity.entryDraft.v1:'))localStorage.removeItem(k);}});
+ await page.evaluate(()=>{EXA.openTx(null,{type:'expense'});});await page.waitForTimeout(500);
+ await page.fill('#txDesc','Salary for October');await page.waitForTimeout(1100);
+ const inc=await page.evaluate(()=>({title:document.querySelector('#sheetTitle')?.textContent,cat:document.querySelector('.catchip.on')?.dataset.txCat,note:document.querySelector('#smartNote')?.innerText||'',desc:document.querySelector('#txDesc')?.value}));
+ console.log(inc);
+ ok(/income/i.test(inc.title||'')&&inc.cat==='salary','"Salary for October" switches to income with the Salary category: '+inc.title+' / '+inc.cat);
+ ok(inc.desc==='Salary for October','the description is kept');
+ await page.click('[data-smart-undo]');await page.waitForTimeout(500);
+ ok(await page.evaluate(()=>!/income/i.test(document.querySelector('#sheetTitle')?.textContent||'')),'Undo switches back to an expense');
+ // a hand-chosen type is never switched
+ await page.evaluate(()=>UI.closeSheet(true));
+ await page.evaluate(()=>{EXA.openTx(null,{type:'expense'});});await page.waitForTimeout(500);
+ await page.click('[data-entry=type]').catch(()=>{});await page.waitForTimeout(200);
+ await page.click('[data-tx-type=expense]').catch(()=>{});await page.waitForTimeout(300);
+ await page.fill('#txDesc','Refund from the shop');await page.waitForTimeout(1100);
+ ok(await page.evaluate(()=>!/income/i.test(document.querySelector('#sheetTitle')?.textContent||'')),'a type chosen by hand is left alone');
  ok(errors.length===0,'no errors '+errors.join('|'));
 }catch(e){console.log('FAIL',e.message,errors);process.exitCode=1;}
 await browser.close();server.close();
