@@ -105,15 +105,30 @@
 		draw();
 	}
 
-	/* ---------------------------------------------------------------- the playable chat: the real app in demo mode, loaded only when asked */
-	const cf = $( '#efp-chatframe' ), cg = $( '#efp-chatgo' );
-	if ( cf && cg ) {
-		const load = () => {
-			cf.innerHTML = '';
-			const f = document.createElement( 'iframe' ); f.src = cf.dataset.src; f.title = cf.dataset.title || 'eFriend'; f.setAttribute( 'allow', '' ); cf.appendChild( f );
-			if ( ! $( '.efp-chatrs' ) ) { const b = document.createElement( 'button' ); b.type = 'button'; b.className = 'efp-btn out efp-chatrs'; b.textContent = cf.dataset.restart || 'Restart'; b.addEventListener( 'click', load ); const tips = $( '.efp-chattips' ); if ( tips ) tips.appendChild( b ); }
+	/* ---------------------------------------------------------------- Nixie tubes: digits that cycle like a real display, then land */
+	const tubes = ( el, text ) => { el.innerHTML = [ ...String( text ) ].map( ( ch ) => `<span class="nx-t${ /\d/.test( ch ) ? '' : ' sep' }"><b>${ ch }</b></span>` ).join( '' ); };
+	const land = ( el, text, delay = 0 ) => {
+		tubes( el, text ); if ( reduce ) return; const bs = $$( 'b', el ).filter( ( b ) => /\d/.test( b.textContent ) ), fin = bs.map( ( b ) => b.textContent );
+		bs.forEach( ( b, i ) => { let n = 0; const go = () => { n++; if ( n < 9 + i * 2 ) { b.textContent = Math.floor( Math.random() * 10 ); setTimeout( go, 55 ); } else b.textContent = fin[ i ]; }; setTimeout( go, delay + i * 60 ); } );
+	};
+	const nxs = $$( '[data-nx]' ).filter( ( e ) => e.id !== 'nx-timer' );
+	nxs.forEach( ( e ) => tubes( e, e.dataset.nx ) );
+	const nio = "IntersectionObserver" in window ? new IntersectionObserver( ( ents ) => ents.forEach( ( x ) => { if ( x.isIntersecting ) { land( x.target, x.target.dataset.nx ); nio.unobserve( x.target ); } } ), { threshold: .4 } ) : null;
+	nxs.forEach( ( e ) => ( nio ? nio.observe( e ) : land( e, e.dataset.nx ) ) );
+	/* ---------------------------------------------------------------- the cassette deck: the real chat, in a player; the counter runs while the tape plays */
+	const deck = $( '#deck' ), cf = $( '#efp-chatframe' ), timer = $( '#nx-timer' ); let tick = 0, secs = 0;
+	if ( deck && cf && timer ) {
+		tubes( timer, '00:00' );
+		const show = () => { const t = String( Math.floor( secs / 60 ) ).padStart( 2, '0' ) + ':' + String( secs % 60 ).padStart( 2, '0' ); $$( '.nx-t b', timer ).forEach( ( b, i ) => { b.textContent = t[ i ]; } ); };
+		const stop = () => { clearInterval( tick ); deck.classList.remove( 'playing' ); };
+		const play = () => {
+			if ( ! $( 'iframe', cf ) ) { const f = document.createElement( 'iframe' ); f.src = cf.dataset.src; f.title = cf.dataset.title || 'eFriend'; f.setAttribute( 'allow', '' ); cf.innerHTML = ''; cf.appendChild( f ); }
+			deck.classList.add( 'playing' ); clearInterval( tick ); tick = setInterval( () => { if ( secs < 300 ) { secs++; show(); } else stop(); }, 1000 );
 		};
-		cg.addEventListener( 'click', load );
+		const eject = () => { stop(); secs = 0; show(); const go = document.createElement( 'button' ); go.type = 'button'; go.className = 'efp-btn dk'; go.id = 'efp-chatgo'; go.textContent = ( $( '#dk-play' ) || {} ).textContent || '▶'; go.addEventListener( 'click', play ); cf.innerHTML = ''; cf.appendChild( go ); };
+		const rewind = () => { secs = 0; show(); const old = $( 'iframe', cf ); if ( old ) old.remove(); play(); };
+		const g = $( '#efp-chatgo' ); if ( g ) g.addEventListener( 'click', play );
+		const p = $( '#dk-play' ), s = $( '#dk-stop' ), r = $( '#dk-rew' ); if ( p ) p.addEventListener( 'click', play ); if ( s ) s.addEventListener( 'click', eject ); if ( r ) r.addEventListener( 'click', rewind );
 	}
 	/* ---------------------------------------------------------------- the accordion: open and close one, or all */
 	const accs = $$( '.efp-acc' );

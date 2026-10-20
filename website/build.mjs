@@ -499,7 +499,7 @@ ${ toc.length > 1 ? `<nav class="on-page" aria-label="${ L.docs.toc }" data-spy>
 			.replace( /\{\{logo\}\}/g, () => SV.logo )
 			.replace( /\{\{svgjson\}\}/g, () => JSON.stringify( { robot: SV.robot, robotHappy: SV.robotHappy, robotWorried: SV.robotWorried, robotMeh: SV.robotMeh } ) )
 			.replace( /\{\{root\}\}/g, root ).replace( /\{\{version\}\}/g, VERSION );
-		const extraHead = `<link rel="stylesheet" href="${ root }assets/efriend-core.css?v=${ ASSET_V }">\n<link rel="stylesheet" href="${ root }assets/efriend.css?v=${ ASSET_V }">\n<script src="${ root }assets/efriend.js?v=${ ASSET_V }" defer></script>`;
+		const extraHead = `<link rel="stylesheet" href="${ root }assets/efriend-core.css?v=${ ASSET_V }">\n<link rel="stylesheet" href="${ root }assets/efriend.css?v=${ ASSET_V }">\n<link rel="stylesheet" href="${ root }assets/efriend-retro.css?v=${ ASSET_V }">\n<script src="${ root }assets/efriend.js?v=${ ASSET_V }" defer></script>`;
 		write( `${ prefix }efriend/index.html`, layout( { lang: L.code, title: copy[ L.code ].title, description: copy[ L.code ].desc, root, canonical: `${ prefix }efriend/`, alt: L.code === 'en' ? 'el/efriend/' : 'efriend/', body, extraHead } ) );
 		urls.push( `${ prefix }efriend/` );
 	}
