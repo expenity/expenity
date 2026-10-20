@@ -36,6 +36,10 @@ await page.click('[data-ef-ob-income]');await page.waitForTimeout(500);
 ok(await page.evaluate(()=>document.querySelector('.ef-ob').classList.contains('paused')&&document.getElementById('sheet').open),'adding income pauses the tour and opens the income form');
 await page.evaluate(()=>{EX.state().incomes.push({id:'inc1',name:'Salary',amount:'1500',account:EX.state().accounts[0].id,currency:EX.state().settings.currency,repeat:'monthly',next:new Date(Date.now()+9*864e5).toISOString().slice(0,10),category:'salary'});EX.save();UI.closeSheet(true);});await page.waitForTimeout(900);
 ok(await page.evaluate(()=>!document.querySelector('.ef-ob').classList.contains('paused')&&/Income added/.test(document.querySelector('.ef-ob').textContent)),'closing the form brings the tour back to the same step, now showing the income');
+await page.click('[data-ef-ob=next]');await page.waitForTimeout(500);
+ok(await page.evaluate(()=>/most you are comfortable spending/i.test(document.querySelector('.ef-ob').textContent)&&document.querySelectorAll('[data-lim]').length===3),'the tour asks for your daily, weekly and monthly spending limits');
+await page.fill('[data-lim=day]','40');await page.fill('[data-lim=month]','900');await page.waitForTimeout(200);
+ok(await page.evaluate(()=>/stricter one/.test(document.querySelector('.ef-lim-note').textContent)&&EX.efriend.limits().day===4000&&EX.efriend.limits().month===90000),'limits typed in the tour are saved with the spending targets, and limits that do not line up are flagged');
 await page.click('[data-ef-ob=next]');await page.waitForTimeout(600);
 ok(await page.evaluate(()=>/dreaming/i.test(document.querySelector('.ef-ob').textContent)&&document.querySelectorAll('.ef-wish[data-ef-wish]').length>=6),'the tour asks what you are dreaming about, with wish chips');
 const before=await page.evaluate(()=>EX.state().goals.filter(g=>g.kind==='efriend').length);
@@ -71,7 +75,7 @@ ok(await page.evaluate(()=>!!document.querySelector('[data-more=efriend]')),'Mor
 await page.click('[data-more=efriend]');await page.waitForTimeout(300);
 console.log(await page.evaluate(()=>document.querySelector('#view').textContent.slice(0,200)+'|'+!!document.querySelector('[data-ef-new]')+!!document.querySelector('[data-ef-sort]')));ok(await page.evaluate(()=>/Trip to Italy/.test(document.querySelector('.ef-page')?.parentElement?.textContent||document.body.textContent)&&!!document.querySelector('[data-ef-new]')&&!!document.querySelector('[data-ef-sort]')),'eFriend page lists goals with actions');
 await page.click('[data-ef-intro]');await page.waitForSelector('.ef-ob');
-ok(await page.evaluate(()=>document.querySelectorAll('.ef-dots i').length===9),'More > eFriend replays the whole onboarding (9 steps; the income step only appears when none is set)');
+ok(await page.evaluate(()=>document.querySelectorAll('.ef-dots i').length===10),'More > eFriend replays the whole onboarding (10 steps; the income step only appears when none is set)');
 await page.click('[data-ef-ob=skip]');await page.waitForTimeout(300);
 await page.evaluate(()=>{const S=EX.state();S.goals[0].deadline='';EXA.go('home');});await page.waitForTimeout(300);
 ok(await page.evaluate(()=>!!document.querySelector('[data-ef-try]')&&/date/i.test(document.querySelector('[data-home=efriend]').textContent)),'coached goal without a date is not lost: Home asks for the date');
@@ -89,7 +93,7 @@ await page.click('[data-ef-ob=skip]');await page.waitForTimeout(2000);
 ok(await page.evaluate(()=>!document.querySelector('.ef-ob')),'Skip closes it and it does not restart');
 await page.evaluate(()=>UI.closeSheet&&UI.closeSheet());
 await page.evaluate(()=>EXA.efriendOnboard());await page.waitForSelector('.ef-ob');
-for(let i=0;i<8;i++){await page.click('[data-ef-ob=next]');await page.waitForTimeout(150);}
+for(let i=0;i<9;i++){await page.click('[data-ef-ob=next]');await page.waitForTimeout(150);}
 await page.click('[data-ef-ob=next]');await page.waitForTimeout(2000);
 ok(await page.evaluate(()=>!document.querySelector('.ef-ob')),"Let's go finishes and it does not restart");
 ok(await page.evaluate(()=>{const c=getComputedStyle(document.createElement('div'));return true;}),'');
@@ -226,6 +230,7 @@ S.goals.push({id:'d1',name:'Italy trip',target:'800',deadline:y,icon:'plane',kin
 ok(await page.evaluate(()=>EX.efriend.due().length===3),'plans whose date has arrived are due');
 await page.evaluate(()=>EXA.efriendDue());await page.waitForSelector('.ef-due');
 ok(await page.evaluate(()=>/Did you make it/.test(document.querySelector('.ef-due').textContent)&&document.querySelectorAll('[data-due=yes],[data-due=move],[data-due=drop]').length===3&&getComputedStyle(document.querySelector('.ef-due')).position==='fixed'),'a full-screen question: did you make it? yes, move the date, or changed my mind');
+ok(await page.evaluate(()=>/afford it|short|left/i.test(document.querySelector('.ef-due .ef-callouts')?.textContent||'')),'on the date, eFriend first says whether you can afford it today');
 await page.click('[data-due=yes]');await page.waitForSelector('#efDueCost');
 await page.fill('#efDueCost','760');await page.click('[data-due=add]');await page.waitForTimeout(400);
 const tx=await page.evaluate(()=>{const g=EX.state().goals.find(x=>x.id==='d1'),t=EX.state().txs.find(x=>x.efPlan==='d1');return {state:g.state,tx:!!t&&t.type==='expense'&&t.amount==='760'&&t.name==='Italy trip',cat:t&&t.category};});
@@ -300,5 +305,33 @@ ok(await page.evaluate(()=>EX.efriend.alloc().mode==='auto'),'after the warning,
 // home totals show both: total and set aside
 await page.evaluate(()=>{const S=EX.state();S.txs.push({id:'sa1',type:'expense',amount:'500',category:'goal',account:S.accounts[0].id,date:EX.today(),name:'in',goalId:'pot'});EX.save();EXA.st.view='home';EXA.render();});await page.waitForTimeout(400);
 ok(await page.evaluate(()=>/set aside/i.test(document.querySelector('[data-home=balance]').textContent)),'the Home balance shows the total and how much of it is set aside for goals');
+// limits cap spending in the forecast; earliest safe date
+await page.evaluate(()=>{document.querySelectorAll('.ef-ob').forEach(x=>x.remove());document.body.classList.remove('ef-ob-open');UI.closeSheet&&UI.closeSheet(true);const S=EX.state(),a=S.accounts[0],d=(n)=>new Date(Date.now()+n*864e5).toISOString().slice(0,10);
+S.goals=S.goals.filter(g=>g.kind!=='efriend');S.txs=S.txs.filter(x=>false);S.bills=[];S.incomes=[];a.opening='6000';delete S.settings.targets;delete S.settings.efCushion;
+for(let i=1;i<=60;i++)S.txs.push({id:'l'+i,type:'expense',amount:'40',category:'food',account:a.id,date:new Date(Date.now()-i*864e5).toISOString().slice(0,10),name:'daily'});
+S.incomes.push({id:'sl',name:'Salary',amount:'2000',account:a.id,currency:S.settings.currency,repeat:'monthly',next:d(10),category:'salary'});
+S.goals.push({id:'big',name:'Big trip',target:'5000',deadline:d(30),icon:'plane',kind:'efriend',wallets:[a.id]});});
+const lim=await page.evaluate(()=>{const S=EX.state(),a=EX.efriend.of('big');const noCap={spend:a.spend,left:a.left,applied:a.limitApplied};S.settings.targets={spend:{period:'auto',amount:''},income:{period:'off',amount:''},limits:{day:'20',week:'',month:''}};const b=EX.efriend.of('big');const capped={spend:b.spend,left:b.left,applied:b.limitApplied,per:b.limitPerDay};S.settings.targets.limits={day:'200',week:'',month:''};const c=EX.efriend.of('big');const loose={spend:c.spend,applied:c.limitApplied};return {noCap,capped,loose};});
+console.log(JSON.stringify(lim));
+ok(lim.capped.applied&&lim.capped.spend<lim.noCap.spend&&lim.capped.left>lim.noCap.left,'a spending limit below your habits is used for the forecast ("whichever is lower")');
+ok(!lim.loose.applied&&lim.loose.spend===lim.noCap.spend,'a limit above your habits changes nothing');
+const e1=await page.evaluate(()=>{const S=EX.state();S.settings.targets=undefined;const g=S.goals.find(x=>x.id==='big');g.target='9000';const d=EX.efriend.earliest(g,0);return {d,days:d?Math.round((new Date(d)-new Date(EX.today()))/864e5):null};});
+ok(e1.d&&e1.days>30&&e1.days<=365,'for a bigger amount, eFriend suggests the earliest safe date ('+e1.d+', '+e1.days+' days)');
+const e2=await page.evaluate(()=>{const g=EX.state().goals.find(x=>x.id==='big');g.target='900000';return EX.efriend.earliest(g,0);});
+ok(e2===null,'beyond a year it says so (no date)');
+await page.evaluate(()=>{const g=EX.state().goals.find(x=>x.id==='big');g.target='9000';EX.save();EXA.openEfriend('big');});await page.waitForSelector('.ef-sheet [data-ef-usedate]');
+ok(await page.evaluate(()=>/Earliest safe date/.test(document.querySelector('.ef-sheet').textContent)),'the analysis shows the earliest safe date');
+const dl0=await page.evaluate(()=>EX.state().goals.find(x=>x.id==='big').deadline);
+await page.click('.ef-sheet [data-ef-usedate]');await page.waitForTimeout(500);
+ok(await page.evaluate((b)=>EX.state().goals.find(x=>x.id==='big').deadline>b&&(EX.state().settings.efEvents.big||[]).length>=1,dl0),'"Use this date" moves the plan and records the change');
+await page.evaluate(()=>{UI.closeSheet(true);EXA.openEfPlan(EX.state().goals.find(x=>x.id==='big'));});await page.waitForSelector('[data-ef-suggestdate]');
+await page.evaluate(()=>{document.querySelector('[name=pdate]').value='';});await page.click('[data-ef-suggestdate]');await page.waitForTimeout(300);
+ok(await page.evaluate(()=>/^\d{4}-\d{2}-\d{2}$/.test(document.querySelector('[name=pdate]').value)&&/Earliest safe date/.test(document.getElementById('efDateNote').textContent)),'the plan form has a Suggest a date button that fills the date');
+await page.evaluate(()=>UI.closeSheet(true));
+// the due screen: can you afford it today, and when
+await page.evaluate(()=>{const S=EX.state(),y=new Date(Date.now()-864e5).toISOString().slice(0,10);S.goals=S.goals.filter(g=>g.id!=='due1');S.settings.efSnooze={};S.goals.push({id:'due1',name:'Pricey thing',target:'20000',deadline:y,icon:'gift',kind:'efriend',wallets:[S.accounts[0].id]});});
+await page.evaluate(()=>EXA.efriendDue('due1'));await page.waitForSelector('.ef-due');
+ok(await page.evaluate(()=>/short|afford/i.test(document.querySelector('.ef-due .ef-callouts').textContent)&&/Earliest safe date|Not within a year/.test(document.querySelector('.ef-due .ef-callouts').textContent)),'on the date, eFriend says if you can afford it today and, if not, the earliest safe date');
+await page.evaluate(()=>{document.querySelectorAll('.ef-due').forEach(x=>x.remove());document.body.classList.remove('ef-ob-open');});
 ok(errs.length===0,'no page errors '+errs.join('|'));
 await browser.close();server.close();

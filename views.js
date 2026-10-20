@@ -56,7 +56,7 @@
 		const cur = EX.txCurrency( x );
 		const info = x.type === 'transfer' ? { iconName: 'arrows-exchange', color: 'blue', name: t( 'catTransfer' ) } : EX.catInfo( x.category );
 		const title = x.reimbursementOf?t('amReceipt')+' · '+(x.reimbursementWho||x.name||''):x.name || info.name;
-		const meta = [ x.type === 'transfer' ? `${ walletName( x.account ) } → ${ walletName( x.toAccount ) }` : walletName( x.account ), x.note, x.efMoved ? t( 'efMovedBy' ) : '' ].filter( Boolean ).join( ' · ' );
+		const meta = [ x.efMoved ? '🤖 ' + t( 'efMovedBy' ) : '', x.type === 'transfer' ? `${ walletName( x.account ) } → ${ walletName( x.toAccount ) }` : walletName( x.account ), x.note ].filter( Boolean ).join( ' · ' );
 		const sign = x.type === 'income' ? '+' : x.type === 'expense' ? '−' : '';
 		return `<li class="sw bm-row tx${ x.type === 'transfer' ? '' : x.date > today() ? ' later' : ' paid' }${ x.efMoved ? ' ef-moved' : '' }" data-kind="tx" data-id="${ esc( x.id ) }">
 			<div class="sw-back"><div class="sw-l">${ x.type === 'expense' && ! x.billId && ! x.goalId && ! x.incomeId && ! x.reimbursementOf ? swBtn( 'unpay', 'refresh', 'actUnpaid', 'unpay' ) : '' }</div><div class="sw-r">${ swBtn( 'edit', 'pencil', 'actEdit', 'edit' ) }${ swBtn( 'duplicate', 'copy', 'duplicateRecord', 'duplicate' ) }${ swBtn( 'del', 'trash', 'actDelete', 'del' ) }</div></div>
