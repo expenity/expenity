@@ -1034,3 +1034,70 @@ button.bm-pill{cursor:pointer;min-height:34px;transition:transform .15s}button.b
 [data-home=calendar] .cell .num{font-size:13px}[data-home=calendar] .dots{min-height:5px;gap:2px}[data-home=calendar] .dots i{width:5px;height:5px}
 [data-home=calendar] .monthbar{margin:0 0 4px}[data-home=calendar] .monthbar b{font-size:16px}[data-home=calendar] .dow{font-size:11px}
 [data-home=calendar] .grp{margin-top:8px}
+
+/* eFriend */
+.ef-card{padding:14px;border-radius:var(--r,18px);background:var(--surface);border:1px solid var(--line)}
+.ef-top{display:flex;gap:12px;align-items:center}
+.ef-bubble{position:relative;flex:1;padding:10px 12px;border-radius:16px;background:color-mix(in srgb,var(--accent) 12%,var(--surface));display:flex;flex-direction:column;gap:6px;align-items:flex-start;font-size:.95rem;line-height:1.3}
+.ef-bubble::before{content:"";position:absolute;left:-6px;top:22px;width:12px;height:12px;background:inherit;transform:rotate(45deg)}
+.ef-meta{display:flex;justify-content:space-between;align-items:center;margin:10px 0 8px;font-size:.85rem;color:var(--muted)}
+.ef-chip{display:inline-block;padding:2px 10px;border-radius:99px;font-weight:700;font-size:.8rem;background:color-mix(in srgb,var(--ok) 22%,var(--surface));color:color-mix(in srgb,var(--ok) 36%,var(--ink));border:1px solid color-mix(in srgb,var(--ok) 40%,transparent)}
+.ef-tight .ef-chip{background:color-mix(in srgb,var(--warn) 22%,var(--surface));color:color-mix(in srgb,var(--warn) 36%,var(--ink));border-color:color-mix(in srgb,var(--warn) 40%,transparent)}
+.ef-atrisk .ef-chip,.ef-unlikely .ef-chip{background:color-mix(in srgb,var(--bad) 20%,var(--surface));color:color-mix(in srgb,var(--bad) 36%,var(--ink));border-color:color-mix(in srgb,var(--bad) 40%,transparent)}
+.ef-bar{position:relative;height:10px;border-radius:99px;background:color-mix(in srgb,var(--accent) 14%,var(--surface));margin:14px 10px 6px 0}
+.ef-bar i{position:absolute;left:0;top:0;bottom:0;border-radius:99px;background:var(--accent);transition:width .8s}
+.ef-suit{position:absolute;top:-11px;transform:translateX(-50%);width:28px;height:28px;border-radius:50%;background:var(--surface);border:2px solid var(--accent);display:grid;place-items:center;color:var(--accent);animation:ef-bob 2.4s ease-in-out infinite}
+.ef-card small{color:var(--muted)}
+.ef-mascot{flex:none;overflow:visible}
+.ef-body{transform-origin:32px 56px;animation:ef-bob 2.6s ease-in-out infinite}
+.ef-eyes{transform-origin:32px 30px;animation:ef-blink 4.5s infinite}
+.ef-cheer .ef-body{animation:ef-hop 1.2s ease-in-out infinite}
+.ef-spark{transform-origin:52px 16px;animation:ef-spin 2s linear infinite}
+.ef-drop{animation:ef-drip 2s ease-in infinite}
+@keyframes ef-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes ef-hop{0%,100%{transform:translateY(0) scale(1,1)}40%{transform:translateY(-8px) scale(.96,1.05)}60%{transform:translateY(0) scale(1.05,.95)}}
+@keyframes ef-blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+@keyframes ef-spin{to{transform:rotate(360deg)}}
+@keyframes ef-drip{0%{transform:translateY(-2px);opacity:0}30%{opacity:1}100%{transform:translateY(8px);opacity:0}}
+.ef-back{text-align:center;display:flex;flex-direction:column;gap:8px;align-items:center;padding:12px}
+.ef-sheet h3{margin:18px 0 6px}
+.ef-kv{list-style:none;margin:12px 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ef-kv li{padding:10px;border-radius:14px;background:var(--surface);border:1px solid var(--line);display:flex;flex-direction:column;gap:2px}
+.ef-kv span{font-size:.8rem;color:var(--muted)}
+.ef-list{list-style:none;margin:0;padding:0}
+.ef-list li{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.ef-list small{display:block;color:var(--muted)}
+.ef-list select{max-width:44%}
+.ef-gain{font-weight:700;color:color-mix(in srgb,var(--ok) 40%,var(--ink))}
+.ef-late{font-style:normal;font-weight:700;color:color-mix(in srgb,var(--bad) 45%,var(--ink))}
+.ef-intro{display:flex;gap:12px;align-items:center;padding:12px;border-radius:16px;background:color-mix(in srgb,var(--accent) 10%,var(--surface));margin:12px 0}
+.ef-intro small{display:block;color:var(--muted)}
+.ef-switch{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:8px 0}
+.ef-switch small{display:block;color:var(--muted)}
+.ef-wallet{cursor:pointer}
+.ef-intro-ov{position:fixed;inset:0;z-index:9999;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(6px);display:grid;place-items:center;padding:24px}
+.ef-intro-card{max-width:340px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px}
+.ef-logo{width:100%;max-width:300px;overflow:visible;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+.ef-hop{opacity:0}
+.ef-logo.play .ef-lg-E{animation:ef-E 3.4s both}
+.ef-logo.play .ef-lg-tick{stroke-dasharray:40;animation:ef-tick 3.4s both}
+.ef-logo.play .ef-lg-e{opacity:0;animation:ef-in 3.4s both;animation-name:ef-e}
+.ef-logo.play .ef-lg-F{opacity:0;animation:ef-F 3.4s both}
+.ef-logo.play .ef-lg-rest tspan{opacity:0;animation:ef-letter .5s both;animation-delay:calc(2.1s + var(--i)*.14s)}
+.ef-intro-ov .ef-hop{animation:ef-pop .7s 3s both}
+.ef-intro-ov p,.ef-intro-ov button{opacity:0;animation:ef-fade .6s 3.4s both}
+.ef-logo:not(.play) .ef-lg-E,.ef-logo:not(.play) .ef-lg-tick{display:none}
+@keyframes ef-E{0%,35%{opacity:1;transform:none}55%,100%{opacity:0;transform:scale(.6) translate(0,20px)}}
+@keyframes ef-tick{0%{stroke-dashoffset:40}20%,35%{stroke-dashoffset:0;opacity:1}55%,100%{opacity:0;transform:translate(20px,0)}}
+@keyframes ef-e{0%,40%{opacity:0;transform:scale(.6)}60%,100%{opacity:1;transform:none}}
+@keyframes ef-F{0%,45%{opacity:0;transform:translateY(-14px)}65%,100%{opacity:1;transform:none}}
+@keyframes ef-letter{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes ef-pop{0%{opacity:0;transform:scale(.3)}70%{opacity:1;transform:scale(1.1)}100%{opacity:1;transform:scale(1)}}
+@keyframes ef-fade{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.ef-body,.ef-eyes,.ef-spark,.ef-drop,.ef-suit{animation:none}.ef-logo.play *{animation:none!important;opacity:1!important}.ef-logo.play .ef-lg-E,.ef-logo.play .ef-lg-tick{display:none}.ef-hop,.ef-intro-ov p,.ef-intro-ov button{animation:none;opacity:1}}
+.ef-tri{display:flex;border:1px solid var(--line);border-radius:99px;overflow:hidden;flex:none}
+.ef-tri button{border:0;background:transparent;padding:6px 10px;font-size:.8rem;font-weight:600;color:var(--muted);min-height:34px}
+.ef-tri button.on{color:#fff}
+.ef-tri .ef-l-must.on{background:color-mix(in srgb,var(--bad) 70%,#000 12%)}
+.ef-tri .ef-l-need.on{background:color-mix(in srgb,var(--warn) 62%,#000 28%)}
+.ef-tri .ef-l-want.on{background:color-mix(in srgb,var(--ok) 65%,#000 25%)}
