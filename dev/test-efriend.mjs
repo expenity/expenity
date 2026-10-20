@@ -51,6 +51,9 @@ await page.evaluate(()=>{EXA.st.view='more';EXA.st.more='root';EXA.render();});a
 ok(await page.evaluate(()=>!!document.querySelector('[data-more=efriend]')),'More has an eFriend row');
 await page.evaluate(()=>document.querySelector('[data-more=efriend]').closest('details').open=true);await page.click('[data-more=efriend]');await page.waitForTimeout(300);
 console.log(await page.evaluate(()=>document.querySelector('#view').textContent.slice(0,200)+'|'+!!document.querySelector('[data-ef-new]')+!!document.querySelector('[data-ef-sort]')));ok(await page.evaluate(()=>/Trip to Italy/.test(document.querySelector('.ef-page')?.parentElement?.textContent||document.body.textContent)&&!!document.querySelector('[data-ef-new]')&&!!document.querySelector('[data-ef-sort]')),'eFriend page lists goals with actions');
+await page.click('[data-ef-intro]');await page.waitForSelector('.ef-ob');
+ok(await page.evaluate(()=>document.querySelectorAll('.ef-dots i').length===4),'More > eFriend replays the whole onboarding (4 steps)');
+await page.click('[data-ef-ob=skip]');await page.waitForTimeout(300);
 await page.evaluate(()=>{const S=EX.state();S.goals[0].deadline='';EXA.go('home');});await page.waitForTimeout(300);
 ok(await page.evaluate(()=>!!document.querySelector('[data-ef-try]')&&/date/i.test(document.querySelector('[data-home=efriend]').textContent)),'coached goal without a date is not lost: Home asks for the date');
 await page.evaluate(()=>{document.querySelector('#view').innerHTML=EX.efriend.mascot('ontrack',100);});
