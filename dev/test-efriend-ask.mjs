@@ -221,6 +221,19 @@ await page.evaluate(()=>EXA.efriendAskOpen());await page.waitForSelector('.ef-ch
 await page.evaluate(()=>document.querySelector('[data-ef-menu]').click());
 ok(await page.evaluate(()=>document.querySelectorAll('.ef-chiph').length===1&&![...document.querySelectorAll('.ef-chipq')].some(c=>/A new car/.test(c.textContent))),'while eFriend asks for a price, the button offers only the questions about him');
 await page.evaluate(()=>{document.querySelector('[data-ef-cpx]').click();});
+// a wrong amount can be corrected with the pencil on the bubble
+await page.evaluate(()=>EXA.efriendAskOpen());await page.waitForSelector('.ef-chipq');await send('phone');await page.waitForFunction(()=>document.getElementById('efChatQ').inputMode==='decimal');
+await send('599');await page.waitForFunction(()=>document.querySelectorAll('.ef-chipq').length===4);
+ok(await page.evaluate(()=>!!document.querySelector('.ef-msg.me [data-ef-amtedit]')),'the bubble with the amount has an edit pencil');
+await page.waitForTimeout(400);await page.evaluate(()=>document.querySelector('[data-ef-amtedit]').click());await page.waitForSelector('.ef-editf input');
+await page.fill('.ef-editf input','1250');await page.evaluate(()=>document.querySelector('.ef-editf').requestSubmit());
+await page.waitForFunction(()=>/1,250|1\.250/.test([...document.querySelectorAll('.ef-msg')].slice(-1)[0].textContent));
+ok(await page.evaluate(()=>/1,250|1\.250/.test([...document.querySelectorAll('.ef-msg.me .ef-mb')].slice(-1)[0].textContent)&&!document.querySelector('.ef-editf')),'the amount is corrected in the bubble and eFriend confirms');
+await page.evaluate(()=>document.querySelectorAll('.ef-chipq')[1].click());await page.waitForFunction(()=>document.querySelector('.ef-chipq.go'));
+await page.waitForTimeout(400);await page.evaluate(()=>document.querySelector('[data-ef-amtedit]').click());await page.fill('.ef-editf input','800');await page.evaluate(()=>document.querySelector('.ef-editf').requestSubmit());
+await page.waitForFunction(()=>/800/.test([...document.querySelectorAll('.ef-msg.ef')].slice(-1)[0].textContent)&&document.querySelector('.ef-chipq.go'));
+ok(true,'editing at the recap step shows a fresh recap with the new amount');
+await page.evaluate(()=>document.querySelector('[data-ef-cpx]').click());
 // the lines vary
 // entry points
 await page.evaluate(()=>{const S=EX.state();S.goals.push({id:'p1',name:'Trip',target:'800',deadline:new Date(Date.now()+60*864e5).toISOString().slice(0,10),icon:'plane',kind:'efriend',wallets:['w1']});EX.save();EXA.go('home');});await page.waitForTimeout(700);
