@@ -1,0 +1,19 @@
+// Home must never leave an empty gap: a card with one bill is as tall as one bill, and when a bill is paid the widgets below move up.
+import {chromium} from 'playwright-core';
+import {createServer} from 'node:http';import {readFileSync,existsSync} from 'node:fs';import {join,extname} from 'node:path';
+const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.svg':'image/svg+xml','.png':'image/png','.webmanifest':'application/manifest+json','.woff2':'font/woff2','.webp':'image/webp'};
+const server=createServer((req,res)=>{const u=req.url.split('?')[0];const f=join(process.cwd(),u==='/'?'index.html':u);if(!existsSync(f)){res.writeHead(404).end();return;}res.setHeader('Content-Type',types[extname(f)]||'application/octet-stream');res.end(readFileSync(f));}).listen(0);
+const ok=(c,m)=>{console.log((c?'ok ':'FAIL ')+m);if(!c)process.exitCode=1;};
+const browser=await chromium.launch({channel:'chrome'}),ctx=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,serviceWorkers:'block'}),page=await ctx.newPage();
+await page.addInitScript(()=>{localStorage.setItem('expenity.lang','en');localStorage.setItem('expenity.motion','off');});
+await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.weekSummary);
+await page.evaluate(()=>{EXA.skipFlow();EX.setLang('en');const S=EX.state();const d=(n)=>new Date(Date.now()+n*864e5).toISOString().slice(0,10);S.bills.push({id:'b1',name:'Supermarket',amount:'132.5',category:'food',next:d(0),repeat:'once',currency:'EUR'});EX.save();EXA.go('home');});await page.waitForTimeout(1200);
+const gap=async()=>page.evaluate(()=>{const a=document.querySelector('[data-home=due]');if(!a)return -1;const r=a.getBoundingClientRect();let n=a.nextElementSibling;while(n&&n.getBoundingClientRect().height<2)n=n.nextElementSibling;return n?Math.round(n.getBoundingClientRect().top-r.bottom):-1;});
+const g1=await gap();ok(g1>=0&&g1<60,'one due bill: no empty gap before the next widget ('+g1+' px)');
+await page.evaluate(()=>{const f=document.querySelector('[data-flip=due]');f.click();});await page.waitForTimeout(300);
+const g2=await gap();ok(g2>=0&&g2<60,'flipped to the week summary: still no gap ('+g2+' px)');
+await page.evaluate(()=>{EXA.markPaid('b1','132.5',new Date().toISOString().slice(0,10),EX.state().accounts[0]?.id);EXA.go('home');});await page.waitForTimeout(800);
+ok(await page.evaluate(()=>!document.querySelector('[data-home=due] .bm-row')),'after paying, the bill is gone from Due soon');
+const top=await page.evaluate(()=>{const first=[...document.querySelectorAll('#view [data-home]')].find(e=>e.getBoundingClientRect().height>2&&e.dataset.home!=='welcome');return Math.round(first.getBoundingClientRect().top);});
+ok(top<170,'and the first widget starts right under the header ('+top+' px)');
+await browser.close();server.close();

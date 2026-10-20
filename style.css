@@ -1007,3 +1007,7 @@ button.bm-pill{cursor:pointer;min-height:34px;transition:transform .15s}button.b
 .wk-list{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:6px;width:100%;max-width:340px}
 .wk-list li{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;padding:8px 12px;border-radius:calc(12px * var(--rk,1));background:var(--surface);font-size:14px;text-align:left}.wk-list span{color:var(--muted);font-size:12px;white-space:nowrap}.wk-list b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.wk-list em{font-style:normal;font-weight:700}
 .fc-tile .fc-hint{width:24px;height:24px;top:6px;right:6px}.fc-tile .fc-hint svg{width:14px;height:14px}
+/* Lists and the calendar take the height of the face that is showing, so nothing leaves an empty gap and the widgets below always move up to fill it. Only the three small tiles keep both faces in one cell. */
+.flipcard:not(.fc-tile) .fc-back{display:none}
+.flipcard:not(.fc-tile).flipped .fc-front{display:none}
+.flipcard:not(.fc-tile).flipped .fc-back{display:block}
