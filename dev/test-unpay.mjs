@@ -1,0 +1,18 @@
+import {chromium} from 'playwright-core';
+import {createServer} from 'node:http';import {readFileSync,existsSync} from 'node:fs';import {join,extname} from 'node:path';
+const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.svg':'image/svg+xml','.png':'image/png','.webmanifest':'application/manifest+json','.woff2':'font/woff2','.webp':'image/webp'};
+const server=createServer((req,res)=>{const u=req.url.split('?')[0];const f=join(process.cwd(),u==='/'?'index.html':u);if(!existsSync(f)){res.writeHead(404).end();return;}res.setHeader('Content-Type',types[extname(f)]||'application/octet-stream');res.end(readFileSync(f));}).listen(0);
+const ok=(c,m)=>{console.log((c?'ok ':'FAIL ')+m);if(!c)process.exitCode=1;};
+const browser=await chromium.launch({channel:'chrome'}),ctx=await browser.newContext({viewport:{width:390,height:844},serviceWorkers:'block'}),page=await ctx.newPage();const errors=[];page.on('pageerror',e=>errors.push(String(e)));
+await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.openUnpay);
+await page.evaluate(()=>{EXA.skipFlow();EX.setLang('el');const S=EX.state();S.txs.push({id:'t1',type:'expense',name:'Lunch',amount:'12',account:S.accounts[0]?.id,category:'food',date:new Date().toISOString().slice(0,10)});EX.save();EXA.go('activity');});await page.waitForTimeout(1200);
+ok(await page.evaluate(()=>document.querySelector('.sw[data-id=t1] .bm-pill')?.textContent.trim()==='Paid'),'status labels stay in English in Greek: '+await page.evaluate(()=>document.querySelector('.sw[data-id=t1] .bm-pill')?.textContent.trim()));
+await page.evaluate(()=>document.querySelector('.sw[data-id=t1]').dispatchEvent(new CustomEvent('swipeaction',{bubbles:true,detail:{action:'unpay',id:'t1',kind:'tx'}})));await page.waitForTimeout(500);
+ok(await page.evaluate(()=>!!document.querySelector('#unpayDate')&&EX.state().txs.length===1),'swiping to unpaid asks for a date first and changes nothing yet');
+await page.click('[data-unpay-cancel]');await page.waitForTimeout(300);ok(await page.evaluate(()=>EX.state().txs.length===1&&EX.state().bills.length===0),'Cancel leaves the expense as it was');
+await page.evaluate(()=>document.querySelector('.sw[data-id=t1]').dispatchEvent(new CustomEvent('swipeaction',{bubbles:true,detail:{action:'unpay',id:'t1',kind:'tx'}})));await page.waitForTimeout(400);
+await page.click('[data-unpay-day="1"]');await page.click('[data-unpay-ok]');await page.waitForTimeout(500);
+const due=await page.evaluate(()=>EX.state().bills[0]?.next),tomorrow=await page.evaluate(()=>new Date(Date.now()+864e5).toISOString().slice(0,10));
+ok(await page.evaluate(()=>EX.state().txs.length===0&&EX.state().bills.length===1),'confirming turns it into a bill');ok(due===tomorrow,'due on the chosen day: '+due);
+ok(errors.length===0,'no errors '+errors.join('|'));
+await browser.close();server.close();

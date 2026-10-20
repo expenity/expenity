@@ -71,14 +71,29 @@
 		toast( t( 'tTxDeleted' ), () => { S().txs.splice( i, 0, x ); EX.save(); } );
 	}
 	/** Mark a plain expense as not paid: it becomes a one-time bill due on its date, and Undo puts the expense back. */
-	function unpayTx( id ) {
+	function unpayTx( id, due ) {
 		const i = S().txs.findIndex( ( x ) => x.id === id ); if ( i < 0 ) return;
 		const x = S().txs[ i ]; if ( x.type !== 'expense' || x.billId || x.goalId || x.incomeId ) return;
 		const cur = ( S().accounts.find( ( a ) => a.id === x.account ) || {} ).currency || S().settings.currency;
-		const bill = { id: uid(), name: x.name || EX.catInfo( x.category ).name, amount: x.amount, account: x.account, currency: cur, category: x.category, tags: copy( x.tags || [] ), photo: x.photo || '', repeat: 'once', next: x.date };
+		const bill = { id: uid(), name: x.name || EX.catInfo( x.category ).name, amount: x.amount, account: x.account, currency: cur, category: x.category, tags: copy( x.tags || [] ), photo: x.photo || '', repeat: 'once', next: due || x.date };
 		S().txs.splice( i, 1 ); S().bills.push( bill ); EX.save();
 		toast( t( 'tUnpaid' ), () => { S().bills = S().bills.filter( ( b ) => b.id !== bill.id ); S().txs.splice( i, 0, x ); EX.save(); } );
 	}
+	/** Swiping a paid expense to unpaid: ask when it should be paid, with Cancel and a confirm button (and Undo afterwards). */
+	EXA.openUnpay = ( id ) => {
+		const x = S().txs.find( ( z ) => z.id === id ); if ( ! x ) return;
+		const cur = ( S().accounts.find( ( a ) => a.id === x.account ) || {} ).currency || S().settings.currency;
+		UI.openSheet( `${ head( t( 'actUnpaid' ) ) }<div class="sheet-pad unpay-sheet"><p><b>${ esc( x.name || EX.catInfo( x.category ).name ) }</b> \u00b7 ${ esc( EX.money( Number( x.amount ), cur ) ) }</p><p class="muted">${ esc( t( 'unpayWhen' ) ) }</p>
+			<div class="when-chips"><button type="button" class="chip" data-unpay-day="0">${ esc( t( 'relToday' ) ) }</button><button type="button" class="chip" data-unpay-day="1">${ esc( t( 'relTomorrow' ) ) }</button><button type="button" class="chip" data-unpay-day="7">${ esc( t( 'relIn', { n: 7 } ) ) }</button></div>
+			<label class="f"><span>${ esc( t( 'pickDate' ) ) }</span><input type="date" id="unpayDate" value="${ esc( today() ) }"></label><p class="err" id="unpayErr" role="alert" hidden></p>
+			<div class="btn-row"><button type="button" class="btn btn-ghost" data-unpay-cancel>${ esc( t( 'cancel' ) ) }</button><button type="button" class="btn btn-primary" data-unpay-ok>${ esc( t( 'actUnpaid' ) ) }</button></div></div>`, { cls: 'small' } );
+		const box = $( '.unpay-sheet' );
+		box.addEventListener( 'click', ( e ) => {
+			const d = e.target.closest( '[data-unpay-day]' ); if ( d ) { $( '#unpayDate' ).value = addDays( today(), Number( d.dataset.unpayDay ) ); return; }
+			if ( e.target.closest( '[data-unpay-cancel]' ) ) { UI.closeSheet( true ); return; }
+			if ( e.target.closest( '[data-unpay-ok]' ) ) { const v = $( '#unpayDate' ).value; if ( ! /^\d{4}-\d{2}-\d{2}$/.test( v ) ) { const er = $( '#unpayErr' ); er.textContent = t( 'errDate' ); er.hidden = false; return; } UI.closeSheet( true ); unpayTx( id, v ); }
+		} );
+	};
 	Object.assign( EXA, { unpayTx, markPaid, skipBill, snoozeBill, removeBill, removeTx } );
 
 	/* ------------------------------------------------------------------ Confirm */
@@ -347,7 +362,7 @@
 		const catChip = `<label class="qp-chip pick${ cat ? '' : ' warn' }">${ cat ? UI.icon( cat.iconName || 'tag', 16 ) + ' ' + esc( cat.name ) : esc( t( 'entryChooseCat' ) ) }<select data-qp-cat aria-label="${ esc( t( 'fCategory' ) ) }">${ cat ? '' : `<option value="" selected disabled>${ esc( t( 'entryChooseCat' ) ) }</option>` }${ catOpts }</select></label>`;
 		const walletChip = wallets.length > 1 ? `<label class="qp-chip pick${ acct ? '' : ' warn' }">${ UI.icon( 'wallet', 16 ) } ${ esc( acct ? EX.accountName( acct ) : t( 'entryChooseWallet' ) ) }<select data-qp-wallet aria-label="${ esc( t( T.type === 'income' ? 'incTo' : 'fPayFrom' ) ) }">${ acct ? '' : `<option value="" selected disabled>${ esc( t( 'entryChooseWallet' ) ) }</option>` }${ wallets.map( ( w ) => `<option value="${ esc( w.id ) }"${ T.account === w.id ? ' selected' : '' }>${ esc( EX.accountName( w ) ) }</option>` ).join( '' ) }</select></label>` : '';
 		return `<div class="qp-amt">${ esc( EX.money( T.amount || 0, cur ) ) }</div><div class="qp-name">${ esc( T.name || '\u2014' ) }</div>
-			<div class="qp-chips">${ catChip }${ walletChip }<span class="qp-chip">${ UI.icon( 'calendar', 16 ) } ${ esc( EX.dayName( T.date ) ) }</span><span class="qp-chip ${ later ? 'later' : 'paid' }">${ later ? esc( t( 'unpaidWord' ) ) : UI.icon( 'check', 14 ) + ' ' + esc( t( T.type === 'income' ? 'receivedWord' : 'paid' ) ) }</span>${ repeat }</div>`;
+			<div class="qp-chips">${ catChip }${ walletChip }<span class="qp-chip">${ UI.icon( 'calendar', 16 ) } ${ esc( EX.dayName( T.date ) ) }</span><span class="qp-chip ${ later ? 'later' : 'paid' }">${ later ? 'Unpaid' : UI.icon( 'check', 14 ) + ' ' + ( T.type === 'income' ? 'Received' : 'Paid' ) }</span>${ repeat }</div>`;
 	}
 	/** "Prepare my expense": understand the sentence, fill in anything it could not tell (Other, the usual wallet) and show the card. */
 	function prepareQuick() {

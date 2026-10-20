@@ -26,6 +26,8 @@
 	const amountText = ( b ) => ( b.amount !== '' && b.amount != null ? ( b.variable ? '~' : '' ) + money( Number( b.amount ), b.currency ) : '–' );
 	const mainCur = () => S().settings.currency;
 	const sumMain = ( list ) => EX.mainCents( list );
+	/** Status labels (Paid, Unpaid, Due in 2 days...) stay in English in every language: they are short and must not grow in translation. */
+	const relEn = ( due ) => { const n = diffDays( due, today() ); return n === 0 ? 'Today' : n === 1 ? 'Tomorrow' : n === -1 ? 'Yesterday' : n < 0 ? `${ -n } days overdue` : `In ${ n } days`; };
 	function rel( due ) {
 		const n = diffDays( due, today() );
 		if ( n === 0 ) return t( 'relToday' );
@@ -45,9 +47,9 @@
 	const swBtn = ( action, icon, labelKey, cls ) => `<button type="button" class="sw-act ${ cls }" data-sw="${ action }" tabindex="-1" aria-hidden="true">${ UI.icon( icon, 22 ) }<span>${ esc( t( labelKey ) ) }</span></button>`;
 	/** A short status for a recorded entry: a paid bill, money received, or something dated in the future. */
 	const txPill = ( x ) => {
-		if ( x.date > today() ) return `<span class="bm-pill later">${ esc( rel( x.date ) ) }</span>`;
-		if ( x.type === 'income' ) return `<span class="bm-pill paid">${ UI.icon( 'check', 14 ) } ${ esc( t( 'receivedWord' ) ) }</span>`;
-		if ( x.type === 'expense' ) return `<span class="bm-pill paid">${ UI.icon( 'check', 14 ) } ${ esc( t( 'paid' ) ) }</span>`; // a recorded expense is a paid one
+		if ( x.date > today() ) return `<span class="bm-pill later">${ esc( relEn( x.date ) ) }</span>`;
+		if ( x.type === 'income' ) return `<span class="bm-pill paid">${ UI.icon( 'check', 14 ) } Received</span>`;
+		if ( x.type === 'expense' ) return `<span class="bm-pill paid">${ UI.icon( 'check', 14 ) } Paid</span>`; // a recorded expense is a paid one
 		return '';
 	};
 	function txItem( x ) {
@@ -280,7 +282,7 @@
 	/* Shared by the Bills tab and Home: a bill as a card with a date tile and a clear status pill. */
 	const bmVal = ( i ) => ( i.kind === 'bill' ? { amount: Number( i.b.amount ) || 0, currency: i.b.currency } : { amount: Number( i.x.amount ) || 0, currency: ( S().accounts.find( ( a ) => a.id === i.x.account ) || {} ).currency || S().settings.currency } );
 	const bmDay = ( d ) => `<span class="bm-date"><b>${ Number( d.slice( 8, 10 ) ) }</b><small>${ esc( new Date( `${ d }T00:00:00` ).toLocaleDateString( EX.loc(), { month: 'short' } ).replace( '.', '' ).toUpperCase() ) }</small></span>`;
-	const bmPill = ( i ) => { if ( i.paid ) return `<span class="bm-pill paid">${ UI.icon( 'check', 14 ) } ${ esc( t( 'paid' ) ) }</span>`; const n = diffDays( i.due, today() ); return `<button type="button" class="bm-pill ${ n < 0 ? 'late' : n <= 3 ? 'soon' : 'later' }" data-bm-pay="${ esc( i.b.id ) }" aria-label="${ esc( t( 'actPaid' ) ) }: ${ esc( i.b.name ) }">${ esc( rel( i.due ) ) }</button>`; };
+	const bmPill = ( i ) => { if ( i.paid ) return `<span class="bm-pill paid">${ UI.icon( 'check', 14 ) } Paid</span>`; const n = diffDays( i.due, today() ); return `<button type="button" class="bm-pill ${ n < 0 ? 'late' : n <= 3 ? 'soon' : 'later' }" data-bm-pay="${ esc( i.b.id ) }" aria-label="${ esc( t( 'actPaid' ) ) }: ${ esc( i.b.name ) }">${ esc( relEn( i.due ) ) }</button>`; };
 	const bmRow = ( i ) => {
 		const name = i.kind === 'bill' ? i.b.name : ( i.x.name || EX.catInfo( i.x.category ).name ), cat = EX.catInfo( i.kind === 'bill' ? i.b.category : i.x.category );
 		const amt = i.kind === 'bill' ? amountText( i.b ) : money( Number( i.x.amount ), bmVal( i ).currency );
@@ -307,7 +309,7 @@
 		const pv = paidList.map( bmVal ), uv = unpaid.map( bmVal );
 		const pC = EX.mainCents( pv ), uC = EX.mainCents( uv ), pct = pC + uC > 0 ? Math.round( ( pC / ( pC + uC ) ) * 100 ) : 0;
 		return `<div class="bm-head"><button type="button" class="bm-nav" data-bmonth="-1" aria-label="${ esc( t( 'prevMonth' ) ) }">${ UI.icon( 'chevron-left', 18 ) } ${ esc( short( -1 ) ) }</button><b class="bm-title">${ esc( monthName( m ) ) } ${ y }</b><button type="button" class="bm-nav" data-bmonth="1" aria-label="${ esc( t( 'nextMonth' ) ) }">${ esc( short( 1 ) ) } ${ UI.icon( 'chevron-right', 18 ) }</button></div>
-			<section class="bm-sum" aria-label="${ esc( t( 'statMonth' ) ) }"><div class="bm-top"><div><small>${ esc( t( 'repTotal' ) ) }</small><b>${ esc( EX.sumByCur( [ ...pv, ...uv ] ) || money( 0 ) ) }</b></div><div class="bm-chips">${ bmChip( 'paid', t( 'paid' ), EX.sumByCur( pv ) || money( 0 ) ) }${ bmChip( 'unpaid', t( 'unpaidWord' ), EX.sumByCur( uv ) || money( 0 ) ) }</div></div>
+			<section class="bm-sum" aria-label="${ esc( t( 'statMonth' ) ) }"><div class="bm-top"><div><small>${ esc( t( 'repTotal' ) ) }</small><b>${ esc( EX.sumByCur( [ ...pv, ...uv ] ) || money( 0 ) ) }</b></div><div class="bm-chips">${ bmChip( 'paid', 'Paid', EX.sumByCur( pv ) || money( 0 ) ) }${ bmChip( 'unpaid', 'Unpaid', EX.sumByCur( uv ) || money( 0 ) ) }</div></div>
 			<div class="bm-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${ pct }"><i style="width:${ pct }%"></i></div><span class="bm-pct">${ pct }%</span></section>
 			${ items.length ? `<ul class="bm-list">${ unpaid.map( bmRow ).join( '' ) }${ paidList.map( bmRow ).join( '' ) }</ul>` : `<p class="muted center pad">${ esc( t( 'noDue' ) ) }</p>` }
 			${ S().bills.length ? '' : `<div class="btn-row"><button type="button" class="btn btn-primary" data-act="add-bill">${ esc( t( 'addTitle' ) ) }</button></div>` }`;
