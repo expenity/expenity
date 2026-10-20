@@ -157,6 +157,19 @@ ok(await page.evaluate(()=>/1985|AI|80s|retro|beep|golden|tape|dial|ask the ques
 await page.evaluate(()=>EXA.efriendAskOpen({text:'Can I buy shoes that cost 49?'}));await page.waitForFunction(()=>document.querySelectorAll('.ef-chipq').length===4);
 ok(true,'a question that carries a price is still a request');
 await page.evaluate(()=>document.querySelector('[data-ef-cpx]').click());
+// eFriend has a personality: he answers about himself, and tells his story
+const T=await page.evaluate(()=>{const out={};return {};});
+await page.evaluate(()=>EXA.efriendAskOpen());await page.waitForSelector('.ef-chipq');
+await send('How old are you?');await page.waitForFunction(()=>document.querySelectorAll('.ef-msg.me').length===1&&document.querySelectorAll('.ef-msg.ef').length>=4,{timeout:15000});
+ok(await page.evaluate(()=>/42|1984|forty/i.test([...document.querySelectorAll('.ef-msg.ef')].map(x=>x.textContent).join(' '))),'he answers about his age from his own story');
+await send('Do you like Star Wars?');await page.waitForFunction(()=>/Star Wars|Force/i.test(document.getElementById('efChat').textContent),{timeout:15000});
+ok(true,'he loves Star Wars');
+await send('Tell me about yourself');await page.waitForFunction(()=>/010001100/.test(document.getElementById('efChat').textContent)&&/George/.test(document.getElementById('efChat').textContent),{timeout:30000});
+ok(await page.evaluate(()=>/1984/.test(document.getElementById('efChat').textContent)&&/cassette/i.test(document.getElementById('efChat').textContent)),'asked about himself, he tells the whole story');
+await send('What is the capital of France?');await page.waitForFunction(()=>document.querySelectorAll('.ef-msg.me').length===4&&[...document.querySelectorAll('.ef-msg.ef')].slice(-2).some(x=>/ask the questions|AI|80s|retro|beep|golden|tape|dial|philosophy|1985/i.test(x.textContent)),{timeout:15000});
+ok(true,'a question he cannot answer from his story gets the retro joke');
+const pr=await page.evaluate(()=>{const F=EX.efriend;return ['new shoes 49','dance shoes 60','a laptop for work 900'].map(q=>{return !!document.querySelector('x');});});
+await page.evaluate(()=>document.querySelector('[data-ef-cpx]').click());
 // the lines vary
 // entry points
 await page.evaluate(()=>{const S=EX.state();S.goals.push({id:'p1',name:'Trip',target:'800',deadline:new Date(Date.now()+60*864e5).toISOString().slice(0,10),icon:'plane',kind:'efriend',wallets:['w1']});EX.save();EXA.go('home');});await page.waitForTimeout(700);
