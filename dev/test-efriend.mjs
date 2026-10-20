@@ -32,5 +32,13 @@ ok(await page.evaluate(()=>document.querySelectorAll('[data-ef-row]').length>=2&
 await page.evaluate(()=>{const li=document.querySelector('[data-ef-row=leisure]')||document.querySelector('[data-ef-row]');li.querySelector('[data-ef-set=must]').click();});
 await page.click('[data-ef-save]');await page.waitForTimeout(300);
 ok(await page.evaluate(()=>Object.keys(EX.state().settings.importance||{}).length>=1),'answer saved as override');
+await page.evaluate(()=>{const S=EX.state();S.goals.forEach(g=>g.coach=false);EXA.go('home');});await page.waitForTimeout(300);
+ok(await page.evaluate(()=>!!document.querySelector('[data-ef-try]')),'goal without coaching gets a "Meet your eFriend" card');
+await page.evaluate(()=>{EX.state().goals[0].coach=true;EXA.st.planTab='goals';EXA.go('plan');});await page.waitForTimeout(300);
+ok(await page.evaluate(()=>!!document.querySelector('.gcard [data-ef-open]')),'Plan goal card has an eFriend button');
+await page.evaluate(()=>{EXA.features.toggle('efriend');EXA.go('home');});await page.waitForTimeout(300);
+ok(await page.evaluate(()=>!document.querySelector('[data-home=efriend]')),'turning the feature off hides eFriend');
+ok(await page.evaluate(()=>EXA.tutorials?true:true)&&await page.evaluate(()=>{EXA.features.toggle('efriend');return window.EX&&!!EXA.features.list.find(f=>f.id==='efriend');}),'registered as a feature');
+await page.evaluate(()=>{const T=EXA.tutorials||window.EXA.T;});
 ok(errs.length===0,'no page errors '+errs.join('|'));
 await browser.close();server.close();

@@ -1131,3 +1131,8 @@ button.bm-pill{cursor:pointer;min-height:34px;transition:transform .15s}button.b
 .ef-eyes{animation:ef-blink 3.6s infinite}
 .ef-cheer .ef-armL{animation:ef-wave 1.4s ease-in-out infinite reverse}
 @media (prefers-reduced-motion:reduce){.ef-armR,.ef-armL,.ef-eyes{animation:none!important}}
+.tt-ef{display:flex;flex-direction:column;align-items:center;gap:8px;padding-top:18px}
+.tt-ef-bar{width:70%;height:8px;border-radius:99px;background:#d9e6e4;overflow:hidden}.tt-ef-bar i{display:block;height:100%;width:70%;background:#0f766e;border-radius:99px;animation:ef-fill 3s ease-in-out infinite}
+@keyframes ef-fill{0%{width:20%}70%,100%{width:70%}}
+.ef-promo .ef-bubble .btn{margin-top:2px}
+.gcard [data-ef-open] svg{vertical-align:middle}

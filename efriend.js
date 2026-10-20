@@ -49,7 +49,8 @@
 
 	/* ------------------------------------------------------------------ The forecast */
 	const centsOf = ( amount, cur ) => { const v = EX.convert( num( amount ), cur || main(), main() ); return v == null ? 0 : Math.round( v * 100 ); };
-	F.goals = () => S().goals.filter( ( g ) => g.coach && g.deadline );
+	const on = () => ! EX.feature || EX.feature( 'efriend' ) !== false;
+	F.goals = () => ( on() ? S().goals.filter( ( g ) => g.coach && g.deadline ) : [] );
 	F.forecast = ( goal ) => {
 		const now = today(), end = goal.deadline, days = diff( end, now );
 		const saved = EX.plan ? EX.plan.saved( goal ) : 0, target = EX.cents( goal.target ), remaining = Math.max( 0, target - saved );
@@ -139,7 +140,10 @@
 	/* ------------------------------------------------------------------ Home widget */
 	const pickGoal = () => { const l = F.goals().map( ( g ) => F.forecast( g ) ); if ( ! l.length ) return null; const rank = { unlikely: 0, atrisk: 1, tight: 2, ontrack: 3, comfortable: 4, done: 5 }; return l.sort( ( a, b ) => ( rank[ a.verdict ] - rank[ b.verdict ] ) || ( a.days - b.days ) )[ 0 ]; };
 	EXA.efriendHome = () => {
-		const f = pickGoal(); if ( ! f || ! EXA.flipCard ) return '';
+		if ( ! on() ) return '';
+		const f = pickGoal();
+		if ( ! f ) { const g = S().goals.find( ( x ) => ! x.coach ); return g ? `<section data-home="efriend"><div class="ef-card ef-promo"><div class="ef-top">${ F.mascot( 'happy' ) }<div class="ef-bubble"><b>${ esc( t( 'efMeet' ) ) }</b>${ esc( t( 'efPromo', { name: g.name } ) ) }<button type="button" class="btn btn-primary sm" data-ef-try="${ esc( g.id ) }">${ esc( t( 'efTry' ) ) }</button></div></div></div></section>` : ''; }
+		if ( ! EXA.flipCard ) return '';
 		if ( ! ( S().device || {} ).efIntro && ! navigator.webdriver ) setTimeout( () => EXA.efriendIntro(), 600 );
 		const g = f.goal, pct = f.target ? Math.min( 100, Math.round( f.saved / f.target * 100 ) ) : 0, label = { comfortable: 'Comfortable', ontrack: 'On track', tight: 'Tight', atrisk: 'At risk', unlikely: 'Unlikely', done: 'Done' }[ f.verdict ];
 		const front = `<div class="ef-card ef-${ f.verdict }"><div class="ef-top">${ F.mascot( f.verdict ) }<div class="ef-bubble"><b>${ esc( pickLine( f.verdict ) ) }</b></div></div>
@@ -171,10 +175,12 @@
 			<button type="button" class="btn btn-ghost wide" data-ef-redo="${ esc( id ) }">${ esc( t( 'efRedo' ) ) }</button><p class="muted small">${ esc( t( 'efDisclaimer' ) ) }</p></div>`, { tall: true } );
 		document.querySelector( '.ef-sheet' ).addEventListener( 'change', ( e ) => { const s = e.target.closest( '[data-ef-level]' ); if ( ! s ) return; const o = S().settings.importance = S().settings.importance || {}; o[ 'cat:' + s.dataset.efLevel ] = s.value; S().settings.u = Date.now(); EX.save(); EXA.openEfriend( id ); EXA.render(); } );
 	};
-	document.addEventListener( 'click', ( e ) => { const r = e.target.closest( '[data-ef-redo]' ); if ( r ) { UI.closeSheet(); setTimeout( () => EXA.efriendOnboard( r.dataset.efRedo ), 200 ); return; } const b = e.target.closest( '[data-ef-open]' ); if ( b ) { e.preventDefault(); e.stopImmediatePropagation(); EXA.openEfriend( b.dataset.efOpen ); } }, true );
+	document.addEventListener( 'click', ( e ) => { const tr = e.target.closest( '[data-ef-try]' ); if ( tr ) { e.preventDefault(); EXA.openGoal( S().goals.find( ( x ) => x.id === tr.dataset.efTry ) ); return; } const r = e.target.closest( '[data-ef-redo]' ); if ( r ) { UI.closeSheet(); setTimeout( () => EXA.efriendOnboard( r.dataset.efRedo ), 200 ); return; } const b = e.target.closest( '[data-ef-open]' ); if ( b ) { e.preventDefault(); e.stopImmediatePropagation(); EXA.openEfriend( b.dataset.efOpen ); } }, true );
 
 	/* ------------------------------------------------------------------ Goal form: the switch and the wallets */
+	EXA.efriendChip = ( g ) => ( g.coach && on() && g.deadline ? `<button type="button" class="btn btn-ghost sm" data-ef-open="${ esc( g.id ) }">${ F.mascot( F.forecast( g ).verdict, 22 ) } eFriend</button>` : '' );
 	EXA.efriendGoalFields = ( g ) => {
+		if ( ! on() ) return '';
 		const ws = EX.writableAccounts(), chosen = g && g.wallets && g.wallets.length ? g.wallets : ws.map( ( w ) => w.id );
 		return `<div class="ef-intro"><span class="ef-mini">${ F.mascot( 'happy', 44 ) }</span><div><b>${ esc( t( 'efMeet' ) ) }</b><small>${ esc( t( 'efMeetText' ) ) }</small></div></div>
 			<label class="entry-paid ef-switch"><span><b>${ esc( t( 'efToggle' ) ) }</b><small>${ esc( t( 'efToggleHint' ) ) }</small></span><span class="switch"><input type="checkbox" name="coach"${ g && g.coach ? ' checked' : '' }><i></i></span></label>
@@ -259,6 +265,9 @@
 		efWhy_insurance: 'Skipping insurance can cost far more later.', efWhy_loan: 'Missed payments add interest and hurt your record.', efWhy_tax: 'Taxes and contributions have penalties when late.',
 		efWhy_childcare: 'Your family depends on it.', efWhy_must: 'Fixed and necessary.', efWhy_custom: 'You marked this as a must.',
 		efOnbTitle: 'How you spend', efOnbHi: "Here is how I sorted your spending. Tap to change anything that is different for you.", efOnbSave: 'Looks right', efRedo: 'Review how I sorted your spending',
+		fx_efriend: 'eFriend', fxD_efriend: 'A small robot that coaches a savings goal and tells you whether you will make it.', efPromo: 'Let it coach "{name}": it checks your bills, income and habits and tells you if you will make it.', efTry: 'Try it',
+		tut_efriend: 'Meet your eFriend', tutD_efriend: 'A robot that tells you if your goal will happen', tut_efriend_1: 'In **Plan**, add a goal with a target and a date, for example a trip.', tut_efriend_2: 'Turn on **Let eFriend coach this goal** and choose the wallets the money comes from.', tut_efriend_3: 'On Home, tap **Full analysis** to see what is likely, what would help, and how your spending is sorted. Change any of it.',
+		tutEx_efriend: 'Maria wants 400 for a trip by December. eFriend sees her rent and phone bill are musts, notices she spends a lot on takeaway, and says: cut it by a quarter and you will make it, with money to spare.',
 		efDisclaimer: 'These are estimates from your own history, not financial advice. The more you add, the better my guesses get.',
 	};
 	const el = {
@@ -283,6 +292,9 @@
 		efWhy_insurance: 'Η παράλειψη ασφάλισης μπορεί να κοστίσει πολύ περισσότερο αργότερα.', efWhy_loan: 'Οι χαμένες δόσεις προσθέτουν τόκους και βλάπτουν το ιστορικό σας.', efWhy_tax: 'Οι φόροι και οι εισφορές έχουν πρόστιμα όταν καθυστερούν.',
 		efWhy_childcare: 'Η οικογένειά σας εξαρτάται από αυτό.', efWhy_must: 'Σταθερό και απαραίτητο.', efWhy_custom: 'Το σημάνατε ως αναγκαίο.',
 		efOnbTitle: 'Πώς ξοδεύετε', efOnbHi: 'Έτσι ταξινόμησα τα έξοδά σας. Πατήστε για να αλλάξετε ό,τι διαφέρει για εσάς.', efOnbSave: 'Σωστά', efRedo: 'Δείτε πώς ταξινόμησα τα έξοδά σας',
+		fx_efriend: 'eFriend', fxD_efriend: 'Ένα μικρό ρομπότ που προπονεί έναν στόχο αποταμίευσης και σας λέει αν θα τα καταφέρετε.', efPromo: 'Αφήστε το να προπονήσει τον στόχο «{name}»: ελέγχει τους λογαριασμούς, τα έσοδα και τις συνήθειές σας και σας λέει αν θα τα καταφέρετε.', efTry: 'Δοκιμάστε το',
+		tut_efriend: 'Γνωρίστε το eFriend σας', tutD_efriend: 'Ένα ρομπότ που σας λέει αν θα γίνει ο στόχος σας', tut_efriend_1: 'Στο **Πλάνο**, προσθέστε έναν στόχο με ποσό και ημερομηνία, για παράδειγμα ένα ταξίδι.', tut_efriend_2: 'Ενεργοποιήστε το **Να προπονεί το eFriend αυτόν τον στόχο** και διαλέξτε τα πορτοφόλια από τα οποία προέρχονται τα χρήματα.', tut_efriend_3: 'Στην Αρχική, πατήστε **Πλήρης ανάλυση** για να δείτε τι είναι πιθανό, τι θα βοηθούσε και πώς ταξινομούνται τα έξοδά σας. Αλλάξτε οτιδήποτε.',
+		tutEx_efriend: 'Η Μαρία θέλει 400 για ένα ταξίδι μέχρι τον Δεκέμβριο. Το eFriend βλέπει ότι το ενοίκιο και ο λογαριασμός τηλεφώνου είναι αναγκαία, προσέχει ότι ξοδεύει πολλά σε delivery και λέει: κόψτε το κατά ένα τέταρτο και θα τα καταφέρετε, με χρήματα να περισσεύουν.',
 		efDisclaimer: 'Πρόκειται για εκτιμήσεις από το δικό σας ιστορικό και όχι για οικονομική συμβουλή. Όσο περισσότερα προσθέτετε, τόσο καλύτερα μαντεύω.',
 	};
 	Object.assign( window.EXPENITY_I18N.langs.en, en ); Object.assign( window.EXPENITY_I18N.langs.el, el );

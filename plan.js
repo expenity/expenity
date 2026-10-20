@@ -120,7 +120,7 @@
 		const eta = i.remaining === 0 ? t( 'goalReached' ) : i.eta ? t( 'goalEta', { date: dateShort( i.eta ) } ) : t( 'goalNoEta' );
 		return `<div class="gcard">${ ring( i.pct, 72, UI.icon( g.icon || 'target', 26 ) ) }
 			<button type="button" class="mid" data-plan="edit-goal" data-id="${ esc( g.id ) }"><b>${ esc( g.name ) }</b>${EXA.tagsInline(g.tags)}<small>${ esc( t( 'goalSaved', { a: m$( i.saved ), b: m$( i.target ) } ) ) }</small><small class="st">${ i.pct }% · ${ esc( eta ) }${ i.needMonthly ? ' · ' + esc( t( 'goalNeed', { a: m$( i.needMonthly ) } ) ) : '' }</small></button>
-			<button type="button" class="btn btn-ghost sm" data-plan="goal-money" data-id="${ esc( g.id ) }">${ UI.icon( 'plus', 18 ) } ${ esc( t( 'goalAddMoney' ) ) }</button></div>`;
+			<button type="button" class="btn btn-ghost sm" data-plan="goal-money" data-id="${ esc( g.id ) }">${ UI.icon( 'plus', 18 ) } ${ esc( t( 'goalAddMoney' ) ) }</button>${ EXA.efriendChip ? EXA.efriendChip( g ) : '' }</div>`;
 	}
 	function incomeRow( i ) {
 		const days = Math.round( ( parse( i.next ) - parse( today() ) ) / 864e5 );
