@@ -73,3 +73,5 @@
 .nx-stats { position: relative; } .nx-stats .wrap { position: relative; z-index: 1; }
 .deck > * { min-width: 0; } .deck-body { box-sizing: border-box; max-width: 100%; } .deck-cass { max-width: 100%; }
 @media (max-width: 900px) { .deck { display: block; } .deck-body { margin-bottom: 26px; } .deck .efp-chatframe { margin: 0 auto; } .deck-ctl { justify-content: center; } }
+
+.efp-chatframe iframe.pre { visibility: hidden; } .efp-chatframe #efp-chatgo { position: relative; z-index: 2; }

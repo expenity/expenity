@@ -41,7 +41,7 @@ The calendar shows **one month at a time**, opened on the best day. Use the **�
 
 The graph shows your estimated balance, day by day, **with and without** the purchase, and your safety cushion as a dotted line.
 
-> 💡 **Real-life example** Maria types *"laptop 900"*, then taps **In 2 weeks**. eFriend says today is tight, but the 29th, a few days after payday, is safe. She taps **Make it a plan for 29 Oct**.
+> 💡 **Real-life example** Danae types *"laptop 900"*, then taps **In 2 weeks**. eFriend says today is tight, but the 29th, a few days after payday, is safe. She taps **Make it a plan for 29 Oct**.
 
 ### Start over and past chats
 

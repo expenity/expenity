@@ -121,12 +121,18 @@
 		tubes( timer, '00:00' );
 		const show = () => { const t = String( Math.floor( secs / 60 ) ).padStart( 2, '0' ) + ':' + String( secs % 60 ).padStart( 2, '0' ); $$( '.nx-t b', timer ).forEach( ( b, i ) => { b.textContent = t[ i ]; } ); };
 		const stop = () => { clearInterval( tick ); deck.classList.remove( 'playing' ); };
+		const mk = ( src ) => { const f = document.createElement( 'iframe' ); f.src = src; f.title = cf.dataset.title || 'eFriend'; f.setAttribute( 'allow', '' ); return f; };
+		const wait = ( cf.dataset.src || '' ).replace( 'ask=1', 'ask=wait' );
+		const preload = () => { if ( ! $( 'iframe', cf ) ) { const f = mk( wait ); f.className = 'pre'; cf.appendChild( f ); } };
 		const play = () => {
-			if ( ! $( 'iframe', cf ) ) { const f = document.createElement( 'iframe' ); f.src = cf.dataset.src; f.title = cf.dataset.title || 'eFriend'; f.setAttribute( 'allow', '' ); cf.innerHTML = ''; cf.appendChild( f ); }
+			let f = $( 'iframe', cf ); if ( ! f ) { preload(); f = $( 'iframe', cf ); }
+			const go = $( '#efp-chatgo' ); if ( go ) go.remove();
+			f.classList.remove( 'pre' ); try { f.contentWindow.postMessage( 'ef-open', '*' ); } catch ( x ) { /* ignore */ }
 			deck.classList.add( 'playing' ); clearInterval( tick ); tick = setInterval( () => { if ( secs < 300 ) { secs++; show(); } else stop(); }, 1000 );
 		};
-		const eject = () => { stop(); secs = 0; show(); const go = document.createElement( 'button' ); go.type = 'button'; go.className = 'efp-btn dk'; go.id = 'efp-chatgo'; go.textContent = ( $( '#dk-play' ) || {} ).textContent || '▶'; go.addEventListener( 'click', play ); cf.innerHTML = ''; cf.appendChild( go ); };
-		const rewind = () => { secs = 0; show(); const old = $( 'iframe', cf ); if ( old ) old.remove(); play(); };
+		const eject = () => { stop(); secs = 0; show(); const old = $( 'iframe', cf ); if ( old ) old.remove(); const go = document.createElement( 'button' ); go.type = 'button'; go.className = 'efp-btn dk'; go.id = 'efp-chatgo'; go.textContent = ( $( '#dk-play' ) || {} ).textContent || '▶'; go.addEventListener( 'click', play ); cf.innerHTML = ''; cf.appendChild( go ); preload(); };
+		const rewind = () => { secs = 0; show(); const old = $( 'iframe', cf ); if ( old ) old.remove(); const go = $( '#efp-chatgo' ); if ( go ) go.remove(); cf.appendChild( mk( cf.dataset.src ) ); deck.classList.add( 'playing' ); clearInterval( tick ); tick = setInterval( () => { if ( secs < 300 ) { secs++; show(); } else stop(); }, 1000 ); };
+		preload();
 		const g = $( '#efp-chatgo' ); if ( g ) g.addEventListener( 'click', play );
 		const p = $( '#dk-play' ), s = $( '#dk-stop' ), r = $( '#dk-rew' ); if ( p ) p.addEventListener( 'click', play ); if ( s ) s.addEventListener( 'click', eject ); if ( r ) r.addEventListener( 'click', rewind );
 	}
