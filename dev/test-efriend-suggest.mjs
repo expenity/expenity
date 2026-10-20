@@ -8,8 +8,8 @@ await pg.goto( `http://localhost:${ port }/index.html` ); await pg.waitForFuncti
 await pg.evaluate( () => { const S = EX.state(); S.settings.onboarded = true; EX.save(); } );
 await pg.evaluate( () => EXA.openAdd() ); await pg.waitForSelector( '[data-act=ef-chat]' );
 chk( 'add menu has eFriend row', true );
-await pg.evaluate( () => document.querySelector( '[data-act=ef-chat]' ).click() ); await pg.waitForSelector( '#efAskForm' ); chk( 'chat opens', true );
-await pg.evaluate( () => { UI.closeSheet(); } );
+await pg.evaluate( () => document.querySelector( '[data-act=ef-chat]' ).click() ); await pg.waitForSelector( '.ef-cp' ); chk( 'chat opens', true );
+await pg.evaluate( () => document.querySelector( '[data-ef-cpx]' ).click() );
 const r = await pg.evaluate( () => { const F = EX.efriend, S = EX.state(); const d = new Date( Date.now() + 40 * 864e5 ).toISOString().slice( 0, 10 ); S.goals.push( { id: 'a', kind: 'efriend', name: 'A', target: '300', deadline: d, icon: 'target', wallets: [], created: Date.now() }, { id: 'b', kind: 'efriend', name: 'B', target: '100', deadline: d, icon: 'target', wallets: [], created: Date.now() } ); EX.save(); const c0 = F.cushion(); const s = F.suggestCushion( F.suggestOrder() ); const same = F.cushion() === c0; F.applySuggest( true ); return { s, same, after: F.cushion(), p: F.plans().map( g => g.prio ) }; } );
 chk( 'cushion restored by preview', r.same ); chk( 'cushion applied', r.after === r.s.m ); chk( 'order applied', r.p.includes( 1 ) );
 await pg.evaluate( () => EXA.efSuggestOpen() ); await pg.waitForSelector( '[data-ef-sug=both]' ); chk( 'choice sheet', await pg.locator( '[data-ef-sug]' ).count() === 2 );

@@ -10,6 +10,11 @@ await page.addInitScript(()=>{localStorage.setItem('expenity.lang','en');});
 await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EX?.efriend);
 // parsing
 const P=await page.evaluate(()=>['Can I buy shoes that cost $49?','new phone 650','Can I afford a 1,200 euro laptop?','μπορώ να αγοράσω παπούτσια 49;','dinner out 80.50'].map(q=>EX.efriend.parseAsk(q)));
+const P2=await page.evaluate(()=>['New iPhone 16 pro max 1250$','no, it\'s 1250 the price','iphone 16 1250 euro','2 shoes 80'].map((q,i)=>EX.efriend.parseAsk(q,i===1)));
+ok(P2[0].cost===125000&&/iPhone 16 pro max/.test(P2[0].item),'"New iPhone 16 pro max 1250$" -> the price is 1250, not 16 ('+JSON.stringify(P2[0])+')');
+ok(P2[1].cost===125000&&!P2[1].item,'a correction like "no, it is 1250 the price" gives only the price ('+JSON.stringify(P2[1])+')');
+ok(P2[2].cost===125000&&/16/.test(P2[2].item),'the biggest number is the price when there is no sign ('+JSON.stringify(P2[2])+')');
+ok(P2[3].cost===8000,'"2 shoes 80" -> 80');
 ok(P[0].item==='Shoes'&&P[0].cost===4900,'"Can I buy shoes that cost $49?" -> Shoes, 49 ('+JSON.stringify(P[0])+')');
 ok(P[1].item==='Phone'&&P[1].cost===65000,'"new phone 650" -> Phone, 650');
 ok(P[2].item==='Laptop'&&P[2].cost===120000,'"a 1,200 euro laptop" -> Laptop, 1200 ('+JSON.stringify(P[2])+')');
@@ -22,25 +27,55 @@ a.opening=String(700-EX.balance(a)/100);
 S.incomes.push({id:'sal',name:'Salary',amount:'1500',account:'w1',currency:S.settings.currency,repeat:'monthly',next:d(10),category:'salary'});
 S.bills.push({id:'rent',name:'Rent',amount:'600',category:'housing',next:d(14),repeat:'monthly',currency:S.settings.currency,account:'w1'});EX.save();});
 const ans=await page.evaluate(()=>{const a=EX.efriend.answer(4900);return {n:a.days.length,today:a.today.st,best:a.best&&a.best.i,bestSt:a.best&&a.best.st,sts:[...new Set(a.days.map(x=>x.st))]};});
-ok(ans.n===42,'the next 6 weeks are rated ('+JSON.stringify(ans)+')');
-const big=await page.evaluate(()=>{const a=EX.efriend.answer(150000);return {today:a.today.st,first:a.first&&a.first.i,best:a.best&&a.best.i};});
-ok(big.today==='avoid','a purchase far beyond your means is "avoid" today ('+JSON.stringify(big)+')');
-const mid=await page.evaluate(()=>{const a=EX.efriend.answer(60000);return {today:a.today.st,days:a.days.map(x=>x.st[0]).join('')};});
-console.log('MID',JSON.stringify(mid));
-ok(/[bgt]/.test(mid.days)&&/a/.test(mid.days),'a mid-size purchase has both good and bad days, so the calendar is useful');
-// the screen
+ok(ans.n===120,'the next four months are rated ('+JSON.stringify(ans)+')');
+const big=await page.evaluate(()=>{const a=EX.efriend.answer(5000000);return {today:a.today.st,first:a.first&&a.first.i,best:a.best&&a.best.i,ok:a.anyOk};});
+ok(big.today==='avoid'&&big.best===null&&!big.ok,'a purchase far beyond your means has no best day at all, not a red one ('+JSON.stringify(big)+')');
+await page.waitForTimeout(1500);await page.evaluate(()=>EX.setLang('en'));
+// the screen: a full-page chat that interviews you
 await page.evaluate(()=>{EXA.st.view='more';EXA.st.more='efriend';EXA.render();});await page.waitForSelector('[data-ef-ask]');
 ok(await page.evaluate(()=>!!document.querySelector('.ef-askcard [data-ef-ask]')),'the eFriend page has an Ask button');
-await page.evaluate(()=>document.querySelector('.ef-askcard [data-ef-ask]').click());await page.waitForSelector('#efAskForm');
-await page.fill('#efAskQ','Can I buy shoes that cost 49?');await page.evaluate(()=>document.querySelector('#efAskForm').requestSubmit());await page.waitForSelector('.ef-cal-d');
-ok(await page.evaluate(()=>document.querySelector('[name=what]').value==='Shoes'&&document.querySelector('[name=cost]').value==='49'),'the question fills in what and how much');
-ok(await page.evaluate(()=>document.querySelectorAll('.ef-cal-d').length===42&&!!document.querySelector('.ef-cal-d em')&&/Yes|Not today|tight|thinner/i.test(document.querySelector('.ef-askres').textContent)),'an answer and a 6-week calendar with a best day (⭐) appear');
-ok(await page.evaluate(()=>!!document.querySelector('.ef-cal-d .mk')&&/💶/.test(document.querySelector('.ef-cal').textContent)&&/🧾/.test(document.querySelector('.ef-cal').textContent)),'paydays and bills are marked on the calendar');
+await page.evaluate(()=>document.querySelector('.ef-askcard [data-ef-ask]').click());await page.waitForSelector('.ef-cp .ef-msg.ef');await page.waitForSelector('.ef-chipq');
+ok(await page.evaluate(()=>{const r=document.querySelector('.ef-cp').getBoundingClientRect();return r.width>=Math.min(innerWidth,760)-2&&r.height>=innerHeight*0.9;}),'the chat takes the whole screen');
+ok(await page.evaluate(()=>document.querySelectorAll('.ef-chipq').length===6&&document.querySelectorAll('#efChatForm input').length===1),'one text box and six idea chips to start with');
+const send=async(q)=>{await page.fill('#efChatQ',q);await page.evaluate(()=>document.querySelector('#efChatForm').requestSubmit());await page.waitForTimeout(200);};
+await send('New iPhone 16 pro max 1250$');await page.waitForFunction(()=>document.querySelectorAll('.ef-chipq').length===4);
+ok(await page.evaluate(()=>/urgent|deadline|how fast|When do you want|Last question/i.test([...document.querySelectorAll('.ef-msg.ef')].pop().textContent)),'after the item and the price (read correctly) eFriend asks how soon');
+await page.evaluate(()=>document.querySelectorAll('.ef-chipq')[1].click());await page.waitForFunction(()=>document.querySelector('.ef-chipq.go'));
+ok(await page.evaluate(()=>{const m=[...document.querySelectorAll('.ef-msg.ef')];const x=m.slice(-3).map(e=>e.textContent).join(' ');return /iPhone 16 pro max/.test(x)&&/1,250/.test(x)&&/2 weeks/.test(x);}),'it repeats the item, the price and the timing and asks if that is right');
+await send("no, it's 900 the price");await page.waitForFunction(()=>document.querySelector('.ef-chipq.go'));
+ok(await page.evaluate(()=>{const x=[...document.querySelectorAll('.ef-msg.ef')].slice(-1).map(e=>e.textContent).join(' ');return /iPhone 16 pro max/.test(x)&&/\b900\b/.test(x)&&!/1,250/.test(x)&&/2 weeks/.test(x);}),'a correction in plain words changes the price and eFriend asks again');
+await page.evaluate(()=>document.querySelector('.ef-chipq.go').click());await page.waitForSelector('#efRes',{timeout:15000});
+ok(await page.evaluate(()=>!document.querySelector('.ef-cp')&&!!document.querySelector('#efRes .ef-graph .ef-gl.with')&&!!document.querySelector('#efRes .ef-tiles3')),'the chat ends and the analysis opens in the app, with a prediction graph');
+ok(await page.evaluate(()=>document.querySelectorAll('.ef-cal-mh').length>=4&&document.querySelectorAll('.ef-cal-d').length===120&&!!document.querySelector('.ef-cal-d em')),'the calendar shows four months with a best day (⭐)');
+ok(await page.evaluate(()=>/💶/.test(document.querySelector('.ef-cal').textContent)&&/🧾/.test(document.querySelector('.ef-cal').textContent)),'paydays and bills are marked on the calendar');
+ok(await page.evaluate(()=>/window|wish|inside|earliest/i.test(document.querySelector('.ef-res-lines').textContent)),'it says how the best day fits the timing I asked for');
 await page.evaluate(()=>document.querySelectorAll('.ef-cal-d')[20].click());
-ok(await page.evaluate(()=>/lowest point|run short|tight|safe day|thinner/i.test(document.getElementById('efAskDetail').textContent)&&document.querySelectorAll('.ef-cal-d.sel').length===1),'tapping a day explains it');
+ok(await page.evaluate(()=>document.querySelectorAll('.ef-cal-d.sel').length===1&&document.getElementById('efAskDetail').textContent.length>10),'tapping a day explains it');
 await page.evaluate(()=>document.querySelector('[data-ef-askplan]').click());await page.waitForSelector('#efPlanForm');
-ok(await page.evaluate(()=>{const f=document.querySelector('#efPlanForm');return f.elements.pname.value==='Shoes'&&f.elements.pcost.value==='49'&&/^\d{4}-\d{2}-\d{2}$/.test(f.elements.pdate.value);}),'"Make it a plan" opens the plan form with the item, cost and chosen date');
+ok(await page.evaluate(()=>{const f=document.querySelector('#efPlanForm');return /iPhone 16 pro max/.test(f.elements.pname.value)&&f.elements.pcost.value==='900'&&/^\d{4}-\d{2}-\d{2}$/.test(f.elements.pdate.value)&&f.elements.pdate.value>EX.today();}),'"Make it a plan" opens the plan form with the item, price and a good (not red) date');
 await page.evaluate(()=>UI.closeSheet(true));
+// nothing fits: an explanation, no date
+await page.evaluate(()=>EXA.efriendAskOpen());await page.waitForSelector('.ef-chipq');
+await send('yacht 150000 no rush');await page.waitForFunction(()=>document.querySelector('.ef-chipq.go'));await page.evaluate(()=>document.querySelector('.ef-chipq.go').click());await page.waitForSelector('#efRes',{timeout:15000});
+ok(await page.evaluate(()=>{const x=document.querySelector('.ef-res-lines').textContent;return /4 months/.test(x)&&!document.querySelector('.ef-tile:nth-child(3).good')&&/Make it a plan/.test(document.querySelector('[data-ef-askplan]').textContent);}),'when no safe day exists eFriend explains why instead of showing a date');
+await page.evaluate(()=>UI.closeSheet(true));
+// the first message can hold everything: it skips straight to the recap
+await page.evaluate(()=>EXA.efriendAskOpen({text:'laptop 900 in 3 weeks'}));await page.waitForFunction(()=>document.querySelector('.ef-chipq.go'));
+ok(await page.evaluate(()=>{const x=[...document.querySelectorAll('.ef-msg.ef')].slice(-3).map(e=>e.textContent).join(' ');return /Laptop/i.test(x)&&/900/.test(x)&&/3 weeks/.test(x);}),'one sentence with item, price and timing skips the questions and goes to the recap');
+await page.evaluate(()=>document.querySelector('[data-ef-cpx]').click());
+ok(await page.evaluate(()=>!document.querySelector('.ef-cp')),'the chat can be closed');
+// history: past chats are kept and can be reopened and asked again
+ok(await page.evaluate(()=>{const l=EX.state().settings.efChats||[];return l.length>=3&&l.some(x=>x.done&&/iPhone/.test(x.item))&&l.some(x=>!x.done);}),'every chat is kept in the history (finished and unfinished)');
+await page.evaluate(()=>EXA.efriendAskOpen());await page.waitForSelector('.ef-cp');ok(await page.evaluate(()=>document.querySelectorAll('.ef-msg.me').length===0),'opening the chat again starts a fresh one');
+await page.evaluate(()=>document.querySelector('[data-ef-hist]').click());await page.waitForSelector('.ef-hrow');
+ok(await page.evaluate(()=>document.querySelectorAll('.ef-hrow').length>=3),'the history button lists the past chats');
+await page.evaluate(()=>[...document.querySelectorAll('.ef-hrow')].find(r=>/iPhone/.test(r.textContent)).click());await page.waitForSelector('.ef-hist-chat .ef-msg.me');
+ok(await page.evaluate(()=>/1250|iPhone/.test(document.querySelector('.ef-hist-chat').textContent)),'tapping one shows the whole conversation');
+await page.evaluate(()=>document.querySelector('[data-ef-hagain]').click());await page.waitForFunction(()=>!document.getElementById('efHist')&&document.querySelector('.ef-chipq.go'));
+ok(await page.evaluate(()=>{const x=[...document.querySelectorAll('.ef-msg.ef')].slice(-1)[0].textContent;return /iPhone 16 pro max/.test(x)&&/900/.test(x);}),'"Ask again" brings the item, price and timing back for a fresh check');
+await page.evaluate(()=>document.querySelector('[data-ef-cpx]').click());
+// the lines vary
+const lines=await page.evaluate(()=>{const seen=new Set();for(let i=0;i<30;i++){EXA.efriendAskOpen();}return 1;});
 // entry points
 await page.evaluate(()=>{const S=EX.state();S.goals.push({id:'p1',name:'Trip',target:'800',deadline:new Date(Date.now()+60*864e5).toISOString().slice(0,10),icon:'plane',kind:'efriend',wallets:['w1']});EX.save();EXA.go('home');});await page.waitForTimeout(700);
 ok(await page.evaluate(()=>!!document.querySelector('[data-home=efriend] [data-ef-ask]')),'Home has a 💬 Ask link too');
