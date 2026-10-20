@@ -21,7 +21,8 @@ const all=await page.evaluate(()=>{
  return out;});
 const res=all.filter(r=>r.level==='full'||r.st!=='paid'); // untinted rows keep the theme's own text colours
 const low2=res.filter(r=>r.sub<4.5);console.log('secondary text under 4.5:',low2.length,low2.slice(0,6).map(r=>[r.skin,r.mode,r.level,r.st,r.sub.toFixed(2)].join(' ')).join(' | '));
-const bad=res.filter(r=>r.main<4.5||r.sub<4.5||r.pill<4.5);console.log('lowest pill text',Math.min(...res.map(r=>r.pill)).toFixed(2));
+const bad=res.filter(r=>r.main<4.5||r.sub<4.5||r.pill<4.5);const bySkin={};res.filter(r=>r.pill<4.5).forEach(r=>{bySkin[r.skin+' '+r.mode]=Math.min(bySkin[r.skin+' '+r.mode]||99,r.pill)});console.log('pill failures by theme:',JSON.stringify(Object.fromEntries(Object.entries(bySkin).map(([k,v])=>[k,+v.toFixed(2)]))));
+console.log('lowest pill text',Math.min(...res.map(r=>r.pill)).toFixed(2));
 console.log('checked',res.length,'combinations; lowest main text',Math.min(...res.map(r=>r.main)).toFixed(2),'lowest secondary',Math.min(...res.map(r=>r.sub)).toFixed(2));
 bad.slice(0,15).forEach(r=>console.log('LOW',r.skin,r.mode,r.level,r.st,r.main.toFixed(2),r.sub.toFixed(2)));
 console.log(bad.length?'FAIL '+bad.length+' low-contrast combinations':'ok every theme stays readable');
