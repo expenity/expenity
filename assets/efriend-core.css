@@ -1,0 +1,176 @@
+/* Copied from the app: the robot, its moods and the animated logo, so the website robot behaves exactly like the real one. */
+.ef-card{padding:14px;border-radius:var(--r,18px);background:var(--surface);border:1px solid var(--line)}
+.ef-top{display:flex;gap:12px;align-items:center}
+.ef-bubble{position:relative;flex:1;padding:10px 12px;border-radius:16px;background:color-mix(in srgb,var(--accent) 12%,var(--surface));display:flex;flex-direction:column;gap:6px;align-items:flex-start;font-size:.95rem;line-height:1.3}
+.ef-bubble::before{content:"";position:absolute;left:-6px;top:22px;width:12px;height:12px;background:inherit;transform:rotate(45deg)}
+.ef-meta{display:flex;justify-content:space-between;align-items:center;margin:10px 0 8px;font-size:.85rem;color:var(--muted)}
+.ef-chip{display:inline-block;padding:2px 10px;border-radius:99px;font-weight:700;font-size:.8rem;background:color-mix(in srgb,var(--ok) 22%,var(--surface));color:color-mix(in srgb,var(--ok) 36%,var(--ink));border:1px solid color-mix(in srgb,var(--ok) 40%,transparent)}
+.ef-bar{position:relative;height:10px;border-radius:99px;background:color-mix(in srgb,var(--accent) 14%,var(--surface));margin:14px 10px 6px 0}
+.ef-bar i{position:absolute;left:0;top:0;bottom:0;border-radius:99px;background:var(--accent);transition:width .8s}
+.ef-suit{position:absolute;top:-11px;transform:translateX(-50%);width:28px;height:28px;border-radius:50%;background:var(--surface);border:2px solid var(--accent);display:grid;place-items:center;color:var(--accent);animation:ef-bob 2.4s ease-in-out infinite}
+.ef-card small{color:var(--muted)}
+.ef-mascot{flex:none;overflow:visible}
+.ef-body{transform-origin:32px 56px;animation:ef-bob 2.6s ease-in-out infinite}
+.ef-eyes{transform-origin:32px 30px;animation:ef-blink 4.5s infinite}
+.ef-cheer .ef-body{animation:ef-hop 1.2s ease-in-out infinite}
+.ef-spark{transform-origin:52px 16px;animation:ef-spin 2s linear infinite}
+.ef-drop{animation:ef-drip 2s ease-in infinite}
+@keyframes ef-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes ef-hop{0%,100%{transform:translateY(0) scale(1,1)}40%{transform:translateY(-8px) scale(.96,1.05)}60%{transform:translateY(0) scale(1.05,.95)}}
+@keyframes ef-blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+@keyframes ef-spin{to{transform:rotate(360deg)}}
+@keyframes ef-drip{0%{transform:translateY(-2px);opacity:0}30%{opacity:1}100%{transform:translateY(8px);opacity:0}}
+.ef-back{text-align:center;display:flex;flex-direction:column;gap:8px;align-items:center;padding:12px}
+.ef-sheet h3{margin:18px 0 6px}
+.ef-kv{list-style:none;margin:12px 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ef-kv li{padding:10px;border-radius:14px;background:var(--surface);border:1px solid var(--line);display:flex;flex-direction:column;gap:2px}
+.ef-kv span{font-size:.8rem;color:var(--muted)}
+.ef-gain{font-weight:700;color:color-mix(in srgb,var(--ok) 40%,var(--ink))}
+.ef-late{font-style:normal;font-weight:700;color:color-mix(in srgb,var(--late) 45%,var(--ink))}
+.ef-intro{display:flex;gap:12px;align-items:center;padding:12px;border-radius:16px;background:color-mix(in srgb,var(--accent) 10%,var(--surface));margin:12px 0}
+.ef-intro small{display:block;color:var(--muted)}
+.ef-switch{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:8px 0}
+.ef-switch small{display:block;color:var(--muted)}
+.ef-wallet{cursor:pointer}
+.ef-intro-ov{position:fixed;inset:0;z-index:9999;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(6px);display:grid;place-items:center;padding:24px}
+.ef-intro-card{max-width:340px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px}
+.ef-logo{width:100%;max-width:300px;overflow:visible;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+.ef-hop{opacity:0}
+.ef-intro-ov .ef-hop{animation:ef-pop .7s 3.3s both}
+.ef-intro-ov p,.ef-intro-ov button{opacity:0;animation:ef-fade .6s 3.7s both}
+@keyframes ef-E{0%,35%{opacity:1;transform:none}55%,100%{opacity:0;transform:scale(.6) translate(0,20px)}}
+@keyframes ef-tick{0%{stroke-dashoffset:40}20%,35%{stroke-dashoffset:0;opacity:1}55%,100%{opacity:0;transform:translate(20px,0)}}
+@keyframes ef-letter{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes ef-pop{0%{opacity:0;transform:scale(.3)}70%{opacity:1;transform:scale(1.1)}100%{opacity:1;transform:scale(1)}}
+@keyframes ef-fade{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.ef-body,.ef-eyes,.ef-spark,.ef-drop,.ef-suit{animation:none}.ef-logo.play *{animation:none!important;opacity:1!important}.ef-logo.play .ef-lg-E,.ef-hop,.ef-intro-ov p,.ef-intro-ov button{animation:none;opacity:1}}
+.ef-ln{fill:none;stroke:var(--ink);stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round}
+.ef-ln.ef-thin{stroke-width:2.6}
+.ef-dot{fill:var(--ink)}
+.ef-head{fill:color-mix(in srgb,var(--accent) 12%,var(--surface))}
+.ef-torso{fill:var(--surface)}
+.ef-ear{fill:#0f766e;stroke:var(--ink);stroke-width:2.6}
+.ef-arm{transform-origin:67px 80px;animation:ef-wave 2.4s ease-in-out infinite}
+.ef-ball{animation:ef-bob 1.8s ease-in-out infinite}
+@keyframes ef-wave{0%,100%{transform:rotate(0)}50%{transform:rotate(-24deg)}}
+@media (prefers-reduced-motion:reduce){.ef-arm,.ef-ball{animation:none}}
+.ef-glow{filter:drop-shadow(0 0 3px #9ff3e6)}
+.ef-stk{fill:none;stroke:#9ff3e6;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+.ef-stk.ef-thin{stroke-width:2.6}
+.ef-body{animation:ef-hover 3s ease-in-out infinite}
+.ef-shadow{transform-box:fill-box;transform-origin:center;animation:ef-shad 3s ease-in-out infinite}
+.ef-armR{transform-box:fill-box;transform-origin:20% 90%;animation:ef-wave 2.2s ease-in-out infinite}
+.ef-armL{transform-box:fill-box;transform-origin:80% 90%;animation:ef-wave2 3.2s ease-in-out infinite}
+.ef-eyes{transform-box:fill-box;transform-origin:center;animation:ef-blink 4.5s infinite}
+.ef-cheer .ef-body{animation:ef-hopb 1.3s ease-in-out infinite}
+@keyframes ef-hover{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes ef-shad{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(.82);opacity:.7}}
+@keyframes ef-hopb{0%,100%{transform:translateY(0)}45%{transform:translateY(-9px)}}
+@keyframes ef-wave2{0%,100%{transform:rotate(0)}50%{transform:rotate(8deg)}}
+@media (prefers-reduced-motion:reduce){.ef-body,.ef-shadow,.ef-armR,.ef-armL,.ef-eyes{animation:none!important}}
+@keyframes ef-wave{0%,55%,100%{transform:rotate(0)}8%{transform:rotate(-38deg)}18%{transform:rotate(-8deg)}28%{transform:rotate(-38deg)}38%{transform:rotate(-8deg)}46%{transform:rotate(-34deg)}}
+@keyframes ef-blink{0%,90%,100%{transform:scaleY(1)}93%{transform:scaleY(.08)}96%{transform:scaleY(1)}}
+.ef-armR{animation:ef-wave 5s ease-in-out infinite}
+.ef-eyes{animation:ef-blink 3.6s infinite}
+.ef-cheer .ef-armL{animation:ef-wave 1.4s ease-in-out infinite reverse}
+@media (prefers-reduced-motion:reduce){.ef-armR,.ef-armL,.ef-eyes{animation:none!important}}
+.tt-ef-bar{width:70%;height:8px;border-radius:99px;background:#d9e6e4;overflow:hidden}
+.tt-ef-bar i{display:block;height:100%;width:70%;background:#0f766e;border-radius:99px;animation:ef-fill 3s ease-in-out infinite}
+@keyframes ef-fill{0%{width:20%}70%,100%{width:70%}}
+.ef-promo .ef-bubble .btn{margin-top:2px}
+.gcard [data-ef-open] svg{vertical-align:middle}
+.ef-page .ef-top{align-items:flex-start}
+.ef-grow{display:flex;flex-direction:column;gap:8px;padding:12px 0;border-bottom:1px solid var(--line)}
+.ef-gtop{display:flex;align-items:center;gap:10px}
+.ef-gtop>div{flex:1}
+.ef-gtop small{display:block;color:var(--muted)}
+.ef-gacts{display:flex;justify-content:flex-end}
+.ef-dots{display:flex;gap:6px}
+.ef-dots i{width:8px;height:8px;border-radius:99px;background:var(--line);transition:.3s}
+.ef-dots i.on{width:22px;background:#0f766e}
+.ef-dots i.done{background:color-mix(in srgb,#0f766e 50%,var(--line))}
+.ef-demo-fill{animation:ef-dfill 3s .9s ease-out both}
+.ef-demo-suit{animation:ef-dsuit 3s .9s ease-out both}
+.ef-tap{position:absolute;right:14px;top:14px;width:18px;height:18px;border-radius:50%;background:rgba(15,118,110,.35);animation:ef-tapa 1.6s ease-out infinite}
+@keyframes ef-widget{from{opacity:0;transform:translateY(14px) scale(.94)}to{opacity:1;transform:none}}
+@keyframes ef-dfill{from{width:8%}to{width:62%}}
+@keyframes ef-dsuit{from{left:8%}to{left:62%}}
+@keyframes ef-pulse{0%,100%{box-shadow:0 0 0 0 rgba(15,118,110,.35)}50%{box-shadow:0 0 0 6px rgba(15,118,110,0)}}
+@keyframes ef-tapa{0%{transform:scale(.4);opacity:1}100%{transform:scale(2.2);opacity:0}}
+.ef-mascot{cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+.ef-face-smile,.ef-face-giggle,.ef-face-angry,.ef-fx .ef-heart,.ef-fx .ef-steam{display:none}
+.ef-poke-smile .ef-face-base,.ef-poke-giggle .ef-face-base,.ef-poke-angry .ef-face-base{display:none}
+.ef-poke-smile .ef-face-smile,.ef-poke-giggle .ef-face-giggle,.ef-poke-angry .ef-face-angry{display:inline}
+.ef-red{stroke:#ff8a80!important;filter:drop-shadow(0 0 3px #ff6b6b)}
+.ef-redglow{filter:drop-shadow(0 0 3px #ff6b6b)}
+.ef-poke-smile .ef-fx .ef-heart,.ef-poke-giggle .ef-fx .ef-heart{display:inline;transform-box:fill-box;transform-origin:center;animation:ef-heart 1.2s ease-out both}
+.ef-poke-angry .ef-fx .ef-steam{display:inline;animation:ef-steam .5s ease-in-out infinite}
+.ef-mascot.ef-poke-smile .ef-body{animation:ef-jump .5s ease-out}
+.ef-mascot.ef-poke-giggle .ef-body{animation:ef-wobble .25s ease-in-out 5}
+.ef-mascot.ef-poke-angry{animation:ef-shake .12s linear infinite}
+.ef-mascot.ef-poke-smile .ef-armR,.ef-mascot.ef-poke-giggle .ef-armR{animation:ef-flapR .3s ease-in-out 4}
+.ef-mascot.ef-poke-smile .ef-armL,.ef-mascot.ef-poke-giggle .ef-armL{animation:ef-flapL .3s ease-in-out 4}
+.ef-mascot.ef-poke-angry .ef-armR{animation:ef-flapR .14s linear infinite}
+.ef-mascot.ef-poke-angry .ef-armL{animation:ef-flapL .14s linear infinite}
+@keyframes ef-jump{0%{transform:translateY(0)}40%{transform:translateY(-12px)}100%{transform:translateY(0)}}
+@keyframes ef-wobble{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
+@keyframes ef-shake{0%{transform:translate(0,0)}25%{transform:translate(-3px,1px)}50%{transform:translate(3px,-1px)}75%{transform:translate(-2px,-1px)}100%{transform:translate(0,0)}}
+@keyframes ef-flapR{0%,100%{transform:rotate(0)}50%{transform:rotate(-45deg)}}
+@keyframes ef-flapL{0%,100%{transform:rotate(0)}50%{transform:rotate(45deg)}}
+@keyframes ef-heart{0%{opacity:0;transform:translateY(10px) scale(.4)}30%{opacity:1}100%{opacity:0;transform:translateY(-22px) scale(1)}}
+@keyframes ef-steam{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-4px)}}
+@media (prefers-reduced-motion:reduce){.ef-mascot.ef-poke-angry,.ef-mascot[class*=ef-poke] .ef-body,.ef-mascot[class*=ef-poke] .ef-armR,.ef-mascot[class*=ef-poke] .ef-armL{animation:none}}
+.ef-logo .ef-lg-w{transform-box:fill-box}
+.ef-logo.play .ef-lg-w.sw{opacity:0;animation:ef-fade .35s var(--d) both}
+.ef-logo.play .ef-lg-w.ty{clip-path:inset(0 100% 0 0);animation:ef-type .2s steps(6,end) var(--d) both}
+.ef-logo.play .ef-m{animation:ef-mout .35s 2.6s both}
+.ef-logo.play .ef-m-e,.ef-logo.play .ef-m-t{opacity:0;animation:ef-fade .35s .15s both}
+.ef-logo.play .ef-m-hook,.ef-logo.play .ef-m-bar{stroke-dasharray:1;stroke-dashoffset:1;animation:ef-draw2 .3s both}
+.ef-logo.play .ef-m-hook{animation-delay:2s}
+.ef-logo.play .ef-m-bar{animation-delay:2.25s}
+@keyframes ef-type{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes ef-mout{to{opacity:0}}
+@keyframes ef-draw2{to{stroke-dashoffset:0}}
+.ef-intro-ov .ef-hop{animation:ef-pop .7s 4.2s both}
+.ef-intro-ov p,.ef-intro-ov button{animation:ef-fade .6s 4.6s both}
+@media (prefers-reduced-motion:reduce){.ef-logo.play .ef-m{display:none}.ef-logo.play .ef-lg-w{opacity:1;clip-path:none;animation:none}}
+.ef-mascot .ef-armL,.ef-mascot .ef-armR{transform-box:view-box;transform-origin:0 0}
+.ef-mascot .ef-armR{transform:rotate(-22deg);animation:ef-armsR 8s ease-in-out infinite}
+.ef-mascot .ef-armL{transform:rotate(22deg);animation:ef-armsL 8s ease-in-out infinite}
+@keyframes ef-armsR{0%{transform:rotate(-22deg)}4%{transform:rotate(-152deg)}8%{transform:rotate(-134deg)}12%{transform:rotate(-166deg)}16%{transform:rotate(-134deg)}20%{transform:rotate(-166deg)}24%{transform:rotate(-134deg)}28%{transform:rotate(-166deg)}30%{transform:rotate(-152deg)}35%{transform:rotate(-22deg)}38.75%{transform:rotate(-22deg)}42%{transform:rotate(-152deg)}46%{transform:rotate(-166deg)}50%{transform:rotate(-134deg)}54%{transform:rotate(-166deg)}58%{transform:rotate(-134deg)}62%{transform:rotate(-166deg)}65%{transform:rotate(-134deg)}67.5%{transform:rotate(-152deg)}74%{transform:rotate(-22deg)}100%{transform:rotate(-22deg)}}
+@keyframes ef-armsL{0%{transform:rotate(22deg)}38.75%{transform:rotate(22deg)}42%{transform:rotate(152deg)}46%{transform:rotate(166deg)}50%{transform:rotate(134deg)}54%{transform:rotate(166deg)}58%{transform:rotate(134deg)}62%{transform:rotate(166deg)}65%{transform:rotate(134deg)}67.5%{transform:rotate(152deg)}74%{transform:rotate(22deg)}100%{transform:rotate(22deg)}}
+.ef-mascot.ef-poke-smile .ef-armR,.ef-mascot.ef-poke-giggle .ef-armR{animation:ef-pokeR .35s ease-in-out 4}
+.ef-mascot.ef-poke-smile .ef-armL,.ef-mascot.ef-poke-giggle .ef-armL{animation:ef-pokeL .35s ease-in-out 4}
+.ef-mascot.ef-poke-angry .ef-armR{animation:ef-angryR .15s linear infinite}
+.ef-mascot.ef-poke-angry .ef-armL{animation:ef-angryL .15s linear infinite}
+@keyframes ef-pokeR{0%,100%{transform:rotate(-140deg)}50%{transform:rotate(-165deg)}}
+@keyframes ef-pokeL{0%,100%{transform:rotate(140deg)}50%{transform:rotate(165deg)}}
+@keyframes ef-angryR{0%,100%{transform:rotate(-100deg)}50%{transform:rotate(-135deg)}}
+@keyframes ef-angryL{0%,100%{transform:rotate(100deg)}50%{transform:rotate(135deg)}}
+@media (prefers-reduced-motion:reduce){.ef-mascot .ef-armR,.ef-mascot .ef-armL{animation:none!important}}
+.ef-bubble[data-ef-bubble]{cursor:pointer;transition:opacity .22s}
+.ef-bubble.swap{opacity:0}
+.ef-editrow{display:flex;justify-content:flex-end;margin-bottom:4px}
+.ef-gacts{gap:8px}
+.ef-back .btn.sm{margin-top:2px}
+.ef-chip.v-tight{background:color-mix(in srgb,var(--warn) 22%,var(--surface));color:color-mix(in srgb,var(--warn) 36%,var(--ink));border-color:color-mix(in srgb,var(--warn) 40%,transparent)}
+.ef-chip.v-atrisk,.ef-chip.v-unlikely{background:color-mix(in srgb,var(--late) 20%,var(--surface));color:color-mix(in srgb,var(--late) 36%,var(--ink));border-color:color-mix(in srgb,var(--late) 40%,transparent)}
+.ef-rep-plan{flex-direction:column;align-items:stretch}
+.ef-rep-plan .ef-gtop{width:100%}
+@keyframes ef-tick{from{transform:translateX(var(--cw,300px))}to{transform:translateX(-100%)}}
+.ef-tips .btn{margin-top:6px}
+@keyframes ef-gainpop{0%{opacity:0;transform:translateY(10px) scale(.6)}70%{opacity:1;transform:translateY(-4px) scale(1.1)}100%{opacity:1;transform:none}}
+.ef-disc{margin-top:16px}
+.ef-rank{width:28px;text-align:center;font-weight:700;font-size:1.05rem;flex:none}
+.ef-ud{display:flex;flex-direction:column;gap:2px}
+.ef-ud button{border:0;background:transparent;color:var(--muted);font-size:.7rem;line-height:1;padding:2px 6px;cursor:pointer}
+@keyframes ef-s1{0%,20%{top:0}40%,80%{top:54px}100%{top:0}}
+@keyframes ef-s2{0%,20%{top:54px}40%,80%{top:108px}100%{top:54px}}
+@keyframes ef-s3{0%,20%{top:108px}40%,80%{top:0;border-color:#0f766e}100%{top:108px}}
+@keyframes ef-trophy{0%,35%{opacity:0;width:0}45%,80%{opacity:1;width:1.4em}100%{opacity:0;width:0}}
+.ef-nudge{margin:0 0 12px}
+@keyframes ef-fall{0%{transform:translateY(-10px);opacity:0}30%{opacity:1}70%{transform:translateX(30px) translateY(6px);opacity:1}100%{transform:translateX(40px);opacity:0}}
+@keyframes ef-fall2{0%{transform:translateY(-30px) rotate(0);opacity:0}10%{opacity:1}100%{transform:translateY(110vh) rotate(360deg);opacity:1}}
+.ef-md-ok{font-size:1.3rem;opacity:0;animation:ef-fade .5s 1.8s both}
+.ef-md-a{animation:ef-bob 2s ease-in-out infinite}
+.ef-md-ar{opacity:.5;animation:ef-fade .5s 1s both}
