@@ -95,5 +95,26 @@ const rem=await page.evaluate(()=>{const S=EX.state(),pl=S.goals.find(g=>g.name=
 ok(rem[1]===rem[0]-30000,'money set aside in a linked goal counts towards the plan ('+rem.join(' -> ')+')');
 await page.evaluate(()=>{document.querySelectorAll('.ef-ob').forEach(x=>x.remove());UI.closeSheet&&UI.closeSheet();EXA.openEfPlan();});await page.waitForTimeout(300);
 ok(await page.evaluate(()=>getComputedStyle(document.querySelector('#efPlanForm select')||document.body).appearance==='none'||!document.querySelector('#efPlanForm select')),'selects use the slick style (no native look)');
+// several plans together
+await page.evaluate(()=>{UI.closeSheet&&UI.closeSheet();document.querySelectorAll('.ef-ob').forEach(x=>x.remove());document.body.classList.remove('ef-ob-open');const S=EX.state();S.goals=S.goals.filter(g=>g.kind!=='efriend');const d=(n)=>new Date(Date.now()+n*864e5).toISOString().slice(0,10);const a=S.accounts[0].id;
+S.goals.push({id:'m1',name:'Weekend away',target:'300',deadline:d(60),icon:'beach',kind:'efriend',wallets:[a],group:'Summer'},{id:'m2',name:'New bike',target:'300',deadline:d(90),icon:'car',kind:'efriend',wallets:[a],group:'Summer'},{id:'m3',name:'Concert',target:'50',deadline:d(30),icon:'gift',kind:'efriend',wallets:[a]});EX.save();});
+const sh=await page.evaluate(()=>{const all=EX.efriend.all();return {order:all.map(f=>f.goal.id).join(','),res:all.map(f=>Math.round(f.reserved/100)).join(','),single:Math.round(EX.efriend.forecast(all[2].goal,0).projectedFree/100),adj:Math.round(all[2].projectedFree/100)};});
+ok(sh.order==='m3,m1,m2','plans are checked in date order ('+sh.order+')');
+ok(sh.res==='0,50,350'&&sh.single-sh.adj===350,'a later plan only gets what the earlier ones leave ('+sh.res+')');
+await page.evaluate(()=>EXA.go('home'));await page.waitForTimeout(400);
+ok(await page.evaluate(()=>document.querySelectorAll('[data-home=efriend] .ef-mini-list li').length===3&&/plans/.test(document.querySelector('[data-home=efriend]').textContent)),'Home shows all plans together, each with its own verdict');
+await page.evaluate(()=>EXA.openEfriendAll());await page.waitForSelector('.ef-plan-rows');
+ok(await page.evaluate(()=>document.querySelectorAll('.ef-plan-rows li').length===3&&/by date/i.test(document.querySelector('.ef-sheet').textContent)),'the combined analysis lists every plan by date');
+await page.evaluate(()=>{UI.closeSheet();EXA.openEfriendAll('Summer');});await page.waitForSelector('.ef-plan-rows');
+ok(await page.evaluate(()=>document.querySelectorAll('.ef-plan-rows li').length===2),'a group is analysed on its own');
+await page.evaluate(()=>{UI.closeSheet();EXA.st.view='more';EXA.st.more='efriend';EXA.render();});await page.waitForTimeout(300);
+ok(await page.evaluate(()=>!!document.querySelector('.ef-overview')&&[...document.querySelectorAll('.ef-ghead h2')].some(h=>h.textContent==='Summer')),'the eFriend page groups plans and shows the overview');
+await page.evaluate(()=>{EXA.st.view='reports';EXA.st.more='root';});
+await page.evaluate(()=>{const S=EX.state();S.settings.efHistory={m1:[{d:'2026-10-01',v:'atrisk',p:50},{d:'2026-10-10',v:'tight',p:90},{d:EX.today(),v:'ontrack',p:105}]};S.goals.find(g=>g.id==='m1').created=new Date(Date.now()-30*864e5).toISOString().slice(0,10);EX.state().settings.efHistory.m1[0].d=new Date(Date.now()-30*864e5).toISOString().slice(0,10);EX.save();});
+ok(await page.evaluate(()=>{const h=EXA.efriendReport();return /ef-spark-chart/.test(h)&&/Spending on wants/.test(h)&&/not proof/.test(h);}),'the Reports view shows the journey chart and the honest wants comparison');
+await page.evaluate(()=>{EXA.st.view='reports';EXA.render();});await page.waitForTimeout(300);
+ok(await page.evaluate(()=>!![...document.querySelectorAll('[data-rep=tab]')].find(b=>b.dataset.tab==='efriend')),'Reports has an eFriend tab');
+await page.evaluate(()=>[...document.querySelectorAll('[data-rep=tab]')].find(b=>b.dataset.tab==='efriend').click());await page.waitForTimeout(300);
+ok(await page.evaluate(()=>!!document.querySelector('#repBody .ef-rep')),'the eFriend tab shows the progress report');
 ok(errs.length===0,'no page errors '+errs.join('|'));
 await browser.close();server.close();
