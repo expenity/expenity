@@ -122,7 +122,7 @@
 		const eta = i.remaining === 0 ? t( 'goalReached' ) : i.eta ? t( 'goalEta', { date: dateShort( i.eta ) } ) : t( 'goalNoEta' );
 		return `<div class="gcard">${ ring( i.pct, 72, UI.icon( g.icon || 'target', 26 ) ) }
 			<button type="button" class="mid" data-plan="edit-goal" data-id="${ esc( g.id ) }"><b>${ esc( g.name ) }</b>${EXA.tagsInline(g.tags)}<small>${ esc( t( 'goalSaved', { a: m$( i.saved ), b: m$( i.target ) } ) ) }</small><small class="st">${ i.pct }% · ${ esc( eta ) }${ i.needMonthly ? ' · ' + esc( t( 'goalNeed', { a: m$( i.needMonthly ) } ) ) : '' }</small></button>
-			<button type="button" class="btn btn-ghost sm" data-plan="goal-money" data-id="${ esc( g.id ) }">${ UI.icon( 'plus', 18 ) } ${ esc( t( 'goalAddMoney' ) ) }</button></div>`;
+			<button type="button" class="btn btn-ghost sm" data-plan="goal-money" data-id="${ esc( g.id ) }">${ UI.icon( 'plus', 18 ) } ${ esc( t( 'goalAddMoney' ) ) }</button>${ EXA.efriendAsk ? EXA.efriendAsk( g ) : '' }</div>`;
 	}
 	function incomeRow( i ) {
 		const days = Math.round( ( parse( i.next ) - parse( today() ) ) / 864e5 );
@@ -156,7 +156,7 @@
 			const sav = EX.activeAccounts().filter( ( a ) => a.type === 'savings' );
 			const savBal = EX.mainCents( sav.map( ( a ) => ( { amount: EX.balance( a ) / 100, currency: a.currency } ) ) );
 			body = `<section class="card"><h2>${ esc( t( 'savingsTitle' ) ) }</h2><div class="tiles"><div class="tile"><small>${ esc( t( 'savedInGoals' ) ) }</small><b>${ esc( m$( saved ) ) }</b><span>${ esc( target ? t( 'ofTarget', { b: m$( target ) } ) : '' ) }</span></div><div class="tile"><small>${ esc( t( 'savingsWallets' ) ) }</small><b>${ esc( m$( savBal ) ) }</b><span>${ esc( t( 'walletsN', { n: sav.length } ) ) }</span></div></div></section>
-				${ goals.length ? `<div class="ggrid">${ goals.map( goalCard ).join( '' ) }</div>` : `<div class="empty small">${ UI.ci( 'target', 'pink', 64 ) }<p>${ esc( t( 'goalNone' ) ) }</p></div>` }
+				${ goals.length && EXA.efriendNudge ? EXA.efriendNudge() : '' }${ goals.length ? `<div class="ggrid">${ goals.map( goalCard ).join( '' ) }</div>` : `<div class="empty small">${ UI.ci( 'target', 'pink', 64 ) }<p>${ esc( t( 'goalNone' ) ) }</p></div>` }
 				<div class="btn-row"><button type="button" class="btn btn-primary" data-plan="add-goal">${ UI.icon( 'plus', 22 ) } ${ esc( t( 'goalAdd' ) ) }</button></div>`;
 
 		}

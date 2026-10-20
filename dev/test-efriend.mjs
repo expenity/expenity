@@ -30,8 +30,18 @@ await page.click('.ef-intro-ov button');
 await page.evaluate(()=>EXA.efriendOnboard('g1'));await page.waitForSelector('.ef-ob');
 ok(await page.evaluate(()=>{const r=document.querySelector('.ef-ob').getBoundingClientRect();return r.width>=innerWidth-1&&r.height>=innerHeight-1;}),'onboarding is full screen');
 await page.waitForTimeout(5800);await page.screenshot({path:'/tmp/ef-ob1.png'});await page.click('[data-ef-ob=next]');await page.waitForTimeout(3800);
-ok(await page.evaluate(()=>/afford/i.test(document.querySelector('.ef-ob').textContent)&&document.querySelectorAll('.ef-how li').length===6),'step 2 explains how it works (wallets, income, bills, spending, free vs cost)');await page.screenshot({path:'/tmp/ef-how.png'});await page.click('[data-ef-ob=next]');await page.waitForTimeout(1200);
-ok(await page.evaluate(()=>/budget/i.test(document.querySelector('.ef-ob').textContent)&&!!document.querySelector('.ef-bud-card')),'the tour has a fun budgets step');await page.screenshot({path:'/tmp/ef-bud.png'});await page.click('[data-ef-ob=next]');await page.waitForTimeout(2200);
+ok(await page.evaluate(()=>/afford/i.test(document.querySelector('.ef-ob').textContent)&&document.querySelectorAll('.ef-how li').length===6),'step 2 explains how it works (wallets, income, bills, spending, free vs cost)');await page.screenshot({path:'/tmp/ef-how.png'});await page.click('[data-ef-ob=next]');await page.waitForTimeout(600);
+ok(await page.evaluate(()=>/dreaming/i.test(document.querySelector('.ef-ob').textContent)&&document.querySelectorAll('.ef-wish[data-ef-wish]').length>=6),'the tour asks what you are dreaming about, with wish chips');
+const before=await page.evaluate(()=>EX.state().goals.filter(g=>g.kind==='efriend').length);
+await page.click('.ef-ob .ef-wish[data-ef-wish=trip]');await page.click('.ef-ob [data-ef-wish-other]');
+await page.click('[data-ef-ob=next]');await page.waitForTimeout(300);
+ok(await page.evaluate(()=>/future date|remove it/i.test(document.querySelector('.ef-ob').textContent)),'an incomplete wish asks for a cost and a date instead of being lost');
+await page.fill('.ef-ob .ef-wish-row:nth-child(1) [data-w=cost]','800');await page.evaluate(()=>{const i=document.querySelector('.ef-ob .ef-wish-row:nth-child(1) [data-w=date]');i.value=new Date(Date.now()+120*864e5).toISOString().slice(0,10);i.dispatchEvent(new Event('change',{bubbles:true}));i.dispatchEvent(new Event('input',{bubbles:true}));});
+await page.click('[data-ef-ob=next]');await page.waitForTimeout(500);
+ok(await page.evaluate((b)=>EX.state().goals.filter(g=>g.kind==='efriend').length===b+1,before),'a wish from the tour becomes a plan');
+await page.waitForTimeout(800);
+ok(await page.evaluate(()=>/budget/i.test(document.querySelector('.ef-ob').textContent)&&!!document.querySelector('.ef-bud-card')),'the tour has a fun budgets step');await page.screenshot({path:'/tmp/ef-bud.png'});await page.click('[data-ef-ob=next]');await page.waitForTimeout(500);
+ok(await page.evaluate(()=>/Who comes first/i.test(document.querySelector('.ef-ob').textContent)&&!!document.querySelector('.ef-ob [data-ef-margin]')&&!!document.querySelector('.ef-shuf')),'the tour explains priorities (even with one plan) and has the risk slider');await page.screenshot({path:'/tmp/ef-prio.png'});await page.click('[data-ef-ob=next]');await page.waitForTimeout(2200);
 ok(await page.evaluate(()=>!!document.querySelector('.ef-ob .ef-ph-widget')),'step 2 animates the Home card');await page.screenshot({path:'/tmp/ef-ob2.png'});
 await page.click('[data-ef-ob=next]');await page.waitForSelector('[data-ef-row]');await page.screenshot({path:'/tmp/ef-ob3.png'});
 ok(await page.evaluate(()=>document.querySelectorAll('[data-ef-row]').length>=2&&document.querySelectorAll('[data-ef-row] .on').length===document.querySelectorAll('[data-ef-row]').length),'every category pre-sorted with a 3-way toggle');
@@ -54,7 +64,7 @@ ok(await page.evaluate(()=>!!document.querySelector('[data-more=efriend]')),'Mor
 await page.click('[data-more=efriend]');await page.waitForTimeout(300);
 console.log(await page.evaluate(()=>document.querySelector('#view').textContent.slice(0,200)+'|'+!!document.querySelector('[data-ef-new]')+!!document.querySelector('[data-ef-sort]')));ok(await page.evaluate(()=>/Trip to Italy/.test(document.querySelector('.ef-page')?.parentElement?.textContent||document.body.textContent)&&!!document.querySelector('[data-ef-new]')&&!!document.querySelector('[data-ef-sort]')),'eFriend page lists goals with actions');
 await page.click('[data-ef-intro]');await page.waitForSelector('.ef-ob');
-ok(await page.evaluate(()=>document.querySelectorAll('.ef-dots i').length===6),'More > eFriend replays the whole onboarding (6 steps)');
+ok(await page.evaluate(()=>document.querySelectorAll('.ef-dots i').length===8),'More > eFriend replays the whole onboarding (8 steps)');
 await page.click('[data-ef-ob=skip]');await page.waitForTimeout(300);
 await page.evaluate(()=>{const S=EX.state();S.goals[0].deadline='';EXA.go('home');});await page.waitForTimeout(300);
 ok(await page.evaluate(()=>!!document.querySelector('[data-ef-try]')&&/date/i.test(document.querySelector('[data-home=efriend]').textContent)),'coached goal without a date is not lost: Home asks for the date');
@@ -72,7 +82,7 @@ await page.click('[data-ef-ob=skip]');await page.waitForTimeout(2000);
 ok(await page.evaluate(()=>!document.querySelector('.ef-ob')),'Skip closes it and it does not restart');
 await page.evaluate(()=>UI.closeSheet&&UI.closeSheet());
 await page.evaluate(()=>EXA.efriendOnboard());await page.waitForSelector('.ef-ob');
-for(let i=0;i<5;i++){await page.click('[data-ef-ob=next]');await page.waitForTimeout(150);}
+for(let i=0;i<7;i++){await page.click('[data-ef-ob=next]');await page.waitForTimeout(150);}
 await page.click('[data-ef-ob=next]');await page.waitForTimeout(2000);
 ok(await page.evaluate(()=>!document.querySelector('.ef-ob')),"Let's go finishes and it does not restart");
 ok(await page.evaluate(()=>{const c=getComputedStyle(document.createElement('div'));return true;}),'');
@@ -151,6 +161,39 @@ await page.evaluate(()=>{const S=EX.state();S.goals=S.goals.filter(g=>g.kind!=='
 ok(await page.evaluate(()=>document.querySelectorAll('.ef-tips [data-ef-budget]').length>=1&&/budget/i.test(document.querySelector('.ef-tips').textContent)),'off target: eFriend suggests budgets with a link to set them');
 await page.click('.ef-tips [data-ef-budget]');await page.waitForSelector('#budgetForm');
 ok(await page.evaluate(()=>{const f=document.querySelector('#budgetForm');return +f.elements.amount.value>0&&f.elements.category.value!=='all';}),'the link opens the budget form already filled in');
+await page.evaluate(()=>UI.closeSheet());
+// priorities
+await page.evaluate(()=>{document.querySelectorAll('.ef-ob').forEach(x=>x.remove());document.body.classList.remove('ef-ob-open');UI.closeSheet&&UI.closeSheet();const S=EX.state();S.goals=S.goals.filter(g=>g.kind!=='efriend');S.bills=[];S.accounts[0].opening='1500';delete S.settings.efAsked;delete S.settings.efMargin;const d=(n)=>new Date(Date.now()+n*864e5).toISOString().slice(0,10),a=S.accounts[0].id;
+S.goals.push({id:'q1',name:'Sofa',target:'900',deadline:d(40),icon:'home',kind:'efriend',wallets:[a]},{id:'q2',name:'Paris',target:'900',deadline:d(100),icon:'plane',kind:'efriend',wallets:[a]},{id:'q3',name:'Shoes',target:'200',deadline:d(30),icon:'heart',kind:'efriend',wallets:[a]});EX.save();});
+const o1=await page.evaluate(()=>EX.efriend.all().map(f=>f.goal.name).join(','));
+ok(o1==='Shoes,Sofa,Paris','without a ranking, plans go by date ('+o1+')');
+ok(await page.evaluate(()=>EX.efriend.conflict()&&EX.efriend.needAsk()),'plans costing more than the money likely free are a conflict, and eFriend needs to ask');
+await page.evaluate(()=>EXA.go('home'));await page.waitForTimeout(400);
+ok(await page.evaluate(()=>!!document.querySelector('.ef-ask [data-ef-prio]')),'Home asks which plan matters most');
+await page.evaluate(()=>EXA.openEfPriority());await page.waitForSelector('.ef-prio-i');
+for(let i=0;i<2;i++){await page.evaluate(()=>{const li=[...document.querySelector('.ef-prio').children].find(x=>x.dataset.id==='q2');li.querySelector('[data-up]').click();});await page.waitForTimeout(300);}
+console.log(await page.evaluate(()=>JSON.stringify(EX.efriend.all().map(f=>[f.goal.name,Math.round((f.projectedFree||0)/100),Math.round(f.remaining/100),f.verdict]))));
+const o2=await page.evaluate(()=>EX.efriend.ordered().map(g=>g.name).join(','));
+ok(o2==='Paris,Shoes,Sofa','moving a plan up makes it the top priority ('+o2+')');
+ok(await page.evaluate(()=>!EX.efriend.needAsk()&&EX.state().settings.efAsked===EX.efriend.sig()),'once you rank them, eFriend does not ask again for the same plans');
+const v=await page.evaluate(()=>{const a=EX.efriend.all();return a.map(f=>f.goal.name+':'+f.verdict).join(' ');});
+ok(/^Paris:/.test(v),'the top priority is funded first ('+v+')');
+const grp=await page.evaluate(()=>{EXA.openEfriendAll();return new Promise(r=>setTimeout(()=>r(document.querySelector('#sheet').textContent),400));});
+ok(/top priority/i.test(grp)&&/Paris/.test(grp),'the combined analysis names the top priority');
+ok(await page.evaluate(()=>{const w=EX.efriend.whatIf(EX.efriend.all());return w===null||!!w.plan;}),'what-if finds a plan that would fit if a lower one were dropped (or none is needed)');
+const vm=await page.evaluate(()=>{const S=EX.state();S.settings.efMargin=1.6;const a=EX.efriend.all().map(f=>f.verdict);S.settings.efMargin=1.05;const b=EX.efriend.all().map(f=>f.verdict);delete S.settings.efMargin;return [a.filter(x=>x==='comfortable').length,b.filter(x=>x==='comfortable').length];});
+ok(vm[0]<=vm[1],'the risk slider changes what counts as safe (cautious '+vm[0]+' safe, bold '+vm[1]+' safe)');
+await page.evaluate(()=>{UI.closeSheet();EXA.st.view='more';EXA.st.more='efriend';EXA.render();});await page.waitForTimeout(300);
+ok(await page.evaluate(()=>!!document.querySelector('.ef-prio')&&!!document.querySelector('[data-ef-margin]')),'the eFriend page has the priority list and the risk slider');
+// adoption nudges
+await page.evaluate(()=>{const S=EX.state();S.goals=S.goals.filter(g=>g.kind!=='efriend');S.goals.push({id:'g9',name:'Savings pot',target:'1000',deadline:new Date(Date.now()+90*864e5).toISOString().slice(0,10),icon:'target'});EX.save();EXA.st.view='plan';EXA.st.planTab='goals';EXA.render();});await page.waitForTimeout(300);
+ok(await page.evaluate(()=>!!document.querySelector('.ef-nudge [data-ef-nudge]')&&!!document.querySelector('.gcard [data-ef-fromgoal]')),'Plan nudges you to try eFriend and each goal has an Ask eFriend button');
+await page.click('.gcard [data-ef-fromgoal]');await page.waitForSelector('#efPlanForm');
+console.log(await page.evaluate(()=>{const f=document.querySelector('#efPlanForm');return [f.elements.pname.value,f.elements.pcost.value,f.elements.plink&&f.elements.plink.value].join('|');}));ok(await page.evaluate(()=>{const f=document.querySelector('#efPlanForm');return f.elements.pname.value==='Savings pot'&&f.elements.pcost.value==='1000'&&f.elements.plink.value!=='';}),'Ask eFriend opens a plan prefilled from the goal and linked to it');
+await page.evaluate(()=>{UI.closeSheet();EXA.go('home');});await page.waitForTimeout(400);
+ok(await page.evaluate(()=>document.querySelectorAll('[data-home=efriend] .ef-wish[data-ef-wish]').length>=6),'with no plans, Home invites wishes as tappable chips');
+await page.click('[data-home=efriend] .ef-wish[data-ef-wish=trip]');await page.waitForSelector('#efPlanForm');
+ok(await page.evaluate(()=>document.querySelector('#efPlanForm').elements.pname.value.length>0),'tapping a wish opens a plan with the name filled in');
 await page.evaluate(()=>UI.closeSheet());
 ok(errs.length===0,'no page errors '+errs.join('|'));
 await browser.close();server.close();

@@ -1335,3 +1335,33 @@ input[type=date]::-webkit-datetime-edit{padding:0}
 .ef-det summary::after{content:"";margin-left:auto;width:9px;height:9px;border-right:2.5px solid var(--muted);border-bottom:2.5px solid var(--muted);transform:rotate(45deg);transition:transform .2s}
 .ef-det[open] summary::after{transform:rotate(-135deg)}.ef-det[open] summary{margin-bottom:8px}
 .ef-disc{margin-top:16px}
+
+/* priorities */
+.ef-prio{list-style:none;margin:10px 0;padding:0;display:flex;flex-direction:column;gap:8px}
+.ef-prio-i{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--line);border-radius:16px;background:var(--surface);touch-action:pan-y}
+.ef-prio-i.drag{box-shadow:0 8px 24px rgba(0,0,0,.2);border-color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,var(--surface))}
+.ef-grip{border:0;background:transparent;color:var(--muted);font-size:1.4rem;line-height:1;padding:4px 6px;cursor:grab;touch-action:none}
+.ef-rank{width:28px;text-align:center;font-weight:700;font-size:1.05rem;flex:none}
+.ef-prio-t{flex:1;min-width:0}.ef-prio-t b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ef-prio-t small{color:var(--muted)}
+.ef-ud{display:flex;flex-direction:column;gap:2px}.ef-ud button{border:0;background:transparent;color:var(--muted);font-size:.7rem;line-height:1;padding:2px 6px;cursor:pointer}
+.ef-risk{padding:4px 0}.ef-risk-h{display:flex;justify-content:space-between;align-items:center;gap:8px}.ef-risk-val{font-weight:700;color:#0f766e}
+.ef-risk input[type=range]{width:100%;margin:10px 0 2px;accent-color:#0f766e;height:28px}.ef-risk-ends{display:flex;justify-content:space-between;font-size:.8rem;color:var(--muted)}
+.ef-ask{display:flex;align-items:center;gap:10px;padding:10px 12px;margin:0 0 10px;border-radius:14px;background:color-mix(in srgb,var(--warn) 18%,var(--surface));border:1px solid color-mix(in srgb,var(--warn) 45%,var(--line))}
+.ef-ask>span:nth-child(2){flex:1;line-height:1.35}.ef-ask-em{font-size:1.3rem}
+
+/* wishes, shuffle animation */
+.ef-wishes{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:10px 0}
+.ef-wish{border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:99px;padding:8px 14px;font:inherit;font-weight:600;cursor:pointer}
+.ef-wish.on{background:color-mix(in srgb,#0f766e 16%,var(--surface));border-color:#0f766e}.ef-wish-other{align-self:center;margin:0 auto 8px;display:block}
+.ef-wish-rows{display:flex;flex-direction:column;gap:12px;width:100%;max-width:360px;text-align:left}
+.ef-wish-row{padding:12px;border:1px solid var(--line);border-radius:16px;background:var(--surface)}
+.ef-wish-head{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:1.4rem}.ef-wish-head input{flex:1;min-width:0;height:44px;border:1.5px solid var(--line);border-radius:12px;padding:0 12px;font:inherit;font-size:16px;background:var(--bg);color:var(--ink)}
+.ef-wish-del{border:0;background:transparent;color:var(--muted);font-size:1.1rem;cursor:pointer;padding:6px}
+.ef-shuf{position:relative;width:240px;height:150px;margin:6px auto 10px}
+.ef-shuf span{position:absolute;left:0;right:0;height:42px;display:flex;align-items:center;gap:6px;padding:0 14px;border:1.5px solid var(--line);border-radius:14px;background:var(--surface);font-weight:600;text-align:left}
+.ef-shuf .s1{animation:ef-s1 6s ease-in-out infinite}.ef-shuf .s2{animation:ef-s2 6s ease-in-out infinite}.ef-shuf .s3{animation:ef-s3 6s ease-in-out infinite}
+.ef-shuf .s3 i{font-style:normal;opacity:0;width:0;overflow:hidden;animation:ef-trophy 6s ease-in-out infinite}
+@keyframes ef-s1{0%,20%{top:0}40%,80%{top:54px}100%{top:0}}@keyframes ef-s2{0%,20%{top:54px}40%,80%{top:108px}100%{top:54px}}@keyframes ef-s3{0%,20%{top:108px}40%,80%{top:0;border-color:#0f766e}100%{top:108px}}
+@keyframes ef-trophy{0%,35%{opacity:0;width:0}45%,80%{opacity:1;width:1.4em}100%{opacity:0;width:0}}
+@media (prefers-reduced-motion:reduce){.ef-shuf span,.ef-shuf .s3 i{animation:none}.ef-shuf .s1{top:54px}.ef-shuf .s2{top:108px}.ef-shuf .s3{top:0}.ef-shuf .s3 i{opacity:1;width:1.4em}}
+.ef-nudge{margin:0 0 12px}
