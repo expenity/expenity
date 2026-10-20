@@ -152,6 +152,26 @@
 
 	/* ------------------------------------------------------------------ Home */
 
+	/* ------------------------------------------------------------------ Home: flip cards and the written week */
+	st.flips = st.flips || {};
+	/** A card with two faces. Front and back share one cell, so the card never changes size when it turns. */
+	const flipCard = ( id, front, back, cls = '' ) => `<div class="flipcard stack ${ cls }${ st.flips[ id ] ? ' flipped' : '' }" data-flip="${ id }" role="button" tabindex="0" aria-pressed="${ !! st.flips[ id ] }"><div class="fc-inner"><div class="fc-face fc-front">${ front }<i class="fc-hint" aria-hidden="true">${ UI.icon( 'refresh', 14 ) }</i></div><div class="fc-face fc-back" aria-hidden="${ ! st.flips[ id ] }">${ back }<i class="fc-hint" aria-hidden="true">${ UI.icon( 'refresh', 14 ) }</i></div></div></div>`;
+	const unpaidOccurrences = ( from, to ) => active().flatMap( ( b ) => EX.occurrences( b, to ).filter( ( d ) => d >= from || from === '' ).map( ( d ) => ( { b, d } ) ) );
+	/** The next seven days in words, from the bills that are coming up: how many, how much, the biggest, and what is left. */
+	EXA.weekSummary = () => {
+		const td = today(), end = addDays( td, 7 ), all = unpaidOccurrences( '', end ).sort( ( a, b ) => ( a.d < b.d ? -1 : 1 ) );
+		const late = all.filter( ( o ) => o.d < td ), soon = all.filter( ( o ) => o.d >= td );
+		const val = ( o ) => ( { amount: Number( o.b.amount ) || 0, currency: o.b.currency } );
+		if ( ! all.length ) return `<p class="wk-line">${ esc( t( 'wkNone' ) ) }</p>`;
+		const wallets = EX.activeAccounts(), balC = EX.mainCents( wallets.map( ( a ) => ( { amount: EX.balance( a ) / 100, currency: a.currency } ) ) ), dueC = EX.mainCents( all.map( val ) );
+		const big = all.slice().sort( ( a, b ) => ( Number( b.b.amount ) || 0 ) - ( Number( a.b.amount ) || 0 ) )[ 0 ];
+		const lines = [];
+		if ( soon.length ) lines.push( t( 'wkSome', { n: t( 'billsN', { n: soon.length } ), sum: EX.sumByCur( soon.map( val ) ) } ) );
+		if ( late.length ) lines.push( t( 'wkLate', { n: late.length } ) );
+		lines.push( t( 'wkBiggest', { name: big.b.name, day: big.d < td ? t( 'relLate', { n: diffDays( td, big.d ) } ) : EX.dayName( big.d ) } ) );
+		lines.push( balC >= dueC ? t( 'wkFree', { free: money( ( balC - dueC ) / 100, S().settings.currency ) } ) : t( 'wkShort' ) );
+		return lines.map( ( l ) => `<p class="wk-line">${ esc( l ) }</p>` ).join( '' );
+	};
 	EXA.home = () => {
 		const now = new Date(), y = now.getFullYear(), m = now.getMonth();
 		const wallets = EX.activeAccounts();
@@ -162,7 +182,7 @@
 		// Due soon leads the page only when something is overdue or due within two days; otherwise it follows the wallets.
 		const urgent = active().some( ( b ) => diffDays( b.next, today() ) <= 2 );
 		const DUE = `<div class="sec-head"><h2>${ esc( t( 'dueSoon' ) ) }</h2><button type="button" class="link" data-go="bills">${ esc( t( 'seeAll' ) ) }</button></div>
-			${ upcoming.length ? `<ul class="bm-list">${ upcoming.map( ( b ) => bmRow( { kind: 'bill', b, date: b.next, due: b.next, paid: false } ) ).join( '' ) }</ul>` : `<p class="muted pad">${ esc( t( 'noDue' ) ) }</p>` }`;
+			${ upcoming.length ? flipCard( 'due', `<ul class="bm-list">${ upcoming.map( ( b ) => bmRow( { kind: 'bill', b, date: b.next, due: b.next, paid: false } ) ).join( '' ) }</ul>`, `<div class="wk-back"><span class="wk-ic">${ UI.icon( 'calendar-event', 28 ) }</span>${ EXA.weekSummary() }</div>`, 'fc-list' ) : `<p class="muted pad">${ esc( t( 'noDue' ) ) }</p>` }`;
 		const WAL = `<div class="sec-head"><h2>${ esc( t( 'wallets' ) ) }</h2><button type="button" class="link" data-more="wallets">${ esc( t( 'ovManage' ) ) }</button></div>
 			<div class="wallets">${ wallets.map( ( a ) => `<button type="button" class="wc" data-act="edit-wallet" data-id="${ esc( a.id ) }">${ UI.walletCi( a, 36 ) }<span>${ a.space ? UI.icon( 'users', 14 ) + ' ' : '' }${ esc( EX.accountName( a ) ) }</span><b>${ esc( money( EX.balance( a ) / 100, a.currency ) ) }</b></button>` ).join( '' ) }</div>`;
 		const recent = S().txs.slice().sort( ( a, b ) => ( a.date < b.date ? 1 : a.date > b.date ? -1 : 0 ) ).slice( 0, 5 );
@@ -172,17 +192,27 @@
 		const rate = mC.inc > 0 ? Math.round( ( ( mC.inc - mC.exp ) / mC.inc ) * 100 ) : null;
 		const count = ( str, c ) => ( str === M( c ) ? ` data-count="${ c / 100 }" data-cur="${ esc( mainCur ) }"` : '' ); // numbers roll up on entering the screen
 		const totalC = EX.mainCents( wallets.map( ( a ) => ( { amount: EX.balance( a ) / 100, currency: a.currency } ) ) );
-		return `${ urgent ? `<section data-home="due">${DUE}</section>` : '' }<section data-home="balance"><div class="hero-flip${ st.heroFlip ? ' flipped' : '' }${st.characterRetreated?' character-retreated':''}${st.characterCollapsed?' character-collapsed':''}" data-act="flip-hero" role="button" tabindex="0" aria-pressed="${ !! st.heroFlip }" aria-label="${ esc( t( 'balanceAria' ) + '. ' + t( 'heroFlipHint' ) ) }">
+		const smartHome = S().settings.smartHome !== false, lead = smartHome && urgent;
+		const fun = [ 'mario', 'bricks', 'minnie', 'vader' ].includes( EXA.skin() ); // the character themes keep their big card, which carries their artwork
+		const mEnd = iso( new Date( y, m + 1, 0 ) ), mStart = iso( new Date( y, m, 1 ) );
+		const unpaidList = unpaidOccurrences( '', mEnd ), unpaidV = unpaidList.map( ( o ) => ( { amount: Number( o.b.amount ) || 0, currency: o.b.currency } ) );
+		const paidV = S().txs.filter( ( x ) => x.billId && x.type !== 'income' && x.date >= mStart && x.date <= mEnd ).map( ( x ) => ( { amount: Number( x.amount ) || 0, currency: EX.txCurrency( x ) } ) );
+		const pC = EX.mainCents( paidV ), uC = EX.mainCents( unpaidV ), pct = pC + uC > 0 ? Math.round( ( pC / ( pC + uC ) ) * 100 ) : 0;
+		let safe = null; try { if ( EX.safeSpend ) { const r = EX.safeSpend.calculate(); if ( r.valid && Number.isFinite( r.daily ) ) safe = Math.max( 0, Math.floor( r.daily ) ); } } catch ( e ) { /* the estimate needs more data */ }
+		const tile = ( id, icon, label, val, sub, backTitle, backVal, backSub ) => flipCard( id, `<span class="fc-label">${ UI.icon( icon, 16 ) } ${ esc( label ) }</span><b class="fc-val">${ esc( val ) }</b><small>${ esc( sub ) }</small>`, `<span class="fc-label">${ esc( backTitle ) }</span><b class="fc-val">${ esc( backVal ) }</b><small>${ esc( backSub ) }</small>`, 'fc-tile' );
+		const strip = `<section data-home="balance"><div class="key-strip">${ tile( 'k-balance', 'wallet', t( 'ovBalance' ), total, `${ esc( t( 'ovIncome' ) ) } ${ inc }`, t( 'heroBackTitle' ), M( mC.inc - mC.exp ), `${ t( 'ovIncome' ) } ${ inc } · ${ t( 'ovExpenses' ) } ${ exp }` ) }${ tile( 'k-topay', 'calendar-event', t( 'keyToPay' ), EX.sumByCur( unpaidV ) || money( 0 ), t( 'billsN', { n: unpaidList.length } ), 'Paid', `${ pct }%`, `Paid ${ EX.sumByCur( paidV ) || money( 0 ) } · Unpaid ${ EX.sumByCur( unpaidV ) || money( 0 ) }` ) }${ safe === null ? '' : tile( 'k-safe', 'shield-check', t( 'keySafe' ), M( safe ), t( 'keySafeSub' ), t( 'keySafe' ), M( safe ), t( 'safeEstimate' ) ) }</div></section>`;
+		const legacy = `<section data-home="balance"><div class="hero-flip${ st.heroFlip ? ' flipped' : '' }${st.characterRetreated?' character-retreated':''}${st.characterCollapsed?' character-collapsed':''}" data-act="flip-hero" role="button" tabindex="0" aria-pressed="${ !! st.heroFlip }" aria-label="${ esc( t( 'balanceAria' ) + '. ' + t( 'heroFlipHint' ) ) }">
 			<section class="hero hero-front"><small>${ esc( t( 'ovBalance' ) ) }</small><b${ count( total, totalC ) }>${ esc( total ) }</b>
 				<div class="hero-tiles"><div><span class="k">${ UI.icon( 'arrow-down-left', 18 ) } ${ esc( t( 'ovIncome' ) ) }</span><b${ count( inc, mC.inc ) }>${ esc( inc ) }</b></div><div><span class="k">${ UI.icon( 'arrow-up-right', 18 ) } ${ esc( t( 'ovExpenses' ) ) }</span><b${ count( exp, mC.exp ) }>${ esc( exp ) }</b></div></div><i class="flip-ic" aria-hidden="true">${ UI.icon( 'refresh', 18 ) }</i></section>
 			<section class="hero hero-back" aria-hidden="true"><small>${ esc( t( 'heroBackTitle' ) ) }</small><b>${ esc( M( mC.inc - mC.exp ) ) }</b>
 				<div class="mini-bars">${ spark.map( ( s ) => `<div><span class="mb-in" style="height:${ Math.max( 4, Math.round( ( s.inc / sMax ) * 100 ) ) }%"></span><span class="mb-out" style="height:${ Math.max( 4, Math.round( ( s.exp / sMax ) * 100 ) ) }%"></span><em>${ esc( s.l ) }</em></div>` ).join( '' ) }</div>
 				<div class="hero-tiles"><div><span class="k">${ esc( t( 'heroRate' ) ) }</span><b>${ rate == null ? '—' : rate + '%' }</b></div><div><span class="k">${ esc( t( 'heroPerDay' ) ) }</span><b>${ esc( M( Math.round( mC.exp / Math.max( 1, now.getDate() ) ) ) ) }</b></div></div><i class="flip-ic" aria-hidden="true">${ UI.icon( 'refresh', 18 ) }</i></section></div>
-			</section><section data-home="welcome">${ promos() }</section>
-			${ urgent ? `<section data-home="ideas">${EXA.ideasHome()}</section>` : `<section data-home="wallets">${WAL}</section>` }
-			${ urgent ? `<section data-home="wallets">${WAL}</section>` : `<section data-home="due">${DUE}</section>` }
-			${ urgent ? '' : `<section data-home="ideas">${EXA.ideasHome()}</section>` }
-			${ S().bills.length ? `<section data-home="calendar"><div class="sec-head"><h2>${ esc( t( 'tabCalendar' ) ) }</h2><button type="button" class="link" data-go="bills">${ esc( t( 'seeAll' ) ) }</button></div>${ billsCalendar() }</section>` : '' }
+			</section>`;
+		return `${ lead ? `<section data-home="due">${DUE}</section>` : '' }${ fun ? legacy : strip }<section data-home="welcome">${ promos() }</section>
+			${ lead ? `<section data-home="ideas">${EXA.ideasHome()}</section>` : `<section data-home="wallets">${WAL}</section>` }
+			${ lead ? `<section data-home="wallets">${WAL}</section>` : `<section data-home="due">${DUE}</section>` }
+			${ lead ? '' : `<section data-home="ideas">${EXA.ideasHome()}</section>` }
+			${ S().bills.length ? `<section data-home="calendar"><div class="sec-head"><h2>${ esc( t( 'tabCalendar' ) ) }</h2><button type="button" class="link" data-go="bills">${ esc( t( 'seeAll' ) ) }</button></div>${ flipCard( 'cal', billsCalendar(), `<div class="wk-back"><span class="wk-ic bob">${ UI.icon( 'calendar-event', 34 ) }</span><h3>${ esc( t( 'wkTitle' ) ) }</h3>${ EXA.weekSummary() }</div>`, 'fc-cal' ) }</section>` : '' }
 			<section data-home="goals">${ EXA.planHome() }</section><section data-home="recent">
 			<div class="sec-head"><h2>${ esc( t( 'ovRecent' ) ) }</h2><button type="button" class="link" data-go="activity">${ esc( t( 'seeAll' ) ) }</button></div>
 			${ recent.length ? `<ul class="list">${ recent.map( txItem ).join( '' ) }</ul>` : `<p class="muted pad">${ esc( t( 'txNoneHint' ) ) }</p>` }</section>`;
@@ -423,6 +453,7 @@
 		return `<section class="card"><h2>${ esc( t( 'sLanguage' ) ) }</h2><div class="chips wrap">${ Object.keys( EX.I18N.langs ).map( ( k ) => `<button type="button" class="chip big${ k === EX.lang() ? ' on' : '' }" data-lang="${ k }" lang="${ k }">${ UI.icon( 'language', 20 ) } ${ esc( EX.I18N.langs[ k ].langName ) }</button>` ).join( '' ) }</div></section>
 			<section class="card"><h2>${ esc( t( 'themesTitle' ) ) }</h2>${ EXA.themePicker() }</section>
 			<section class="card"><h2>${ esc( t( 'setupMotion' ) ) }</h2><div class="chips wrap">${ [ 'auto', 'full', 'reduced', 'off' ].map( ( m ) => `<button type="button" class="chip big${ ( S().device.motion || 'auto' ) === m ? ' on' : '' }" data-motion-set="${ m }">${ esc( t( 'motion' + m.charAt( 0 ).toUpperCase() + m.slice( 1 ) ) ) }</button>` ).join( '' ) }</div><p class="muted small">${ esc( t( 'motionHint' ) ) }</p></section>
+			<section class="card"><label class="fx-row"><span class="mid"><b>${ esc( t( 'smartHomeTitle' ) ) }</b><small>${ esc( t( 'smartHomeHint' ) ) }</small></span><span class="switch"><input type="checkbox" data-smart-home${ S().settings.smartHome !== false ? ' checked' : '' } aria-label="${ esc( t( 'smartHomeTitle' ) ) }"><i></i></span></label></section>
 			<section class="card"><h2>${ esc( t( 'statusTitle' ) ) }</h2><div class="chips wrap">${ [ 'off', 'low', 'normal', 'full' ].map( ( m ) => `<button type="button" class="chip big${ ( document.documentElement.dataset.status || 'normal' ) === m ? ' on' : '' }" data-status-set="${ m }">${ esc( t( 'status' + m.charAt( 0 ).toUpperCase() + m.slice( 1 ) ) ) }</button>` ).join( '' ) }</div><p class="muted small">${ esc( t( 'statusHint' ) ) }</p></section>`;
 	}
 	function installView() {
