@@ -251,6 +251,12 @@
 	const askBanner = () => ( F.needAsk() ? `<div class="ef-ask"><span class="ef-ask-em">💬</span><span>${ rich( t( 'efAskBanner' ) ) }</span><button type="button" class="btn btn-primary sm" data-ef-prio>${ esc( t( 'efAskBtn' ) ) }</button></div>` : '' );
 	EXA.efriendHome = () => {
 		if ( ! on() ) return '';
+		try { F.tickAlloc(); } catch ( e ) { /* ignore */ }
+		const html = home0(), pr = proposalsHtml();
+		if ( ! pr ) return html;
+		return html ? html.replace( '<section data-home="efriend">', '<section data-home="efriend">' + pr ) : `<section data-home="efriend">${ pr }</section>`;
+	};
+	const home0 = () => {
 		if ( ! ( S().device || {} ).efOnboard && ! navigator.webdriver && ! document.querySelector( '.ef-ob' ) ) { try { S().device.efOnboard = 1; EX.persist(); } catch ( e ) { /* ignore */ } setTimeout( () => EXA.efriendOnboard(), 600 ); }
 		if ( F.due().length && ! navigator.webdriver && ! dueOpen && ! document.querySelector( '.ef-ob' ) && ! ( EXA.flow && EXA.flow.active && EXA.flow.active() ) ) setTimeout( () => EXA.efriendDue(), 900 );
 		const f = pickGoal(); if ( f ) F.snapshot();
@@ -425,7 +431,7 @@
 		if ( document.querySelector( '.ef-ob' ) ) return;
 		try { S().device.efOnboard = 1; EX.persist(); } catch ( e ) { /* ignore */ }
 		const rows = F.sortRows(), pick = {}; rows.forEach( ( r ) => { pick[ r.cat ] = r.level; } );
-		const steps = only === 'sort' ? [ 'sort' ] : [ 'meet', 'how' ].concat( S().incomes.length ? [] : [ 'income' ] ).concat( [ 'wishes', 'budgets', 'priority', 'see', 'sort', 'where' ] );
+		const steps = only === 'sort' ? [ 'sort' ] : [ 'meet', 'how' ].concat( S().incomes.length ? [] : [ 'income' ] ).concat( [ 'wishes', 'budgets', 'priority', 'moves', 'see', 'sort', 'where' ] );
 		let i = 0, wr = [], added = [], wErr = false, madePlans = false;
 		const ov = document.createElement( 'div' ); ov.className = 'ef-ob'; ov.setAttribute( 'role', 'dialog' ); ov.setAttribute( 'aria-modal', 'true' ); ov.setAttribute( 'aria-label', 'eFriend' );
 		const mock = ( kind ) => kind === 'see'
@@ -440,6 +446,7 @@
 			if ( id === 'income' ) return `<h2>${ esc( t( 'efObIncTitle' ) ) }</h2><div class="ef-inc-demo"><span class="ef-inc-pay">💶</span><span class="ef-inc-arrow">➜</span>${ F.mascot( 'cheer', 70 ) }</div>${ para( 'efObIncText' ) }${ S().incomes.length ? `<div class="ef-callouts">${ points( [ t( 'efObIncDone' ) ] ) }</div>` : `<button type="button" class="btn btn-primary" data-ef-ob-income>💶 ${ esc( t( 'efAddIncome' ) ) }</button><p class="muted small">${ esc( t( 'efObIncSkip' ) ) }</p>` }`;
 			if ( id === 'wishes' ) return `<h2>${ esc( t( 'efWishTitle' ) ) }</h2>${ para( 'efWishText' ) }${ added.length ? points( [ t( 'efWishAdded', { names: added.join( ', ' ) } ) ] ) : '' }${ wishChips( wr.map( ( r ) => r.k ) ) }<button type="button" class="ef-wish ef-wish-other" data-ef-wish-other>＋ ${ esc( t( 'efWishOther' ) ) }</button><div class="ef-wish-rows">${ wr.map( ( r, n ) => `<div class="ef-wish-row" data-n="${ n }"><div class="ef-wish-head"><span>${ r.em }</span><input data-w="name" maxlength="60" autocomplete="off" placeholder="${ esc( t( 'efWishName' ) ) }" value="${ esc( r.name ) }"><button type="button" class="ef-wish-del" data-w-del aria-label="${ esc( t( 'efWishRemove' ) ) }">✕</button></div><div class="grid2"><label class="f"><span>${ esc( t( 'efPlanCost' ) ) } (${ esc( main() ) })</span><input data-w="cost" inputmode="decimal" autocomplete="off" placeholder="0.00" value="${ esc( r.cost ) }"></label><label class="f"><span>${ esc( t( 'efPlanDate' ) ) }</span><input data-w="date" type="date" value="${ esc( r.date ) }"></label></div></div>` ).join( '' ) }</div>${ wErr ? `<p class="err">${ esc( t( 'efWishIncomplete' ) ) }</p>` : '' }`;
 			if ( id === 'priority' ) { const list = F.all(); return `<h2>${ esc( t( 'efObPrioTitle' ) ) }</h2><div class="ef-shuf" aria-hidden="true"><span class="s1">✈️ ${ esc( t( 'efWishTrip' ) ) }</span><span class="s2">👟 ${ esc( t( 'efWishShoes' ) ) }</span><span class="s3"><i>🏆</i> 🚗 ${ esc( t( 'efWishCar' ) ) }</span></div>${ para( 'efObPrioText' ) }${ list.length > 1 ? prioList( list ) : '' }${ riskHtml() }`; }
+			if ( id === 'moves' ) return `<h2>${ esc( t( 'efObMovesTitle' ) ) }</h2><div class="ef-moves-demo"><span class="ef-md-a">💰</span><span class="ef-md-ar">➜</span><span class="ef-md-b">🎯</span><span class="ef-md-ok">✋ ✅</span></div>${ para( 'efObMovesText' ) }<p class="muted small">${ esc( t( 'efObMovesLater' ) ) }</p>`;
 			if ( id === 'budgets' ) return `<h2>${ esc( t( 'efObBudTitle' ) ) }</h2><div class="ef-bud-demo"><div class="ef-bud-card"><div class="ef-bud-top"><b>🍕 ${ esc( t( 'efObBudCat' ) ) }</b><span>${ money( 120, main() ) } / ${ esc( t( 'efObBudMonth' ) ) }</span></div><div class="ef-bar"><i class="ef-bud-fill"></i></div><div class="ef-bud-ok">✅ ${ esc( t( 'efObBudInside' ) ) }</div></div><div class="ef-bud-bot">${ F.mascot( 'cheer', 70 ) }<span class="ef-bud-gain">+${ money( 45, main() ) } ✈️</span></div></div>${ para( 'efObBudText' ) }`;
 			if ( id === 'see' ) return `<h2>${ esc( t( 'efObSeeTitle' ) ) }</h2>${ mock( 'see' ) }${ para( 'efObSeeText' ) }`;
 			if ( id === 'where' ) return `<h2>${ esc( t( 'efObWhereTitle' ) ) }</h2>${ mock( 'where' ) }${ para( 'efObWhereText' ) }`;
@@ -562,8 +569,8 @@
 		const pastHtml = pastList.length ? `<details class="card ef-sec ef-det"><summary><span class="ef-sec-em">🗄️</span><b>${ esc( t( 'efPast' ) ) }</b></summary><ul class="ef-list">${ pastList.map( ( g ) => `<li><div><b>${ esc( g.name ) }</b><small>${ esc( m( EX.cents( g.target ) ) ) }</small></div><button type="button" class="btn btn-ghost sm" data-ef-reopen="${ esc( g.id ) }">${ esc( t( 'efReopen' ) ) }</button></li>` ).join( '' ) }</ul></details>` : '';
 		const worst = all.length ? F.summary( all ) : null;
 		return `<section class="card ef-page"><div class="ef-top">${ F.mascot( 'happy', 84 ) }<div class="ef-bubble"><b>${ esc( t( 'efMeet' ) ) }</b></div></div>${ para( 'efMeetText' ) }</section>
-			${ overview }${ achievements }${ askBanner() ? `<section class="card">${ askBanner() }</section>` : '' }${ all.length > 1 ? `<section class="card"><h2>🏆 ${ esc( t( 'efPrioSection' ) ) }</h2>${ para( 'efPrioTextShort' ) }${ prioList( all ) }<div class="btn-row"><button type="button" class="btn btn-ghost" data-ef-suggest>✨ ${ esc( t( 'efSuggestOrder' ) ) }</button></div></section>` : '' }${ all.length ? `<section class="card">${ riskHtml() }</section>` : '' }${ buckets.length ? buckets.map( section ).join( '' ) : `<section class="card"><h2>${ esc( t( 'efYourGoals' ) ) }</h2><p class="muted">${ esc( t( 'efNoGoals' ) ) }</p></section>` }
-			${ pastHtml }<section class="card"><div class="btn-row"><button type="button" class="btn btn-primary" data-ef-new>${ UI.icon( 'plus', 20 ) } ${ esc( t( 'efNewGoal' ) ) }</button></div></section>
+			${ proposalsHtml() }${ overview }${ achievements }${ askBanner() ? `<section class="card">${ askBanner() }</section>` : '' }${ all.length > 1 ? `<section class="card"><h2>🏆 ${ esc( t( 'efPrioSection' ) ) }</h2>${ para( 'efPrioTextShort' ) }${ prioList( all ) }<div class="btn-row"><button type="button" class="btn btn-ghost" data-ef-suggest>✨ ${ esc( t( 'efSuggestOrder' ) ) }</button></div></section>` : '' }${ all.length ? `<section class="card">${ riskHtml() }</section>` : '' }${ buckets.length ? buckets.map( section ).join( '' ) : `<section class="card"><h2>${ esc( t( 'efYourGoals' ) ) }</h2><p class="muted">${ esc( t( 'efNoGoals' ) ) }</p></section>` }
+			${ allocCard() }${ pastHtml }<section class="card"><div class="btn-row"><button type="button" class="btn btn-primary" data-ef-new>${ UI.icon( 'plus', 20 ) } ${ esc( t( 'efNewGoal' ) ) }</button></div></section>
 			<section class="card"><label class="fx-row"><span class="mid"><b>${ esc( t( 'efSoundTitle' ) ) }</b><small>${ esc( t( 'efSoundHint' ) ) }</small></span><span class="switch"><input type="checkbox" data-ef-sound${ S().settings.efSound !== false ? ' checked' : '' } aria-label="${ esc( t( 'efSoundTitle' ) ) }"><i></i></span></label></section>
 			<section class="card"><div class="list mlist"><button type="button" class="mrow" data-ef-sort>${ UI.ci( 'adjustments-horizontal', 'teal', 40 ) }<span class="mid"><b>${ esc( t( 'efSortTitle' ) ) }</b><small>${ esc( t( 'efSortSub' ) ) }</small></span>${ UI.icon( 'chevron-right', 18 ) }</button><button type="button" class="mrow" data-ef-intro>${ UI.ci( 'player-play', 'purple', 40 ) }<span class="mid"><b>${ esc( t( 'efReplay' ) ) }</b><small>${ esc( t( 'efReplaySub' ) ) }</small></span>${ UI.icon( 'chevron-right', 18 ) }</button></div></section>`;
 	};
@@ -691,6 +698,110 @@
 		document.body.appendChild( ov ); document.body.classList.add( 'ef-ob-open' ); draw();
 	};
 	document.addEventListener( 'click', ( e ) => { const r = e.target.closest && e.target.closest( '[data-ef-reopen]' ); if ( r ) { const g = S().goals.find( ( x ) => x.id === r.dataset.efReopen ); if ( g ) { delete g.state; delete g.droppedOn; S().settings.u = Date.now(); EX.save(); } } } );
+
+	/* ------------------------------------------------------------------ Helping with savings goals: suggest, ask first, or automatic (records only, no real money moves) */
+	const ALLOC_DAYS = { daily: 1, weekly: 7, monthly: 30 };
+	F.alloc = () => Object.assign( { mode: 'off', every: 'weekly', maxPending: 3, goals: {}, last: '' }, S().settings.efAlloc || {} );
+	const saveAlloc = ( patch ) => { S().settings.efAlloc = Object.assign( F.alloc(), patch ); S().settings.u = Date.now(); EX.save(); };
+	const props = () => ( S().settings.efProposals = S().settings.efProposals || [] );
+	F.pending = () => props().filter( ( x ) => x.status === 'pending' );
+	F.pendingTotal = () => F.pending().reduce( ( s, x ) => s + x.items.reduce( ( a, i ) => a + i.a, 0 ), 0 );
+	/** Savings goals (not plans) that eFriend may feed, most urgent first. */
+	F.fundGoals = () => { const al = F.alloc(); return S().goals.filter( ( g ) => ! isPlan( g ) && ! g.state && g.target && al.goals[ g.id ] && EX.plan && EX.plan.goal( g ).remaining > 0 ).sort( ( a, b ) => ( ( a.deadline || '9999' ) < ( b.deadline || '9999' ) ? -1 : 1 ) ); };
+	/** What can safely move now: what is in the wallets, plus next month's income, minus next month's costs and your cushion, minus what is already proposed. */
+	F.safePool = () => {
+		const b = F.baseline(), bal = EX.mainCents( EX.activeAccounts().map( ( a ) => ( { amount: EX.balance( a ) / 100, currency: a.currency } ) ) );
+		let pool = bal + b.incomeMonthly - b.monthly - Math.round( F.cushion() * b.monthly ) - F.pendingTotal();
+		if ( F.all().some( ( f ) => F.status( f.verdict ) === 'risk' || F.status( f.verdict ) === 'no' ) ) pool = Math.round( pool * 0.5 ); // plans that are in trouble come first
+		return Math.max( 0, pool );
+	};
+	F.proposeItems = () => {
+		const al = F.alloc(), days = ALLOC_DAYS[ al.every ] || 7, recent = props().slice( -3 ).filter( ( x ) => x.status === 'dismissed' ).length;
+		let budget = Math.round( F.safePool() * Math.min( 1, days / 30 ) * Math.pow( 0.8, recent ) ); const items = [];
+		F.fundGoals().forEach( ( g ) => {
+			const i = EX.plan.goal( g ), periods = g.deadline ? Math.max( 1, Math.ceil( EX.diffDays( g.deadline, today() ) / days ) ) : Math.max( 1, Math.ceil( 365 / days ) );
+			let a = Math.min( Math.ceil( i.remaining / periods ), i.remaining, budget ); a = Math.floor( a / 500 ) * 500; // whole 5s
+			if ( a >= 500 ) { items.push( { g: g.id, a } ); budget -= a; }
+		} );
+		return items;
+	};
+	F.moveWallet = () => { const ws = EX.writableAccounts(), d = ws.find( ( w ) => w.id === S().settings.defaultAccount ); return ( d || ws.slice().sort( ( a, b ) => EX.balance( b ) - EX.balance( a ) )[ 0 ] || {} ).id; };
+	F.execute = ( items, by, pid ) => {
+		const acc = F.moveWallet(); if ( ! acc ) return 0; let n = 0;
+		items.forEach( ( it ) => { const g = S().goals.find( ( x ) => x.id === it.g ); if ( ! g || it.a < 1 ) return; S().txs.push( { id: EX.uid(), type: 'expense', amount: ( it.a / 100 ).toFixed( 2 ), account: acc, category: 'goal', date: today(), name: g.name, goalId: g.id, efMoved: pid, efBy: by } ); n++; } );
+		return n;
+	};
+	/** Runs when Home or Activity opens: expire old proposals, and when a period has passed make a new one (ask first) or record it (automatic). */
+	F.tickAlloc = () => {
+		const al = F.alloc(), td = today(); let changed = false;
+		props().forEach( ( x ) => { if ( x.status === 'pending' && x.exp < td ) { x.status = 'expired'; changed = true; } } );
+		if ( ( al.mode === 'ask' || al.mode === 'auto' ) && F.fundGoals().length && ( ! al.last || diff( td, al.last ) >= ( ALLOC_DAYS[ al.every ] || 7 ) ) && F.pending().length < al.maxPending ) {
+			const items = F.proposeItems(), pid = EX.uid();
+			if ( items.length ) {
+				if ( al.mode === 'auto' ) { F.execute( items, 'auto', pid ); props().push( { id: pid, d: td, exp: td, items, status: 'confirmed', by: 'auto' } ); }
+				else props().push( { id: pid, d: td, exp: addDays( td, 3 ), items, status: 'pending' } );
+				S().settings.efAlloc = Object.assign( al, { last: td } ); changed = true;
+			} else if ( al.last !== td ) { S().settings.efAlloc = Object.assign( al, { last: td } ); changed = true; }
+		}
+		if ( props().length > 40 ) props().splice( 0, props().length - 40 );
+		if ( changed ) { try { EX.persist(); } catch ( e ) { /* ignore */ } }
+	};
+	EXA.efriendPendingTotal = () => ( on() ? F.pendingTotal() : 0 );
+	const gname = ( id ) => ( S().goals.find( ( g ) => g.id === id ) || { name: '?' } ).name;
+	const proposalsHtml = () => {
+		if ( ! on() ) return '';
+		const list = F.pending(), m = ( c ) => money( c / 100, main() );
+		return list.map( ( x ) => `<div class="ef-prop" data-pid="${ esc( x.id ) }"><div class="ef-prop-h">🤖 <b>${ esc( t( 'efPropTitle' ) ) }</b></div>${ points( x.items.map( ( i ) => t( 'efPropItem', { a: m( i.a ), name: gname( i.g ) } ) ).concat( [ t( 'efPropTotal', { a: m( x.items.reduce( ( s, i ) => s + i.a, 0 ) ) } ), t( 'efPropExpire', { n: Math.max( 1, diff( x.exp, today() ) + 1 ) } ) ] ) ) }<div class="ef-prop-btns"><button type="button" class="btn btn-primary sm" data-ef-prop="confirm">✅ ${ esc( t( 'efPropConfirm' ) ) }</button><button type="button" class="btn btn-ghost sm" data-ef-prop="edit">✏️ ${ esc( t( 'efPropEdit' ) ) }</button><button type="button" class="btn btn-ghost sm" data-ef-prop="dismiss">✖️ ${ esc( t( 'efPropDismiss' ) ) }</button></div></div>` ).join( '' );
+	};
+	const weekMoved = () => { const from = addDays( today(), -7 ), tx = S().txs.filter( ( x ) => x.efMoved && x.date >= from ); return { n: tx.length, c: tx.reduce( ( s, x ) => s + EX.cents( x.amount ), 0 ) }; };
+	EXA.efriendUndo = ( x ) => `<span class="ef-undo" role="button" tabindex="0" data-ef-undo="${ esc( x.id ) }">↩️ ${ esc( t( 'efUndo' ) ) }</span>`;
+	const activityTop = () => { if ( ! on() ) return ''; const w = weekMoved(), p = proposalsHtml(); return p + ( w.n ? `<div class="ef-week">${ points( [ t( 'efWeekMoved', { a: money( w.c / 100, main() ), n: w.n } ) ] ) }</div>` : '' ); };
+	{ const act = EXA.activity; if ( typeof act === 'function' ) EXA.activity = function () { try { F.tickAlloc(); } catch ( e ) { /* ignore */ } return activityTop() + act.apply( this, arguments ); }; }
+	document.addEventListener( 'click', ( e ) => {
+		const u = e.target.closest && e.target.closest( '[data-ef-undo]' ); if ( u ) { e.preventDefault(); e.stopPropagation(); const id = u.dataset.efUndo, tx = S().txs.find( ( x ) => x.id === id ); if ( tx ) { S().txs = S().txs.filter( ( x ) => x.id !== id ); const pr = props().find( ( x ) => x.id === tx.efMoved ); if ( pr ) { pr.status = pr.items.length > 1 ? pr.status : 'undone'; pr.undone = ( pr.undone || 0 ) + 1; } S().settings.u = Date.now(); EX.save(); UI.toast && UI.toast( t( 'efUndone' ) ); } return; }
+		const b = e.target.closest && e.target.closest( '[data-ef-prop]' ); if ( ! b ) return; e.preventDefault(); e.stopPropagation();
+		const card = b.closest( '[data-pid]' ), pr = props().find( ( x ) => x.id === card.dataset.pid ); if ( ! pr ) return;
+		if ( b.dataset.efProp === 'confirm' ) { F.execute( pr.items, 'confirmed', pr.id ); pr.status = 'confirmed'; S().settings.u = Date.now(); EX.save(); UI.toast && UI.toast( t( 'efPropDone' ) ); }
+		else if ( b.dataset.efProp === 'dismiss' ) { pr.status = 'dismissed'; S().settings.u = Date.now(); EX.save(); }
+		else if ( b.dataset.efProp === 'edit' ) openPropEdit( pr );
+	}, true );
+	const openPropEdit = ( pr ) => {
+		const X = `<button type="button" class="ab-btn" data-close aria-label="${ esc( t( 'close' ) ) }">${ UI.icon( 'x', 24 ) }</button>`;
+		UI.openSheet( `<div class="sheet-head">${ X }<h2 id="sheetTitle">${ esc( t( 'efPropEdit' ) ) }</h2><span class="sp"></span></div><form id="efPropForm" class="sheet-pad" novalidate data-pid="${ esc( pr.id ) }">${ pr.items.map( ( i, n ) => `<label class="f"><span>${ esc( gname( i.g ) ) } (${ esc( main() ) })</span><input name="a${ n }" inputmode="decimal" autocomplete="off" value="${ ( i.a / 100 ).toFixed( 2 ) }"></label>` ).join( '' ) }${ points( [ t( 'efPropNote' ) ] ) }<div class="btn-row"><button type="submit" class="btn btn-primary wide">✅ ${ esc( t( 'efPropConfirm' ) ) }</button></div></form>` );
+	};
+	document.addEventListener( 'submit', ( e ) => {
+		const f = e.target; if ( f.id !== 'efPropForm' ) return; e.preventDefault(); const pr = props().find( ( x ) => x.id === f.dataset.pid ); if ( ! pr ) return;
+		pr.items = pr.items.map( ( i, n ) => ( { g: i.g, a: Math.round( num( f.elements[ 'a' + n ].value ) * 100 ) } ) ).filter( ( i ) => i.a > 0 );
+		if ( pr.items.length ) { F.execute( pr.items, 'confirmed', pr.id ); pr.status = 'confirmed'; } else pr.status = 'dismissed';
+		S().settings.u = Date.now(); EX.save(); UI.closeSheet(); UI.toast && UI.toast( t( 'efPropDone' ) );
+	} );
+	/** The settings card on the eFriend page: mode, how often, how many proposals at once, and which goals. */
+	const allocCard = () => {
+		const al = F.alloc(), modes = [ [ 'off', '⏸️', 'efModeOff' ], [ 'suggest', '💡', 'efModeSuggest' ], [ 'ask', '✋', 'efModeAsk' ], [ 'auto', '🤖', 'efModeAuto' ] ];
+		const goals = S().goals.filter( ( g ) => ! isPlan( g ) && ! g.state && g.target ), m = ( c ) => money( c / 100, main() );
+		const sug = al.mode === 'suggest' ? ( ( items ) => items.length ? `<div class="ef-callouts">${ points( [ t( 'efSuggestNow', { a: m( items.reduce( ( s, i ) => s + i.a, 0 ) ), names: items.map( ( i ) => '**' + gname( i.g ) + '**' ).join( ', ' ) } ) ] ) }<button type="button" class="btn btn-ghost sm" data-ef-movenow>${ esc( t( 'efMoveNow' ) ) }</button></div>` : '' )( F.proposeItems() ) : '';
+		return `<section class="card ef-alloc"><h2>🤝 ${ esc( t( 'efAllocTitle' ) ) }</h2>${ para( 'efAllocText' ) }<div class="ef-modes">${ modes.map( ( [ k, em, key ] ) => `<button type="button" class="ef-mode${ al.mode === k ? ' on' : '' }" data-ef-mode="${ k }" aria-pressed="${ al.mode === k }"><span>${ em }</span><b>${ esc( t( key ) ) }</b><small>${ esc( t( key + 'Sub' ) ) }</small></button>` ).join( '' ) }</div>
+			${ al.mode === 'ask' || al.mode === 'auto' ? `<div class="ef-alloc-opts"><div class="lbl">${ esc( t( 'efEvery' ) ) }</div><div class="chips">${ [ 'daily', 'weekly', 'monthly' ].map( ( k ) => `<button type="button" class="chip${ al.every === k ? ' on' : '' }" data-ef-every="${ k }">${ esc( t( 'efEvery_' + k ) ) }</button>` ).join( '' ) }</div>
+			<div class="ef-risk-h"><b>${ esc( t( 'efMaxPending' ) ) }</b><span class="ef-risk-val" data-ef-maxv>${ al.maxPending }</span></div><input type="range" class="ef-pend" data-ef-maxpend min="1" max="5" step="1" value="${ al.maxPending }" aria-label="${ esc( t( 'efMaxPending' ) ) }">${ points( [ t( 'efExpireNote' ) ] ) }</div>` : '' }
+			${ al.mode !== 'off' ? `<div class="lbl">${ esc( t( 'efWhichGoals' ) ) }</div>${ goals.length ? goals.map( ( g ) => `<label class="fx-row"><span class="mid"><b>${ esc( g.name ) }</b><small>${ esc( m( EX.cents( g.target ) ) ) }</small></span><span class="switch"><input type="checkbox" data-ef-fund="${ esc( g.id ) }"${ al.goals[ g.id ] ? ' checked' : '' } aria-label="${ esc( g.name ) }"><i></i></span></label>` ).join( '' ) : `<p class="muted">${ esc( t( 'efNoGoalsToFeed' ) ) }</p>` }` : '' }${ sug }${ points( [ t( 'efNoRealMoney' ) ] ) }</section>`;
+	};
+	const warnAuto = () => {
+		const b = F.baseline(), X = `<button type="button" class="ab-btn" data-close aria-label="${ esc( t( 'close' ) ) }">${ UI.icon( 'x', 24 ) }</button>`;
+		UI.openSheet( `<div class="sheet-head">${ X }<h2 id="sheetTitle">${ esc( t( 'efAutoWarnTitle' ) ) }</h2><span class="sp"></span></div><div class="sheet-pad"><div class="ef-top">${ F.mascot( 'meh', 72 ) }<div class="ef-bubble"><b>${ esc( t( 'efAutoWarnHi' ) ) }</b></div></div>${ points( [ t( 'efAutoWarnData', { d: b.history } ), t( 'efAutoWarnUndo' ), t( 'efAutoWarnSafe' ), t( 'efNoRealMoney' ) ] ) }<div class="btn-row"><button type="button" class="btn btn-ghost" data-ef-autono>${ esc( t( 'efAutoKeepAsk' ) ) }</button><button type="button" class="btn btn-primary" data-ef-autoyes>${ esc( t( 'efAutoTurnOn' ) ) }</button></div></div>` );
+	};
+	document.addEventListener( 'click', ( e ) => {
+		const md = e.target.closest && e.target.closest( '[data-ef-mode]' );
+		if ( md ) { const k = md.dataset.efMode; if ( k === 'auto' && F.baseline().history < 30 && F.alloc().mode !== 'auto' ) warnAuto(); else saveAlloc( { mode: k, last: k === 'ask' || k === 'auto' ? F.alloc().last : '' } ); return; }
+		const ev = e.target.closest && e.target.closest( '[data-ef-every]' ); if ( ev ) { saveAlloc( { every: ev.dataset.efEvery } ); return; }
+		if ( e.target.closest && e.target.closest( '[data-ef-autoyes]' ) ) { UI.closeSheet(); saveAlloc( { mode: 'auto' } ); return; }
+		if ( e.target.closest && e.target.closest( '[data-ef-autono]' ) ) { UI.closeSheet(); saveAlloc( { mode: 'ask' } ); return; }
+		if ( e.target.closest && e.target.closest( '[data-ef-movenow]' ) ) { const items = F.proposeItems(), pid = EX.uid(); if ( items.length ) { F.execute( items, 'confirmed', pid ); props().push( { id: pid, d: today(), exp: today(), items, status: 'confirmed', by: 'confirmed' } ); S().settings.u = Date.now(); EX.save(); UI.toast && UI.toast( t( 'efPropDone' ) ); } }
+	} );
+	document.addEventListener( 'change', ( e ) => {
+		const fu = e.target.matches && e.target.matches( '[data-ef-fund]' ) ? e.target : null; if ( fu ) { const g = Object.assign( {}, F.alloc().goals ); if ( fu.checked ) g[ fu.dataset.efFund ] = true; else delete g[ fu.dataset.efFund ]; saveAlloc( { goals: g } ); return; }
+		if ( e.target.matches && e.target.matches( '[data-ef-maxpend]' ) ) saveAlloc( { maxPending: Number( e.target.value ) } );
+	} );
+	document.addEventListener( 'input', ( e ) => { if ( e.target.matches && e.target.matches( '[data-ef-maxpend]' ) ) { const v = e.target.closest( '.ef-alloc-opts' ).querySelector( '[data-ef-maxv]' ); if ( v ) v.textContent = e.target.value; } } );
 
 	/* ------------------------------------------------------------------ Progress: what eFriend can honestly show */
 	// A snapshot per plan per day (how ready you are), so Reports can draw the journey. Small on purpose: at most 120 points per plan.
@@ -1008,5 +1119,27 @@
 	} );
 	Object.assign( window.EXPENITY_I18N.langs.el, {
 		efConvert: 'Να το διαχειρίζεται το eFriend', efConvertHint: '🤖 Γίνεται σχέδιο eFriend και φεύγει από τους στόχους σας\n💰 Τα χρήματα που έχετε ήδη βάλει συνεχίζουν να υπολογίζονται',
+	} );
+	Object.assign( window.EXPENITY_I18N.langs.en, {
+		efSetAside: 'set aside', efPendingWord: 'pending', efMovedBy: 'Moved by eFriend', efUndo: 'Undo', efUndone: 'Undone', efWeekMoved: '🤖 This week eFriend moved **{a}** ({n} entries).',
+		efPropTitle: 'eFriend proposes', efPropItem: '🎯 **{a}** → *{name}*', efPropTotal: '💰 Total **{a}**. Nothing real moves: this only updates your records.', efPropExpire: '⏳ If you do not answer, this expires in **{n}** days. Nothing is lost.',
+		efPropConfirm: 'Confirm', efPropEdit: 'Edit', efPropDismiss: 'Dismiss', efPropDone: 'Recorded. Your bank is not touched.', efPropNote: '🧾 Confirming only updates your records.',
+		efAllocTitle: 'Helping with my goals', efAllocText: '🎯 I can work out how much is safe to put into your savings goals\n✋ You choose how much I do on my own\n🧾 It only updates your records. Real money never moves.',
+		efModeOff: 'Off', efModeOffSub: 'No help', efModeSuggest: 'Suggest', efModeSuggestSub: 'I tell you the safe amount', efModeAsk: 'Ask first', efModeAskSub: 'I propose, you confirm', efModeAuto: 'Automatic', efModeAutoSub: 'I record it, you can undo',
+		efEvery: 'How often', efEvery_daily: 'Daily', efEvery_weekly: 'Weekly', efEvery_monthly: 'Monthly', efMaxPending: 'Proposals waiting at once', efExpireNote: '⏳ A proposal you do not answer expires after 3 days and is not counted.',
+		efWhichGoals: 'Goals I may help with', efNoGoalsToFeed: 'You have no savings goals yet. Add one in Plan.', efSuggestNow: '💡 You can safely move about **{a}** now: {names}.', efMoveNow: 'Record it now', efNoRealMoney: '🏦 No real money moves. This is a tracking system.',
+		efAutoWarnTitle: 'Turn on automatic?', efAutoWarnHi: 'I need a little more data to be good at this.', efAutoWarnData: '📈 I only have **{d} days** of history, so my amounts may be rough.', efAutoWarnUndo: '↩️ Every automatic entry has an Undo button.', efAutoWarnSafe: '🛡️ I never go below your cushion.', efAutoKeepAsk: 'Keep asking first', efAutoTurnOn: 'Turn on automatic',
+		efObMovesTitle: 'I can help move money too', efObMovesText: '💡 Suggest: I tell you how much is safe to put into a goal\n✋ Ask first: I propose, you confirm or dismiss\n🤖 Automatic: I record it and you can undo\n⏳ Unanswered proposals expire after 3 days, nothing is lost\n🏦 No real money moves. It is all records', efObMovesLater: 'You choose in More, then eFriend.',
+	} );
+	Object.assign( window.EXPENITY_I18N.langs.el, {
+		efSetAside: 'στην άκρη', efPendingWord: 'σε αναμονή', efMovedBy: 'Μετακινήθηκε από το eFriend', efUndo: 'Αναίρεση', efUndone: 'Αναιρέθηκε', efWeekMoved: '🤖 Αυτή την εβδομάδα το eFriend μετακίνησε **{a}** ({n} εγγραφές).',
+		efPropTitle: 'Πρόταση του eFriend', efPropItem: '🎯 **{a}** → *{name}*', efPropTotal: '💰 Σύνολο **{a}**. Δεν μετακινούνται πραγματικά χρήματα: ενημερώνονται μόνο τα αρχεία σας.', efPropExpire: '⏳ Αν δεν απαντήσετε, λήγει σε **{n}** ημέρες. Δεν χάνεται τίποτα.',
+		efPropConfirm: 'Επιβεβαίωση', efPropEdit: 'Επεξεργασία', efPropDismiss: 'Απόρριψη', efPropDone: 'Καταγράφηκε. Η τράπεζά σας δεν επηρεάζεται.', efPropNote: '🧾 Η επιβεβαίωση ενημερώνει μόνο τα αρχεία σας.',
+		efAllocTitle: 'Βοήθεια με τους στόχους μου', efAllocText: '🎯 Μπορώ να υπολογίσω πόσα είναι ασφαλές να μπουν στους στόχους αποταμίευσής σας\n✋ Εσείς διαλέγετε πόσα κάνω μόνο μου\n🧾 Ενημερώνει μόνο τα αρχεία σας. Πραγματικά χρήματα δεν μετακινούνται ποτέ.',
+		efModeOff: 'Ανενεργό', efModeOffSub: 'Χωρίς βοήθεια', efModeSuggest: 'Πρόταση', efModeSuggestSub: 'Σας λέω το ασφαλές ποσό', efModeAsk: 'Ρωτά πρώτα', efModeAskSub: 'Προτείνω, εσείς επιβεβαιώνετε', efModeAuto: 'Αυτόματο', efModeAutoSub: 'Το καταγράφω, μπορείτε να το αναιρέσετε',
+		efEvery: 'Πόσο συχνά', efEvery_daily: 'Καθημερινά', efEvery_weekly: 'Εβδομαδιαία', efEvery_monthly: 'Μηνιαία', efMaxPending: 'Προτάσεις σε αναμονή ταυτόχρονα', efExpireNote: '⏳ Μια πρόταση που δεν απαντάτε λήγει μετά από 3 ημέρες και δεν υπολογίζεται.',
+		efWhichGoals: 'Στόχοι στους οποίους μπορώ να βοηθήσω', efNoGoalsToFeed: 'Δεν έχετε ακόμα στόχους αποταμίευσης. Προσθέστε έναν στο Πλάνο.', efSuggestNow: '💡 Μπορείτε με ασφάλεια να μετακινήσετε περίπου **{a}** τώρα: {names}.', efMoveNow: 'Καταγραφή τώρα', efNoRealMoney: '🏦 Δεν μετακινούνται πραγματικά χρήματα. Είναι σύστημα παρακολούθησης.',
+		efAutoWarnTitle: 'Ενεργοποίηση αυτόματου;', efAutoWarnHi: 'Χρειάζομαι λίγα ακόμα δεδομένα για να τα πηγαίνω καλά.', efAutoWarnData: '📈 Έχω μόνο **{d} ημέρες** ιστορικού, οπότε τα ποσά μου μπορεί να είναι πρόχειρα.', efAutoWarnUndo: '↩️ Κάθε αυτόματη εγγραφή έχει κουμπί Αναίρεσης.', efAutoWarnSafe: '🛡️ Δεν πηγαίνω ποτέ κάτω από το περιθώριό σας.', efAutoKeepAsk: 'Να ρωτά πρώτα', efAutoTurnOn: 'Ενεργοποίηση αυτόματου',
+		efObMovesTitle: 'Μπορώ να βοηθήσω και με τη μετακίνηση χρημάτων', efObMovesText: '💡 Πρόταση: σας λέω πόσα είναι ασφαλές να μπουν σε έναν στόχο\n✋ Ρωτά πρώτα: προτείνω, εσείς επιβεβαιώνετε ή απορρίπτετε\n🤖 Αυτόματο: το καταγράφω και μπορείτε να το αναιρέσετε\n⏳ Οι προτάσεις που δεν απαντάτε λήγουν σε 3 ημέρες, δεν χάνεται τίποτα\n🏦 Δεν μετακινούνται πραγματικά χρήματα. Είναι όλα αρχεία', efObMovesLater: 'Διαλέγετε στο Περισσότερα, μετά eFriend.',
 	} );
 }() );

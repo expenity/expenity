@@ -47,7 +47,8 @@ await page.click('[data-ef-ob=next]');await page.waitForTimeout(500);
 ok(await page.evaluate((b)=>EX.state().goals.filter(g=>g.kind==='efriend').length===b+1,before),'a wish from the tour becomes a plan');
 await page.waitForTimeout(800);
 ok(await page.evaluate(()=>/budget/i.test(document.querySelector('.ef-ob').textContent)&&!!document.querySelector('.ef-bud-card')),'the tour has a fun budgets step');await page.screenshot({path:'/tmp/ef-bud.png'});await page.click('[data-ef-ob=next]');await page.waitForTimeout(500);
-ok(await page.evaluate(()=>/Who comes first/i.test(document.querySelector('.ef-ob').textContent)&&!!document.querySelector('.ef-ob [data-ef-margin]')&&!!document.querySelector('.ef-shuf')),'the tour explains priorities (even with one plan) and has the risk slider');await page.screenshot({path:'/tmp/ef-prio.png'});await page.click('[data-ef-ob=next]');await page.waitForTimeout(2200);
+ok(await page.evaluate(()=>/Who comes first/i.test(document.querySelector('.ef-ob').textContent)&&!!document.querySelector('.ef-ob [data-ef-margin]')&&!!document.querySelector('.ef-shuf')),'the tour explains priorities (even with one plan) and has the risk slider');await page.screenshot({path:'/tmp/ef-prio.png'});await page.click('[data-ef-ob=next]');await page.waitForTimeout(500);
+ok(await page.evaluate(()=>/expire after 3 days/i.test(document.querySelector('.ef-ob').textContent)&&/No real money moves/i.test(document.querySelector('.ef-ob').textContent)),'the tour explains the three helper modes, that proposals expire after 3 days, and that no real money moves');await page.click('[data-ef-ob=next]');await page.waitForTimeout(2200);
 ok(await page.evaluate(()=>!!document.querySelector('.ef-ob .ef-ph-widget')),'step 2 animates the Home card');await page.screenshot({path:'/tmp/ef-ob2.png'});
 await page.click('[data-ef-ob=next]');await page.waitForSelector('[data-ef-row]');await page.screenshot({path:'/tmp/ef-ob3.png'});
 ok(await page.evaluate(()=>document.querySelectorAll('[data-ef-row]').length>=2&&document.querySelectorAll('[data-ef-row] .on').length===document.querySelectorAll('[data-ef-row]').length),'every category pre-sorted with a 3-way toggle');
@@ -70,7 +71,7 @@ ok(await page.evaluate(()=>!!document.querySelector('[data-more=efriend]')),'Mor
 await page.click('[data-more=efriend]');await page.waitForTimeout(300);
 console.log(await page.evaluate(()=>document.querySelector('#view').textContent.slice(0,200)+'|'+!!document.querySelector('[data-ef-new]')+!!document.querySelector('[data-ef-sort]')));ok(await page.evaluate(()=>/Trip to Italy/.test(document.querySelector('.ef-page')?.parentElement?.textContent||document.body.textContent)&&!!document.querySelector('[data-ef-new]')&&!!document.querySelector('[data-ef-sort]')),'eFriend page lists goals with actions');
 await page.click('[data-ef-intro]');await page.waitForSelector('.ef-ob');
-ok(await page.evaluate(()=>document.querySelectorAll('.ef-dots i').length===8),'More > eFriend replays the whole onboarding (8 steps; the income step only appears when none is set)');
+ok(await page.evaluate(()=>document.querySelectorAll('.ef-dots i').length===9),'More > eFriend replays the whole onboarding (9 steps; the income step only appears when none is set)');
 await page.click('[data-ef-ob=skip]');await page.waitForTimeout(300);
 await page.evaluate(()=>{const S=EX.state();S.goals[0].deadline='';EXA.go('home');});await page.waitForTimeout(300);
 ok(await page.evaluate(()=>!!document.querySelector('[data-ef-try]')&&/date/i.test(document.querySelector('[data-home=efriend]').textContent)),'coached goal without a date is not lost: Home asks for the date');
@@ -88,7 +89,7 @@ await page.click('[data-ef-ob=skip]');await page.waitForTimeout(2000);
 ok(await page.evaluate(()=>!document.querySelector('.ef-ob')),'Skip closes it and it does not restart');
 await page.evaluate(()=>UI.closeSheet&&UI.closeSheet());
 await page.evaluate(()=>EXA.efriendOnboard());await page.waitForSelector('.ef-ob');
-for(let i=0;i<7;i++){await page.click('[data-ef-ob=next]');await page.waitForTimeout(150);}
+for(let i=0;i<8;i++){await page.click('[data-ef-ob=next]');await page.waitForTimeout(150);}
 await page.click('[data-ef-ob=next]');await page.waitForTimeout(2000);
 ok(await page.evaluate(()=>!document.querySelector('.ef-ob')),"Let's go finishes and it does not restart");
 ok(await page.evaluate(()=>{const c=getComputedStyle(document.createElement('div'));return true;}),'');
@@ -253,5 +254,51 @@ await page.evaluate(()=>document.querySelector('#efPlanForm').requestSubmit());a
 ok(await page.evaluate(()=>{const g=EX.state().goals.find(x=>x.id==='cg');return g.kind==='efriend'&&EX.plan.list().every(x=>x.id!=='cg');}),'a goal can be turned into an eFriend plan and leaves the goals list');
 ok(await page.evaluate(()=>EX.efriend.of('cg').saved===15000),'money already put into the converted goal still counts');
 await page.evaluate(()=>{document.querySelectorAll('.ef-ob').forEach(x=>x.remove());document.body.classList.remove('ef-ob-open');UI.closeSheet&&UI.closeSheet(true);});
+// helping with goals: ask first, confirm, edit, dismiss, expire, automatic with undo
+await page.evaluate(()=>{document.querySelectorAll('.ef-ob').forEach(x=>x.remove());document.body.classList.remove('ef-ob-open');UI.closeSheet&&UI.closeSheet(true);const S=EX.state(),a=S.accounts[0],d=(n)=>new Date(Date.now()+n*864e5).toISOString().slice(0,10);
+S.goals=S.goals.filter(g=>g.kind==='efriend'&&false);S.txs=S.txs.filter(x=>false);S.bills=[];S.incomes=[];S.settings.efProposals=[];delete S.settings.efAlloc;delete S.settings.efCushion;a.opening='9000';
+for(let i=1;i<=45;i++)S.txs.push({id:'h'+i,type:'expense',amount:'12',category:'food',account:a.id,date:new Date(Date.now()-i*864e5).toISOString().slice(0,10),name:'daily'});
+S.goals.push({id:'pot',name:'Paris pot',target:'1200',deadline:d(60),icon:'plane'},{id:'pot2',name:'Car pot',target:'3000',deadline:d(200),icon:'car'});EX.save();});
+ok(await page.evaluate(()=>EX.efriend.alloc().mode==='off'&&EX.efriend.fundGoals().length===0&&EX.efriend.proposeItems().length===0),'helping is off by default and touches no goals');
+await page.evaluate(()=>{EXA.st.view='more';EXA.st.more='efriend';EXA.render();});await page.waitForTimeout(300);
+ok(await page.evaluate(()=>document.querySelectorAll('.ef-mode').length===4&&/No real money moves/.test(document.querySelector('.ef-alloc').textContent)),'the eFriend page offers Off / Suggest / Ask first / Automatic and says no real money moves');
+await page.click('[data-ef-mode=suggest]');await page.waitForTimeout(300);
+await page.click('[data-ef-fund=pot]');await page.click('[data-ef-fund=pot2]');await page.waitForTimeout(300);
+ok(await page.evaluate(()=>/safely move about/.test(document.querySelector('.ef-alloc').textContent)&&!!document.querySelector('[data-ef-movenow]')),'suggest mode tells you the safe amount for the goals you allowed');
+await page.click('[data-ef-mode=ask]');await page.waitForTimeout(300);
+await page.click('[data-ef-every=weekly]');await page.evaluate(()=>{const r=document.querySelector('[data-ef-maxpend]');r.value=2;r.dispatchEvent(new Event('change',{bubbles:true}));});await page.waitForTimeout(300);
+ok(await page.evaluate(()=>EX.efriend.alloc().maxPending===2&&/expires after 3 days/.test(document.querySelector('.ef-alloc').textContent)),'proposals waiting at once is a 1 to 5 slider and the 3-day expiry is explained');
+await page.evaluate(()=>{EX.efriend.tickAlloc();EX.save();EXA.render();});await page.waitForTimeout(300);
+const pend=await page.evaluate(()=>EX.efriend.pending().map(x=>x.items.map(i=>i.g+':'+i.a/100).join(',')));
+ok(pend.length===1&&pend[0].includes('pot'),'ask first: a proposal appears (one combined card for several goals): '+pend.join('|'));
+ok(await page.evaluate(()=>!!document.querySelector('.ef-prop [data-ef-prop=confirm]')&&!!document.querySelector('.ef-prop [data-ef-prop=edit]')&&!!document.querySelector('.ef-prop [data-ef-prop=dismiss]')),'the proposal has Confirm, Edit and Dismiss');
+const txBefore=await page.evaluate(()=>EX.state().txs.filter(x=>x.efMoved).length);
+ok(txBefore===0,'nothing is recorded until you confirm');
+await page.click('.ef-prop [data-ef-prop=confirm]');await page.waitForTimeout(400);
+const moved=await page.evaluate(()=>EX.state().txs.filter(x=>x.efMoved&&x.efBy==='confirmed'));
+ok(moved.length>=1&&moved.every(x=>x.goalId&&x.category==='goal'),'confirming records goal entries marked as moved by eFriend ('+moved.length+')');
+await page.evaluate(()=>{EXA.st.view='activity';EXA.render();});await page.waitForTimeout(400);
+ok(await page.evaluate(()=>!!document.querySelector('.ef-moved')&&!!document.querySelector('.ef-moved .ef-txbadge')&&!!document.querySelector('.ef-undo')&&/This week eFriend moved/.test(document.querySelector('#view').textContent)),'Activity makes eFriend\'s entries stand out: badge, label, Undo, and a weekly line');
+await page.click('.ef-undo');await page.waitForTimeout(300);
+ok(await page.evaluate((n)=>EX.state().txs.filter(x=>x.efMoved).length<n,moved.length),'Undo removes the entry');
+// dismiss, expire, max pending
+await page.evaluate(()=>{const S=EX.state();S.settings.efProposals=[];S.settings.efAlloc.last='';EX.efriend.tickAlloc();});
+await page.evaluate(()=>{EXA.st.view='home';EXA.render();});await page.waitForTimeout(400);
+ok(await page.evaluate(()=>!!document.querySelector('[data-home=efriend] .ef-prop')),'Home shows the proposal too');
+await page.click('[data-home=efriend] .ef-prop [data-ef-prop=dismiss]');await page.waitForTimeout(300);
+ok(await page.evaluate(()=>EX.efriend.pending().length===0&&EX.state().settings.efProposals.some(x=>x.status==='dismissed')),'dismissing removes it and remembers');
+await page.evaluate(()=>{const S=EX.state();S.settings.efAlloc.last='';S.settings.efAlloc.maxPending=1;EX.efriend.tickAlloc();S.settings.efAlloc.last='';EX.efriend.tickAlloc();});
+ok(await page.evaluate(()=>EX.efriend.pending().length<=1),'no more proposals than your limit wait at once');
+await page.evaluate(()=>{const S=EX.state();S.settings.efProposals.forEach(x=>{if(x.status==='pending')x.exp=new Date(Date.now()-864e5).toISOString().slice(0,10);});EX.efriend.tickAlloc();});
+ok(await page.evaluate(()=>EX.efriend.pending().length===0||EX.state().settings.efProposals.filter(x=>x.status==='expired').length>=1),'an unanswered proposal expires');
+// automatic mode: warned when there is little data
+await page.evaluate(()=>{const S=EX.state();S.txs=S.txs.filter(x=>x.date>=new Date(Date.now()-5*864e5).toISOString().slice(0,10));EXA.st.view='more';EXA.st.more='efriend';EXA.render();});await page.waitForTimeout(300);
+await page.click('[data-ef-mode=auto]');await page.waitForSelector('[data-ef-autoyes]');
+ok(await page.evaluate(()=>/days of history/.test(document.querySelector('#sheet').textContent)&&EX.efriend.alloc().mode!=='auto'),'with little data, automatic shows a warning first and is not on yet');
+await page.click('[data-ef-autoyes]');await page.waitForTimeout(300);
+ok(await page.evaluate(()=>EX.efriend.alloc().mode==='auto'),'after the warning, automatic can be turned on');
+// home totals show both: total and set aside
+await page.evaluate(()=>{const S=EX.state();S.txs.push({id:'sa1',type:'expense',amount:'500',category:'goal',account:S.accounts[0].id,date:EX.today(),name:'in',goalId:'pot'});EX.save();EXA.st.view='home';EXA.render();});await page.waitForTimeout(400);
+ok(await page.evaluate(()=>/set aside/i.test(document.querySelector('[data-home=balance]').textContent)),'the Home balance shows the total and how much of it is set aside for goals');
 ok(errs.length===0,'no page errors '+errs.join('|'));
 await browser.close();server.close();
