@@ -223,7 +223,7 @@ ok(car.careful!=='comfortable','a careful cushion (3 months) does not call it sa
 await page.evaluate(()=>{UI.closeSheet&&UI.closeSheet();EXA.st.view='more';EXA.st.more='efriend';EXA.render();});await page.waitForTimeout(300);
 const cols=await page.evaluate(()=>{const r=document.querySelector('[data-ef-margin]'),box=r.closest('.ef-risk'),out=[];for(const v of [0,10,20,30,40,50,60,80,100]){r.value=v;r.dispatchEvent(new Event('input',{bubbles:true}));out.push(box.style.getPropertyValue('--c'));}return out;});
 ok(new Set(cols).size===cols.length&&cols[0]==='rgb(217,45,32)'&&cols[4]==='rgb(22,163,74)'&&cols[8]==='rgb(30,58,138)','the thumb colour blends smoothly from red through green to blue ('+cols.join(' ')+')');
-ok(await page.evaluate(()=>{const r=document.querySelector('[data-ef-margin]');return getComputedStyle(r).backgroundImage.includes('linear-gradient');}),'the track is a gradient');
+ok(await page.evaluate(()=>{const r=document.querySelector('[data-ef-margin]'),bg=getComputedStyle(r).backgroundImage;return !/rgb\(217, ?45, ?32\)/.test(bg)&&!/rgb\(22, ?163, ?74\)/.test(bg)&&!!document.querySelector('.ef-risk').style.getPropertyValue('--p');}),'the track is neutral: only the handle carries the colour');
 // when the date arrives: did you make it?
 await page.evaluate(()=>{document.querySelectorAll('.ef-ob').forEach(x=>x.remove());document.body.classList.remove('ef-ob-open');UI.closeSheet&&UI.closeSheet(true);const S=EX.state(),a=S.accounts[0].id,y=new Date(Date.now()-864e5).toISOString().slice(0,10);S.goals=S.goals.filter(g=>g.kind!=='efriend');S.settings.efSnooze={};
 S.goals.push({id:'d1',name:'Italy trip',target:'800',deadline:y,icon:'plane',kind:'efriend',wallets:[a]},{id:'d2',name:'Old phone',target:'300',deadline:y,icon:'device-mobile',kind:'efriend',wallets:[a]},{id:'d3',name:'Gift',target:'50',deadline:y,icon:'gift',kind:'efriend',wallets:[a]});EX.save();});
@@ -340,6 +340,9 @@ const lay=await page.evaluate(()=>{const sh=document.querySelector('.ef-shuf').g
 ok(lay.h>=140&&lay.clear&&lay.inside,'the animated pills have their own space and never cover the text ('+JSON.stringify(lay)+')');
 const jump=await page.evaluate(()=>{const r=document.querySelector('[data-ef-margin]'),box=r.closest('.ef-risk'),pos=[],tops=[];for(const v of [0,10,20,30,40,50,60,70,80,90,100]){r.value=v;r.dispatchEvent(new Event('input',{bubbles:true}));pos.push(Math.round(r.getBoundingClientRect().top)+'/'+Math.round(box.getBoundingClientRect().height)+'/'+Math.round(box.querySelector('.ef-risk-h').getBoundingClientRect().height));}return [...new Set(pos)];});
 ok(jump.length===1,'moving the slider does not change the height of anything around it ('+jump.join(' | ')+')');
-await page.evaluate(()=>{document.querySelectorAll('.ef-ob').forEach(x=>x.remove());document.body.classList.remove('ef-ob-open');});
+const vis=async(lang)=>page.evaluate((l)=>{EX.setLang(l);document.querySelectorAll('.ef-ob').forEach(x=>x.remove());document.body.classList.remove('ef-ob-open');UI.closeSheet&&UI.closeSheet(true);EXA.openEfPriority();return new Promise(r=>setTimeout(()=>{const b=document.querySelector('.ef-risk-h b'),v=document.querySelector('.ef-risk-val');r({clip:b.scrollHeight>b.clientHeight+1||b.scrollWidth>b.clientWidth+1,valFits:v.scrollWidth<=v.clientWidth+1,text:b.textContent});},400));},lang);
+const vi=[await vis('en'),await vis('el')];await page.evaluate(()=>EX.setLang('en'));
+ok(vi.every((x)=>!x.clip&&x.valFits),'the slider heading and value are fully visible in English and Greek ('+vi.map((x)=>x.text).join(' / ')+')');
+await page.evaluate(()=>{document.querySelectorAll('.ef-ob').forEach(x=>x.remove());document.body.classList.remove('ef-ob-open');UI.closeSheet&&UI.closeSheet(true);});
 ok(errs.length===0,'no page errors '+errs.join('|'));
 await browser.close();server.close();
