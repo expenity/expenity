@@ -122,8 +122,10 @@ ok(await page.evaluate(()=>{const F=EX.efriend;return F.amtCents('2.500')===2500
 await page.evaluate(()=>EXA.efriendAskOpen());await page.waitForSelector('.ef-chipq');await send('phone 500');await page.waitForFunction(()=>document.querySelectorAll('.ef-chipq').length===6);
 await send('xyz');await page.waitForTimeout(300);await send('qwerty');
 await page.waitForFunction(()=>[...document.querySelectorAll('.ef-chipq')].length===2&&document.querySelector('.ef-chipq'));
+ok(await page.evaluate(()=>document.getElementById('efChatQ').disabled),'while the offer is on screen the text box rests');
 ok(await page.evaluate(()=>/📝/.test(document.querySelectorAll('.ef-chipq')[0].textContent)&&/💬/.test(document.querySelectorAll('.ef-chipq')[1].textContent)),'when eFriend keeps asking the same thing it offers a quick form or to keep chatting');
 await page.evaluate(()=>document.querySelectorAll('.ef-chipq')[0].click());await page.waitForSelector('#efQForm');
+ok(await page.evaluate(()=>document.getElementById('efChatQ').disabled),'with the form open the text box rests too');
 ok(await page.evaluate(()=>!!document.querySelector('#efQForm [name=what]')&&!!document.querySelector('#efQForm [name=cost]')&&!!document.querySelector('#efQForm [name=when]')),'the form has the item, price and date');
 await page.fill('#efQForm [name=what]','');await page.fill('#efQForm [name=cost]','');await page.evaluate(()=>document.querySelector('#efQForm').requestSubmit());ok(await page.evaluate(()=>!document.getElementById('efQErr').hidden),'an empty form asks for the item and price');
 await page.fill('#efQForm [name=what]','Bike');await page.type('#efQForm [name=cost]','1200');await page.fill('#efQForm [name=when]',new Date(Date.now()+20*864e5).toISOString().slice(0,10));
@@ -142,6 +144,10 @@ await page.evaluate(()=>EXA.efriendAskOpen());await page.waitForSelector('.ef-ch
 await send('xyz');await page.waitForTimeout(300);await send('qwerty');
 await page.waitForFunction(()=>document.querySelectorAll('.ef-chipq').length===2);await page.evaluate(()=>document.querySelectorAll('.ef-chipq')[1].click());await page.waitForTimeout(400);
 ok(await page.evaluate(()=>!document.getElementById('efQForm')&&!document.getElementById('efChatQ').disabled),'keep chatting declines the form');
+await page.evaluate(()=>EXA.efriendAskOpen());await page.waitForSelector('[data-ef-skip]');await page.click('[data-ef-skip]');await page.waitForSelector('#efQForm');await page.evaluate(()=>document.querySelector('[data-ef-clear]').click());
+await page.waitForFunction(()=>!document.getElementById('efChatQ').disabled&&document.querySelectorAll('.ef-chipq').length===8);
+ok(true,'start over gives the text box back');
+await page.evaluate(()=>EXA.efriendAskOpen());await page.waitForSelector('.ef-chipq');
 // clearing the chat twice also offers it
 await page.evaluate(()=>{document.querySelector('[data-ef-clear]').click();});await page.waitForFunction(()=>document.querySelectorAll('.ef-chipq').length===8);
 await page.evaluate(()=>{document.querySelector('[data-ef-clear]').click();});await page.waitForFunction(()=>[...document.querySelectorAll('.ef-chipq')].some(c=>/📝/.test(c.textContent)));
