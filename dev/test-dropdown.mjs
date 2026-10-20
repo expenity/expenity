@@ -21,6 +21,18 @@ ok(await page.evaluate(()=>document.querySelector('#efPlanForm select').value===
 await page.click('#efPlanForm select');await page.keyboard.press('Escape');
 ok(await page.evaluate(()=>!document.querySelector('.dd-menu')&&!!document.querySelector('#sheet[open]')),'Escape closes only the menu');
 ok(await page.evaluate(()=>getComputedStyle(document.querySelector('#efPlanForm select')).appearance==='none'),'closed select has the custom look');
+await page.evaluate(()=>UI.closeSheet&&UI.closeSheet());await page.evaluate(()=>EXA.openEfPlan());await page.waitForSelector('#efPlanForm [name=pdate]');
+await page.evaluate(()=>{window.__dc=0;document.querySelector('[name=pdate]').addEventListener('change',()=>window.__dc++);});
+await page.click('[name=pdate]');
+ok(await page.evaluate(()=>!!document.querySelector('.dp')&&document.querySelectorAll('.dp-day').length===42),'clicking a date field opens the modern calendar');
+await page.screenshot({path:'/tmp/dp.png'});
+await page.click('.dp-chip[data-q]');
+ok(await page.evaluate(()=>!document.querySelector('.dp')&&/^\d{4}-\d{2}-\d{2}$/.test(document.querySelector('[name=pdate]').value)&&window.__dc===1),'a quick chip sets the date and fires change');
+await page.click('[name=pdate]');await page.click('.dp-nav[data-nav="1"]');await page.click('.dp-day:not(.out):text-is("15")');
+ok(await page.evaluate(()=>/^\d{4}-\d{2}-15$/.test(document.querySelector('[name=pdate]').value)),'month arrows and a day pick the right date');
+await page.click('[name=pdate]');await page.keyboard.press('ArrowRight');await page.keyboard.press('Enter');
+ok(await page.evaluate(()=>/^\d{4}-\d{2}-16$/.test(document.querySelector('[name=pdate]').value)),'the keyboard moves and chooses');
+await page.click('[name=pdate]');await page.keyboard.press('Escape');ok(await page.evaluate(()=>!document.querySelector('.dp')&&!!document.querySelector('#sheet[open]')),'Escape closes only the calendar');
 ok(errs.length===0,'no page errors '+errs.join('|'));
 const touch=await (await browser.newContext({viewport:{width:390,height:800},isMobile:true,hasTouch:true,serviceWorkers:'block'})).newPage();
 await touch.goto(`http://localhost:${server.address().port}`);await touch.waitForFunction(()=>!!window.EX?.efriend);

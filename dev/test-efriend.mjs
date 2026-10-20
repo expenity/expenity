@@ -57,7 +57,7 @@ ok(await page.evaluate(()=>document.querySelectorAll('.ef-dots i').length===5),'
 await page.click('[data-ef-ob=skip]');await page.waitForTimeout(300);
 await page.evaluate(()=>{const S=EX.state();S.goals[0].deadline='';EXA.go('home');});await page.waitForTimeout(300);
 ok(await page.evaluate(()=>!!document.querySelector('[data-ef-try]')&&/date/i.test(document.querySelector('[data-home=efriend]').textContent)),'coached goal without a date is not lost: Home asks for the date');
-await page.evaluate(()=>{document.querySelector('#view').innerHTML=EX.efriend.mascot('ontrack',100);});
+await page.evaluate(()=>{document.querySelector('#view').innerHTML='<div>'+EX.efriend.mascot('ontrack',100)+'</div>';});
 const state=()=>page.evaluate(()=>[...document.querySelector('.ef-mascot').classList].filter(c=>c.startsWith('ef-poke')).join());
 await page.click('.ef-mascot');ok((await state())==='ef-poke-smile','one click: smiles');
 ok(await page.evaluate(()=>getComputedStyle(document.querySelector('.ef-armR')).animationName==='ef-pokeR'&&getComputedStyle(document.querySelector('.ef-face-smile')).display!=='none'),'hands move and the face smiles');
