@@ -16,4 +16,9 @@ await page.evaluate(()=>{EXA.markPaid('b1','132.5',new Date().toISOString().slic
 ok(await page.evaluate(()=>!document.querySelector('[data-home=due] .bm-row')),'after paying, the bill is gone from Due soon');
 const top=await page.evaluate(()=>{const first=[...document.querySelectorAll('#view [data-home]')].find(e=>e.getBoundingClientRect().height>2&&e.dataset.home!=='welcome');return Math.round(first.getBoundingClientRect().top);});
 ok(top<170,'and the first widget starts right under the header ('+top+' px)');
+await page.evaluate(()=>{const S=EX.state();S.bills.push({id:'b2',name:'Gym',amount:'30',category:'health',next:new Date().toISOString().slice(0,10),repeat:'once',currency:'EUR'});EX.save();EXA.go('home');});await page.waitForTimeout(800);
+const before=await page.evaluate(()=>document.querySelector('[data-home=calendar] .grp')?.textContent.trim().slice(0,40));
+await page.evaluate(()=>document.querySelector('[data-flip=cal]').click());await page.waitForTimeout(500);
+ok(await page.evaluate(()=>{const f=document.querySelector('[data-flip=cal]'),g=document.querySelector('[data-home=calendar] .grp');return !!g&&!f.contains(g);}),'the selected day list sits outside the flipping card');
+ok(await page.evaluate(()=>document.querySelector('[data-flip=cal]').classList.contains('flipped')&&!!document.querySelector('[data-home=calendar] .grp')&&getComputedStyle(document.querySelector('[data-home=calendar] .grp')).display!=='none'),'flipping the calendar leaves the list below showing: '+before);
 await browser.close();server.close();
