@@ -23,8 +23,8 @@ ok(await page.evaluate(()=>!!document.querySelector('[data-ef-open]')),'back fac
 await page.click('[data-ef-open]');await page.waitForSelector('.ef-sheet');
 ok(await page.evaluate(()=>document.querySelectorAll('.ef-kv li').length===4&&document.querySelectorAll('[data-ef-level]').length>0),'analysis sheet shows numbers and category sorting');
 await page.evaluate(()=>UI.closeSheet());
-await page.evaluate(()=>EXA.efriendIntro());await page.waitForTimeout(4200);
-ok(await page.evaluate(()=>!!document.querySelector('.ef-logo.play .ef-lg-F')&&getComputedStyle(document.querySelector('.ef-intro-ov button')).opacity==='1'),'logo intro finishes on the word eFriend');
+await page.evaluate(()=>EXA.efriendIntro());await page.waitForTimeout(4800);
+ok(await page.evaluate(()=>!!document.querySelector('.ef-logo.play .ef-lg-w')&&getComputedStyle(document.querySelector('.ef-intro-ov button')).opacity==='1'),'logo intro finishes on the word eFriend');
 await page.screenshot({path:'/tmp/ef-intro.png'}).catch(()=>{});
 await page.click('.ef-intro-ov button');
 await page.evaluate(()=>EXA.efriendOnboard('g1'));await page.waitForSelector('[data-ef-row]');
