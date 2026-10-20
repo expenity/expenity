@@ -23,5 +23,10 @@ ok(await page.evaluate(()=>EX.state().txs.some(x=>/xyzzy/i.test(x.name)&&(x.cate
 await page.evaluate(()=>{UI.closeSheet(true);});await page.waitForTimeout(400);await page.evaluate(()=>EXA.openTx(null,{type:'expense'}));await page.waitForTimeout(700);
 await page.click('[data-tx=toggle-mode]');await page.waitForTimeout(400);
 ok(await page.evaluate(()=>!!document.querySelector('#txDesc')&&!document.querySelector('#txQuick')&&EX.state().device.entryMode==='casual'),'switching to casual shows the form and is remembered');
+await page.evaluate(()=>{UI.closeSheet(true);});await page.waitForTimeout(300);await page.evaluate(()=>{EX.state().device.entryMode='smart';EXA.openTx(null,{type:'expense'});});await page.waitForTimeout(600);
+await page.fill('#txQuick','Tea 2');await page.waitForTimeout(300);await page.click('.entry-head [data-close], [data-close]');await page.waitForTimeout(400);
+ok(await page.evaluate(()=>{const e=document.querySelector('.entry-alert');return !!e&&getComputedStyle(e).display!=='none'&&e.getBoundingClientRect().height>10;}),'in Smart entry, X shows the Keep editing / Discard prompt (it used to be hidden, so nothing seemed to happen)');
+await page.click('[data-entry=discard]').catch(()=>{});await page.waitForTimeout(500);
+ok(await page.evaluate(()=>!UI.sheetOpen()),'Discard closes the entry');
 ok(errors.length===0,'no errors '+errors.join('|'));
 await browser.close();server.close();

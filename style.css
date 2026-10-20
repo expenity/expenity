@@ -1011,3 +1011,4 @@ button.bm-pill{cursor:pointer;min-height:34px;transition:transform .15s}button.b
 .flipcard:not(.fc-tile) .fc-back{display:none}
 .flipcard:not(.fc-tile).flipped .fc-front{display:none}
 .flipcard:not(.fc-tile).flipped .fc-back{display:block}
+.tx-scroll.entry-scroll.sentence-entry-mode>.entry-alert,.tx-scroll.entry-scroll.sentence-entry-mode>.entry-draft-status:not(:empty){display:block!important}
