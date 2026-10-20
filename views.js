@@ -177,6 +177,7 @@
 		lines.push( balC >= dueC ? t( 'wkFree', { free: money( ( balC - dueC ) / 100, S().settings.currency ) } ) : t( 'wkShort' ) );
 		return lines.map( ( l ) => `<p class="wk-line">${ esc( l ) }</p>` ).join( '' );
 	};
+	EXA.flipCard = flipCard;
 	EXA.home = () => {
 		const now = new Date(), y = now.getFullYear(), m = now.getMonth();
 		const wallets = EX.activeAccounts();
