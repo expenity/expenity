@@ -199,6 +199,14 @@ await page.evaluate(()=>document.querySelector('[data-ef-cpx]').click());
 await page.evaluate(()=>EXA.efriendAskOpen());await page.waitForSelector('.ef-cp');await page.evaluate(()=>EXA.openEfPlan(null,{name:'Bike',target:'500',icon:'gift'}));await page.waitForSelector('#efPlanForm');
 ok(await page.evaluate(()=>!document.querySelector('.ef-cp')&&!document.body.classList.contains('ef-ob-open')),'opening a plan closes any chat');
 await page.evaluate(()=>UI.closeSheet(true));
+// the rare name surprise (George, Olga, Danae): about one chat in ten
+const eg=await page.evaluate(()=>{const F=EX.efriend,r={};['George','Giorgos','Georgios','Γιώργος','Γεωργιος','Olga','Ολγα','Danae','Δανάη','Maria',''].forEach(n=>{EX.state().settings.name=n;r[n]=F.nameEgg();});return r;});
+ok(eg.George==='george'&&eg.Giorgos==='george'&&eg.Georgios==='george'&&eg['Γιώργος']==='george'&&eg['Γεωργιος']==='george'&&eg.Olga==='olga'&&eg['Ολγα']==='olga'&&eg.Danae==='danae'&&eg['Δανάη']==='danae'&&eg.Maria===''&&eg['']==='','the names are recognised in English and Greek, others are not');
+await page.evaluate(()=>{EX.state().settings.name='Olga';EX.state().device.efChatCount=2;EXA.efriendAskOpen();});await page.waitForFunction(()=>/creator/i.test(document.getElementById('efChat').textContent),{timeout:20000});
+ok(true,'on the third chat Olga hears that she shares her name with his creator’s wife');
+await page.evaluate(()=>{EX.state().device.efChatCount=3;document.querySelector('[data-ef-cpx]').click();EXA.efriendAskOpen();});await page.waitForSelector('.ef-chipq');
+ok(await page.evaluate(()=>!/creator/i.test(document.getElementById('efChat').textContent)),'it does not come back on the next chat');
+await page.evaluate(()=>{EX.state().settings.name='';document.querySelector('[data-ef-cpx]').click();});
 // the lines vary
 // entry points
 await page.evaluate(()=>{const S=EX.state();S.goals.push({id:'p1',name:'Trip',target:'800',deadline:new Date(Date.now()+60*864e5).toISOString().slice(0,10),icon:'plane',kind:'efriend',wallets:['w1']});EX.save();EXA.go('home');});await page.waitForTimeout(700);
