@@ -1125,3 +1125,9 @@ button.bm-pill{cursor:pointer;min-height:34px;transition:transform .15s}button.b
 @keyframes ef-hopb{0%,100%{transform:translateY(0)}45%{transform:translateY(-9px)}}
 @keyframes ef-wave2{0%,100%{transform:rotate(0)}50%{transform:rotate(8deg)}}
 @media (prefers-reduced-motion:reduce){.ef-body,.ef-shadow,.ef-armR,.ef-armL,.ef-eyes{animation:none!important}}
+@keyframes ef-wave{0%,55%,100%{transform:rotate(0)}8%{transform:rotate(-38deg)}18%{transform:rotate(-8deg)}28%{transform:rotate(-38deg)}38%{transform:rotate(-8deg)}46%{transform:rotate(-34deg)}}
+@keyframes ef-blink{0%,90%,100%{transform:scaleY(1)}93%{transform:scaleY(.08)}96%{transform:scaleY(1)}}
+.ef-armR{animation:ef-wave 5s ease-in-out infinite}
+.ef-eyes{animation:ef-blink 3.6s infinite}
+.ef-cheer .ef-armL{animation:ef-wave 1.4s ease-in-out infinite reverse}
+@media (prefers-reduced-motion:reduce){.ef-armR,.ef-armL,.ef-eyes{animation:none!important}}
