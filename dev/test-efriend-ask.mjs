@@ -170,6 +170,10 @@ await send('What is the capital of France?');await page.waitForFunction(()=>docu
 ok(true,'a question he cannot answer from his story gets the retro joke');
 const pr=await page.evaluate(()=>{const F=EX.efriend;return ['new shoes 49','dance shoes 60','a laptop for work 900'].map(q=>{return !!document.querySelector('x');});});
 await page.evaluate(()=>document.querySelector('[data-ef-cpx]').click());
+// making a plan leaves the chat
+await page.evaluate(()=>EXA.efriendAskOpen());await page.waitForSelector('.ef-cp');await page.evaluate(()=>EXA.openEfPlan(null,{name:'Bike',target:'500',icon:'gift'}));await page.waitForSelector('#efPlanForm');
+ok(await page.evaluate(()=>!document.querySelector('.ef-cp')&&!document.body.classList.contains('ef-ob-open')),'opening a plan closes any chat');
+await page.evaluate(()=>UI.closeSheet(true));
 // the lines vary
 // entry points
 await page.evaluate(()=>{const S=EX.state();S.goals.push({id:'p1',name:'Trip',target:'800',deadline:new Date(Date.now()+60*864e5).toISOString().slice(0,10),icon:'plane',kind:'efriend',wallets:['w1']});EX.save();EXA.go('home');});await page.waitForTimeout(700);
