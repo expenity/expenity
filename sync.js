@@ -153,6 +153,20 @@
 			const r = await api( 'DELETE', '/api/devices/passkey/' + encodeURIComponent( id ), undefined, { stepUp: s.token } );
 			return r.ok ? { ok: true } : { error: r.error || 'generic' };
 		},
+		/** Start over: add a new passkey on this device first (so there is never none), remove all the others, and issue fresh recovery codes. One fingerprint or face check covers all of it. */
+		async resetPasskeys() {
+			const s = await A.stepUp();
+			if ( s.error ) return s;
+			const add = await ceremony( 'create', () => api( 'POST', '/api/passkeys/options', {}, { stepUp: s.token } ), '/api/passkeys/verify', { label: deviceLabel() } );
+			if ( add.error ) return add;
+			const d = await A.devices(); if ( d.error ) return d;
+			const list = ( d.data.passkeys || [] ).slice().sort( ( a, b ) => ( a.createdAt || 0 ) - ( b.createdAt || 0 ) );
+			for ( const p of list.slice( 0, -1 ) ) await api( 'DELETE', '/api/devices/passkey/' + encodeURIComponent( p.id ), undefined, { stepUp: s.token } );
+			const c = await api( 'POST', '/api/recovery/regenerate', {}, { stepUp: s.token } );
+			if ( ! c.ok ) return { ok: true, recoveryCodes: null };
+			auth.codesLeft = 10;
+			return { ok: true, recoveryCodes: c.json.recoveryCodes };
+		},
 		async revokeSession( id ) {
 			const r = await api( 'DELETE', '/api/devices/session/' + encodeURIComponent( id ) );
 			return r.ok ? { ok: true } : { error: r.error || 'generic' };

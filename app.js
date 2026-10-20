@@ -217,6 +217,7 @@
 			case 'auth-create': case 'auth-signin': case 'auth-back': EXA.openAuth( 'start' ); break;
 			case 'auth-recover': EXA.openAuth( 'recover' ); break;
 			case 'sync-now': EX.sync.run().then( () => toast( t( 'syncDone' ) ) ); break;
+			case 'reset-passkeys': { if ( ! await EXA.confirm( { title: t( 'pkResetTitle' ), text: t( 'pkResetConfirm' ), confirm: t( 'pkResetBtn' ) } ) ) break; const r = await EX.auth.resetPasskeys(); if ( r.ok ) { toast( t( 'pkResetDone' ) ); loadDevices(); if ( r.recoveryCodes ) EXA.showCodes( r.recoveryCodes, () => {} ); } else toast( EXA.errText( r.error ) ); break; }
 			case 'add-passkey': { const r = await EX.auth.addPasskey(); if ( r.ok ) { toast( t( 'tPasskeyAdded' ) ); loadDevices(); } else toast( EXA.errText( r.error ) ); break; }
 			case 'rm-passkey': { const r = await EX.auth.removePasskey( el.dataset.id ); if ( r.ok ) { toast( t( 'tPasskeyRemoved' ) ); loadDevices(); } else toast( EXA.errText( r.error ) ); break; }
 			case 'rm-session': { const r = await EX.auth.revokeSession( el.dataset.id ); if ( r.ok ) { toast( t( 'tDeviceOut' ) ); loadDevices(); } else toast( EXA.errText( r.error ) ); break; }

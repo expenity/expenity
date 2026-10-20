@@ -752,6 +752,18 @@ async function adminReset( req, env ) {
 	return reply( req, env, { ok: true, cleared: tables } );
 }
 
+/** Mission Control only: gives the owner one fresh, single-use recovery code for an account, to pass on after checking the person is who they say. Existing codes stay valid. */
+async function adminRecoveryCode( req, env ) {
+	const given = ( req.headers.get( 'Authorization' ) || '' ).replace( /^Bearer /, '' );
+	if ( ! env.STATS_TOKEN || ! given || ( await sha256( given ) ) !== ( await sha256( env.STATS_TOKEN ) ) ) return fail( req, env, 'unauthorized', 401 );
+	const r = await readJson( req ); if ( r.tooLarge || r.bad ) return fail( req, env, 'bad_request' );
+	const email = String( r.body.email || '' ).trim().toLowerCase();
+	const user = validEmail( email ) ? await env.DB.prepare( 'SELECT id FROM users WHERE email = ?' ).bind( email ).first() : null;
+	if ( ! user ) return fail( req, env, 'not_found', 404 );
+	const code = newRecoveryCodes()[ 0 ];
+	await env.DB.prepare( 'INSERT INTO recovery_codes (user_id, code_hash) VALUES (?, ?)' ).bind( user.id, await sha256( normaliseCode( code ) ) ).run();
+	return reply( req, env, { code, codesLeft: await codesLeft( env, user.id ) } );
+}
 /** Mission Control only: sends a test notification to every subscribed device right now and says how each push service answered. */
 async function adminPushRun( req, env ) {
 	const given = ( req.headers.get( 'Authorization' ) || '' ).replace( /^Bearer /, '' );
@@ -917,6 +929,7 @@ async function handle( req, env ) {
 		if ( path === '/api/share/site' && req.method === 'POST' ) return siteShare( req, env, ip );
 		if ( path === '/api/admin/sharing' && req.method === 'GET' ) { if ( await limited( env, 'AUTH_LIMITER', 'admin:' + ip ) ) return fail( req, env, 'rate_limited', 429 ); return adminSharing( req, env, url ); }
 		if ( path === '/api/admin/reset' && req.method === 'POST' ) { if ( await limited( env, 'AUTH_LIMITER', 'admin:' + ip ) ) return fail( req, env, 'rate_limited', 429 ); return adminReset( req, env ); }
+		if ( path === '/api/admin/recovery-code' && req.method === 'POST' ) { if ( await limited( env, 'AUTH_LIMITER', 'admin:' + ip ) ) return fail( req, env, 'rate_limited', 429 ); return adminRecoveryCode( req, env ); }
 		if ( path === '/api/admin/push-run' && req.method === 'POST' ) { if ( await limited( env, 'AUTH_LIMITER', 'admin:' + ip ) ) return fail( req, env, 'rate_limited', 429 ); return adminPushRun( req, env ); }
 		if ( path === '/api/admin/stats' && req.method === 'GET' ) { if ( await limited( env, 'AUTH_LIMITER', 'admin:' + ip ) ) return fail( req, env, 'rate_limited', 429 ); return adminStats( req, env, url ); }
 		if ( PUBLIC_POST[ path ] ) {
