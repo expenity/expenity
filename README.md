@@ -20,6 +20,7 @@ Started as a bill reminder and grew into a money app for expenses, income, bills
 - **Budgets & goals:** category limits, carry-over, savings targets and milestones. Recurring income is under Activity → Income; Ideas stays on Home.
 - **Reports:** overview, spending, cash flow, trends, forecast, subscriptions and a sortable table, with filters, CSV export and a table view for every chart.
 - **Shared wallets:** invite codes and links, roles (owner, editor, viewer) enforced by the server, "added by" on every item.
+- **eFriend:** a small robot that checks whether you can afford something. A full-page chat that asks what, how much and how soon, finds the best days on a calendar with a balance graph, suggests spending limits and budgets, warns before you overspend or run short, and uses your name. Everything runs on your device. See [the guide](docs/efriend.md).
 - **Plans and features:** a Features page with Basic, Pro and Advanced, a comparison table and a toggle for every optional feature.
 - **Help:** Animated tutorials (pure CSS), a pulsing help icon on every screen with a tutorial (popup, per-screen dismissal, switch in More), a welcome tour, and **Contact us** with rich text and photos.
 - **Look:** eighteen themes, each adjustable with a pencil (colors, font, roundness), bundled fonts with Greek support, light and dark, an animations setting, press-and-hold and swipe actions, tablet and desktop layouts.

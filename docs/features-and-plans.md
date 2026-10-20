@@ -8,7 +8,7 @@ Expenity does a lot. You decide how much of it you see. **More → Make it yours
 
 - **Basic**: wallets, expenses, income, bills, categories and reports. Simple and quiet.
 - **Pro**: everything in Basic, plus repeating bills and income, budgets and goals, tags, quick entries, photos on entries, profile picture, notifications, shared wallets, the duplicate guard, the daily number, search filters, recently deleted, price-change alerts and draft reminders.
-- **Advanced**: everything in Pro, plus split expenses, reimbursements, receipt scanning, ideas, safe to spend, sounds, Home editing, theme editing and streaks.
+- **Advanced**: everything in Pro, plus split expenses, reimbursements, receipt scanning, ideas, safe to spend, sounds, Home editing, theme editing and streaks. See also [eFriend](efriend.md), the robot that checks if you can afford it.
 
 The first-run setup asks you to pick one, and **Advanced** is selected to start with, so nothing is hidden unless you choose to. Switching never deletes anything: a hidden feature simply disappears from the screens, and everything you entered comes back when you turn it on again.
 

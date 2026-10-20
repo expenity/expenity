@@ -1,17 +1,18 @@
 // Screenshots and SVG snippets for the eFriend announcement page on the website.
 import {chromium} from 'playwright-core';
 import {createServer} from 'node:http';import {readFileSync,writeFileSync,existsSync} from 'node:fs';import {join,extname} from 'node:path';
-const OUT='website/src/assets/efriend/';
+const OUT=process.env.SHOTOUT||'website/src/assets/efriend/',LANG=process.env.SHOTLANG||'en',EL=LANG==='el';
 const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.svg':'image/svg+xml','.png':'image/png','.webmanifest':'application/manifest+json','.woff2':'font/woff2'};
 const server=createServer((req,res)=>{const u=req.url.split('?')[0];const f=join(process.cwd(),u==='/'?'index.html':u);if(!existsSync(f)){res.writeHead(404).end();return;}res.setHeader('Content-Type',types[extname(f)]||'application/octet-stream');res.end(readFileSync(f));}).listen(0);
 const browser=await chromium.launch({channel:'chrome'}),ctx=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:2,isMobile:true,hasTouch:true,serviceWorkers:'block'}),page=await ctx.newPage();
 await page.addInitScript(()=>{localStorage.setItem('expenity.lang','en');const st=document.createElement('style');st.textContent='#toast{display:none!important}[data-home=welcome]{display:none!important}';document.addEventListener('DOMContentLoaded',()=>document.head.appendChild(st));});
+await page.addInitScript(`window.__L='${LANG}';localStorage.setItem('expenity.lang','${LANG}')`);
 await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EX?.efriend);
 const shot=async(name,wait=700)=>{await page.waitForTimeout(wait);await page.screenshot({path:OUT+name+'.jpg',type:'jpeg',quality:84});console.log('shot',name);};
 const closeAll=()=>page.evaluate(()=>{document.querySelectorAll('.ef-ob,.ef-due').forEach(x=>x.remove());document.body.classList.remove('ef-ob-open');UI.closeSheet&&UI.closeSheet(true);});
 // ---------------------------------------------------------------- Maria's money
-await page.evaluate(()=>{EXA.skipFlow();EX.setLang('en');const S=EX.state(),d=(n)=>new Date(Date.now()+n*864e5).toISOString().slice(0,10),p=(n)=>new Date(Date.now()-n*864e5).toISOString().slice(0,10);
-S.settings.name='Maria';S.accounts.length=0;S.accounts.push({id:'cash',name:'Cash',type:'cash',currency:S.settings.currency,opening:'0'},{id:'bank',name:'Everyday bank',type:'bank',currency:S.settings.currency,opening:'0'});S.settings.defaultAccount='bank';
+await page.evaluate(()=>{EXA.skipFlow();EX.setLang(window.__L);const S=EX.state(),d=(n)=>new Date(Date.now()+n*864e5).toISOString().slice(0,10),p=(n)=>new Date(Date.now()-n*864e5).toISOString().slice(0,10);
+S.settings.name=window.__L==='el'?'Μαρία':'Maria';S.accounts.length=0;S.accounts.push({id:'cash',name:'Cash',type:'cash',currency:S.settings.currency,opening:'0'},{id:'bank',name:'Everyday bank',type:'bank',currency:S.settings.currency,opening:'0'});S.settings.defaultAccount='bank';
 S.txs.length=0;const cats=[['food',14,'Groceries'],['food',22,'Supermarket'],['leisure',9,'Coffee & snacks'],['leisure',38,'Dinner out'],['shopping',46,'Clothes'],['transport',18,'Fuel'],['health',24,'Pharmacy'],['leisure',12,'Cinema']];
 for(let i=1;i<=84;i++){const c=cats[(i*7)%cats.length];S.txs.push({id:'x'+i,type:'expense',amount:String(c[1]),category:c[0],account:i%3?'bank':'cash',date:p(i),name:c[2]});}
 S.bills.length=0;S.bills.push({id:'b1',name:'Rent',amount:'520',category:'housing',next:d(6),repeat:'monthly',currency:S.settings.currency,account:'bank'},{id:'b2',name:'Phone',amount:'25',category:'utilities',next:d(12),repeat:'monthly',currency:S.settings.currency,account:'bank'},{id:'b3',name:'Netflix',amount:'12',category:'subscriptions',next:d(17),repeat:'monthly',currency:S.settings.currency,account:'bank'});
@@ -36,7 +37,7 @@ S.settings.efEvents={paris:[{d:p(20),c:[['cost','3900','3300']],p0:62,p1:104},{d
 S.settings.efLast={};S.device.efOnboard=1;EX.save();});
 // SVG snippets for the page
 const svg=await page.evaluate(()=>({robot:EX.efriend.mascot('cheer',160),robotHappy:EX.efriend.mascot('ontrack',160),robotWorried:EX.efriend.mascot('atrisk',160),robotMeh:EX.efriend.mascot('tight',160),logo:EX.efriend.logoWord('play'),logoStatic:EX.efriend.logoWord('')}));
-writeFileSync('website/src/assets/efriend/svg.json',JSON.stringify(svg));
+if(!EL)writeFileSync('website/src/assets/efriend/svg.json',JSON.stringify(svg));
 // 1 Home
 await page.evaluate(()=>{EX.efriend.tickAlloc();EX.save();EXA.go('home');});await page.waitForTimeout(3200);
 await page.evaluate(()=>document.querySelector('[data-home=efriend]').scrollIntoView({block:'start'}));await page.evaluate(()=>{window.scrollBy(0,-90);document.querySelector('#view').scrollTop-=90;});await shot('home',500);
@@ -83,11 +84,33 @@ await closeAll();
 await page.evaluate(()=>{EXA.st.view='reports';const f=EXA.st;EXA.render();});await page.waitForTimeout(500);
 await page.evaluate(()=>{[...document.querySelectorAll('[data-rep=tab]')].find(b=>b.dataset.tab==='efriend').click();});await page.waitForTimeout(900);await shot('reports',300);
 await page.evaluate(()=>{document.querySelector('#view').scrollTop=360;window.scrollTo(0,360);});await shot('reports-journey',400);
-// Ask eFriend
-await closeAll();await page.evaluate(()=>{EXA.efriendAskOpen();});await page.waitForSelector('#efAskForm');await page.fill('#efAskQ','Can I buy shoes that cost 49?');await shot('ask',300);
-await page.evaluate(()=>document.querySelector('#efAskForm').requestSubmit());await page.waitForSelector('.ef-cal-d');await page.waitForTimeout(900);
-await page.evaluate(()=>{document.querySelector('#sheet .sheet-scroll').scrollTop=document.querySelector('#efAskOut').offsetTop-20;});await shot('ask-result',500);
-await page.fill('#efAskQ','Can I buy a laptop that costs 1500?');await page.evaluate(()=>{document.querySelector('[name=what]').value='';document.querySelector('[name=cost]').value='';document.querySelector('#efAskForm').requestSubmit();});await page.waitForTimeout(900);await page.evaluate(()=>{const sc=document.querySelector('#sheet .sheet-scroll');sc.scrollTop=document.querySelector('.ef-cal').offsetTop+document.querySelector('#efAskOut').offsetTop-215;});await shot('ask-calendar',600);
+// Ask eFriend: the chat (real timing, so the analysis screen can be caught)
+await closeAll();await page.evaluate(()=>{Object.defineProperty(navigator,'webdriver',{get:()=>false});EXA.efriendAskOpen();});
+await page.waitForSelector('.ef-chipq',{timeout:30000});await shot('chat-hello',600);
+await page.fill('#efChatQ',EL?'Θέλω να αγοράσω ένα ρολόι για τη φίλη μου, 450':'I want to buy a new watch for my girlfriend, 450');await page.keyboard.press('Enter');
+await page.waitForFunction(()=>document.querySelectorAll('.ef-chipq').length===4,{timeout:60000});await shot('chat-when',600);
+await page.evaluate(()=>document.querySelectorAll('.ef-chipq')[1].click());await page.waitForSelector('.ef-chipq.go',{timeout:60000});await shot('chat-confirm',700);
+await page.evaluate(()=>document.querySelector('.ef-chipq.go').click());await page.waitForSelector('.ef-an',{timeout:60000});await shot('chat-analysing',3200);
+await page.waitForSelector('#efRes',{timeout:60000});await page.waitForTimeout(3200);await shot('result',100);
+await page.evaluate(()=>{const sc=document.querySelector('#sheet .sheet-scroll'),c=document.querySelector('.ef-cal');sc.scrollTop=c.offsetTop+c.closest('.ef-res').offsetTop-130;});await shot('result-calendar',500);
+await page.evaluate(()=>{const sc=document.querySelector('#sheet .sheet-scroll'),g=document.querySelector('.ef-graph');sc.scrollTop=g.getBoundingClientRect().top-sc.getBoundingClientRect().top+sc.scrollTop-120;});await shot('result-graph',1800);
+await closeAll();await page.evaluate(()=>EXA.efriendAskOpen({hist:true}));await page.waitForSelector('.ef-hrow',{timeout:20000});await shot('chat-history',700);
+await page.evaluate(()=>{document.querySelector('[data-ef-cpx]').click();});
+// the warning before saving an expense over a limit
+await closeAll();await page.evaluate(()=>{const F=EX.efriend;F.saveLimits('day','40');const w=EXA.efLimitWarn({type:'expense',amount:'55',date:EX.today(),account:'bank'});EXA.confirm({title:EX.t('efLimWarnTitle'),text:w.replace(/\*\*/g,''),confirm:EX.t('efLimSaveAnyway'),danger:false});F.saveLimits('day','');});await shot('limit-warning',600);
+await page.evaluate(()=>{document.querySelector('dialog[open] [data-confirm=no], .confirm-cancel, dialog[open] .btn-ghost')?.click();});await closeAll();
+// the low-balance banner on Home
+await page.evaluate(()=>{const S=EX.state();S.bills.push({id:'big',name:'Car insurance',amount:'4200',category:'transport',next:new Date(Date.now()+22*864e5).toISOString().slice(0,10),repeat:'yearly',currency:S.settings.currency,account:'bank'});EX.save();EXA.go('home');});await page.waitForTimeout(1500);
+await page.evaluate(()=>{document.querySelector('[data-home=efriend]').scrollIntoView({block:'start'});window.scrollBy(0,-90);document.querySelector('#view').scrollTop-=90;});await shot('low-balance',500);
+await page.evaluate(()=>{const S=EX.state();S.bills=S.bills.filter(b=>b.id!=='big');EX.save();});
+// budget ideas on the eFriend page
+await page.evaluate(()=>{EXA.st.view='more';EXA.st.more='efriend';EXA.render();});await page.waitForTimeout(700);await page.evaluate(()=>{const e=document.querySelector('.ef-budideas');if(e)e.scrollIntoView({block:'start'});});await shot('budget-ideas',500);
+// limits suggested from real spending (the tour step), then the cushion hint
+await closeAll();await page.evaluate(()=>{const S=EX.state();S.settings.targets={spend:{period:'auto',amount:''},income:{period:'off',amount:''},limits:{day:'',week:'',month:''}};EX.save();EXA.efriendOnboard();});await page.waitForSelector('.ef-ob',{timeout:20000});
+await page.waitForTimeout(5600);await page.click('[data-ef-ob=next]');await page.waitForTimeout(3800);await page.click('[data-ef-ob=next]');await page.waitForTimeout(900);
+if(await page.evaluate(()=>document.querySelectorAll('[data-lim]').length===3))await shot('limits-suggest',400);
+await closeAll();
+await page.evaluate(()=>{const S=EX.state(),p=(n)=>new Date(Date.now()-n*864e5).toISOString().slice(0,10);[[9,2400],[39,1500],[69,2100]].forEach(([n,a],i)=>S.txs.push({id:'inc'+i,type:'income',amount:String(a),category:'salary',account:'bank',date:p(n),name:'Salary'}));EX.save();EXA.openEfPriority();});await page.waitForSelector('[data-ef-margin]');await page.evaluate(()=>{document.querySelector('#sheet .sheet-scroll').scrollTop=9999;});await shot('cushion-steady',500);
 // spending more than you earn
 await closeAll();await page.evaluate(()=>{const S=EX.state();S.incomes[0].amount='700';EX.save();EXA.openEfriend('paris');});await page.waitForSelector('.ef-tiles');await page.waitForTimeout(800);await page.evaluate(()=>{document.querySelector('#sheet .sheet-scroll').scrollTop=250;});await shot('deficit',500);
 await browser.close();server.close();

@@ -105,6 +105,16 @@
 		draw();
 	}
 
+	/* ---------------------------------------------------------------- the playable chat: the real app in demo mode, loaded only when asked */
+	const cf = $( '#efp-chatframe' ), cg = $( '#efp-chatgo' );
+	if ( cf && cg ) {
+		const load = () => {
+			cf.innerHTML = '';
+			const f = document.createElement( 'iframe' ); f.src = cf.dataset.src; f.title = cf.dataset.title || 'eFriend'; f.setAttribute( 'allow', '' ); cf.appendChild( f );
+			if ( ! $( '.efp-chatrs' ) ) { const b = document.createElement( 'button' ); b.type = 'button'; b.className = 'efp-btn out efp-chatrs'; b.textContent = cf.dataset.restart || 'Restart'; b.addEventListener( 'click', load ); const tips = $( '.efp-chattips' ); if ( tips ) tips.appendChild( b ); }
+		};
+		cg.addEventListener( 'click', load );
+	}
 	/* ---------------------------------------------------------------- the accordion: open and close one, or all */
 	const accs = $$( '.efp-acc' );
 	const reveal = ( box ) => $$( '.efp-rv, .efp-rv-l, .efp-rv-r, [data-count], [data-confetti]', box ).forEach( ( el, i ) => { setTimeout( () => { el.classList.add( 'in' ); count( el ); if ( el.matches( '[data-confetti]' ) ) confetti( el ); }, reduce ? 0 : i * 70 ); } );

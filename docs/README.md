@@ -14,6 +14,7 @@ The same guides as the [help center on the website](https://expenity.github.io/e
 | [Reports](reports.md) | Overview, spending, cash flow, trends, forecast, subscriptions, table |
 | [Reminders](reminders.md) | The calendar file (works when the app is closed) and notifications |
 | [Shared wallets](shared-wallets.md) | Share a wallet with family or friends, roles, invites |
+| [eFriend](efriend.md) | The robot that checks if you can afford it: chat, best days, limits, warnings, budget ideas |
 | [Features and plans](features-and-plans.md) | Basic, Pro, Advanced or your own mix, with a comparison table |
 | [Tutorials and help](tutorials-and-help.md) | Animated tutorials, the help icon and how to switch it off |
 | [Daily number, targets and streaks](spending-helpers.md) | What you can spend today, your own targets, streaks, price alerts, duplicate guard |
