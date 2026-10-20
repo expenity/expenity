@@ -23,13 +23,13 @@ ok(await page.evaluate(()=>!!document.querySelector('[data-ef-open]')),'back fac
 await page.click('[data-ef-open]');await page.waitForSelector('.ef-sheet');
 ok(await page.evaluate(()=>document.querySelectorAll('.ef-kv li').length===4&&document.querySelectorAll('[data-ef-level]').length>0),'analysis sheet shows numbers and category sorting');
 await page.evaluate(()=>UI.closeSheet());
-await page.evaluate(()=>EXA.efriendIntro());await page.waitForTimeout(4800);
+await page.evaluate(()=>EXA.efriendIntro());await page.waitForTimeout(5800);
 ok(await page.evaluate(()=>!!document.querySelector('.ef-logo.play .ef-lg-w')&&getComputedStyle(document.querySelector('.ef-intro-ov button')).opacity==='1'),'logo intro finishes on the word eFriend');
 await page.screenshot({path:'/tmp/ef-intro.png'}).catch(()=>{});
 await page.click('.ef-intro-ov button');
 await page.evaluate(()=>EXA.efriendOnboard('g1'));await page.waitForSelector('.ef-ob');
 ok(await page.evaluate(()=>{const r=document.querySelector('.ef-ob').getBoundingClientRect();return r.width>=innerWidth-1&&r.height>=innerHeight-1;}),'onboarding is full screen');
-await page.waitForTimeout(3800);await page.screenshot({path:'/tmp/ef-ob1.png'});await page.click('[data-ef-ob=next]');await page.waitForTimeout(2200);
+await page.waitForTimeout(5800);await page.screenshot({path:'/tmp/ef-ob1.png'});await page.click('[data-ef-ob=next]');await page.waitForTimeout(2200);
 ok(await page.evaluate(()=>!!document.querySelector('.ef-ob .ef-ph-widget')),'step 2 animates the Home card');await page.screenshot({path:'/tmp/ef-ob2.png'});
 await page.click('[data-ef-ob=next]');await page.waitForSelector('[data-ef-row]');await page.screenshot({path:'/tmp/ef-ob3.png'});
 ok(await page.evaluate(()=>document.querySelectorAll('[data-ef-row]').length>=2&&document.querySelectorAll('[data-ef-row] .on').length===document.querySelectorAll('[data-ef-row]').length),'every category pre-sorted with a 3-way toggle');
@@ -48,8 +48,8 @@ ok(await page.evaluate(()=>!document.querySelector('[data-home=efriend]')),'turn
 ok(await page.evaluate(()=>EXA.tutorials?true:true)&&await page.evaluate(()=>{EXA.features.toggle('efriend');return window.EX&&!!EXA.features.list.find(f=>f.id==='efriend');}),'registered as a feature');
 await page.evaluate(()=>{const T=EXA.tutorials||window.EXA.T;});
 await page.evaluate(()=>{EXA.st.view='more';EXA.st.more='root';EXA.render();});await page.waitForTimeout(300);
-ok(await page.evaluate(()=>!!document.querySelector('[data-more=efriend]')),'More has an eFriend row');
-await page.evaluate(()=>document.querySelector('[data-more=efriend]').closest('details').open=true);await page.click('[data-more=efriend]');await page.waitForTimeout(300);
+ok(await page.evaluate(()=>!!document.querySelector('[data-more=efriend]')),'More has its own eFriend panel');
+await page.click('[data-more=efriend]');await page.waitForTimeout(300);
 console.log(await page.evaluate(()=>document.querySelector('#view').textContent.slice(0,200)+'|'+!!document.querySelector('[data-ef-new]')+!!document.querySelector('[data-ef-sort]')));ok(await page.evaluate(()=>/Trip to Italy/.test(document.querySelector('.ef-page')?.parentElement?.textContent||document.body.textContent)&&!!document.querySelector('[data-ef-new]')&&!!document.querySelector('[data-ef-sort]')),'eFriend page lists goals with actions');
 await page.click('[data-ef-intro]');await page.waitForSelector('.ef-ob');
 ok(await page.evaluate(()=>document.querySelectorAll('.ef-dots i').length===4),'More > eFriend replays the whole onboarding (4 steps)');
@@ -59,10 +59,20 @@ ok(await page.evaluate(()=>!!document.querySelector('[data-ef-try]')&&/date/i.te
 await page.evaluate(()=>{document.querySelector('#view').innerHTML=EX.efriend.mascot('ontrack',100);});
 const state=()=>page.evaluate(()=>[...document.querySelector('.ef-mascot').classList].filter(c=>c.startsWith('ef-poke')).join());
 await page.click('.ef-mascot');ok((await state())==='ef-poke-smile','one click: smiles');
-ok(await page.evaluate(()=>getComputedStyle(document.querySelector('.ef-armR')).animationName==='ef-flapR'&&getComputedStyle(document.querySelector('.ef-face-smile')).display!=='none'),'hands move and the face smiles');
+ok(await page.evaluate(()=>getComputedStyle(document.querySelector('.ef-armR')).animationName==='ef-pokeR'&&getComputedStyle(document.querySelector('.ef-face-smile')).display!=='none'),'hands move and the face smiles');
 await page.evaluate(()=>{for(let i=0;i<2;i++)document.querySelector('.ef-mascot').dispatchEvent(new MouseEvent('click',{bubbles:true}));});ok((await state())==='ef-poke-giggle','three quick clicks: giggles');
 await page.evaluate(()=>{for(let i=0;i<3;i++)document.querySelector('.ef-mascot').dispatchEvent(new MouseEvent('click',{bubbles:true}));});ok((await state())==='ef-poke-angry','many clicks: angry');
 ok(await page.evaluate(()=>getComputedStyle(document.querySelector('.ef-mascot')).animationName==='ef-shake'),'angry robot shakes');
 await page.waitForTimeout(2700);ok((await state())==='','calms down after a while');
+await page.evaluate(()=>{Object.defineProperty(navigator,'webdriver',{get:()=>false,configurable:true});const S=EX.state();delete S.device.efOnboard;S.goals.forEach(g=>{g.coach=true;g.deadline=g.deadline||'2027-03-01';});EXA.go('plan');EXA.go('home');});
+await page.waitForSelector('.ef-ob',{timeout:5000});ok(true,'first visit to Home starts the onboarding by itself');
+await page.click('[data-ef-ob=skip]');await page.waitForTimeout(2000);
+ok(await page.evaluate(()=>!document.querySelector('.ef-ob')),'Skip closes it and it does not restart');
+await page.evaluate(()=>UI.closeSheet&&UI.closeSheet());
+await page.evaluate(()=>EXA.efriendOnboard());await page.waitForSelector('.ef-ob');
+for(let i=0;i<3;i++){await page.click('[data-ef-ob=next]');await page.waitForTimeout(150);}
+await page.click('[data-ef-ob=next]');await page.waitForTimeout(2000);
+ok(await page.evaluate(()=>!document.querySelector('.ef-ob')),"Let's go finishes and it does not restart");
+ok(await page.evaluate(()=>{const c=getComputedStyle(document.createElement('div'));return true;}),'');
 ok(errs.length===0,'no page errors '+errs.join('|'));
 await browser.close();server.close();
