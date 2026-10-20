@@ -333,5 +333,13 @@ await page.evaluate(()=>{const S=EX.state(),y=new Date(Date.now()-864e5).toISOSt
 await page.evaluate(()=>EXA.efriendDue('due1'));await page.waitForSelector('.ef-due');
 ok(await page.evaluate(()=>/short|afford/i.test(document.querySelector('.ef-due .ef-callouts').textContent)&&/Earliest safe date|Not within a year/.test(document.querySelector('.ef-due .ef-callouts').textContent)),'on the date, eFriend says if you can afford it today and, if not, the earliest safe date');
 await page.evaluate(()=>{document.querySelectorAll('.ef-due').forEach(x=>x.remove());document.body.classList.remove('ef-ob-open');});
+// layout stability: the animated pills sit in their own space, and the slider does not make things jump
+await page.evaluate(()=>{document.querySelectorAll('.ef-ob').forEach(x=>x.remove());document.body.classList.remove('ef-ob-open');UI.closeSheet&&UI.closeSheet(true);EXA.efriendOnboard();});await page.waitForSelector('.ef-ob');
+for(let i=0;i<20&&!(await page.evaluate(()=>!!document.querySelector('.ef-shuf')));i++){await page.click('[data-ef-ob=next]');await page.waitForTimeout(250);}
+const lay=await page.evaluate(()=>{const sh=document.querySelector('.ef-shuf').getBoundingClientRect(),next=document.querySelector('.ef-shuf').nextElementSibling.getBoundingClientRect(),pills=[...document.querySelectorAll('.ef-shuf span')].map(x=>x.getBoundingClientRect());return {h:Math.round(sh.height),clear:next.top>=sh.bottom-1,inside:pills.every(p=>p.top>=sh.top-1&&p.bottom<=sh.bottom+1)};});
+ok(lay.h>=140&&lay.clear&&lay.inside,'the animated pills have their own space and never cover the text ('+JSON.stringify(lay)+')');
+const jump=await page.evaluate(()=>{const r=document.querySelector('[data-ef-margin]'),box=r.closest('.ef-risk'),pos=[],tops=[];for(const v of [0,10,20,30,40,50,60,70,80,90,100]){r.value=v;r.dispatchEvent(new Event('input',{bubbles:true}));pos.push(Math.round(r.getBoundingClientRect().top)+'/'+Math.round(box.getBoundingClientRect().height)+'/'+Math.round(box.querySelector('.ef-risk-h').getBoundingClientRect().height));}return [...new Set(pos)];});
+ok(jump.length===1,'moving the slider does not change the height of anything around it ('+jump.join(' | ')+')');
+await page.evaluate(()=>{document.querySelectorAll('.ef-ob').forEach(x=>x.remove());document.body.classList.remove('ef-ob-open');});
 ok(errs.length===0,'no page errors '+errs.join('|'));
 await browser.close();server.close();
