@@ -21,7 +21,7 @@ await page.screenshot({path:'/tmp/ef-front.png'}).catch(()=>{});
 await page.click('[data-flip-btn=efriend]');await page.waitForTimeout(400);
 ok(await page.evaluate(()=>!!document.querySelector('[data-ef-open]')),'back face has full analysis button');
 await page.click('[data-ef-open]');await page.waitForSelector('.ef-sheet');
-ok(await page.evaluate(()=>document.querySelectorAll('.ef-kv li').length===4&&document.querySelectorAll('[data-ef-level]').length>0),'analysis sheet shows numbers and category sorting');
+ok(await page.evaluate(()=>document.querySelectorAll('.ef-tile').length===4&&document.querySelectorAll('.ef-sec').length>=1&&!!document.querySelector('.ef-det')),'analysis shows number tiles and titled sections');
 await page.evaluate(()=>UI.closeSheet());
 await page.evaluate(()=>EXA.efriendIntro());await page.waitForTimeout(5800);
 ok(await page.evaluate(()=>!!document.querySelector('.ef-logo.play .ef-lg-w')&&getComputedStyle(document.querySelector('.ef-intro-ov button')).opacity==='1'),'logo intro finishes on the word eFriend');
@@ -119,10 +119,10 @@ await page.evaluate(()=>[...document.querySelectorAll('[data-rep=tab]')].find(b=
 ok(await page.evaluate(()=>!!document.querySelector('#repBody .ef-rep')),'the eFriend tab shows the progress report');
 // any change means a new analysis
 await page.evaluate(()=>{const S=EX.state();S.goals=S.goals.filter(g=>g.kind!=='efriend');S.goals.push({id:'r1',name:'Refresh test',target:'500',deadline:new Date(Date.now()+60*864e5).toISOString().slice(0,10),icon:'plane',kind:'efriend',wallets:[S.accounts[0].id]});EX.save();EXA.openEfriend('r1');});
-await page.waitForSelector('.ef-sheet .ef-kv');
-const days1=await page.evaluate(()=>document.querySelectorAll('.ef-sheet .ef-kv li b')[2].textContent);
+await page.waitForSelector('.ef-sheet .ef-tiles');
+const days1=await page.evaluate(()=>document.querySelectorAll('.ef-sheet .ef-tile b')[3].textContent);
 await page.evaluate(()=>{const g=EX.state().goals.find(x=>x.id==='r1');g.deadline=new Date(Date.now()+90*864e5).toISOString().slice(0,10);EX.save();});await page.waitForTimeout(300);
-const days2=await page.evaluate(()=>document.querySelectorAll('.ef-sheet .ef-kv li b')[2].textContent);
+const days2=await page.evaluate(()=>document.querySelectorAll('.ef-sheet .ef-tile b')[3].textContent);
 ok(days1!==days2&&await page.evaluate(()=>!!document.querySelector('#sheet[open] .ef-sheet')),'changing the date refreshes the open analysis ('+days1+' -> '+days2+')');
 await page.evaluate(()=>{const S=EX.state();S.bills.push({id:'bx',name:'Rent',amount:'200',category:'housing',next:new Date(Date.now()+10*864e5).toISOString().slice(0,10),repeat:'monthly',currency:S.settings.currency,account:S.accounts[0].id});EX.save();});await page.waitForTimeout(300);
 ok(await page.evaluate(()=>/Rent/.test(document.querySelector('#sheet .ef-sheet').textContent)),'adding a bill refreshes the open analysis (Rent now listed)');
