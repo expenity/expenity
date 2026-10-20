@@ -30,7 +30,13 @@ await page.click('.ef-intro-ov button');
 await page.evaluate(()=>EXA.efriendOnboard('g1'));await page.waitForSelector('.ef-ob');
 ok(await page.evaluate(()=>{const r=document.querySelector('.ef-ob').getBoundingClientRect();return r.width>=innerWidth-1&&r.height>=innerHeight-1;}),'onboarding is full screen');
 await page.waitForTimeout(5800);await page.screenshot({path:'/tmp/ef-ob1.png'});await page.click('[data-ef-ob=next]');await page.waitForTimeout(3800);
-ok(await page.evaluate(()=>/afford/i.test(document.querySelector('.ef-ob').textContent)&&document.querySelectorAll('.ef-how li').length===6),'step 2 explains how it works (wallets, income, bills, spending, free vs cost)');await page.screenshot({path:'/tmp/ef-how.png'});await page.click('[data-ef-ob=next]');await page.waitForTimeout(600);
+ok(await page.evaluate(()=>/afford/i.test(document.querySelector('.ef-ob').textContent)&&document.querySelectorAll('.ef-how li').length===6),'step 2 explains how it works (wallets, income, bills, spending, free vs cost)');await page.screenshot({path:'/tmp/ef-how.png'});await page.click('[data-ef-ob=next]');await page.waitForTimeout(500);
+ok(await page.evaluate(()=>/Where does your money come from/i.test(document.querySelector('.ef-ob').textContent)&&!!document.querySelector('[data-ef-ob-income]')),'with no income set, the tour asks for it and offers to add it now');
+await page.click('[data-ef-ob-income]');await page.waitForTimeout(500);
+ok(await page.evaluate(()=>document.querySelector('.ef-ob').classList.contains('paused')&&document.getElementById('sheet').open),'adding income pauses the tour and opens the income form');
+await page.evaluate(()=>{EX.state().incomes.push({id:'inc1',name:'Salary',amount:'1500',account:EX.state().accounts[0].id,currency:EX.state().settings.currency,repeat:'monthly',next:new Date(Date.now()+9*864e5).toISOString().slice(0,10),category:'salary'});EX.save();UI.closeSheet(true);});await page.waitForTimeout(900);
+ok(await page.evaluate(()=>!document.querySelector('.ef-ob').classList.contains('paused')&&/Income added/.test(document.querySelector('.ef-ob').textContent)),'closing the form brings the tour back to the same step, now showing the income');
+await page.click('[data-ef-ob=next]');await page.waitForTimeout(600);
 ok(await page.evaluate(()=>/dreaming/i.test(document.querySelector('.ef-ob').textContent)&&document.querySelectorAll('.ef-wish[data-ef-wish]').length>=6),'the tour asks what you are dreaming about, with wish chips');
 const before=await page.evaluate(()=>EX.state().goals.filter(g=>g.kind==='efriend').length);
 await page.click('.ef-ob .ef-wish[data-ef-wish=trip]');await page.click('.ef-ob [data-ef-wish-other]');
@@ -64,7 +70,7 @@ ok(await page.evaluate(()=>!!document.querySelector('[data-more=efriend]')),'Mor
 await page.click('[data-more=efriend]');await page.waitForTimeout(300);
 console.log(await page.evaluate(()=>document.querySelector('#view').textContent.slice(0,200)+'|'+!!document.querySelector('[data-ef-new]')+!!document.querySelector('[data-ef-sort]')));ok(await page.evaluate(()=>/Trip to Italy/.test(document.querySelector('.ef-page')?.parentElement?.textContent||document.body.textContent)&&!!document.querySelector('[data-ef-new]')&&!!document.querySelector('[data-ef-sort]')),'eFriend page lists goals with actions');
 await page.click('[data-ef-intro]');await page.waitForSelector('.ef-ob');
-ok(await page.evaluate(()=>document.querySelectorAll('.ef-dots i').length===8),'More > eFriend replays the whole onboarding (8 steps)');
+ok(await page.evaluate(()=>document.querySelectorAll('.ef-dots i').length===8),'More > eFriend replays the whole onboarding (8 steps; the income step only appears when none is set)');
 await page.click('[data-ef-ob=skip]');await page.waitForTimeout(300);
 await page.evaluate(()=>{const S=EX.state();S.goals[0].deadline='';EXA.go('home');});await page.waitForTimeout(300);
 ok(await page.evaluate(()=>!!document.querySelector('[data-ef-try]')&&/date/i.test(document.querySelector('[data-home=efriend]').textContent)),'coached goal without a date is not lost: Home asks for the date');
@@ -163,7 +169,7 @@ await page.click('.ef-tips [data-ef-budget]');await page.waitForSelector('#budge
 ok(await page.evaluate(()=>{const f=document.querySelector('#budgetForm');return +f.elements.amount.value>0&&f.elements.category.value!=='all';}),'the link opens the budget form already filled in');
 await page.evaluate(()=>UI.closeSheet());
 // priorities
-await page.evaluate(()=>{document.querySelectorAll('.ef-ob').forEach(x=>x.remove());document.body.classList.remove('ef-ob-open');UI.closeSheet&&UI.closeSheet();const S=EX.state();S.goals=S.goals.filter(g=>g.kind!=='efriend');S.bills=[];S.accounts[0].opening='1500';delete S.settings.efAsked;delete S.settings.efMargin;const d=(n)=>new Date(Date.now()+n*864e5).toISOString().slice(0,10),a=S.accounts[0].id;
+await page.evaluate(()=>{document.querySelectorAll('.ef-ob').forEach(x=>x.remove());document.body.classList.remove('ef-ob-open');UI.closeSheet&&UI.closeSheet();const S=EX.state();S.goals=S.goals.filter(g=>g.kind!=='efriend');S.bills=[];S.incomes=[];S.accounts[0].opening='1500';delete S.settings.efAsked;delete S.settings.efCushion;const d=(n)=>new Date(Date.now()+n*864e5).toISOString().slice(0,10),a=S.accounts[0].id;
 S.goals.push({id:'q1',name:'Sofa',target:'900',deadline:d(40),icon:'home',kind:'efriend',wallets:[a]},{id:'q2',name:'Paris',target:'900',deadline:d(100),icon:'plane',kind:'efriend',wallets:[a]},{id:'q3',name:'Shoes',target:'200',deadline:d(30),icon:'heart',kind:'efriend',wallets:[a]});EX.save();});
 const o1=await page.evaluate(()=>EX.efriend.all().map(f=>f.goal.name).join(','));
 ok(o1==='Shoes,Sofa,Paris','without a ranking, plans go by date ('+o1+')');
@@ -181,8 +187,8 @@ ok(/^Paris:/.test(v),'the top priority is funded first ('+v+')');
 const grp=await page.evaluate(()=>{EXA.openEfriendAll();return new Promise(r=>setTimeout(()=>r(document.querySelector('#sheet').textContent),400));});
 ok(/top priority/i.test(grp)&&/Paris/.test(grp),'the combined analysis names the top priority');
 ok(await page.evaluate(()=>{const w=EX.efriend.whatIf(EX.efriend.all());return w===null||!!w.plan;}),'what-if finds a plan that would fit if a lower one were dropped (or none is needed)');
-const vm=await page.evaluate(()=>{const S=EX.state();S.settings.efMargin=1.6;const a=EX.efriend.all().map(f=>f.verdict);S.settings.efMargin=1.05;const b=EX.efriend.all().map(f=>f.verdict);delete S.settings.efMargin;return [a.filter(x=>x==='comfortable').length,b.filter(x=>x==='comfortable').length];});
-ok(vm[0]<=vm[1],'the risk slider changes what counts as safe (cautious '+vm[0]+' safe, bold '+vm[1]+' safe)');
+const vm=await page.evaluate(()=>{const S=EX.state();S.settings.efCushion=6;const a=EX.efriend.all().map(f=>f.verdict);S.settings.efCushion=0;const b=EX.efriend.all().map(f=>f.verdict);delete S.settings.efCushion;return [a.filter(x=>x==='comfortable').length,b.filter(x=>x==='comfortable').length];});
+ok(vm[0]<=vm[1],'the cushion changes what counts as safe (very safe '+vm[0]+' safe, risky '+vm[1]+' safe)');
 await page.evaluate(()=>{UI.closeSheet();EXA.st.view='more';EXA.st.more='efriend';EXA.render();});await page.waitForTimeout(300);
 ok(await page.evaluate(()=>!!document.querySelector('.ef-prio')&&!!document.querySelector('[data-ef-margin]')),'the eFriend page has the priority list and the risk slider');
 // adoption nudges
@@ -195,5 +201,57 @@ ok(await page.evaluate(()=>document.querySelectorAll('[data-home=efriend] .ef-wi
 await page.click('[data-home=efriend] .ef-wish[data-ef-wish=trip]');await page.waitForSelector('#efPlanForm');
 ok(await page.evaluate(()=>document.querySelector('#efPlanForm').elements.pname.value.length>0),'tapping a wish opens a plan with the name filled in');
 await page.evaluate(()=>UI.closeSheet());
+// the car example: 10,000 in the bank, about 700 a month of spending, a 9,000 car in a month
+const car=await page.evaluate(()=>{const S=EX.state(),d=(n)=>new Date(Date.now()+n*864e5).toISOString().slice(0,10),a=S.accounts[0];S.goals=S.goals.filter(g=>g.kind!=='efriend');S.txs=S.txs.filter(x=>false);S.bills=[];S.incomes=[];a.opening='11400';
+for(let i=1;i<=60;i++)S.txs.push({id:'c'+i,type:'expense',amount:'23.33',category:'food',account:a.id,date:new Date(Date.now()-i*864e5).toISOString().slice(0,10),name:'daily'});
+S.goals.push({id:'car',name:'New car',target:'9000',deadline:d(30),icon:'car',kind:'efriend',wallets:[a.id]});delete S.settings.efCushion;
+const f1=EX.efriend.of('car');const noInc={v:f1.verdict,left:Math.round(f1.left/100),months:+f1.leftMonths.toFixed(1),monthly:Math.round(f1.monthly/100),hasIncome:f1.hasIncome};
+S.incomes.push({id:'sal',name:'Salary',amount:'1800',account:a.id,currency:S.settings.currency,repeat:'monthly',next:d(40),category:'salary'});
+const f2=EX.efriend.of('car');S.settings.efCushion=0;const f3=EX.efriend.of('car');S.settings.efCushion=0.25;const f4=EX.efriend.of('car');S.settings.efCushion=3;const f5=EX.efriend.of('car');delete S.settings.efCushion;
+return {noInc,withInc:f2.verdict,riskyCushion:f3.verdict,small:f4.verdict,careful:f5.verdict};});
+console.log(JSON.stringify(car));
+ok(car.noInc.monthly>=650&&car.noInc.monthly<=750&&car.noInc.left>0&&car.noInc.left<700&&car.noInc.months<1&&car.noInc.v==='tight'&&!car.noInc.hasIncome,'the car example: about 700 a month, a small amount left, less than a month of spending, and with no salary known it is tight');
+ok(car.withInc==='ontrack','with the salary known, the same leftover is fine for next month ("fits")');
+ok(car.riskyCushion==='comfortable','a risky cushion (0 months) calls it safe');
+ok(car.careful!=='comfortable','a careful cushion (3 months) does not call it safe');
+// the slider blends colours continuously
+await page.evaluate(()=>{UI.closeSheet&&UI.closeSheet();EXA.st.view='more';EXA.st.more='efriend';EXA.render();});await page.waitForTimeout(300);
+const cols=await page.evaluate(()=>{const r=document.querySelector('[data-ef-margin]'),box=r.closest('.ef-risk'),out=[];for(const v of [0,10,20,30,40,50,60,80,100]){r.value=v;r.dispatchEvent(new Event('input',{bubbles:true}));out.push(box.style.getPropertyValue('--c'));}return out;});
+ok(new Set(cols).size===cols.length&&cols[0]==='rgb(217,45,32)'&&cols[4]==='rgb(22,163,74)'&&cols[8]==='rgb(30,58,138)','the thumb colour blends smoothly from red through green to blue ('+cols.join(' ')+')');
+ok(await page.evaluate(()=>{const r=document.querySelector('[data-ef-margin]');return getComputedStyle(r).backgroundImage.includes('linear-gradient');}),'the track is a gradient');
+// when the date arrives: did you make it?
+await page.evaluate(()=>{document.querySelectorAll('.ef-ob').forEach(x=>x.remove());document.body.classList.remove('ef-ob-open');UI.closeSheet&&UI.closeSheet(true);const S=EX.state(),a=S.accounts[0].id,y=new Date(Date.now()-864e5).toISOString().slice(0,10);S.goals=S.goals.filter(g=>g.kind!=='efriend');S.settings.efSnooze={};
+S.goals.push({id:'d1',name:'Italy trip',target:'800',deadline:y,icon:'plane',kind:'efriend',wallets:[a]},{id:'d2',name:'Old phone',target:'300',deadline:y,icon:'device-mobile',kind:'efriend',wallets:[a]},{id:'d3',name:'Gift',target:'50',deadline:y,icon:'gift',kind:'efriend',wallets:[a]});EX.save();});
+ok(await page.evaluate(()=>EX.efriend.due().length===3),'plans whose date has arrived are due');
+await page.evaluate(()=>EXA.efriendDue());await page.waitForSelector('.ef-due');
+ok(await page.evaluate(()=>/Did you make it/.test(document.querySelector('.ef-due').textContent)&&document.querySelectorAll('[data-due=yes],[data-due=move],[data-due=drop]').length===3&&getComputedStyle(document.querySelector('.ef-due')).position==='fixed'),'a full-screen question: did you make it? yes, move the date, or changed my mind');
+await page.click('[data-due=yes]');await page.waitForSelector('#efDueCost');
+await page.fill('#efDueCost','760');await page.click('[data-due=add]');await page.waitForTimeout(400);
+const tx=await page.evaluate(()=>{const g=EX.state().goals.find(x=>x.id==='d1'),t=EX.state().txs.find(x=>x.efPlan==='d1');return {state:g.state,tx:!!t&&t.type==='expense'&&t.amount==='760'&&t.name==='Italy trip',cat:t&&t.category};});
+ok(tx.state==='done'&&tx.tx,'"yes" adds an expense tagged to the plan and marks it achieved ('+tx.cat+')');
+ok(await page.evaluate(()=>/Congratulations/.test(document.querySelector('.ef-due').textContent)&&!!document.querySelector('.ef-confetti')),'a celebration follows');
+await page.click('[data-due=next]');await page.waitForTimeout(300);
+await page.click('[data-due=move]');await page.waitForSelector('#efMoveDate');
+await page.evaluate(()=>{const i=document.querySelector('#efMoveDate');i.value=new Date(Date.now()+45*864e5).toISOString().slice(0,10);});
+await page.click('[data-due=moveit]');await page.waitForTimeout(300);
+ok(await page.evaluate(()=>{const g=EX.state().goals.find(x=>x.id==='d2');return g.deadline>EX.today()&&!g.state;}),'"not yet" moves the date and the plan carries on');
+await page.waitForSelector('[data-due=drop]');
+await page.click('[data-due=drop]');await page.click('[data-due=dropit]');await page.waitForTimeout(400);
+ok(await page.evaluate(()=>EX.state().goals.find(x=>x.id==='d3').state==='dropped'&&EX.efriend.past().length===1),'"changed my mind" moves it to past plans');
+ok(await page.evaluate(()=>!document.querySelector('.ef-due')),'after the last due plan, the question closes by itself');
+ok(await page.evaluate(()=>EX.efriend.achieved().length===1&&EX.efriend.plans().every(g=>!g.state)),'achieved and dropped plans leave the active list');
+await page.evaluate(()=>{EXA.st.view='more';EXA.st.more='efriend';EXA.render();});await page.waitForTimeout(300);
+ok(await page.evaluate(()=>/What you achieved/.test(document.querySelector('#view').textContent)&&/Italy trip/.test(document.querySelector('.ef-ach').textContent)&&!!document.querySelector('[data-ef-reopen]')),'the eFriend page lists achievements and past plans (with Reopen)');
+await page.evaluate(()=>{EXA.st.view='activity';EXA.render();});await page.waitForTimeout(400);
+ok(await page.evaluate(()=>!!document.querySelector('#view .ef-txbadge')),'the expense shows a small eFriend badge in Activity');
+// habits ignore the one-off purchase
+ok(await page.evaluate(()=>{const S=EX.state();const before=EX.efriend.baseline().monthly;S.txs.push({id:'big',type:'expense',amount:'5000',category:'shopping',account:S.accounts[0].id,date:EX.today(),name:'Big',efPlan:'d1'});const after=EX.efriend.baseline().monthly;S.txs=S.txs.filter(x=>x.id!=='big');return before===after;}),'a purchase made through eFriend does not distort your usual spending');
+// converting a goal
+await page.evaluate(()=>{const S=EX.state();S.goals=S.goals.filter(g=>g.id!=='cg');S.goals.push({id:'cg',name:'Camera fund',target:'600',deadline:new Date(Date.now()+80*864e5).toISOString().slice(0,10),icon:'target'});S.txs.push({id:'cgt',type:'expense',amount:'150',category:'goal',account:S.accounts[0].id,date:EX.today(),name:'in',goalId:'cg'});EX.save();EXA.openGoal(S.goals.find(g=>g.id==='cg'));});await page.waitForSelector('[data-ef-convert]');
+await page.click('[data-ef-convert]');await page.waitForSelector('#efPlanForm');
+await page.evaluate(()=>document.querySelector('#efPlanForm').requestSubmit());await page.waitForTimeout(700);
+ok(await page.evaluate(()=>{const g=EX.state().goals.find(x=>x.id==='cg');return g.kind==='efriend'&&EX.plan.list().every(x=>x.id!=='cg');}),'a goal can be turned into an eFriend plan and leaves the goals list');
+ok(await page.evaluate(()=>EX.efriend.of('cg').saved===15000),'money already put into the converted goal still counts');
+await page.evaluate(()=>{document.querySelectorAll('.ef-ob').forEach(x=>x.remove());document.body.classList.remove('ef-ob-open');UI.closeSheet&&UI.closeSheet(true);});
 ok(errs.length===0,'no page errors '+errs.join('|'));
 await browser.close();server.close();

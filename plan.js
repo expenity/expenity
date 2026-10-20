@@ -201,6 +201,7 @@
 			<label class="f"><span>${ esc( t( 'goalDeadline' ) ) }</span><input name="deadline" type="date" value="${ esc( v.deadline || '' ) }"></label></div>
 			<div class="lbl">${ esc( t( 'goalIcon' ) ) }</div><div class="icon-pick" id="goalIcons">${ GOAL_ICONS.map( ( n ) => `<button type="button" class="ipick${ v.icon === n ? ' on' : '' }" data-plan="pick-icon" data-icon="${ n }" aria-label="${ n }">${ UI.icon( n, 24 ) }</button>` ).join( '' ) }</div><input type="hidden" name="icon" value="${ esc( v.icon ) }">
 			${ EXA.tagsField(typeof v !== 'undefined' ? v.tags : g.tags) }${ EXA.photos.slot( typeof v !== 'undefined' ? v.photo : '' ) }<p class="err" id="planErr" role="alert" hidden></p>
+			${ g && EXA.efriendConvert ? EXA.efriendConvert( g ) : '' }
 			<div class="btn-row sticky-actions">${ g ? `<button type="button" class="btn btn-danger" data-plan="del-goal">${ esc( t( 'del' ) ) }</button>` : '' }<span class="sp"></span><button type="submit" class="btn btn-primary">${ esc( t( 'saveTx' ) ) }</button></div></form>`, { cls: 'small' } );
 	}
 	function openContribute( g ) {
