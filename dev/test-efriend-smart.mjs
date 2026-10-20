@@ -24,7 +24,7 @@ chk( 'warns when over the daily limit', /\d/.test( w.over || '' ) ); chk( 'quiet
 const add = await pg.evaluate( () => { const F = EX.efriend, n0 = EX.state().budgets.length; F.addBudgets( F.budgetIdeas().slice( 0, 1 ) ); return { n: EX.state().budgets.length - n0, left: F.budgetIdeas().length }; } );
 chk( 'adding a budget idea creates a monthly budget and removes the idea', add.n === 1 && add.left === 1 );
 const low = await pg.evaluate( () => { const S = EX.state(), acc = EX.activeAccounts()[ 0 ].id, F = EX.efriend, bal = Math.round( EX.balance( EX.account( acc ) ) / 100 ); S.bills.push( { id: 'b1', name: 'Rent', amount: '9000', account: acc, currency: S.settings.currency, category: 'housing', repeat: 'once', next: EX.addDays( EX.today(), 10 ) } ); EX.save(); return F.lowAhead(); } );
-chk( 'low balance ahead names the day and the bill (' + JSON.stringify( low ) + ')', low && low.kind && low.why === 'Rent' && low.k >= 5 && low.k <= 11 );
-await pg.evaluate( () => EX.emit && EX.emit( 'change' ) ); const home = await pg.evaluate( () => EXA.efriendHome() ); chk( 'Home shows the warning banner', /ef-low/.test( home ) );
+chk( 'low balance ahead names the day and the bill (' + JSON.stringify( low ) + ')', low && low.kind && low.why === 'Rent' && low.whyKind === 'bill' && low.whyAmt === 900000 && low.k >= 5 && low.k <= 11 );
+await pg.evaluate( () => EX.emit && EX.emit( 'change' ) ); const home = await pg.evaluate( () => EXA.efriendHome() ); chk( 'Home shows the warning banner with the payment and its amount', /ef-low/.test( home ) && /Rent/.test( home ) && /9,000|9\.000/.test( home ) );
 chk( 'no page errors ' + errs.join( ';' ), ! errs.length );
 console.log( 'ok', ok, 'fail', fail ); await b.close(); server.close(); process.exit( fail ? 1 : 0 );
