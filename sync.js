@@ -128,8 +128,13 @@
 			afterSignIn();
 			return { ok: true };
 		},
-		async recover( email, code ) {
-			const r = await ceremony( 'create', () => api( 'POST', '/api/auth/recover/options', { email, code }, { anon: true } ), '/api/auth/recover/verify', { label: deviceLabel() }, { anon: true } );
+		/** Asks the server to email a one-time code (it answers the same whether or not the email has an account). Needs email to be switched on. */
+		async recoverEmailStart( email ) {
+			const r = await api( 'POST', '/api/auth/recover/email', { email }, { anon: true } );
+			return r.ok ? { ok: true } : { error: r.error || 'generic' };
+		},
+		async recover( email, code, viaEmail ) {
+			const r = await ceremony( 'create', () => api( 'POST', viaEmail ? '/api/auth/recover/email/verify' : '/api/auth/recover/options', { email, code }, { anon: true } ), '/api/auth/recover/verify', { label: deviceLabel() }, { anon: true } );
 			if ( r.error ) return r;
 			setAuth( r.data.token, r.data.user );
 			auth.codesLeft = r.data.recoveryCodesLeft;

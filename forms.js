@@ -827,7 +827,7 @@
 		let h;
 		if ( ! EX.auth.supported() ) h = `${ head( t( 'authTitle' ) ) }<div class="sheet-pad"><p class="err">${ esc( t( 'err_unsupported' ) ) }</p></div>`;
 		else if ( mode === 'recover' ) {
-			h = `${ head( t( 'recoverTitle' ) ) }<div class="sheet-pad"><p class="muted">${ esc( t( 'recoverText' ) ) }</p><form id="recoverForm" novalidate><label class="f"><span>${ esc( t( 'authEmail' ) ) }</span><input name="email" type="email" autocomplete="email" required autofocus></label><label class="f"><span>${ esc( t( 'recoverCode' ) ) }</span><input name="code" autocomplete="off" spellcheck="false" placeholder="XXXX-XXXX-XXXX" required></label><p class="err" id="authErr" role="alert" hidden></p><div class="btn-row stack"><button type="submit" class="btn btn-primary">${ esc( t( 'recoverBtn' ) ) }</button><button type="button" class="btn btn-ghost" data-act="auth-back">${ esc( t( 'authBack' ) ) }</button></div></form></div>`;
+			h = `${ head( t( 'recoverTitle' ) ) }<div class="sheet-pad"><p class="muted">${ esc( t( 'recoverText' ) ) }</p><form id="recoverForm" novalidate><label class="f"><span>${ esc( t( 'authEmail' ) ) }</span><input name="email" type="email" autocomplete="email" required autofocus></label><label class="f"><span>${ esc( t( 'recoverCode' ) ) }</span><input name="code" autocomplete="off" spellcheck="false" placeholder="XXXX-XXXX-XXXX" required></label><p class="muted small" id="recoverNote" role="status" hidden></p><p class="err" id="authErr" role="alert" hidden></p><div class="btn-row stack"><button type="submit" class="btn btn-primary">${ esc( t( 'recoverBtn' ) ) }</button><button type="button" class="btn btn-ghost" data-act="recover-email">${ UI.icon( 'mail', 20 ) } ${ esc( t( 'recoverEmailBtn' ) ) }</button><button type="button" class="btn btn-ghost" data-act="auth-back">${ esc( t( 'authBack' ) ) }</button></div></form></div>`;
 		} else {
 			h = `${ head( t( 'authTitle' ) ) }<div class="sheet-pad"><div class="auth-hero">${ UI.ci( 'key', 'teal', 64 ) }</div><p class="muted center">${ esc( t( 'authPasskeyHelp' ) ) }</p><div class="btn-row stack"><button type="button" class="btn btn-primary" id="authLogin">${ UI.icon( 'key', 22 ) } ${ esc( t( 'authSignIn' ) ) }</button></div><p class="or"><span>${ esc( t( 'authOr' ) ) }</span></p>
 				<form id="registerForm" novalidate><label class="f"><span>${ esc( t( 'authEmail' ) ) }</span><input name="email" type="email" autocomplete="email" required></label><p class="muted small">${ esc( t( 'authEmailHelp' ) ) }</p><p class="err" id="authErr" role="alert" hidden></p><div class="btn-row stack"><button type="submit" class="btn btn-ghost">${ esc( t( 'authCreate' ) ) }</button></div></form>
@@ -857,7 +857,7 @@
 			EXA.showCodes( r.recoveryCodes, () => EXA.render() );
 		} );
 		else if ( f.id === 'recoverForm' ) withBusy( async () => {
-			const r = await EX.auth.recover( f.elements.email.value.trim(), f.elements.code.value.trim() );
+			const r = await EX.auth.recover( f.elements.email.value.trim(), f.elements.code.value.trim(), f.dataset.viaEmail === '1' );
 			if ( r.error ) return authError( r.error );
 			UI.closeSheet(); toast( t( 'tRecovered' ) ); EXA.render();
 		} );

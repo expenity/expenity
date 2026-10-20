@@ -217,6 +217,7 @@
 			case 'auth-create': case 'auth-signin': case 'auth-back': EXA.openAuth( 'start' ); break;
 			case 'auth-recover': EXA.openAuth( 'recover' ); break;
 			case 'sync-now': EX.sync.run().then( () => toast( t( 'syncDone' ) ) ); break;
+			case 'recover-email': { const f = $( '#recoverForm' ), email = f.elements.email.value.trim(); if ( ! email ) { f.elements.email.focus(); break; } const r = await EX.auth.recoverEmailStart( email ); const note = $( '#recoverNote' ), er = $( '#authErr' ); er.hidden = true; if ( r.ok ) { f.dataset.viaEmail = '1'; note.textContent = t( 'recoverEmailSent' ); note.hidden = false; f.elements.code.focus(); } else { note.hidden = true; er.textContent = t( r.error === 'email_unavailable' ? 'recoverEmailOff' : 'err_generic' ); er.hidden = false; } break; }
 			case 'reset-passkeys': { if ( ! await EXA.confirm( { title: t( 'pkResetTitle' ), text: t( 'pkResetConfirm' ), confirm: t( 'pkResetBtn' ) } ) ) break; const r = await EX.auth.resetPasskeys(); if ( r.ok ) { toast( t( 'pkResetDone' ) ); loadDevices(); if ( r.recoveryCodes ) EXA.showCodes( r.recoveryCodes, () => {} ); } else toast( EXA.errText( r.error ) ); break; }
 			case 'add-passkey': { const r = await EX.auth.addPasskey(); if ( r.ok ) { toast( t( 'tPasskeyAdded' ) ); loadDevices(); } else toast( EXA.errText( r.error ) ); break; }
 			case 'rm-passkey': { const r = await EX.auth.removePasskey( el.dataset.id ); if ( r.ok ) { toast( t( 'tPasskeyRemoved' ) ); loadDevices(); } else toast( EXA.errText( r.error ) ); break; }
