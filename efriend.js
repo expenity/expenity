@@ -99,22 +99,29 @@
 
 	/* ------------------------------------------------------------------ The character */
 	const MOODS = { comfortable: 'cheer', done: 'cheer', ontrack: 'happy', tight: 'meh', atrisk: 'worried', unlikely: 'worried', nodata: 'meh' };
-	/** A friendly line-art robot in the logo's teal and gold: waves, blinks, bobs, and changes its face with the news. */
+	let gid = 0;
+	/** A glossy floating robot with a glass screen face: hovers, waves, blinks, and changes its expression with the news. */
 	F.mascot = ( verdict, size = 72 ) => {
-		const mood = MOODS[ verdict ] || 'happy';
-		const eyes = mood === 'cheer' ? '<path d="M35 47q4-6 8 0M57 47q4-6 8 0" class="ef-ln"/>' : '<g class="ef-eyes"><circle cx="39" cy="47" r="3.2" class="ef-dot"/><circle cx="61" cy="47" r="3.2" class="ef-dot"/></g>';
-		const brows = mood === 'worried' ? '<path d="M33 39l9-3M67 39l-9-3" class="ef-ln ef-thin"/>' : '';
-		const mouth = { cheer: '<path d="M40 56q10 12 20 0z" class="ef-ln" style="fill:#fff"/>', happy: '<path d="M41 57q9 8 18 0" class="ef-ln"/>', meh: '<path d="M43 59h14" class="ef-ln"/>', worried: '<path d="M41 61q4-5 9-2t9-1" class="ef-ln"/>' }[ mood ];
-		const extra = mood === 'cheer' ? '<g class="ef-spark ef-ln ef-thin"><path d="M8 12l8 4M6 24l9 1M16 3l4 8"/></g>' : mood === 'worried' ? '<path class="ef-drop" d="M76 36q4 6 0 9t-4-4z" fill="#7cc4ff"/>' : '';
-		return `<svg class="ef-mascot ef-${ mood }" width="${ size }" height="${ size * 1.1 }" viewBox="0 0 100 110" role="img" aria-label="eFriend"><g class="ef-body">
-			<path d="M50 20V12" class="ef-ln"/><path d="M50 12c-8-2-6-10 0-8" class="ef-ln ef-thin"/><circle class="ef-ball" cx="52" cy="6" r="4.5" fill="#ffc94d" stroke="var(--ink)" stroke-width="3"/>
-			<rect x="20" y="38" width="7" height="24" rx="3.5" class="ef-ear"/><rect x="73" y="38" width="7" height="24" rx="3.5" class="ef-ear"/>
-			<rect x="25" y="20" width="50" height="50" rx="16" class="ef-head ef-ln"/>
-			${ brows }${ eyes }${ mouth }
-			<rect x="33" y="72" width="34" height="26" rx="8" class="ef-torso ef-ln"/>
-			<path d="m42 85 5 5 10-11" fill="none" stroke="#ffc94d" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-			<path d="M33 80q-14 2-18 16" class="ef-ln"/><g class="ef-arm"><path d="M67 80q14-2 17-18" class="ef-ln"/><path d="M80 58q4 2 8-2" class="ef-ln ef-thin"/></g>
-			<path d="M42 98v6M58 98v6" class="ef-ln"/><path d="M36 106h12M52 106h12" class="ef-ln"/>${ extra }</g></svg>`;
+		const mood = MOODS[ verdict ] || 'happy', id = 'efg' + ( ++gid ), G = '#9ff3e6';
+		const eyeL = mood === 'cheer' ? `<path d="M38 50q6-9 12 0" class="ef-glow ef-stk"/>` : `<rect class="ef-eye" x="${ mood === 'meh' ? 38 : 39 }" y="${ mood === 'meh' ? 47 : 42 }" width="11" height="${ mood === 'meh' ? 5 : mood === 'worried' ? 9 : 12 }" rx="3" fill="${ G }"/>`;
+		const eyeR = mood === 'cheer' ? `<path d="M70 50q6-9 12 0" class="ef-glow ef-stk"/>` : mood === 'happy' ? `<path d="M70 48h12" class="ef-glow ef-stk"/>` : `<rect class="ef-eye" x="70" y="${ mood === 'meh' ? 47 : 42 }" width="11" height="${ mood === 'meh' ? 5 : mood === 'worried' ? 9 : 12 }" rx="3" fill="${ G }"/>`;
+		const brows = mood === 'worried' ? `<path d="M38 40l12-3M82 40l-12-3" class="ef-glow ef-stk ef-thin"/>` : '';
+		const mouth = { cheer: `<path d="M50 60q10 12 20 0z" fill="${ G }" class="ef-glow"/>`, happy: `<path d="M52 61q8 7 16 0" class="ef-glow ef-stk"/>`, meh: `<path d="M53 63h14" class="ef-glow ef-stk"/>`, worried: `<path d="M51 64q4-5 9-2t9-1" class="ef-glow ef-stk"/>` }[ mood ];
+		const extra = mood === 'cheer' ? '<g class="ef-spark"><path d="M104 14l2.4 6 6 2.4-6 2.4-2.4 6-2.4-6-6-2.4 6-2.4z" fill="#ffc94d"/><path d="M12 28l1.6 4 4 1.6-4 1.6-1.6 4-1.6-4-4-1.6 4-1.6z" fill="#ffc94d"/></g>' : mood === 'worried' ? '<path class="ef-drop" d="M96 26q5 8 0 12t-5-6z" fill="#7cc4ff"/>' : '';
+		return `<svg class="ef-mascot ef-${ mood }" width="${ size * 1.2 }" height="${ size }" viewBox="0 0 120 100" role="img" aria-label="eFriend"><defs>
+			<linearGradient id="${ id }s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset=".7" stop-color="#eef1f6"/><stop offset="1" stop-color="#cfd6e2"/></linearGradient>
+			<linearGradient id="${ id }a" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#cfd6e2"/></linearGradient></defs>
+			<ellipse class="ef-shadow" cx="60" cy="94" rx="27" ry="4.5" fill="rgba(0,0,0,.16)"/>
+			<g class="ef-body">
+			<g class="ef-armL"><rect x="2" y="42" width="13" height="30" rx="6.5" transform="rotate(32 8 57)" fill="url(#${ id }a)" stroke="#c3cbd9" stroke-width="1.2"/></g>
+			<g class="ef-armR"><rect x="105" y="42" width="13" height="30" rx="6.5" transform="rotate(-28 112 57)" fill="url(#${ id }a)" stroke="#c3cbd9" stroke-width="1.2"/></g>
+			<path d="M24 26q-2-14 12-16 8 3 10 12zM96 26q2-14-12-16-8 3-10 12z" fill="url(#${ id }a)" stroke="#c3cbd9" stroke-width="1.2" stroke-linejoin="round"/>
+			<path d="M30 22q0-7 8-8M90 22q0-7-8-8" fill="none" stroke="#0f766e" stroke-width="3" stroke-linecap="round"/>
+			<rect x="14" y="18" width="92" height="70" rx="34" fill="url(#${ id }s)" stroke="#c3cbd9" stroke-width="1.2"/>
+			<rect x="24" y="27" width="72" height="52" rx="24" fill="#13171f"/>
+			<path d="M32 36q6-6 20-6" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".22"/>
+			<g class="ef-eyes">${ eyeL }${ eyeR }</g>${ brows }${ mouth }
+			<path d="m52 84 4 4 8-9" fill="none" stroke="#ffc94d" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" opacity=".95"/>${ extra }</g></svg>`;
 	};
 
 	/* ------------------------------------------------------------------ Words (funny on purpose) */
