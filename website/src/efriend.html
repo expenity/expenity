@@ -1,0 +1,321 @@
+<div class="efp">
+
+<section class="efp-hero">
+	<i class="efp-blob b1"></i><i class="efp-blob b2"></i>
+	<div class="wrap efp-hero-grid">
+		<div>
+			<span class="efp-pill"><i></i> New in Expenity {{version}}</span>
+			<div class="efp-logowrap" id="efp-logo">{{logo}}</div>
+			<h1>Your money’s most <em>helpful friend</em> has arrived.</h1>
+			<p class="efp-lead">A small robot that lives inside Expenity. Tell it what you are dreaming about, a trip, new shoes, a car, a gift. It looks at your wallets, your income, your bills and the way you really spend, and tells you, kindly and with a joke, whether you can afford it, and when.</p>
+			<div class="efp-ctas">
+				<a class="efp-btn pri" href="{{root}}app/?lang=en">Open Expenity</a>
+				<a class="efp-btn gh" href="#how">See how it thinks</a>
+				<button class="efp-btn gh" type="button" id="efp-replay">↻ Replay the logo</button>
+			</div>
+			<p class="efp-note" style="color:rgba(255,255,255,.7)">Part of the Advanced plan. Turn it on in <b>More → Features</b>.</p>
+		</div>
+		<div class="efp-hero-robot efp-poke">
+			<span class="efp-bot">{{svg:robot}}</span><br>
+			<span class="efp-bubble" id="efp-bubble"></span>
+			<span class="efp-hint efp-pokehint">Go on, tap the robot. Then tap it a lot.</span>
+			<button class="efp-btn gh" type="button" id="efp-sound" aria-pressed="false" style="margin-top:12px;padding:8px 14px;font-size:.85rem">🔇 Sound off</button>
+		</div>
+	</div>
+</section>
+
+<section class="efp-promises">
+	<div class="wrap">
+		<div class="efp-prom efp-rv"><span class="em">🔒</span><div><b>Everything stays on your device</b>eFriend does its sums right inside your phone. No account needed, nothing sent anywhere.</div></div>
+		<div class="efp-prom efp-rv" style="--d:.1s"><span class="em">🏦</span><div><b>No real money ever moves</b>Expenity is a tracking system. eFriend only ever updates your records, never your bank.</div></div>
+		<div class="efp-prom efp-rv" style="--d:.2s"><span class="em">🤝</span><div><b>It advises. You decide.</b>It never drops a plan, never spends for you, and never does more than you allowed.</div></div>
+	</div>
+</section>
+
+<section class="efp-sec" id="what">
+	<div class="wrap">
+		<p class="efp-eyebrow efp-rv">In one minute</p>
+		<h2 class="efp-rv">Three things happen. That’s it.</h2>
+		<p class="efp-lead efp-rv">No spreadsheets, no formulas, no guessing. You tell eFriend what you want. It does the thinking.</p>
+		<div class="efp-steps">
+			<div class="efp-step efp-rv"><span class="em">💭</span><h3>You dream</h3><p>A trip to Paris, fancy new shoes, a new phone, a gift for someone you love, even a car. Give it a cost and a date. That’s a <b>plan</b>.</p>
+				<div class="efp-chips"><span class="ef-chip v-comfortable">✈️ A trip</span><span class="ef-chip v-comfortable">👟 Shoes</span><span class="ef-chip v-comfortable">📱 Phone</span><span class="ef-chip v-comfortable">🎁 A gift</span><span class="ef-chip v-comfortable">🚗 A car</span></div></div>
+			<div class="efp-step efp-rv" style="--d:.12s"><span class="em">🔍</span><h3>It looks</h3><p>At what is in your wallets, the salary on its way, the bills you must pay, and how you actually spend, learned from your own history. Not an average person. You.</p>
+				<div class="efp-chips"><span class="ef-chip v-comfortable">🏦 Wallets</span><span class="ef-chip v-comfortable">💶 Income</span><span class="ef-chip v-comfortable">🧾 Bills</span><span class="ef-chip v-comfortable">📊 Habits</span></div></div>
+			<div class="efp-step efp-rv" style="--d:.24s"><span class="em">🗣️</span><h3>It tells you</h3><p>With a face, a verdict and a joke. And if the answer is “not yet”, it works out the earliest date that would be safe.</p>
+				<div class="efp-chipcycle" aria-hidden="true"><span class="ef-chip v-comfortable">Comfortable</span><span class="ef-chip v-ontrack">On track</span><span class="ef-chip v-tight">Tight</span><span class="ef-chip v-atrisk">At risk</span><span class="ef-chip v-unlikely">Unlikely</span></div></div>
+		</div>
+	</div>
+</section>
+
+<section class="efp-sec efp-dark" id="how">
+	<div class="wrap">
+		<p class="efp-eyebrow efp-rv">How it thinks</p>
+		<h2 class="efp-rv">The question is never “do I have the money?”</h2>
+		<p class="efp-lead efp-rv">It is “what will I have <i>left</i> after buying it, and is that enough for next month?” Here is the idea, with the car example everyone asks about.</p>
+		<div class="efp-eq-grid">
+			<ul class="efp-eq" id="efp-eq">
+				<li class="plus" style="--i:0"><span>🏦 In your wallets</span><b>+ €10,000</b></li>
+				<li class="minus" style="--i:1"><span>🚗 The car you want</span><b>− €9,000</b></li>
+				<li class="total" style="--i:2"><span>🛟 Left after buying</span><b>€1,000</b></li>
+				<li class="minus" style="--i:3"><span>🗓️ Your usual month</span><b>€700</b></li>
+				<li class="verdict" style="--i:4">{{svg:robotHappy}}<span><b>€1,000 is 1.4 months of your spending.</b><br>With your salary on the way, next month stays positive. <b>On track.</b></span></li>
+			</ul>
+			<div class="efp-rv-r">
+				<p>That is the whole trick. eFriend adds up what you have and what is coming, takes away the bills and the spending it has learned from your own history, and looks at what remains <b>after</b> the purchase.</p>
+				<ul class="efp-points">
+					<li><span>🛟</span><span>It measures the leftover in <b>months of your usual spending</b>, because “€300” means nothing until you know what a month costs you.</span></li>
+					<li><span>💶</span><span>It checks your <b>income</b> too. €1,000 left is fine if a salary lands next week, and risky if it doesn’t.</span></li>
+					<li><span>📈</span><span>The longer you use Expenity, the <b>sharper it gets</b>. It tells you how many days of history it has, and how sure it is.</span></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</section>
+
+<section class="efp-sec efp-alt" id="try">
+	<div class="wrap">
+		<p class="efp-eyebrow efp-rv">Try it yourself</p>
+		<h2 class="efp-rv">Play with the real rule.</h2>
+		<p class="efp-lead efp-rv">Move the sliders. This uses the same logic as the app, just with your imagination instead of your data. Watch the handle change colour as you ask for more safety.</p>
+		<div class="efp-demos">
+			<div class="efp-demo efp-rv" id="efp-calc">
+				<div class="efp-field"><label for="c-bal">Money in your wallets <output id="o-bal"></output></label><input type="range" id="c-bal" min="1000" max="30000" step="500" value="10000"></div>
+				<div class="efp-field"><label for="c-spend">What you spend in a month <output id="o-spend"></output></label><input type="range" id="c-spend" min="300" max="3000" step="50" value="700"></div>
+				<div class="efp-field"><label for="c-cost">What you want to buy <output id="o-cost"></output></label><input type="range" id="c-cost" min="100" max="25000" step="100" value="9000"></div>
+				<div class="efp-field"><label for="c-cush">How much safety cushion <output id="o-cush"></output></label><input type="range" id="c-cush" min="0" max="100" step="1" value="40"></div>
+				<div class="efp-field"><label><span><input type="checkbox" id="c-inc" checked> I have a salary coming <output id="o-salary"></output></span></label><input type="range" id="c-salary" min="500" max="5000" step="100" value="1800"></div>
+			</div>
+			<div class="efp-demo efp-rv" style="--d:.1s">
+				<div class="efp-result"><div id="o-bot"></div><div><span class="ef-chip" id="o-chip"></span><div class="big" id="o-left"></div><div class="efp-note" id="o-months"></div></div></div>
+				<p id="o-text" style="font-weight:700;font-size:1.1rem;margin:16px 0 6px"></p>
+				<p class="efp-note" id="o-income"></p>
+			</div>
+		</div>
+	</div>
+</section>
+
+<section class="efp-sec" id="stories">
+	<div class="wrap">
+		<p class="efp-eyebrow efp-rv">Real life</p>
+		<h2 class="efp-rv">Four people. Four very normal questions.</h2>
+		<div class="efp-stories">
+			<article class="efp-story efp-rv">
+				<div class="who"><span class="av">🚗</span><div><h3>Maria and the car</h3><small>“Can I just buy it?”</small></div></div>
+				<p>Maria has €10,000 in the bank, spends about €700 a month and wants a car that costs €9,000. On paper she can. But what happens in the weeks after?</p>
+				<div class="nums"><div><b data-count="1000">€0</b><small>left after buying</small></div><div><b>1.4</b><small>months of spending</small></div><div><b>On track</b><small>salary covers next month</small></div></div>
+				<div class="efp-says">{{svg:robotHappy}}<p>Yes, you can. You would keep about a month and a half of spending, and your salary arrives before the next rent. I would not go below that cushion, though. 😉</p></div>
+			</article>
+			<article class="efp-story efp-rv" style="--d:.1s">
+				<div class="who"><span class="av">👟</span><div><h3>Nikos and the shoes</h3><small>“Is it silly to ask for a small thing?”</small></div></div>
+				<p>Nikos set a plan: fancy shoes, €180, in three weeks. He forgot about it. On the day, Expenity checks again and gives him a green light.</p>
+				<div class="nums"><div><b data-count="180">€0</b><small>cost</small></div><div><b>Safe</b><small>cushion intact</small></div><div><b>🎉</b><small>one tap to record it</small></div></div>
+				<div class="efp-says">{{svg:robot}}<p>Today is the day. You can afford them and your cushion stays untouched. Did you make it? Tap yes and I will add it to your expenses with my little badge.</p></div>
+			</article>
+			<article class="efp-story efp-rv">
+				<div class="who"><span class="av">✈️</span><div><h3>Elena’s Paris</h3><small>“I always wanted to go there.”</small></div></div>
+				<p>Elena wants Paris in ten weeks. The honest answer is <b>At risk</b>. Instead of leaving her stuck, eFriend suggests a budget for her biggest “wants”, spots the subscription she forgot, and offers the earliest date that would be safe.</p>
+				<div class="nums"><div><b>At risk</b><small>for the date she picked</small></div><div><b>🎯</b><small>2 budgets suggested</small></div><div><b>📅</b><small>earliest safe date</small></div></div>
+				<div class="efp-says">{{svg:robotWorried}}<p>Paris is possible, just not by that date. A monthly Leisure budget of about €160 would add roughly €210 by then, and the earliest safe date is two weeks later. Want to use it?</p></div>
+			</article>
+			<article class="efp-story efp-rv" style="--d:.1s">
+				<div class="who"><span class="av">👨‍👩‍👧</span><div><h3>The Papadopoulos family</h3><small>“We want everything. We cannot have everything.”</small></div></div>
+				<p>A gift in two weeks, shoes, a family trip and a new car. Together they cost more than the family will have. eFriend asks once: <b>“Which one matters most?”</b> They drag the plans into their order.</p>
+				<div class="nums"><div><b>🏆</b><small>the trip comes first</small></div><div><b>✅ ⚠️ ❌</b><small>safe, at risk, doesn’t fit</small></div><div><b>💡</b><small>“drop the car, the trip is safe”</small></div></div>
+				<div class="efp-says">{{svg:robotMeh}}<p>The trip is your top priority out of the four, and it fits safely. The gift and shoes fit too. The car doesn’t, yet. I would never drop it for you, but moving it later would help.</p></div>
+			</article>
+		</div>
+	</div>
+</section>
+
+<section class="efp-sec efp-alt" id="features">
+	<div class="wrap">
+		<p class="efp-eyebrow efp-rv">Everything it can do</p>
+		<h2 class="efp-rv">Fourteen things, with the real screens.</h2>
+		<p class="efp-lead efp-rv">Every picture below is a real screen from Expenity, with a made-up household called Maria. Nothing is mocked up.</p>
+
+		<div class="efp-feat">
+			<div class="efp-feat-text efp-rv-l"><span class="num">1</span><h3>Plans, not savings goals</h3>
+				<p>A plan is something to <i>check</i>, not a pot to fill. You give it a name, a cost, a date and the wallets it may use. You never have to “add money” to it. eFriend simply watches whether you will be able to afford it.</p>
+				<ul class="efp-points"><li><span>🔗</span><span>Optional: <b>link a savings goal</b> and eFriend counts what is already saved there.</span></li><li><span>🔄</span><span>Or turn an existing goal into a plan with <b>Let eFriend manage this goal</b>. Money already in it keeps counting.</span></li><li><span>🤖</span><span>Every goal also has an <b>Ask eFriend</b> button, to check it without changing it.</span></li></ul></div>
+			<div class="efp-rv-r">{{phone:home|Expenity Home with the eFriend card showing four plans and their verdicts}}</div>
+		</div>
+
+		<div class="efp-feat rev">
+			<div class="efp-rv-l">{{phone:analysis|The eFriend full analysis for a plan, with tiles for cost, likely free, left after buying and days left}}</div>
+			<div class="efp-feat-text efp-rv-r"><span class="num">2</span><h3>A verdict you can read in two seconds</h3>
+				<p>Each plan gets a face and one of five verdicts, <b>Comfortable</b>, <b>On track</b>, <b>Tight</b>, <b>At risk</b> or <b>Unlikely</b>. Tap <b>Full analysis</b> for the detail.</p>
+				<ul class="efp-points"><li><span>💶</span><span>Four tiles: cost, likely free, <b>left after buying</b>, days left.</span></li><li><span>🛟</span><span>How many months of spending that leftover covers.</span></li><li><span>🧾</span><span>Bills that cannot be skipped, with the reason each one cannot.</span></li><li><span>🎚️</span><span>How sure it is, and how many days of your history it has.</span></li></ul></div>
+		</div>
+
+		<div class="efp-feat">
+			<div class="efp-feat-text efp-rv-l"><span class="num">3</span><h3>It sorts your spending: Must, Need, Want</h3>
+				<p>Rent and your phone bill are not “skippable”. A streaming plan is. eFriend sorts every category for you using a bit of common sense, then asks you to correct it. Is a doctor a need or a want? Only you know. A three-way toggle changes it in a tap, and the analysis updates instantly.</p>
+				<ul class="efp-points"><li><span>🔒</span><span><b>Must</b>: fixed and necessary.</span></li><li><span>🛒</span><span><b>Need</b>: necessary, but you can shop smarter.</span></li><li><span>🎁</span><span><b>Want</b>: nice to have.</span></li></ul></div>
+			<div class="efp-rv-r">{{phone:analysis-sorting|The Must, Need and Want sorting with a three-way toggle for each category}}</div>
+		</div>
+
+		<div class="efp-feat rev">
+			<div class="efp-rv-l">{{phone:analysis-tips|Smart tips in the eFriend analysis, including suggested monthly budgets with a Set this budget button}}</div>
+			<div class="efp-feat-text efp-rv-r"><span class="num">4</span><h3>Budgets are its best friend</h3>
+				<p>When a plan is off target, eFriend does not just worry. It proposes monthly budgets for the categories that cost you the most, tells you how much each could add by the date, and opens the budget form already filled in with <b>Set this budget</b>.</p>
+				<ul class="efp-points"><li><span>🎯</span><span>“A monthly <b>Leisure</b> budget of about €160 could add about €210.”</span></li><li><span>🛑</span><span>Two no-spend days a week, and the 24-hour rule for impulse wants.</span></li><li><span>✂️</span><span>A quarter off the biggest wants, or pausing a subscription, with the exact gain.</span></li></ul></div>
+		</div>
+
+		<div class="efp-feat">
+			<div class="efp-feat-text efp-rv-l"><span class="num">5</span><h3>Many wishes, one priority list</h3>
+				<p>Give it as many plans as you like. When together they cost more than you will have, eFriend asks <b>once</b>: “Which one matters most?” You <b>press and hold, then drag</b> the plans into your order. The top one gets your money first.</p>
+				<ul class="efp-points"><li><span>🏆</span><span>“<b>Trip to Paris</b> is your top priority out of the 4.”</span></li><li><span>✅</span><span>Safe, fits, at risk, doesn’t fit, each plan placed honestly.</span></li><li><span>💡</span><span>“If you drop <b>New car</b>, <b>Paris</b> would fit.”</span></li><li><span>✨</span><span>Or tap <b>Let eFriend suggest</b>: cheapest first, so the most plans can happen.</span></li></ul></div>
+			<div class="efp-rv-r">{{phone:priorities|The priority screen with a draggable list of plans and the Safety cushion slider}}</div>
+		</div>
+
+		<div class="efp-feat rev">
+			<div class="efp-rv-l">{{phone:cushion|The Safety cushion slider, with a neutral track and a colour-changing handle}}</div>
+			<div class="efp-feat-text efp-rv-r"><span class="num">6</span><h3>Your safety cushion, your risk</h3>
+				<p>How much should still be left after you buy something? Half a month? Three? You decide with one slider. The track stays calm. Only the handle changes colour, blending smoothly from red through green to blue.</p>
+				<ul class="efp-points"><li><span>🔴</span><span><b>Risky</b>: you are happy to spend almost everything.</span></li><li><span>🟢</span><span><b>Balanced</b>: one month of your usual spending stays untouched.</span></li><li><span>🔵</span><span><b>Very safe</b>: six months, a proper emergency fund.</span></li></ul></div>
+		</div>
+
+		<div class="efp-feat">
+			<div class="efp-feat-text efp-rv-l"><span class="num">7</span><h3>Your own limits, respected</h3>
+				<p>“What is the most you are comfortable spending?” Set a maximum per <b>day</b>, per <b>week</b> and per <b>month</b>, in the tour or in your spending targets. eFriend plans around the <b>lower</b> of your limit and your real habits. And if your limits don’t line up (€40 a day is about €1,200 a month, but your monthly limit is €900) it tells you and uses the stricter one.</p></div>
+			<div class="efp-rv-r">{{phone:tour-limits|The eFriend tour step asking for the most you are comfortable spending per day, week and month}}</div>
+		</div>
+
+		<div class="efp-feat rev">
+			<div class="efp-rv-l">{{phone:plan-form|The plan form with a Suggest a date button and the earliest safe date}}</div>
+			<div class="efp-feat-text efp-rv-r"><span class="num">8</span><h3>The earliest safe date</h3>
+				<p>For bigger amounts, the question is not only “can I?” but “<i>when</i>?”. eFriend looks up to a year ahead and finds the first date you could buy it safely. If it is further away than a year, it says so honestly.</p>
+				<ul class="efp-points"><li><span>📅</span><span><b>Suggest a date</b> right inside the plan form.</span></li><li><span>👆</span><span><b>Use this date</b> in the analysis, and the plan moves, with the change recorded.</span></li><li><span>🔔</span><span>Offered again on the day itself, if you cannot afford it yet.</span></li></ul></div>
+		</div>
+
+		<div class="efp-feat">
+			<div class="efp-feat-text efp-rv-l"><span class="num">9</span><h3>It can help with your savings goals</h3>
+				<p>Under <b>More → eFriend → Helping with my goals</b>, you choose how much it does on its own. Nothing real moves. It only updates your records.</p>
+				<div class="efp-modes" style="grid-template-columns:1fr 1fr">
+					<div class="efp-mode"><span class="em">⏸️</span><h3>Off</h3><p>No help. The default.</p></div>
+					<div class="efp-mode"><span class="em">💡</span><h3>Suggest</h3><p>“You can safely put about €60 in the Holiday pot.”</p></div>
+					<div class="efp-mode"><span class="em">✋</span><h3>Ask first</h3><p>It proposes. You <b>Confirm</b>, <b>Edit</b> or <b>Dismiss</b>.</p></div>
+					<div class="efp-mode"><span class="em">🤖</span><h3>Automatic</h3><p>It records it. Every entry has <b>Undo</b>.</p></div>
+				</div></div>
+			<div class="efp-rv-r">{{phone:alloc|The Helping with my goals card with the four modes, frequency and a slider for proposals waiting at once}}</div>
+		</div>
+		<div class="efp-feat rev" style="padding-top:0">
+			<div class="efp-rv-l">{{phone:activity|Activity showing an eFriend proposal with Confirm, Edit and Dismiss, and entries marked Moved by eFriend}}</div>
+			<div class="efp-feat-text efp-rv-r"><h3>You choose the pace. It respects it.</h3>
+				<ul class="efp-points"><li><span>🗓️</span><span>Daily, weekly or monthly, your pick.</span></li><li><span>🎚️</span><span>Between <b>1 and 5</b> proposals can wait at once.</span></li><li><span>📦</span><span>Several goals? One combined card with the split inside, confirmed in one tap.</span></li><li><span>⏳</span><span>A proposal you ignore <b>expires after 3 days</b>. Nothing is lost.</span></li><li><span>⚠️</span><span>Turning on Automatic with little history? It warns you first.</span></li><li><span>🛡️</span><span>It never goes below your safety cushion.</span></li></ul></div>
+		</div>
+
+		<div class="efp-feat">
+			<div class="efp-feat-text efp-rv-l"><span class="num">10</span><h3>Impossible to miss, easy to undo</h3>
+				<p>Anything eFriend records stands out. A small robot badge, a coloured edge, the words <b>Moved by eFriend</b>, a one-tap <b>Undo</b>, and a weekly line: “This week eFriend moved €40.” On Home, your balance shows the <b>total</b> and how much of it is <b>set aside</b> for goals, so the numbers always add up.</p></div>
+			<div class="efp-rv-r">{{phone:page|The eFriend page with plans, priorities and the weekly summary}}</div>
+		</div>
+
+		<div class="efp-feat rev" data-confetti>
+			<div class="efp-confetti" aria-hidden="true"></div>
+			<div class="efp-rv-l">{{phone:due|The full-screen question Did you make it, with the afford-today check and the earliest safe date}}</div>
+			<div class="efp-feat-text efp-rv-r"><span class="num">11</span><h3>When the date arrives: “Did you make it?”</h3>
+				<p>A full-screen question, because this deserves a moment. First eFriend tells you whether you can afford it <i>today</i>. Then you answer.</p>
+				<ul class="efp-points"><li><span>✅</span><span><b>Yes, I did it!</b> It records the expense with an eFriend badge and a celebration, and adds it to <b>What you achieved with eFriend</b>.</span></li><li><span>📅</span><span><b>Not yet, move the date</b>, with the earliest safe date already filled in.</span></li><li><span>💔</span><span><b>I changed my mind</b> moves it to Past plans, and you can <b>Reopen</b> it any time.</span></li></ul></div>
+		</div>
+
+		<div class="efp-feat">
+			<div class="efp-feat-text efp-rv-l"><span class="num">12</span><h3>Reports that show the journey</h3>
+				<p>A new <b>eFriend</b> tab in Reports draws how ready you were for each plan over time. Every edit you make, a new cost, a moved date, a changed sorting, becomes a numbered gold point on the line, with a plain sentence: “Cost changed from €3,900 to €3,300: closer to your plan (62% → 104% ready).”</p>
+				<ul class="efp-points"><li><span>📉</span><span>See how each decision moved you closer, or further.</span></li><li><span>🧮</span><span>Your weekly spending on wants, before your first plan and since. A fair comparison, never a claim.</span></li><li><span>🏆</span><span>A running total of what you made happen.</span></li></ul></div>
+			<div class="efp-rv-r">{{phone:reports-journey|The Reports eFriend tab showing a readiness line with numbered gold points where the plan was edited}}</div>
+		</div>
+
+		<div class="efp-feat rev">
+			<div class="efp-rv-l">{{phone:tour-wishes|The eFriend tour asking what are you dreaming about, with wish chips and cost and date fields}}</div>
+			<div class="efp-feat-text efp-rv-r"><span class="num">13</span><h3>A tour that feels like meeting someone</h3>
+				<p>The first time, a full-screen tour introduces eFriend step by step. The logo’s E turns into an <b>e</b>, its tick into an <b>F</b>, and “riend” types itself out.</p>
+				<ul class="efp-points"><li><span>💶</span><span>Where does your money come from? Add your salary right there, and come back to the same step.</span></li><li><span>💭</span><span>What are you dreaming about? Tap a chip: a trip, shoes, a phone, a gift, a car.</span></li><li><span>🎯</span><span>Budgets, priorities, and how it can help move money, with fun little animations.</span></li><li><span>🔁</span><span>Missed it? <b>Take the eFriend tour again</b>, any time.</span></li></ul></div>
+		</div>
+
+		<div class="efp-feat">
+			<div class="efp-feat-text efp-rv-l"><span class="num">14</span><h3>A friend with a personality</h3>
+				<p>The robot waves to get your attention, then waves with both hands. It blinks. Its face changes with the news. It has dozens of lines, some of them very silly (“To be or not to be… on budget?”), and they pass through its bubble one at a time, so the card never jumps around.</p>
+				<ul class="efp-points"><li><span>😊</span><span>Tap it and it smiles and waves.</span></li><li><span>😆</span><span>A few more taps and it giggles.</span></li><li><span>😠</span><span>Poke it too much and it shakes with a low growl. (Try it in the hero above!)</span></li><li><span>🔊</span><span>The sounds can be switched off with <b>Robot sounds</b>.</span></li></ul></div>
+			<div class="efp-rv-r efp-poke efp-pokebox">{{svg:robotWorried}}<p class="efp-pokehint efp-note" style="margin-top:10px">Poke me.</p></div>
+		</div>
+	</div>
+</section>
+
+<section class="efp-sec" id="play">
+	<div class="wrap">
+		<p class="efp-eyebrow efp-rv">Try the priority list</p>
+		<h2 class="efp-rv">Who comes first?</h2>
+		<p class="efp-lead efp-rv">You have €4,200 to share. Reorder the plans and watch who is safe and who is at risk.</p>
+		<div class="efp-demos">
+			<div class="efp-demo efp-rv" id="efp-prio">
+				<ol class="efp-prio" id="efp-prio-list"></ol>
+				<button type="button" class="efp-btn dk" id="efp-suggest" style="padding:10px 16px">✨ Let eFriend suggest</button>
+				<p class="efp-says" style="margin-top:16px"><b id="efp-prio-what"></b></p>
+			</div>
+			<div class="efp-demo efp-rv" style="--d:.1s">
+				<h3>It never decides for you</h3>
+				<ul class="efp-points"><li><span>🤝</span><span>eFriend advises. It never drops a plan on its own.</span></li><li><span>👆</span><span>In the app you press and hold a plan, then drag it. A quick swipe still scrolls.</span></li><li><span>🔁</span><span>Change your mind later? The analysis updates by itself.</span></li></ul>
+			</div>
+		</div>
+	</div>
+</section>
+
+<section class="efp-sec efp-alt" id="private">
+	<div class="wrap">
+		<p class="efp-eyebrow efp-rv">Private by design</p>
+		<h2 class="efp-rv">Smart does not have to mean watched.</h2>
+		<div class="efp-priv">
+			<div class="efp-rv"><span class="em">📱</span><h3>It runs on your device</h3><p>eFriend’s maths happens inside the app. There is no AI service behind it, no server call, no account. The same rules give the same answer every time.</p></div>
+			<div class="efp-rv" style="--d:.1s"><span class="em">🙈</span><h3>Nobody sees your plans</h3><p>Your plans, amounts and proposals stay in your own data. Expenity does not collect usage statistics.</p></div>
+			<div class="efp-rv" style="--d:.2s"><span class="em">🧾</span><h3>Records, not transfers</h3><p>Even in Automatic mode, eFriend only writes entries in your notebook. Your bank is never touched, and every automatic entry can be undone.</p></div>
+		</div>
+	</div>
+</section>
+
+<section class="efp-sec" id="start">
+	<div class="wrap">
+		<p class="efp-eyebrow efp-rv">Start in two minutes</p>
+		<h2 class="efp-rv">Say hello to eFriend.</h2>
+		<div class="efp-steps">
+			<div class="efp-step efp-rv"><span class="em">1️⃣</span><h3>Open Expenity</h3><p>Use it as usual for a while. The more it sees, the better it guesses. Add your salary so it knows what is coming.</p></div>
+			<div class="efp-step efp-rv" style="--d:.12s"><span class="em">2️⃣</span><h3>Meet your eFriend</h3><p>Go to <b>More → eFriend</b>, or watch for its invitation on Home. Take the short tour and add your first wish.</p></div>
+			<div class="efp-step efp-rv" style="--d:.24s"><span class="em">3️⃣</span><h3>Check back whenever</h3><p>Home keeps a card for your plans. Tap it for the numbers. Everything updates on its own as your life does.</p></div>
+		</div>
+	</div>
+</section>
+
+<section class="efp-sec efp-alt" id="faq">
+	<div class="wrap efp-faq" style="max-width:820px">
+		<h2 class="efp-rv">Good questions</h2>
+		<details class="efp-rv"><summary>Is eFriend free?</summary><p>It is part of the Advanced plan of Expenity, which is free. You can switch eFriend on or off in <b>More → Features</b>.</p></details>
+		<details class="efp-rv"><summary>Does it move my real money?</summary><p>Never. Expenity is a tracking system. When eFriend “moves” money to a goal, it only adds an entry in your records. If you also move the money in your bank, your notebook and your bank agree.</p></details>
+		<details class="efp-rv"><summary>Is it using AI?</summary><p>No. It is a set of clear rules that run on your device and use your own history. That is why it is private, fast and predictable.</p></details>
+		<details class="efp-rv"><summary>What if I have only used Expenity for a few days?</summary><p>It still answers, and it tells you plainly that it has little history and may be rough. It also gets sharper over time, and it asks for your salary if it does not know it.</p></details>
+		<details class="efp-rv"><summary>Can it drop a plan, or spend without asking?</summary><p>No. It only advises. In Automatic mode it records moves to the goals you allowed, within your safety cushion, with Undo, and only after you turn that mode on.</p></details>
+		<details class="efp-rv"><summary>Does it work in Greek?</summary><p>Yes, fully, with a formal, friendly tone. There is a Greek version of this page too.</p></details>
+	</div>
+</section>
+
+<section class="efp-cta">
+	<div class="wrap efp-poke">
+		{{svg:robot}}
+		<h2>Your next “can I afford it?” has an answer.</h2>
+		<p style="color:rgba(255,255,255,.85);max-width:54ch;margin:0 auto 22px">Free, private, and a little bit funny. Open Expenity and say hello.</p>
+		<div class="efp-ctas" style="justify-content:center"><a class="efp-btn pri" href="{{root}}app/?lang=en">Open Expenity</a><a class="efp-btn gh" href="{{root}}">Back to the website</a></div>
+	</div>
+</section>
+
+<a class="efp-btn pri efp-sticky" href="{{root}}app/?lang=en">Open Expenity</a>
+
+<script>window.EFP_SVG={{svgjson}};window.EFP_T={
+"lines":["You’re on fire. The suitcase is already packing itself.","To save or not to save? Easy question. You’re saving, and winning.","Not a disaster. More of a plot twist.","To be or not to be on budget? Currently: not. Let’s fix that.","A smaller goal, a later date, or both. Pick your adventure.","Boring is beautiful. Keep being wonderfully boring with money.","Time for a team huddle: you, me, and fewer takeaways."],
+"bub_smile":"Hello there! 😊","bub_giggle":"Hehe, that tickles!","bub_angry":"Okay. OKAY. That is ENOUGH.",
+"poke_smile":"Hello! 😊","poke_giggle":"Hehe, that tickles! 😆","poke_angry":"Grrr. Please stop poking me. 😠",
+"soundOn":"Sound on","soundOff":"Sound off","month":"month","months":"months","ofSpending":"of spending","short":"Not enough","incomeOk":"💶 With your expected income, next month stays positive.","incomeNo":"⚠️ Even with your salary, next month would be tight.","noIncome":"💶 Add a salary and I can be more accurate.",
+"risk":["Risky","Bold","Balanced","Careful","Safe","Very safe"],
+"verdict":{"comfortable":"Comfortable","ontrack":"On track","tight":"Tight","atrisk":"At risk","unlikely":"Unlikely"},
+"say":{"comfortable":"You’re on fire. You keep your whole cushion.","ontrack":"Right on schedule. A little under your cushion, but next month is covered.","tight":"It’s tight. A few small tweaks and this plan is back on.","atrisk":"Houston, a slightly worrying forecast. Good news: I have ideas.","unlikely":"Okay, honest moment: this is a stretch. Let’s pick a smarter plan."},
+"p":["Gift for Anna","Fancy shoes","Trip to Paris","New car"],"st":{"safe":"Safe","fits":"Fits","risk":"At risk","no":"Doesn’t fit"},"up":"Move up","down":"Move down","allFit":"✅ Everything fits, one plan after the other.","whatIf":"💡 If you drop {drop}, {plan} would fit.","later":"📅 {plan} is a stretch by its date. A later date would help."};</script>
+</div>

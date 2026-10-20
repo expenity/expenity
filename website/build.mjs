@@ -8,7 +8,7 @@
  * Run from the repository root: node website/build.mjs
  */
 import MarkdownIt from 'markdown-it';
-import { readFileSync, writeFileSync, mkdirSync, rmSync, cpSync, readdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, rmSync, cpSync, readdirSync, existsSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { dirname, join } from 'node:path';
 
@@ -476,6 +476,30 @@ ${ toc.length > 1 ? `<nav class="on-page" aria-label="${ L.docs.toc }" data-spy>
 		if ( L.code === 'el' ) urls.push( 'el/' );
 	}
 	console.log( `${ L.code }: ${ ORDER.length } help pages, ${ searchIndex.length } search entries` );
+}
+
+/* ------------------------------------------------------------------ eFriend announcement page (English and Greek) */
+
+{
+	const SV = JSON.parse( readFileSync( join( SRC, 'assets/efriend/svg.json' ), 'utf8' ) );
+	const copy = {
+		en: { title: 'Meet eFriend, your money’s most helpful friend', desc: 'eFriend is a small robot inside Expenity that checks whether you can afford a trip, new shoes or a car, tells you the earliest safe date, helps with your savings goals and cheers you on. Private, on your device, and a little bit funny.' },
+		el: { title: 'Γνωρίστε το eFriend, τον πιο χρήσιμο φίλο των χρημάτων σας', desc: 'Το eFriend είναι ένα μικρό ρομπότ μέσα στο Expenity που ελέγχει αν μπορείτε να αντέξετε ένα ταξίδι, καινούργια παπούτσια ή ένα αυτοκίνητο, σας λέει την πρώτη ασφαλή ημερομηνία, βοηθά με τους στόχους αποταμίευσής σας και σας ενθαρρύνει. Ιδιωτικό, στη συσκευή σας και λίγο αστείο.' },
+	};
+	for ( const L of Object.values( LANGS ) ) {
+		const file = L.code === 'el' ? 'efriend-el.html' : 'efriend.html';
+		if ( ! existsSync( join( SRC, file ) ) ) continue;
+		const prefix = L.code === 'el' ? 'el/' : '', root = '../'.repeat( L.code === 'el' ? 2 : 1 );
+		const body = readFileSync( join( SRC, file ), 'utf8' )
+			.replace( /\{\{phone:([a-z0-9-]+)\|([^}]+)\}\}/g, ( m, n, alt ) => `<div class="efp-phonewrap"><div class="efp-phone"><img src="${ root }assets/efriend/${ n }.jpg" width="780" height="1688" alt="${ esc( alt ) }" loading="lazy" decoding="async"></div></div>` )
+			.replace( /\{\{svg:([A-Za-z]+)\}\}/g, ( m, k ) => SV[ k ] )
+			.replace( /\{\{logo\}\}/g, () => SV.logo )
+			.replace( /\{\{svgjson\}\}/g, () => JSON.stringify( { robot: SV.robot, robotHappy: SV.robotHappy, robotWorried: SV.robotWorried, robotMeh: SV.robotMeh } ) )
+			.replace( /\{\{root\}\}/g, root ).replace( /\{\{version\}\}/g, VERSION );
+		const extraHead = `<link rel="stylesheet" href="${ root }assets/efriend-core.css?v=${ ASSET_V }">\n<link rel="stylesheet" href="${ root }assets/efriend.css?v=${ ASSET_V }">\n<script src="${ root }assets/efriend.js?v=${ ASSET_V }" defer></script>`;
+		write( `${ prefix }efriend/index.html`, layout( { lang: L.code, title: copy[ L.code ].title, description: copy[ L.code ].desc, root, canonical: `${ prefix }efriend/`, alt: L.code === 'en' ? 'el/efriend/' : 'efriend/', body, extraHead } ) );
+		urls.push( `${ prefix }efriend/` );
+	}
 }
 
 /* ------------------------------------------------------------------ 404, sitemap, robots */
