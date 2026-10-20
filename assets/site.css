@@ -2062,3 +2062,12 @@ a.card .more {
 	.is-home .site-head .brand{justify-self:start}.is-home .site-head .head-actions{justify-self:end}
 	.is-home .site-head .nav{margin-left:0;transform:translateX(calc(var(--hp,0) * 56px))}
 }
+
+/* ---- layout guard: nothing goes beyond the screen, on any device, on every page ---- */
+html, body { max-width: 100%; overflow-x: clip; }
+*, *::before, *::after { box-sizing: border-box; }
+img, svg, video, canvas, iframe, embed, object { max-width: 100%; }
+input, select, textarea, button { max-width: 100%; }
+:where(p, li, h1, h2, h3, h4, h5, h6, label, small, span, a, b, strong, em, td, th, summary, dd, dt, button) { overflow-wrap: break-word; }
+:where(div, section, article, aside, nav, header, footer, main, form, label, ul, ol, li, figure, fieldset, details) { min-width: 0; }
+pre, code { white-space: pre-wrap; overflow-wrap: anywhere; }
