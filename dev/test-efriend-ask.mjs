@@ -127,8 +127,16 @@ await page.evaluate(()=>document.querySelectorAll('.ef-chipq')[0].click());await
 ok(await page.evaluate(()=>!!document.querySelector('#efQForm [name=what]')&&!!document.querySelector('#efQForm [name=cost]')&&!!document.querySelector('#efQForm [name=when]')),'the form has the item, price and date');
 await page.fill('#efQForm [name=what]','');await page.fill('#efQForm [name=cost]','');await page.evaluate(()=>document.querySelector('#efQForm').requestSubmit());ok(await page.evaluate(()=>!document.getElementById('efQErr').hidden),'an empty form asks for the item and price');
 await page.fill('#efQForm [name=what]','Bike');await page.type('#efQForm [name=cost]','1200');await page.fill('#efQForm [name=when]',new Date(Date.now()+20*864e5).toISOString().slice(0,10));
-await page.evaluate(()=>document.querySelector('#efQForm').requestSubmit());await page.waitForFunction(()=>document.querySelector('.ef-chipq.go'));
-ok(await page.evaluate(()=>{const x=[...document.querySelectorAll('.ef-msg.ef')].slice(-1)[0].textContent;return /Bike/.test(x)&&/1,200|1\.200/.test(x)&&/weeks|days/.test(x);}),'the form fills in the chat and eFriend goes on to the recap');
+ok(await page.evaluate(()=>{const f=document.querySelector('#efQForm');return f.elements.norush.checked===false&&!!f.elements.when.value;}),'a picked date keeps No rush off');
+await page.evaluate(()=>{const f=document.querySelector('#efQForm');f.elements.norush.checked=true;f.elements.norush.dispatchEvent(new Event('change',{bubbles:true}));});
+ok(await page.evaluate(()=>{const f=document.querySelector('#efQForm');return f.elements.when.disabled&&f.elements.when.value==='';}),'No rush on turns the date picker off');
+await page.evaluate(()=>document.querySelector('[data-ef-qdate="14"]').click());
+ok(await page.evaluate(()=>{const f=document.querySelector('#efQForm');return !f.elements.norush.checked&&!f.elements.when.disabled&&!!f.elements.when.value;}),'a quick date turns No rush off and fills the date');
+await page.evaluate(()=>document.querySelector('#efQForm').requestSubmit());await page.waitForSelector('#efRes',{timeout:20000});
+ok(await page.evaluate(()=>/Bike/.test(document.querySelector('.ef-res-item').textContent)),'after the form, eFriend skips the verification and goes straight to the calculation');
+// the skip icon works at any moment, even right when the chat opens
+await page.evaluate(()=>UI.closeSheet(true));await page.evaluate(()=>EXA.efriendAskOpen());await page.waitForSelector('[data-ef-skip]');await page.click('[data-ef-skip]');await page.waitForSelector('#efQForm');
+ok(true,'the icon at the top skips the chat and shows the form');await page.evaluate(()=>document.querySelector('[data-ef-cpx]').click());
 // declining the form
 await page.evaluate(()=>EXA.efriendAskOpen());await page.waitForSelector('.ef-chipq');await send('phone 500');await page.waitForFunction(()=>document.querySelectorAll('.ef-chipq').length===4);
 await send('xyz');await page.waitForTimeout(300);await send('qwerty');
