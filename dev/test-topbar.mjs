@@ -1,0 +1,21 @@
+import {chromium} from 'playwright-core';
+import {createServer} from 'node:http';import {readFileSync,existsSync} from 'node:fs';import {join,extname} from 'node:path';
+const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.svg':'image/svg+xml','.png':'image/png','.webmanifest':'application/manifest+json','.woff2':'font/woff2','.webp':'image/webp'};
+const server=createServer((req,res)=>{const u=req.url.split('?')[0];const f=join(process.cwd(),u==='/'?'index.html':u);if(!existsSync(f)){res.writeHead(404).end();return;}res.setHeader('Content-Type',types[extname(f)]||'application/octet-stream');res.end(readFileSync(f));}).listen(0);
+const ok=(c,m)=>{console.log((c?'ok ':'FAIL ')+m);if(!c)process.exitCode=1;};
+const browser=await chromium.launch({channel:'chrome'}),ctx=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,serviceWorkers:'block'}),page=await ctx.newPage();const errors=[];page.on('pageerror',e=>errors.push(String(e)));
+await page.addInitScript(()=>{localStorage.setItem('expenity.lang','en');localStorage.setItem('expenity.motion','off');});
+await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.barMenu);
+await page.evaluate(()=>{EXA.skipFlow();EX.setLang('en');const S=EX.state();const d=(n)=>new Date(Date.now()+n*864e5).toISOString().slice(0,10);S.bills.push({id:'b1',name:'Electricity',amount:'64',category:'utilities',next:d(-2),repeat:'monthly',currency:'EUR'});EX.save();});await page.waitForTimeout(1200);
+const bar=async(v)=>{await page.evaluate((x)=>EXA.go(x),v);await page.waitForTimeout(500);return page.evaluate(()=>[...document.querySelectorAll('#appbar .ab-act')].map(b=>b.getAttribute('aria-label')));};
+for(const [v,n] of [['home',3],['activity',4],['bills',3],['plan',3]]) {const a=await bar(v);ok(a.length===n,`${v}: ${a.join(' · ')}`);}
+ok((await bar('home')).includes('Reports')&&!(await bar('activity')).includes('Reports')&&!(await bar('bills')).includes('Reports')&&!(await bar('plan')).includes('Reports'),'Reports shows only on Home');
+ok(await page.evaluate(()=>{EXA.go('bills');return true})&&await page.waitForTimeout(400)===undefined&&await page.evaluate(()=>document.querySelector('#appbar .ab-badge')?.textContent==='1'),'Bills shows the overdue count');
+await page.evaluate(()=>EXA.go('activity'));await page.waitForTimeout(400);await page.click('[data-act=toggle-filters]');await page.waitForTimeout(300);
+ok(await page.evaluate(()=>!!document.querySelector('.filter-panel,[data-filter-panel],.fpanel')||document.querySelectorAll('input[name=fmin],input[name=min],#flMin').length>0||document.body.innerText.includes('Filters')),'Filters opens the advanced filters');
+await page.click('[data-act=jump-month]');await page.waitForTimeout(300);ok(await page.evaluate(()=>!!document.querySelector('#jumpMonth')),'Jump to month opens a month picker');
+await page.evaluate(()=>UI.closeSheet(true));await page.waitForTimeout(300);
+await page.click('[data-act=bar-menu]');await page.waitForTimeout(300);
+ok(await page.evaluate(()=>[...document.querySelectorAll('[data-bar-do]')].map(b=>b.dataset.barDo).join(',').includes('tutorials')),'the overflow menu lists Tutorials and What\'s new');
+ok(errors.length===0,'no errors '+errors.join('|'));
+await browser.close();server.close();

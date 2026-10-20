@@ -10,7 +10,7 @@ await page.goto(`http://localhost:${server.address().port}`);await page.waitForF
 await page.evaluate(()=>{EXA.skipFlow();EX.setLang('en');const S=EX.state();const d=(n)=>new Date(Date.now()+n*864e5).toISOString().slice(0,10);S.bills.push({id:'b1',name:'Supermarket',amount:'132.5',category:'food',next:d(0),repeat:'once',currency:'EUR'});EX.save();EXA.go('home');});await page.waitForTimeout(1200);
 const gap=async()=>page.evaluate(()=>{const a=document.querySelector('[data-home=due]');if(!a)return -1;const r=a.getBoundingClientRect();let n=a.nextElementSibling;while(n&&n.getBoundingClientRect().height<2)n=n.nextElementSibling;return n?Math.round(n.getBoundingClientRect().top-r.bottom):-1;});
 const g1=await gap();ok(g1>=0&&g1<60,'one due bill: no empty gap before the next widget ('+g1+' px)');
-await page.evaluate(()=>{const f=document.querySelector('[data-flip=due]');f.click();});await page.waitForTimeout(300);
+await page.click('[data-flip-btn=due]');await page.waitForTimeout(300);
 const g2=await gap();ok(g2>=0&&g2<60,'flipped to the week summary: still no gap ('+g2+' px)');
 await page.evaluate(()=>{EXA.markPaid('b1','132.5',new Date().toISOString().slice(0,10),EX.state().accounts[0]?.id);EXA.go('home');});await page.waitForTimeout(800);
 ok(await page.evaluate(()=>!document.querySelector('[data-home=due] .bm-row')),'after paying, the bill is gone from Due soon');
@@ -18,7 +18,8 @@ const top=await page.evaluate(()=>{const first=[...document.querySelectorAll('#v
 ok(top<170,'and the first widget starts right under the header ('+top+' px)');
 await page.evaluate(()=>{const S=EX.state();S.bills.push({id:'b2',name:'Gym',amount:'30',category:'health',next:new Date().toISOString().slice(0,10),repeat:'once',currency:'EUR'});EX.save();EXA.go('home');});await page.waitForTimeout(800);
 const before=await page.evaluate(()=>document.querySelector('[data-home=calendar] .grp')?.textContent.trim().slice(0,40));
-await page.evaluate(()=>document.querySelector('[data-flip=cal]').click());await page.waitForTimeout(500);
+await page.click('[data-flip-btn=cal]');await page.waitForTimeout(500);
 ok(await page.evaluate(()=>{const f=document.querySelector('[data-flip=cal]'),g=document.querySelector('[data-home=calendar] .grp');return !!g&&!f.contains(g);}),'the selected day list sits outside the flipping card');
+ok(await page.evaluate(()=>{const b=document.querySelector('[data-flip-btn=cal]').getBoundingClientRect(),a=[...document.querySelectorAll('[data-home=calendar] [data-cal]')].map(x=>x.getBoundingClientRect());return a.every(r=>b.bottom<=r.top||b.top>=r.bottom||b.right<=r.left||b.left>=r.right);}),'the flip button never overlaps the month arrows or any other control');
 ok(await page.evaluate(()=>document.querySelector('[data-flip=cal]').classList.contains('flipped')&&!!document.querySelector('[data-home=calendar] .grp')&&getComputedStyle(document.querySelector('[data-home=calendar] .grp')).display!=='none'),'flipping the calendar leaves the list below showing: '+before);
 await browser.close();server.close();
