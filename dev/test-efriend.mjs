@@ -93,5 +93,7 @@ ok(await page.evaluate(()=>{const g=EX.state().goals.find(x=>x.name==='New lapto
 await page.evaluate(()=>{document.querySelectorAll('.ef-ob').forEach(x=>x.remove());document.body.classList.remove('ef-ob-open');UI.closeSheet&&UI.closeSheet();});
 const rem=await page.evaluate(()=>{const S=EX.state(),pl=S.goals.find(g=>g.name==='New laptop'),a=EX.efriend.forecast(pl).remaining;S.txs.push({id:'gc',type:'expense',amount:'300',category:'other',account:S.accounts[0].id,date:EX.today(),name:'to pot',goalId:'sg'});pl.linkedGoal='sg';const b=EX.efriend.forecast(pl).remaining;return [a,b];});
 ok(rem[1]===rem[0]-30000,'money set aside in a linked goal counts towards the plan ('+rem.join(' -> ')+')');
+await page.evaluate(()=>{document.querySelectorAll('.ef-ob').forEach(x=>x.remove());UI.closeSheet&&UI.closeSheet();EXA.openEfPlan();});await page.waitForTimeout(300);
+ok(await page.evaluate(()=>getComputedStyle(document.querySelector('#efPlanForm select')||document.body).appearance==='none'||!document.querySelector('#efPlanForm select')),'selects use the slick style (no native look)');
 ok(errs.length===0,'no page errors '+errs.join('|'));
 await browser.close();server.close();

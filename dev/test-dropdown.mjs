@@ -1,0 +1,28 @@
+// Dropdowns on a computer: a slick menu instead of the plain browser list; touch keeps the native picker.
+import {chromium} from 'playwright-core';
+import {createServer} from 'node:http';import {readFileSync,existsSync} from 'node:fs';import {join,extname} from 'node:path';
+const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.svg':'image/svg+xml','.png':'image/png','.webmanifest':'application/manifest+json','.woff2':'font/woff2'};
+const server=createServer((req,res)=>{const u=req.url.split('?')[0];const f=join(process.cwd(),u==='/'?'index.html':u);if(!existsSync(f)){res.writeHead(404).end();return;}res.setHeader('Content-Type',types[extname(f)]||'application/octet-stream');res.end(readFileSync(f));}).listen(0);
+const ok=(c,m)=>{console.log((c?'ok ':'FAIL ')+m);if(!c)process.exitCode=1;};
+const browser=await chromium.launch({channel:'chrome'}),page=await (await browser.newContext({viewport:{width:1100,height:800},serviceWorkers:'block'})).newPage();
+const errs=[];page.on('pageerror',e=>errs.push(e.message));
+await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EX?.efriend);
+await page.evaluate(()=>{EXA.skipFlow();const S=EX.state();S.accounts.push({id:'w1',name:'Cash',type:'cash',currency:S.settings.currency,opening:'50'},{id:'w2',name:'Bank',type:'bank',currency:S.settings.currency,opening:'80'});S.goals.push({id:'sg',name:'Pot',target:'10'});EX.save();EXA.openEfPlan();});
+await page.waitForSelector('#efPlanForm select');
+await page.evaluate(()=>{window.__ch=0;document.querySelector('#efPlanForm select').addEventListener('change',()=>window.__ch++);});
+await page.click('#efPlanForm select');
+ok(await page.evaluate(()=>!!document.querySelector('.dd-menu')&&document.querySelectorAll('.dd-opt').length===2),'clicking a dropdown opens the slick menu');
+await page.click('.dd-opt:nth-child(2)');
+ok(await page.evaluate(()=>!document.querySelector('.dd-menu')&&document.querySelector('#efPlanForm select').value==='sg'&&window.__ch===1),'choosing an item sets the value and fires change');
+await page.focus('#efPlanForm select');await page.keyboard.press('Enter');
+ok(await page.evaluate(()=>!!document.querySelector('.dd-menu')),'Enter opens it from the keyboard');
+await page.keyboard.press('ArrowUp');await page.keyboard.press('Enter');
+ok(await page.evaluate(()=>document.querySelector('#efPlanForm select').value===''),'arrow keys and Enter choose');
+await page.click('#efPlanForm select');await page.keyboard.press('Escape');
+ok(await page.evaluate(()=>!document.querySelector('.dd-menu')&&!!document.querySelector('#sheet[open]')),'Escape closes only the menu');
+ok(await page.evaluate(()=>getComputedStyle(document.querySelector('#efPlanForm select')).appearance==='none'),'closed select has the custom look');
+ok(errs.length===0,'no page errors '+errs.join('|'));
+const touch=await (await browser.newContext({viewport:{width:390,height:800},isMobile:true,hasTouch:true,serviceWorkers:'block'})).newPage();
+await touch.goto(`http://localhost:${server.address().port}`);await touch.waitForFunction(()=>!!window.EX?.efriend);
+ok(await touch.evaluate(()=>{const s=document.createElement('select');s.innerHTML='<option>a</option>';document.body.append(s);s.dispatchEvent(new MouseEvent('mousedown',{bubbles:true,cancelable:true}));return !document.querySelector('.dd-menu');}),'touch screens keep the native picker');
+await browser.close();server.close();
