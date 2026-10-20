@@ -74,5 +74,13 @@ for(let i=0;i<3;i++){await page.click('[data-ef-ob=next]');await page.waitForTim
 await page.click('[data-ef-ob=next]');await page.waitForTimeout(2000);
 ok(await page.evaluate(()=>!document.querySelector('.ef-ob')),"Let's go finishes and it does not restart");
 ok(await page.evaluate(()=>{const c=getComputedStyle(document.createElement('div'));return true;}),'');
+ok(await page.evaluate(()=>['comfortable','ontrack','tight','atrisk','unlikely','done'].every(v=>EX.t('ef_'+v).split('|').length>=6)),'at least six different lines per verdict');
+ok(await page.evaluate(()=>{const seen=new Set();for(let i=0;i<60;i++)seen.add(EX.efriend.line('ontrack'));return seen.size>=6;}),'the bubble draws from many different lines');
+ok(await page.evaluate(()=>{let prev='',same=0;for(let i=0;i<80;i++){const l=EX.efriend.line('tight');if(l===prev)same++;prev=l;}return same===0;}),'never the same line twice in a row');
+ok(await page.evaluate(()=>EX.t('ef_atrisk').includes('To be or not to be')),'there is a to be or not to be line');
+await page.evaluate(()=>{const S=EX.state();S.goals[0].coach=true;S.goals[0].deadline='2027-03-01';EXA.go('home');});await page.waitForTimeout(300);
+await page.evaluate(()=>EXA.openEfriend(EX.state().goals[0].id));await page.waitForSelector('.ef-sheet [data-ef-edit]');
+await page.click('.ef-sheet [data-ef-edit]');await page.waitForSelector('#goalForm',{timeout:3000});
+ok(await page.evaluate(()=>{const f=document.querySelector('#goalForm');return f.elements.gname.value==='Trip to Italy'&&f.elements.deadline.value==='2027-03-01'&&!!f.elements.coach&&f.querySelectorAll('[name=gw]').length>=1;}),'Edit goal opens the full form: name, date, coaching switch and wallets');
 ok(errs.length===0,'no page errors '+errs.join('|'));
 await browser.close();server.close();
