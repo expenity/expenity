@@ -47,6 +47,8 @@ CREATE TABLE IF NOT EXISTS recovery_codes (
   user_id    TEXT NOT NULL,
   code_hash  TEXT NOT NULL,
   used_at    INTEGER,
+  expires_at INTEGER,          -- owner-issued codes last 24 hours; the ones shown at sign-up do not expire
+  -- Existing databases: ALTER TABLE recovery_codes ADD COLUMN expires_at INTEGER;
   PRIMARY KEY (user_id, code_hash)
 );
 
@@ -185,4 +187,6 @@ CREATE INDEX IF NOT EXISTS usage_device ON usage_daily(device);
 CREATE TABLE IF NOT EXISTS share_daily (day TEXT NOT NULL, kind TEXT NOT NULL, n INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (day, kind));
 -- Shares of our websites and blog posts: anonymous daily counters per site, post and method. Nothing about the person is stored.
 CREATE TABLE IF NOT EXISTS site_shares (day TEXT NOT NULL, site TEXT NOT NULL, post TEXT NOT NULL DEFAULT '', method TEXT NOT NULL, n INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (day, site, post, method));
+-- Every recovery code the owner issues from Mission Control: when, for which account.
+CREATE TABLE IF NOT EXISTS recovery_audit (at INTEGER NOT NULL, user_id TEXT NOT NULL, kind TEXT NOT NULL DEFAULT 'owner');
 CREATE TABLE IF NOT EXISTS contact_daily (day TEXT PRIMARY KEY, n INTEGER NOT NULL DEFAULT 0);

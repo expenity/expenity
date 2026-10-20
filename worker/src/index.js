@@ -304,8 +304,8 @@ async function recoverWithCode( req, env, body ) {
 	const email = String( body.email || '' ).trim().toLowerCase();
 	const user = validEmail( email ) ? await env.DB.prepare( 'SELECT id, email, lang FROM users WHERE email = ?' ).bind( email ).first() : null;
 	const h = await sha256( normaliseCode( body.code ) );
-	const row = user ? await env.DB.prepare( 'SELECT used_at FROM recovery_codes WHERE user_id = ? AND code_hash = ?' ).bind( user.id, h ).first() : null;
-	if ( ! user || ! row || row.used_at ) return fail( req, env, 'bad_code', 401 );
+	const row = user ? await env.DB.prepare( 'SELECT used_at, expires_at FROM recovery_codes WHERE user_id = ? AND code_hash = ?' ).bind( user.id, h ).first() : null;
+	if ( ! user || ! row || row.used_at || ( row.expires_at && row.expires_at < now() ) ) return fail( req, env, 'bad_code', 401 );
 	await env.DB.prepare( 'UPDATE recovery_codes SET used_at = ? WHERE user_id = ? AND code_hash = ?' ).bind( now(), user.id, h ).run();
 	return recoveryRegistration( req, env, user );
 }
@@ -761,8 +761,11 @@ async function adminRecoveryCode( req, env ) {
 	const user = validEmail( email ) ? await env.DB.prepare( 'SELECT id FROM users WHERE email = ?' ).bind( email ).first() : null;
 	if ( ! user ) return fail( req, env, 'not_found', 404 );
 	const code = newRecoveryCodes()[ 0 ];
-	await env.DB.prepare( 'INSERT INTO recovery_codes (user_id, code_hash) VALUES (?, ?)' ).bind( user.id, await sha256( normaliseCode( code ) ) ).run();
-	return reply( req, env, { code, codesLeft: await codesLeft( env, user.id ) } );
+	await env.DB.batch( [
+		env.DB.prepare( 'INSERT INTO recovery_codes (user_id, code_hash, expires_at) VALUES (?, ?, ?)' ).bind( user.id, await sha256( normaliseCode( code ) ), now() + 24 * 3600 * 1000 ),
+		env.DB.prepare( 'INSERT INTO recovery_audit (at, user_id, kind) VALUES (?, ?, ?)' ).bind( now(), user.id, 'owner' ),
+	] );
+	return reply( req, env, { code, expiresInHours: 24, codesLeft: await codesLeft( env, user.id ) } );
 }
 /** Mission Control only: sends a test notification to every subscribed device right now and says how each push service answered. */
 async function adminPushRun( req, env ) {
