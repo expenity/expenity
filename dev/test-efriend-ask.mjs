@@ -54,9 +54,9 @@ await page.evaluate(()=>{EXA.st.view='more';EXA.st.more='efriend';EXA.render();}
 ok(await page.evaluate(()=>!!document.querySelector('.ef-askcard [data-ef-ask]')),'the eFriend page has an Ask button');
 await page.evaluate(()=>document.querySelector('.ef-askcard [data-ef-ask]').click());await page.waitForSelector('.ef-cp .ef-msg.ef');await page.waitForSelector('.ef-chipq');
 ok(await page.evaluate(()=>{const r=document.querySelector('.ef-cp').getBoundingClientRect();return r.width>=Math.min(innerWidth,760)-2&&r.height>=innerHeight*0.9;}),'the chat takes the whole screen');
-ok(await page.evaluate(()=>document.querySelectorAll('.ef-chipq').length===6&&document.querySelectorAll('#efChatForm input').length===1),'one text box and six idea chips to start with');
+ok(await page.evaluate(()=>document.querySelectorAll('.ef-chipq').length===8&&document.querySelectorAll('#efChatForm input').length===1),'one text box and six idea chips and two about-eFriend chips to start with');
 const send=async(q)=>{await page.fill('#efChatQ',q);await page.evaluate(()=>document.querySelector('#efChatForm').requestSubmit());await page.waitForTimeout(200);};
-await send('New iPhone 16 pro max 1250$');await page.waitForFunction(()=>document.querySelectorAll('.ef-chipq').length===4);
+await send('New iPhone 16 pro max 1250$');await page.waitForFunction(()=>document.querySelectorAll('.ef-chipq').length===6);
 ok(await page.evaluate(()=>/urgent|deadline|how fast|When do you want|Last question/i.test([...document.querySelectorAll('.ef-msg.ef')].pop().textContent)),'after the item and the price (read correctly) eFriend asks how soon');
 await page.evaluate(()=>document.querySelectorAll('.ef-chipq')[1].click());await page.waitForFunction(()=>document.querySelector('.ef-chipq.go'));
 ok(await page.evaluate(()=>{const m=[...document.querySelectorAll('.ef-msg.ef')];const x=m.slice(-3).map(e=>e.textContent).join(' ');return /iPhone 16 pro max/.test(x)&&/1,250/.test(x)&&/2 weeks/.test(x);}),'it repeats the item, the price and the timing and asks if that is right');
@@ -100,10 +100,10 @@ await page.evaluate(()=>document.querySelector('[data-ef-cpx]').click());
 await page.evaluate(()=>EXA.efriendAskOpen());await page.waitForSelector('.ef-chipq');
 await send('phone 500');await page.waitForFunction(()=>document.querySelectorAll('.ef-msg.me').length===1&&document.querySelector('.ef-chipq'));
 const before=await page.evaluate(()=>(EX.state().device.efChats||[]).length);
-await page.evaluate(()=>document.querySelector('[data-ef-clear]').click());await page.waitForFunction(()=>document.querySelectorAll('.ef-msg.me').length===0&&document.querySelectorAll('.ef-msg.ef').length>=2&&document.querySelectorAll('.ef-chipq').length===6);
+await page.evaluate(()=>document.querySelector('[data-ef-clear]').click());await page.waitForFunction(()=>document.querySelectorAll('.ef-msg.me').length===0&&document.querySelectorAll('.ef-msg.ef').length>=2&&document.querySelectorAll('.ef-chipq').length===8);
 ok(await page.evaluate((n)=>(EX.state().device.efChats||[]).length===n,before),'the old chat stays in the history, the new one is empty until the person speaks');
 ok(await page.evaluate(()=>!/phone/i.test(document.getElementById('efChat').textContent)),'start over wipes the conversation and eFriend says something funny, then asks again');
-await send('shoes 80');await page.waitForFunction(()=>document.querySelectorAll('.ef-chipq').length===4);
+await send('shoes 80');await page.waitForFunction(()=>document.querySelectorAll('.ef-chipq').length===6);
 ok(await page.evaluate(()=>document.querySelectorAll('.ef-msg.me').length===1),'the fresh chat works normally');
 await page.evaluate(()=>document.querySelector('[data-ef-cpx]').click());
 // eFriend uses the person's name
@@ -119,7 +119,7 @@ await page.type('#efChatQ','25a00x');
 ok(await page.evaluate(()=>document.getElementById('efChatQ').inputMode==='decimal'&&document.getElementById('efChatQ').value==='2500'&&/^2[.,]500$/.test(document.getElementById('efChatQ').getAttribute('value')||document.getElementById('efChatQ').value.replace(/(\d)(?=(\d{3})+$)/g,'$1,'))),'asking for a price: numeric keyboard, letters refused (the field groups the digits as they are typed)');
 ok(await page.evaluate(()=>{const F=EX.efriend;return F.amtCents('2.500')===250000&&F.amtCents('2,500')===250000&&F.amtCents('2.500,50')===250050&&F.amtCents('49,5')===4950&&F.amtCents('80.50')===8050;}),'formatted prices are read back correctly');
 // stuck: the quick form is offered in the chat
-await page.evaluate(()=>EXA.efriendAskOpen());await page.waitForSelector('.ef-chipq');await send('phone 500');await page.waitForFunction(()=>document.querySelectorAll('.ef-chipq').length===4);
+await page.evaluate(()=>EXA.efriendAskOpen());await page.waitForSelector('.ef-chipq');await send('phone 500');await page.waitForFunction(()=>document.querySelectorAll('.ef-chipq').length===6);
 await send('xyz');await page.waitForTimeout(300);await send('qwerty');
 await page.waitForFunction(()=>[...document.querySelectorAll('.ef-chipq')].length===2&&document.querySelector('.ef-chipq'));
 ok(await page.evaluate(()=>/📝/.test(document.querySelectorAll('.ef-chipq')[0].textContent)&&/💬/.test(document.querySelectorAll('.ef-chipq')[1].textContent)),'when eFriend keeps asking the same thing it offers a quick form or to keep chatting');
@@ -138,12 +138,12 @@ ok(await page.evaluate(()=>/Bike/.test(document.querySelector('.ef-res-item').te
 await page.evaluate(()=>UI.closeSheet(true));await page.evaluate(()=>EXA.efriendAskOpen());await page.waitForSelector('[data-ef-skip]');await page.click('[data-ef-skip]');await page.waitForSelector('#efQForm');
 ok(true,'the icon at the top skips the chat and shows the form');await page.evaluate(()=>document.querySelector('[data-ef-cpx]').click());
 // declining the form
-await page.evaluate(()=>EXA.efriendAskOpen());await page.waitForSelector('.ef-chipq');await send('phone 500');await page.waitForFunction(()=>document.querySelectorAll('.ef-chipq').length===4);
+await page.evaluate(()=>EXA.efriendAskOpen());await page.waitForSelector('.ef-chipq');await send('phone 500');await page.waitForFunction(()=>document.querySelectorAll('.ef-chipq').length===6);
 await send('xyz');await page.waitForTimeout(300);await send('qwerty');
 await page.waitForFunction(()=>document.querySelectorAll('.ef-chipq').length===2);await page.evaluate(()=>document.querySelectorAll('.ef-chipq')[1].click());await page.waitForTimeout(400);
 ok(await page.evaluate(()=>!document.getElementById('efQForm')&&!document.getElementById('efChatQ').disabled),'keep chatting declines the form');
 // clearing the chat twice also offers it
-await page.evaluate(()=>{document.querySelector('[data-ef-clear]').click();});await page.waitForFunction(()=>document.querySelectorAll('.ef-chipq').length===6);
+await page.evaluate(()=>{document.querySelector('[data-ef-clear]').click();});await page.waitForFunction(()=>document.querySelectorAll('.ef-chipq').length===8);
 await page.evaluate(()=>{document.querySelector('[data-ef-clear]').click();});await page.waitForFunction(()=>[...document.querySelectorAll('.ef-chipq')].some(c=>/📝/.test(c.textContent)));
 ok(true,'clearing the chat twice offers the quick form');
 // five minutes: eFriend falls asleep
@@ -162,10 +162,14 @@ await page.evaluate(()=>document.querySelector('[data-ef-cpx]').click());
 await page.evaluate(()=>EXA.efriendAskOpen());await page.waitForSelector('.ef-chipq');await send('What is the weather like?');
 await page.waitForFunction(()=>document.querySelectorAll('.ef-msg.me').length===1&&document.querySelectorAll('.ef-msg.ef').length>=3);
 ok(await page.evaluate(()=>/1985|AI|80s|retro|beep|golden|tape|dial|ask the questions|philosophy/i.test([...document.querySelectorAll('.ef-msg.ef')].slice(-2).map(x=>x.textContent).join(' '))&&document.querySelector('.ef-chipq')===null||true),'a question gets a retro joke');
-await page.evaluate(()=>EXA.efriendAskOpen({text:'Can I buy shoes that cost 49?'}));await page.waitForFunction(()=>document.querySelectorAll('.ef-chipq').length===4);
+await page.evaluate(()=>EXA.efriendAskOpen({text:'Can I buy shoes that cost 49?'}));await page.waitForFunction(()=>document.querySelectorAll('.ef-chipq').length===6);
 ok(true,'a question that carries a price is still a request');
 await page.evaluate(()=>document.querySelector('[data-ef-cpx]').click());
 // eFriend has a personality: he answers about himself, and tells his story
+await page.evaluate(()=>EXA.efriendAskOpen());await page.waitForSelector('.ef-chipq');
+await page.evaluate(()=>[...document.querySelectorAll('.ef-chipq')].find(c=>/love/i.test(c.textContent)).click());await page.waitForFunction(()=>/Star Wars|disco|cassette|010001100/i.test(document.getElementById('efChat').textContent),{timeout:15000});
+ok(true,'a chip starts a chat about what he loves, at any moment (even while he is asking for a price)');
+await page.evaluate(()=>document.querySelector('[data-ef-cpx]').click());
 const T=await page.evaluate(()=>{const out={};return {};});
 await page.evaluate(()=>EXA.efriendAskOpen());await page.waitForSelector('.ef-chipq');
 await send('How old are you?');await page.waitForFunction(()=>document.querySelectorAll('.ef-msg.me').length===1&&document.querySelectorAll('.ef-msg.ef').length>=4,{timeout:15000});
