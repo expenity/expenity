@@ -83,4 +83,11 @@ await closeAll();
 await page.evaluate(()=>{EXA.st.view='reports';const f=EXA.st;EXA.render();});await page.waitForTimeout(500);
 await page.evaluate(()=>{[...document.querySelectorAll('[data-rep=tab]')].find(b=>b.dataset.tab==='efriend').click();});await page.waitForTimeout(900);await shot('reports',300);
 await page.evaluate(()=>{document.querySelector('#view').scrollTop=360;window.scrollTo(0,360);});await shot('reports-journey',400);
+// Ask eFriend
+await closeAll();await page.evaluate(()=>{EXA.efriendAskOpen();});await page.waitForSelector('#efAskForm');await page.fill('#efAskQ','Can I buy shoes that cost 49?');await shot('ask',300);
+await page.evaluate(()=>document.querySelector('#efAskForm').requestSubmit());await page.waitForSelector('.ef-cal-d');await page.waitForTimeout(900);
+await page.evaluate(()=>{document.querySelector('#sheet .sheet-scroll').scrollTop=document.querySelector('#efAskOut').offsetTop-20;});await shot('ask-result',500);
+await page.fill('#efAskQ','Can I buy a laptop that costs 1500?');await page.evaluate(()=>{document.querySelector('[name=what]').value='';document.querySelector('[name=cost]').value='';document.querySelector('#efAskForm').requestSubmit();});await page.waitForTimeout(900);await page.evaluate(()=>{const sc=document.querySelector('#sheet .sheet-scroll');sc.scrollTop=document.querySelector('.ef-cal').offsetTop+document.querySelector('#efAskOut').offsetTop-215;});await shot('ask-calendar',600);
+// spending more than you earn
+await closeAll();await page.evaluate(()=>{const S=EX.state();S.incomes[0].amount='700';EX.save();EXA.openEfriend('paris');});await page.waitForSelector('.ef-tiles');await page.waitForTimeout(800);await page.evaluate(()=>{document.querySelector('#sheet .sheet-scroll').scrollTop=250;});await shot('deficit',500);
 await browser.close();server.close();

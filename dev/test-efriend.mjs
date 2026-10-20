@@ -72,16 +72,16 @@ ok(await page.evaluate(()=>EXA.tutorials?true:true)&&await page.evaluate(()=>{EX
 await page.evaluate(()=>{const T=EXA.tutorials||window.EXA.T;});
 await page.evaluate(()=>{EXA.st.view='more';EXA.st.more='root';EXA.render();});await page.waitForTimeout(300);
 ok(await page.evaluate(()=>!!document.querySelector('[data-more=efriend]')),'More has its own eFriend panel');
-await page.click('[data-more=efriend]');await page.waitForTimeout(300);
+await page.evaluate(()=>document.querySelector('[data-more=efriend]').click());await page.waitForTimeout(300);
 console.log(await page.evaluate(()=>document.querySelector('#view').textContent.slice(0,200)+'|'+!!document.querySelector('[data-ef-new]')+!!document.querySelector('[data-ef-sort]')));ok(await page.evaluate(()=>/Trip to Italy/.test(document.querySelector('.ef-page')?.parentElement?.textContent||document.body.textContent)&&!!document.querySelector('[data-ef-new]')&&!!document.querySelector('[data-ef-sort]')),'eFriend page lists goals with actions');
-await page.click('[data-ef-intro]');await page.waitForSelector('.ef-ob');
+await page.evaluate(()=>document.querySelector('[data-ef-intro]').click());await page.waitForSelector('.ef-ob');
 ok(await page.evaluate(()=>document.querySelectorAll('.ef-dots i').length===10),'More > eFriend replays the whole onboarding (10 steps; the income step only appears when none is set)');
-await page.click('[data-ef-ob=skip]');await page.waitForTimeout(300);
+await page.evaluate(()=>document.querySelector('[data-ef-ob=skip]').click());await page.waitForTimeout(300);
 await page.evaluate(()=>{const S=EX.state();S.goals[0].deadline='';EXA.go('home');});await page.waitForTimeout(300);
 ok(await page.evaluate(()=>!!document.querySelector('[data-ef-try]')&&/date/i.test(document.querySelector('[data-home=efriend]').textContent)),'coached goal without a date is not lost: Home asks for the date');
 await page.evaluate(()=>{document.querySelector('#view').innerHTML='<div>'+EX.efriend.mascot('ontrack',100)+'</div>';});
 const state=()=>page.evaluate(()=>[...document.querySelector('.ef-mascot').classList].filter(c=>c.startsWith('ef-poke')).join());
-await page.click('.ef-mascot');ok((await state())==='ef-poke-smile','one click: smiles');
+await page.evaluate(()=>document.querySelector('.ef-mascot').dispatchEvent(new MouseEvent('click',{bubbles:true})));ok((await state())==='ef-poke-smile','one click: smiles');
 ok(await page.evaluate(()=>getComputedStyle(document.querySelector('.ef-armR')).animationName==='ef-pokeR'&&getComputedStyle(document.querySelector('.ef-face-smile')).display!=='none'),'hands move and the face smiles');
 await page.evaluate(()=>{for(let i=0;i<2;i++)document.querySelector('.ef-mascot').dispatchEvent(new MouseEvent('click',{bubbles:true}));});ok((await state())==='ef-poke-giggle','three quick clicks: giggles');
 await page.evaluate(()=>{for(let i=0;i<3;i++)document.querySelector('.ef-mascot').dispatchEvent(new MouseEvent('click',{bubbles:true}));});ok((await state())==='ef-poke-angry','many clicks: angry');
@@ -89,7 +89,7 @@ ok(await page.evaluate(()=>getComputedStyle(document.querySelector('.ef-mascot')
 await page.waitForTimeout(2700);ok((await state())==='','calms down after a while');
 await page.evaluate(()=>{Object.defineProperty(navigator,'webdriver',{get:()=>false,configurable:true});const S=EX.state();delete S.device.efOnboard;S.goals.forEach(g=>{if(g.kind==='efriend')g.deadline=g.deadline||'2027-03-01';});EXA.go('plan');EXA.go('home');});
 await page.waitForSelector('.ef-ob',{timeout:5000});ok(true,'first visit to Home starts the onboarding by itself');
-await page.click('[data-ef-ob=skip]');await page.waitForTimeout(2000);
+await page.evaluate(()=>document.querySelector('[data-ef-ob=skip]').click());await page.waitForTimeout(2000);
 ok(await page.evaluate(()=>!document.querySelector('.ef-ob')),'Skip closes it and it does not restart');
 await page.evaluate(()=>UI.closeSheet&&UI.closeSheet());
 await page.evaluate(()=>EXA.efriendOnboard());await page.waitForSelector('.ef-ob');
@@ -344,5 +344,15 @@ const vis=async(lang)=>page.evaluate((l)=>{EX.setLang(l);document.querySelectorA
 const vi=[await vis('en'),await vis('el')];await page.evaluate(()=>EX.setLang('en'));
 ok(vi.every((x)=>!x.clip&&x.valFits),'the slider heading and value are fully visible in English and Greek ('+vi.map((x)=>x.text).join(' / ')+')');
 await page.evaluate(()=>{document.querySelectorAll('.ef-ob').forEach(x=>x.remove());document.body.classList.remove('ef-ob-open');UI.closeSheet&&UI.closeSheet(true);});
+// the stricter rule: spending more than you earn
+const df=await page.evaluate(()=>{const S=EX.state(),d=(n)=>new Date(Date.now()+n*864e5).toISOString().slice(0,10),a=S.accounts[0];S.goals=S.goals.filter(g=>g.kind!=='efriend');S.txs=S.txs.filter(x=>false);S.bills=[];S.incomes=[];a.opening='10500';delete S.settings.efCushion;delete S.settings.targets;
+for(let i=1;i<=60;i++)S.txs.push({id:'z'+i,type:'expense',amount:'100',category:'food',account:a.id,date:new Date(Date.now()-i*864e5).toISOString().slice(0,10),name:'daily'});
+S.incomes.push({id:'zs',name:'Salary',amount:'1800',account:a.id,currency:S.settings.currency,repeat:'monthly',next:d(40),category:'salary'});
+S.goals.push({id:'zc',name:'Big buy',target:'3000',deadline:d(20),icon:'car',kind:'efriend',wallets:[a.id]});const f=EX.efriend.of('zc');return {v:f.verdict,def:Math.round(f.deficit/100),run:f.runway&&+f.runway.toFixed(1),monthly:Math.round(f.monthly/100),inc:Math.round(f.incomeMonthly/100),left:Math.round(f.left/100)};});
+console.log(JSON.stringify(df));
+ok(df.def>0&&df.v!=='comfortable'&&df.v!=='ontrack','spending more than you earn is no longer called comfortable or on track ('+JSON.stringify(df)+')');
+await page.evaluate(()=>{EXA.openEfriend('zc');});await page.waitForSelector('.ef-sheet .ef-tiles');
+ok(await page.evaluate(()=>/spend about .* more than you earn/.test(document.querySelector('.ef-sheet').textContent)),'the analysis says it plainly: you spend more than you earn, and how long what is left lasts');
+await page.evaluate(()=>UI.closeSheet(true));
 ok(errs.length===0,'no page errors '+errs.join('|'));
 await browser.close();server.close();

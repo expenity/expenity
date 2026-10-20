@@ -235,6 +235,14 @@
    "d_el": "Μετακίνηση, απόκρυψη και αλλαγή μεγέθους καρτών."
   },
   {
+   "id": "efriend",
+   "tier": "advanced",
+   "en": "eFriend",
+   "d_en": "A small robot that checks whether you can afford a trip or a big purchase by a date.",
+   "el": "eFriend",
+   "d_el": "Ένα μικρό ρομπότ που ελέγχει αν μπορείτε να αντέξετε οικονομικά ένα ταξίδι ή μια μεγάλη αγορά μέχρι μια ημερομηνία."
+  },
+  {
    "id": "themeEdit",
    "tier": "advanced",
    "en": "Theme editing",
@@ -246,6 +254,6 @@
  "counts": {
   "basic": 8,
   "pro": 23,
-  "advanced": 33
+  "advanced": 34
  }
 }

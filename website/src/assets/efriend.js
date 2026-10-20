@@ -75,13 +75,15 @@
 			q( 'o-bal' ).textContent = money( bal ); q( 'o-spend' ).textContent = money( spend ); q( 'o-cost' ).textContent = money( cost ); q( 'o-salary' ).textContent = money( val( 'c-salary' ) ); q( 'o-cush' ).textContent = word( p ) + ' · ' + m + ' ' + ( m === 1 ? T.month : T.months );
 			calc.closest( '.efp-demos' ).style.setProperty( '--c', colorAt( p ) );
 			const left = bal - cost, cushion = m * spend; let v;
-			if ( left >= cushion ) v = 'comfortable'; else if ( left >= 0 ) v = ( inc > 0 && left + inc >= spend ) || left >= cushion / 2 ? 'ontrack' : 'tight'; else v = bal / cost >= .6 ? 'atrisk' : 'unlikely';
+			const deficit = inc > 0 ? Math.max( 0, spend - inc ) : 0, runway = deficit > 0 ? left / deficit : Infinity;
+			if ( left < 0 ) v = bal / cost >= .6 ? 'atrisk' : 'unlikely'; else if ( deficit > 0 ) v = runway >= 6 && left >= cushion ? 'comfortable' : runway >= 3 ? 'ontrack' : runway >= 1 ? 'tight' : 'atrisk'; else if ( left >= cushion ) v = 'comfortable'; else v = ( inc > 0 && left + inc >= spend ) || left >= cushion / 2 ? 'ontrack' : 'tight';
 			const months = spend ? left / spend : 0;
 			q( 'o-left' ).textContent = left >= 0 ? money( left ) : '−' + money( -left );
 			q( 'o-months' ).textContent = left >= 0 ? ( Math.round( months * 10 ) / 10 ) + ' ' + T.months + ' ' + T.ofSpending : T.short;
 			q( 'o-chip' ).className = 'ef-chip v-' + v; q( 'o-chip' ).textContent = T.verdict[ v ];
 			q( 'o-text' ).textContent = T.say[ v ]; q( 'o-bot' ).innerHTML = SVG[ mood[ v ] ] || '';
-			q( 'o-income' ).textContent = left >= 0 ? ( inc > 0 && left + inc >= spend ? T.incomeOk : ( inc > 0 ? T.incomeNo : T.noIncome ) ) : '';
+			if ( q( 'o-net' ) ) q( 'o-net' ).textContent = inc > 0 ? T.net + ': ' + ( inc - spend >= 0 ? '+' : '−' ) + money( Math.abs( inc - spend ) ) : '';
+			q( 'o-income' ).textContent = left < 0 ? '' : deficit > 0 ? T.deficit.replace( '{a}', money( deficit ) ).replace( '{r}', ( Math.round( runway * 10 ) / 10 ) + ' ' + T.months ) : ( inc > 0 && left + inc >= spend ? T.incomeOk : ( inc > 0 ? T.incomeNo : T.noIncome ) );
 		};
 		$$( 'input', calc ).forEach( ( i ) => i.addEventListener( 'input', run ) ); run();
 	}
@@ -103,6 +105,14 @@
 		draw();
 	}
 
+	/* ---------------------------------------------------------------- the accordion: open and close one, or all */
+	const accs = $$( '.efp-acc' );
+	const reveal = ( box ) => $$( '.efp-rv, .efp-rv-l, .efp-rv-r, [data-count], [data-confetti]', box ).forEach( ( el, i ) => { setTimeout( () => { el.classList.add( 'in' ); count( el ); if ( el.matches( '[data-confetti]' ) ) confetti( el ); }, reduce ? 0 : i * 70 ); } );
+	accs.forEach( ( a ) => a.addEventListener( 'toggle', () => { if ( a.open ) reveal( a ); } ) );
+	const setAll = ( open ) => accs.forEach( ( a ) => { a.open = open; } );
+	const ex = $( '#efp-expand' ), co = $( '#efp-collapse' ); if ( ex ) ex.addEventListener( 'click', () => setAll( true ) ); if ( co ) co.addEventListener( 'click', () => { setAll( false ); const top = $( '.efp-acc-ctl' ); if ( top ) top.scrollIntoView( { block: 'center', behavior: reduce ? 'auto' : 'smooth' } ); } );
+	const fromHash = () => { const a = location.hash && $( location.hash ); if ( a && a.matches && a.matches( '.efp-acc' ) ) { a.open = true; setTimeout( () => a.scrollIntoView( { block: 'start' } ), 100 ); } };
+	fromHash(); window.addEventListener( 'hashchange', fromHash );
 	/* ---------------------------------------------------------------- floating "open Expenity" after the hero */
 	const sticky = $( '.efp-sticky' ), hero = $( '.efp-hero' );
 	if ( sticky && hero ) new IntersectionObserver( ( es ) => sticky.classList.toggle( 'on', ! es[ 0 ].isIntersecting ) ).observe( hero );

@@ -482,6 +482,7 @@ ${ toc.length > 1 ? `<nav class="on-page" aria-label="${ L.docs.toc }" data-spy>
 
 {
 	const SV = JSON.parse( readFileSync( join( SRC, 'assets/efriend/svg.json' ), 'utf8' ) );
+	SV.logo = SV.logo.replace( 'viewBox="-4 -92 330 130"', 'viewBox="-44 -102 392 146"' ); // the hand-lettered letters reach past the old canvas
 	const copy = {
 		en: { title: 'Meet eFriend, your money’s most helpful friend', desc: 'eFriend is a small robot inside Expenity that checks whether you can afford a trip, new shoes or a car, tells you the earliest safe date, helps with your savings goals and cheers you on. Private, on your device, and a little bit funny.' },
 		el: { title: 'Γνωρίστε το eFriend, τον πιο χρήσιμο φίλο των χρημάτων σας', desc: 'Το eFriend είναι ένα μικρό ρομπότ μέσα στο Expenity που ελέγχει αν μπορείτε να αντέξετε ένα ταξίδι, καινούργια παπούτσια ή ένα αυτοκίνητο, σας λέει την πρώτη ασφαλή ημερομηνία, βοηθά με τους στόχους αποταμίευσής σας και σας ενθαρρύνει. Ιδιωτικό, στη συσκευή σας και λίγο αστείο.' },

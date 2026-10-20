@@ -1,0 +1,17 @@
+import { chromium } from 'playwright-core';
+import http from 'http'; import fs from 'fs'; import path from 'path';
+const root = process.cwd(), types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.svg': 'image/svg+xml' };
+const server = http.createServer( ( q, r ) => { let f = path.join( root, decodeURIComponent( q.url.split( '?' )[ 0 ] ) ); if ( f.endsWith( '/' ) ) f += 'index.html'; fs.readFile( f, ( e, d ) => { if ( e ) { r.writeHead( 404 ); r.end(); } else { r.writeHead( 200, { 'content-type': types[ path.extname( f ) ] || 'application/octet-stream' } ); r.end( d ); } } ); } ).listen( 0 );
+const port = server.address().port; let ok = 0, fail = 0; const chk = ( n, c ) => { if ( c ) ok++; else { fail++; console.log( 'FAIL', n ); } };
+const b = await chromium.launch( { channel: 'chrome' } ), pg = await b.newPage( { viewport: { width: 390, height: 800 } } );
+await pg.goto( `http://localhost:${ port }/index.html` ); await pg.waitForFunction( () => window.EX && EX.efriend );
+await pg.evaluate( () => { const S = EX.state(); S.settings.onboarded = true; EX.save(); } );
+await pg.evaluate( () => EXA.openAdd() ); await pg.waitForSelector( '[data-act=ef-chat]' );
+chk( 'add menu has eFriend row', true );
+await pg.evaluate( () => document.querySelector( '[data-act=ef-chat]' ).click() ); await pg.waitForSelector( '#efAskForm' ); chk( 'chat opens', true );
+await pg.evaluate( () => { UI.closeSheet(); } );
+const r = await pg.evaluate( () => { const F = EX.efriend, S = EX.state(); const d = new Date( Date.now() + 40 * 864e5 ).toISOString().slice( 0, 10 ); S.goals.push( { id: 'a', kind: 'efriend', name: 'A', target: '300', deadline: d, icon: 'target', wallets: [], created: Date.now() }, { id: 'b', kind: 'efriend', name: 'B', target: '100', deadline: d, icon: 'target', wallets: [], created: Date.now() } ); EX.save(); const c0 = F.cushion(); const s = F.suggestCushion( F.suggestOrder() ); const same = F.cushion() === c0; F.applySuggest( true ); return { s, same, after: F.cushion(), p: F.plans().map( g => g.prio ) }; } );
+chk( 'cushion restored by preview', r.same ); chk( 'cushion applied', r.after === r.s.m ); chk( 'order applied', r.p.includes( 1 ) );
+await pg.evaluate( () => EXA.efSuggestOpen() ); await pg.waitForSelector( '[data-ef-sug=both]' ); chk( 'choice sheet', await pg.locator( '[data-ef-sug]' ).count() === 2 );
+await pg.evaluate( () => document.querySelector( '[data-ef-sug=order]' ).click() );
+console.log( 'ok', ok, 'fail', fail ); await b.close(); server.close(); process.exit( fail ? 1 : 0 );
