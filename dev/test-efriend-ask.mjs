@@ -15,6 +15,12 @@ ok(P2[0].cost===125000&&/iPhone 16 pro max/.test(P2[0].item),'"New iPhone 16 pro
 ok(P2[1].cost===125000&&!P2[1].item,'a correction like "no, it is 1250 the price" gives only the price ('+JSON.stringify(P2[1])+')');
 ok(P2[2].cost===125000&&/16/.test(P2[2].item),'the biggest number is the price when there is no sign ('+JSON.stringify(P2[2])+')');
 ok(P2[3].cost===8000,'"2 shoes 80" -> 80');
+const P3=await page.evaluate(()=>['I want to buy a new watch for my girlfriend','I would like to buy a new watch for my girlfriend, 500 euros','Θέλω να αγοράσω ένα ρολόι για τη φίλη μου 300','thinking of getting a trip to Paris','I need a laptop for work 900'].map(q=>EX.efriend.parseAsk(q)));
+ok(P3[0].item==='Watch'&&P3[0].who==='my girlfriend'&&P3[0].cost===0,'"I want to buy a new watch for my girlfriend" -> the item is the watch, the person is the girlfriend ('+JSON.stringify(P3[0])+')');
+ok(P3[1].item==='Watch'&&P3[1].cost===50000&&P3[1].who==='my girlfriend','price and person found in the same sentence ('+JSON.stringify(P3[1])+')');
+ok(/^Ρολόι$/.test(P3[2].item)&&P3[2].cost===30000&&/φίλη/.test(P3[2].who),'Greek: item, price and person ('+JSON.stringify(P3[2])+')');
+ok(/Trip to Paris/i.test(P3[3].item),'"a trip to Paris" keeps Paris ('+JSON.stringify(P3[3])+')');
+ok(/^Laptop$/.test(P3[4].item)&&P3[4].cost===90000,'a purpose after "for" is not part of the item ('+JSON.stringify(P3[4])+')');
 ok(P[0].item==='Shoes'&&P[0].cost===4900,'"Can I buy shoes that cost $49?" -> Shoes, 49 ('+JSON.stringify(P[0])+')');
 ok(P[1].item==='Phone'&&P[1].cost===65000,'"new phone 650" -> Phone, 650');
 ok(P[2].item==='Laptop'&&P[2].cost===120000,'"a 1,200 euro laptop" -> Laptop, 1200 ('+JSON.stringify(P[2])+')');
@@ -46,10 +52,13 @@ await send("no, it's 900 the price");await page.waitForFunction(()=>document.que
 ok(await page.evaluate(()=>{const x=[...document.querySelectorAll('.ef-msg.ef')].slice(-1).map(e=>e.textContent).join(' ');return /iPhone 16 pro max/.test(x)&&/\b900\b/.test(x)&&!/1,250/.test(x)&&/2 weeks/.test(x);}),'a correction in plain words changes the price and eFriend asks again');
 await page.evaluate(()=>document.querySelector('.ef-chipq.go').click());await page.waitForSelector('#efRes',{timeout:15000});
 ok(await page.evaluate(()=>!document.querySelector('.ef-cp')&&!!document.querySelector('#efRes .ef-graph .ef-gl.with')&&!!document.querySelector('#efRes .ef-tiles3')),'the chat ends and the analysis opens in the app, with a prediction graph');
-ok(await page.evaluate(()=>document.querySelectorAll('.ef-cal-mh').length>=4&&document.querySelectorAll('.ef-cal-d').length===120&&!!document.querySelector('.ef-cal-d em')),'the calendar shows four months with a best day (⭐)');
+ok(await page.evaluate(()=>{const c=document.querySelectorAll('.ef-cal-d').length;return c>=1&&c<=31&&!!document.querySelector('.ef-cal-d em')&&!!document.querySelector('.ef-cal-nav');}),'the calendar opens on the month of the best day (⭐), one month at a time, with arrows');
+ok(await page.evaluate(()=>{const plan=document.querySelector('[data-ef-askplan]'),cal=document.querySelector('.ef-cal');return !!(plan.compareDocumentPosition(cal)&Node.DOCUMENT_POSITION_FOLLOWING);}),'"Make it a plan" sits above the calendar, no scrolling needed');
+const m0=await page.evaluate(()=>document.querySelector('.ef-cal-nav b').textContent);await page.evaluate(()=>document.querySelector('[data-ef-mon="-1"]:not(:disabled), [data-ef-mon="1"]:not(:disabled)').click());
+ok(await page.evaluate((m)=>document.querySelector('.ef-cal-nav b').textContent!==m,m0),'the arrows move to another month');
 ok(await page.evaluate(()=>/💶/.test(document.querySelector('.ef-cal').textContent)&&/🧾/.test(document.querySelector('.ef-cal').textContent)),'paydays and bills are marked on the calendar');
 ok(await page.evaluate(()=>/window|wish|inside|earliest/i.test(document.querySelector('.ef-res-lines').textContent)),'it says how the best day fits the timing I asked for');
-await page.evaluate(()=>document.querySelectorAll('.ef-cal-d')[20].click());
+await page.evaluate(()=>document.querySelectorAll('.ef-cal-d')[3].click());
 ok(await page.evaluate(()=>document.querySelectorAll('.ef-cal-d.sel').length===1&&document.getElementById('efAskDetail').textContent.length>10),'tapping a day explains it');
 await page.evaluate(()=>document.querySelector('[data-ef-askplan]').click());await page.waitForSelector('#efPlanForm');
 ok(await page.evaluate(()=>{const f=document.querySelector('#efPlanForm');return /iPhone 16 pro max/.test(f.elements.pname.value)&&f.elements.pcost.value==='900'&&/^\d{4}-\d{2}-\d{2}$/.test(f.elements.pdate.value)&&f.elements.pdate.value>EX.today();}),'"Make it a plan" opens the plan form with the item, price and a good (not red) date');
@@ -73,6 +82,16 @@ await page.evaluate(()=>[...document.querySelectorAll('.ef-hrow')].find(r=>/iPho
 ok(await page.evaluate(()=>/1250|iPhone/.test(document.querySelector('.ef-hist-chat').textContent)),'tapping one shows the whole conversation');
 await page.evaluate(()=>document.querySelector('[data-ef-hagain]').click());await page.waitForFunction(()=>!document.getElementById('efHist')&&document.querySelector('.ef-chipq.go'));
 ok(await page.evaluate(()=>{const x=[...document.querySelectorAll('.ef-msg.ef')].slice(-1)[0].textContent;return /iPhone 16 pro max/.test(x)&&/900/.test(x);}),'"Ask again" brings the item, price and timing back for a fresh check');
+await page.evaluate(()=>document.querySelector('[data-ef-cpx]').click());
+// start over: the chat is wiped, eFriend jokes, the old chat stays in the history
+await page.evaluate(()=>EXA.efriendAskOpen());await page.waitForSelector('.ef-chipq');
+await send('phone 500');await page.waitForFunction(()=>document.querySelectorAll('.ef-msg.me').length===1&&document.querySelector('.ef-chipq'));
+const before=await page.evaluate(()=>(EX.state().settings.efChats||[]).length);
+await page.evaluate(()=>document.querySelector('[data-ef-clear]').click());await page.waitForFunction(()=>document.querySelectorAll('.ef-msg.me').length===0&&document.querySelectorAll('.ef-msg.ef').length>=2&&document.querySelectorAll('.ef-chipq').length===6);
+ok(await page.evaluate((n)=>(EX.state().settings.efChats||[]).length===n+1,before),'the old chat stays in the history, the new one is empty until the person speaks');
+ok(await page.evaluate(()=>!/phone/i.test(document.getElementById('efChat').textContent)),'start over wipes the conversation and eFriend says something funny, then asks again');
+await send('shoes 80');await page.waitForFunction(()=>document.querySelectorAll('.ef-chipq').length===4);
+ok(await page.evaluate(()=>document.querySelectorAll('.ef-msg.me').length===1),'the fresh chat works normally');
 await page.evaluate(()=>document.querySelector('[data-ef-cpx]').click());
 // the lines vary
 const lines=await page.evaluate(()=>{const seen=new Set();for(let i=0;i<30;i++){EXA.efriendAskOpen();}return 1;});
