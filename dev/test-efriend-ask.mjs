@@ -207,6 +207,19 @@ ok(true,'on the third chat Olga hears that she shares her name with his creatorâ
 await page.evaluate(()=>{EX.state().device.efChatCount=3;document.querySelector('[data-ef-cpx]').click();EXA.efriendAskOpen();});await page.waitForSelector('.ef-chipq');
 ok(await page.evaluate(()=>!/creator/i.test(document.getElementById('efChat').textContent)),'it does not come back on the next chat');
 await page.evaluate(()=>{EX.state().settings.name='';document.querySelector('[data-ef-cpx]').click();});
+// the sparkle button above Send brings the ideas and questions back at any moment
+await page.evaluate(()=>EXA.efriendAskOpen());await page.waitForSelector('.ef-chipq');await page.evaluate(()=>document.querySelector('.ef-chipq.more').click());
+await page.evaluate(()=>[...document.querySelectorAll('.ef-chipq')].find(c=>/yourself/i.test(c.textContent)).click());await page.waitForFunction(()=>/010001100/.test(document.getElementById('efChat').textContent),{timeout:30000});
+await page.waitForFunction(()=>!document.getElementById('efTyping')&&/lucky|exactly|what is it for/i.test([...document.querySelectorAll('.ef-msg.ef')].slice(-1)[0].textContent),{timeout:30000});await page.waitForTimeout(400);
+await page.evaluate(()=>document.querySelector('[data-ef-menu]').click());
+ok(await page.evaluate(()=>document.querySelectorAll('.ef-chiph').length===2&&document.querySelectorAll('.ef-chipq').length>=46),'after the story, the sparkle button reveals the ideas and questions again');
+await page.evaluate(()=>document.querySelector('[data-ef-menu]').click());
+ok(await page.evaluate(()=>document.querySelectorAll('.ef-chiph').length===0),'pressing it again closes them');
+await page.evaluate(()=>{document.querySelector('[data-ef-cpx]').click();});
+await page.evaluate(()=>EXA.efriendAskOpen());await page.waitForSelector('.ef-chipq');await send('phone');await page.waitForFunction(()=>document.getElementById('efChatQ').inputMode==='decimal');
+await page.evaluate(()=>document.querySelector('[data-ef-menu]').click());
+ok(await page.evaluate(()=>document.querySelectorAll('.ef-chiph').length===1&&![...document.querySelectorAll('.ef-chipq')].some(c=>/A new car/.test(c.textContent))),'while eFriend asks for a price, the button offers only the questions about him');
+await page.evaluate(()=>{document.querySelector('[data-ef-cpx]').click();});
 // the lines vary
 // entry points
 await page.evaluate(()=>{const S=EX.state();S.goals.push({id:'p1',name:'Trip',target:'800',deadline:new Date(Date.now()+60*864e5).toISOString().slice(0,10),icon:'plane',kind:'efriend',wallets:['w1']});EX.save();EXA.go('home');});await page.waitForTimeout(700);
