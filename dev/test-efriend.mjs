@@ -30,7 +30,8 @@ await page.click('.ef-intro-ov button');
 await page.evaluate(()=>EXA.efriendOnboard('g1'));await page.waitForSelector('.ef-ob');
 ok(await page.evaluate(()=>{const r=document.querySelector('.ef-ob').getBoundingClientRect();return r.width>=innerWidth-1&&r.height>=innerHeight-1;}),'onboarding is full screen');
 await page.waitForTimeout(5800);await page.screenshot({path:'/tmp/ef-ob1.png'});await page.click('[data-ef-ob=next]');await page.waitForTimeout(3800);
-ok(await page.evaluate(()=>/afford/i.test(document.querySelector('.ef-ob').textContent)&&document.querySelectorAll('.ef-how li').length===6),'step 2 explains how it works (wallets, income, bills, spending, free vs cost)');await page.screenshot({path:'/tmp/ef-how.png'});await page.click('[data-ef-ob=next]');await page.waitForTimeout(2200);
+ok(await page.evaluate(()=>/afford/i.test(document.querySelector('.ef-ob').textContent)&&document.querySelectorAll('.ef-how li').length===6),'step 2 explains how it works (wallets, income, bills, spending, free vs cost)');await page.screenshot({path:'/tmp/ef-how.png'});await page.click('[data-ef-ob=next]');await page.waitForTimeout(1200);
+ok(await page.evaluate(()=>/budget/i.test(document.querySelector('.ef-ob').textContent)&&!!document.querySelector('.ef-bud-card')),'the tour has a fun budgets step');await page.screenshot({path:'/tmp/ef-bud.png'});await page.click('[data-ef-ob=next]');await page.waitForTimeout(2200);
 ok(await page.evaluate(()=>!!document.querySelector('.ef-ob .ef-ph-widget')),'step 2 animates the Home card');await page.screenshot({path:'/tmp/ef-ob2.png'});
 await page.click('[data-ef-ob=next]');await page.waitForSelector('[data-ef-row]');await page.screenshot({path:'/tmp/ef-ob3.png'});
 ok(await page.evaluate(()=>document.querySelectorAll('[data-ef-row]').length>=2&&document.querySelectorAll('[data-ef-row] .on').length===document.querySelectorAll('[data-ef-row]').length),'every category pre-sorted with a 3-way toggle');
@@ -53,7 +54,7 @@ ok(await page.evaluate(()=>!!document.querySelector('[data-more=efriend]')),'Mor
 await page.click('[data-more=efriend]');await page.waitForTimeout(300);
 console.log(await page.evaluate(()=>document.querySelector('#view').textContent.slice(0,200)+'|'+!!document.querySelector('[data-ef-new]')+!!document.querySelector('[data-ef-sort]')));ok(await page.evaluate(()=>/Trip to Italy/.test(document.querySelector('.ef-page')?.parentElement?.textContent||document.body.textContent)&&!!document.querySelector('[data-ef-new]')&&!!document.querySelector('[data-ef-sort]')),'eFriend page lists goals with actions');
 await page.click('[data-ef-intro]');await page.waitForSelector('.ef-ob');
-ok(await page.evaluate(()=>document.querySelectorAll('.ef-dots i').length===5),'More > eFriend replays the whole onboarding (5 steps)');
+ok(await page.evaluate(()=>document.querySelectorAll('.ef-dots i').length===6),'More > eFriend replays the whole onboarding (6 steps)');
 await page.click('[data-ef-ob=skip]');await page.waitForTimeout(300);
 await page.evaluate(()=>{const S=EX.state();S.goals[0].deadline='';EXA.go('home');});await page.waitForTimeout(300);
 ok(await page.evaluate(()=>!!document.querySelector('[data-ef-try]')&&/date/i.test(document.querySelector('[data-home=efriend]').textContent)),'coached goal without a date is not lost: Home asks for the date');
@@ -71,7 +72,7 @@ await page.click('[data-ef-ob=skip]');await page.waitForTimeout(2000);
 ok(await page.evaluate(()=>!document.querySelector('.ef-ob')),'Skip closes it and it does not restart');
 await page.evaluate(()=>UI.closeSheet&&UI.closeSheet());
 await page.evaluate(()=>EXA.efriendOnboard());await page.waitForSelector('.ef-ob');
-for(let i=0;i<4;i++){await page.click('[data-ef-ob=next]');await page.waitForTimeout(150);}
+for(let i=0;i<5;i++){await page.click('[data-ef-ob=next]');await page.waitForTimeout(150);}
 await page.click('[data-ef-ob=next]');await page.waitForTimeout(2000);
 ok(await page.evaluate(()=>!document.querySelector('.ef-ob')),"Let's go finishes and it does not restart");
 ok(await page.evaluate(()=>{const c=getComputedStyle(document.createElement('div'));return true;}),'');
@@ -116,5 +117,40 @@ await page.evaluate(()=>{EXA.st.view='reports';EXA.render();});await page.waitFo
 ok(await page.evaluate(()=>!![...document.querySelectorAll('[data-rep=tab]')].find(b=>b.dataset.tab==='efriend')),'Reports has an eFriend tab');
 await page.evaluate(()=>[...document.querySelectorAll('[data-rep=tab]')].find(b=>b.dataset.tab==='efriend').click());await page.waitForTimeout(300);
 ok(await page.evaluate(()=>!!document.querySelector('#repBody .ef-rep')),'the eFriend tab shows the progress report');
+// any change means a new analysis
+await page.evaluate(()=>{const S=EX.state();S.goals=S.goals.filter(g=>g.kind!=='efriend');S.goals.push({id:'r1',name:'Refresh test',target:'500',deadline:new Date(Date.now()+60*864e5).toISOString().slice(0,10),icon:'plane',kind:'efriend',wallets:[S.accounts[0].id]});EX.save();EXA.openEfriend('r1');});
+await page.waitForSelector('.ef-sheet .ef-kv');
+const days1=await page.evaluate(()=>document.querySelectorAll('.ef-sheet .ef-kv li b')[2].textContent);
+await page.evaluate(()=>{const g=EX.state().goals.find(x=>x.id==='r1');g.deadline=new Date(Date.now()+90*864e5).toISOString().slice(0,10);EX.save();});await page.waitForTimeout(300);
+const days2=await page.evaluate(()=>document.querySelectorAll('.ef-sheet .ef-kv li b')[2].textContent);
+ok(days1!==days2&&await page.evaluate(()=>!!document.querySelector('#sheet[open] .ef-sheet')),'changing the date refreshes the open analysis ('+days1+' -> '+days2+')');
+await page.evaluate(()=>{const S=EX.state();S.bills.push({id:'bx',name:'Rent',amount:'200',category:'housing',next:new Date(Date.now()+10*864e5).toISOString().slice(0,10),repeat:'monthly',currency:S.settings.currency,account:S.accounts[0].id});EX.save();});await page.waitForTimeout(300);
+ok(await page.evaluate(()=>/Rent/.test(document.querySelector('#sheet .ef-sheet').textContent)),'adding a bill refreshes the open analysis (Rent now listed)');
+await page.evaluate(()=>{EX.state().settings.importance={'cat:food':'must'};EX.save();});await page.waitForTimeout(300);
+ok(await page.evaluate(()=>!!document.querySelector('#sheet[open] .ef-sheet')),'changing the sorting keeps a fresh analysis open');
+await page.evaluate(()=>UI.closeSheet());await page.evaluate(()=>EXA.openEfPlan(EX.state().goals.find(x=>x.id==='r1')));await page.waitForSelector('#efPlanForm');
+ok(await page.evaluate(()=>document.querySelector('#sheetTitle').textContent==='Refresh test'),'editing a plan shows its name as the title');
+// edits become change points on the graph
+await page.evaluate(()=>{UI.closeSheet();const S=EX.state();S.accounts[0].opening='4000';S.bills=[];S.goals.find(x=>x.id==='r1').target='500';S.settings.efHistory={r1:[{d:new Date(Date.now()-12*864e5).toISOString().slice(0,10),v:'ontrack',p:110}]};S.settings.efEvents={};EXA.openEfPlan(S.goals.find(x=>x.id==='r1'));});await page.waitForSelector('#efPlanForm');
+await page.fill('[name=pcost]','5000');await page.evaluate(()=>document.querySelector('#efPlanForm').requestSubmit());await page.waitForTimeout(700);
+const evs=await page.evaluate(()=>EX.state().settings.efEvents.r1||[]);
+ok(evs.length===1&&evs[0].c[0][0]==='cost'&&evs[0].p1<evs[0].p0,'a cost edit is logged with readiness before and after ('+(evs[0]&&evs[0].p0+'% -> '+evs[0].p1+'%')+')');
+const rep=await page.evaluate(()=>EXA.efriendReport());
+ok(/ef-ev /.test(rep)&&/ef-evlist/.test(rep)&&/Further from your plan/.test(rep)&&/Cost changed/.test(rep),'Reports marks the edit on the graph and says it moved you further away');
+await page.evaluate(()=>UI.closeSheet&&UI.closeSheet());
+// the bubble is a fixed-size ticker
+await page.evaluate(()=>{const S=EX.state();S.goals=S.goals.filter(g=>g.kind!=='efriend');S.goals.push({id:'tk1',name:'Ticker trip',target:'400',deadline:new Date(Date.now()+100*864e5).toISOString().slice(0,10),icon:'plane',kind:'efriend',wallets:[S.accounts[0].id]});EX.save();EXA.go('home');});await page.waitForSelector('[data-ef-bubble] .ef-tk',{state:'attached'});await page.waitForTimeout(900);
+const h0=await page.evaluate(()=>Math.round(document.querySelector('[data-home=efriend]').getBoundingClientRect().height));
+const seen=new Set();const hs=new Set();
+for(let i=0;i<8;i++){await page.evaluate(()=>EX.efriend.tick(document.querySelector('[data-ef-bubble]')));await page.waitForTimeout(60);seen.add(await page.evaluate(()=>document.querySelector('.ef-tk').textContent));hs.add(await page.evaluate(()=>Math.round(document.querySelector('[data-home=efriend]').getBoundingClientRect().height)));}
+ok(hs.size===1&&[...hs][0]===h0,'the widget keeps the same height whatever the message ('+[...hs].join(',')+' vs '+h0+')');
+ok(seen.size>=4&&[...seen].every(x=>x.includes('\u00b7')),'messages pass through the bubble between dots, a new one each time ('+seen.size+' different)');
+ok(await page.evaluate(()=>getComputedStyle(document.querySelector('.ef-tk')).animationName==='ef-tick'),'the message scrolls across the bubble');
+// budgets as eFriend's best friend
+await page.evaluate(()=>{const S=EX.state();S.goals=S.goals.filter(g=>g.kind!=='efriend');S.budgets=[];S.accounts[0].opening='100';S.goals.push({id:'bt',name:'Off target trip',target:'3000',deadline:new Date(Date.now()+60*864e5).toISOString().slice(0,10),icon:'plane',kind:'efriend',wallets:[S.accounts[0].id]});EX.save();EXA.openEfriend('bt');});await page.waitForSelector('.ef-tips');
+ok(await page.evaluate(()=>document.querySelectorAll('.ef-tips [data-ef-budget]').length>=1&&/budget/i.test(document.querySelector('.ef-tips').textContent)),'off target: eFriend suggests budgets with a link to set them');
+await page.click('.ef-tips [data-ef-budget]');await page.waitForSelector('#budgetForm');
+ok(await page.evaluate(()=>{const f=document.querySelector('#budgetForm');return +f.elements.amount.value>0&&f.elements.category.value!=='all';}),'the link opens the budget form already filled in');
+await page.evaluate(()=>UI.closeSheet());
 ok(errs.length===0,'no page errors '+errs.join('|'));
 await browser.close();server.close();
