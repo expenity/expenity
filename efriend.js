@@ -216,6 +216,9 @@
 		// a bright orange-red blaze behind the glass of the Nixie tube (it pulses in style.css)
 		const bid = prefix + 'blaze';
 		svg = svg.replace( '<g class="tube-light">', `<defs><radialGradient id="${ bid }"><stop offset="0" stop-color="#fff2a8" stop-opacity=".95"/><stop offset=".25" stop-color="#ffa51f" stop-opacity=".9"/><stop offset=".6" stop-color="#ff3d00" stop-opacity=".55"/><stop offset="1" stop-color="#ff2a00" stop-opacity="0"/></radialGradient></defs><ellipse class="tube-blaze" cx="45" cy="3" rx="34" ry="38" fill="url(#${ bid })"/><g class="tube-light">` );
+		// the light falls on his body too: the upper left of the shell glows from the tube and pulses with it
+		const cid = prefix + 'cast', kid = prefix + 'castclip';
+		svg = svg.replace( '</g><g class="ef-fx">', `<defs><radialGradient id="${ cid }" cx="45" cy="22" r="64" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#ffd56a" stop-opacity=".95"/><stop offset=".3" stop-color="#ff8a1f" stop-opacity=".7"/><stop offset=".65" stop-color="#ff3d00" stop-opacity=".3"/><stop offset="1" stop-color="#ff2a00" stop-opacity="0"/></radialGradient><clipPath id="${ kid }"><rect x="20" y="20" width="104" height="80" rx="12"/></clipPath></defs><rect class="tube-cast" x="20" y="20" width="104" height="80" rx="12" fill="url(#${ cid })" clip-path="url(#${ kid })"/></g><g class="ef-fx">` );
 		return svg;
 	};
 	F.boogieIcon = ( size = 28 ) => ( window.EXBOOGIE ? window.EXBOOGIE.icon.replace( 'width="40" height="36"', 'class="ef-ico" width="' + size + '" height="' + ( size * 0.9 ) + '"' ) : F.chipIcon( size ) );

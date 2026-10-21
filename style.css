@@ -1804,3 +1804,7 @@ fieldset > legend { font-weight: 800; padding: 0 8px; color: var(--ink, #2a1a14)
 .ef-cassette .tube-blaze { transform-box: fill-box; transform-origin: center; animation: efc-blazebig 2.2s ease-in-out infinite; }
 @keyframes efc-blazebig { 0%, 100% { opacity: .65; transform: scale(.85); } 50% { opacity: 1; transform: scale(1.35); } }
 @keyframes efc-blaze { 0%, 100% { opacity: .75; transform: scale(1); filter: drop-shadow(0 0 5px #ff7a00) drop-shadow(0 0 14px #ff3b00); } 50% { opacity: 1; transform: scale(1.7); filter: drop-shadow(0 0 10px #ffb400) drop-shadow(0 0 30px #ff2a00) drop-shadow(0 0 54px #ff4d00); } }
+
+.ef-cassette .tube-cast { pointer-events: none; mix-blend-mode: screen; animation: efc-cast 2.2s ease-in-out infinite; }
+@keyframes efc-cast { 0%, 100% { opacity: .45; } 50% { opacity: 1; } }
+:root[data-motion=off] .ef-cassette .tube-cast, :root[data-motion=reduced] .ef-cassette .tube-cast { animation: none; opacity: .8; }
