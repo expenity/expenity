@@ -86,3 +86,7 @@ English is the default. Greek is complete (app, help center, website). The gloss
 ## Licence
 
 Application code: GPL-2.0-or-later. Third-party theme artwork has separate terms listed in [artwork credits](assets/themes/ARTWORK.md). By [George Stathopoulos](https://george-stathopoulos.github.io/). See the other projects there.
+
+## Alternative mascot: vintage eFriend
+
+The **[vintage eFriend asset pack](assets/vintage-efriend/README.md)** contains the cassette mascot, animated SVG states, glowing Nixie tube, broken-tube electricity, tape arms, an interactive preview and integration instructions. It is available for future integration; the active app mascot has not been replaced.

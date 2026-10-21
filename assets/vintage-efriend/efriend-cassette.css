@@ -1,0 +1,49 @@
+/* Scoped to the cassette: these rules supersede the old robot's arm pivots. */
+.ef-mascot.ef-cassette{overflow:visible;flex:none;cursor:pointer;touch-action:manipulation;user-select:none;animation:none}
+.ef-cassette.ef-mascot .ef-body{transform-origin:72px 60px;animation:efc-hover 3s ease-in-out infinite}
+.ef-cassette.ef-mascot .ef-shadow{transform-box:fill-box;transform-origin:center;animation:efc-shadow 3s ease-in-out infinite}
+.ef-cassette.ef-mascot .ef-armL{transform-box:view-box;transform-origin:24px 58px;animation:efc-left 5s ease-in-out infinite}
+.ef-cassette.ef-mascot .ef-armR{transform-box:view-box;transform-origin:119px 58px;animation:efc-wave 5s ease-in-out infinite}
+.ef-cassette .reel{transform-box:view-box;animation:efc-reel 8s ease-in-out infinite}
+.ef-cassette .ef-reel-right{animation-direction:reverse;animation-delay:-.2s}
+.ef-cassette .tube-light{animation:efc-glow 4s ease-in-out infinite}
+.ef-cassette .spark{animation:efc-spark 5s linear infinite;opacity:.12}
+.ef-cassette .ef-face-smile,.ef-cassette .ef-face-giggle,.ef-cassette .ef-face-angry,.ef-cassette .ef-heart,.ef-cassette .ef-steam,.ef-cassette .ef-mouth-cheer,.ef-cassette .ef-mouth-meh,.ef-cassette .ef-mouth-worried{display:none}
+.ef-cassette.ef-cheer .ef-mouth-happy,.ef-cassette.ef-meh .ef-mouth-happy,.ef-cassette.ef-worried .ef-mouth-happy{display:none}
+.ef-cassette.ef-cheer .ef-mouth-cheer,.ef-cassette.ef-meh .ef-mouth-meh,.ef-cassette.ef-worried .ef-mouth-worried{display:inline}
+.ef-cassette.ef-cheer .ef-body{animation:efc-hop 1.3s ease-in-out infinite}
+.ef-cassette.ef-thinking .reel{animation:efc-think 2s linear infinite}
+.ef-cassette.ef-thinking .ef-reel-right{animation-direction:reverse}
+.ef-cassette.ef-worried .reel{animation-duration:12s}
+.ef-cassette.ef-mascot.ef-poke-smile .ef-face-base,.ef-cassette.ef-mascot.ef-poke-giggle .ef-face-base,.ef-cassette.ef-mascot.ef-poke-angry .ef-face-base{display:none}
+.ef-cassette.ef-mascot.ef-poke-smile .ef-face-smile,.ef-cassette.ef-mascot.ef-poke-giggle .ef-face-giggle,.ef-cassette.ef-mascot.ef-poke-angry .ef-face-angry{display:inline}
+.ef-cassette.ef-mascot.ef-poke-smile .ef-body{animation:efc-jump .5s ease-out}
+.ef-cassette.ef-mascot.ef-poke-giggle .ef-body{animation:efc-giggle .25s ease-in-out 5}
+.ef-cassette.ef-mascot.ef-poke-angry{animation:efc-shake .18s linear infinite}
+.ef-cassette.ef-mascot.ef-poke-smile .ef-armR,.ef-cassette.ef-mascot.ef-poke-giggle .ef-armR{animation:efc-tap-wave .35s ease-in-out 4}
+.ef-cassette.ef-mascot.ef-poke-smile .ef-armL,.ef-cassette.ef-mascot.ef-poke-giggle .ef-armL{animation:efc-left .35s ease-in-out 4}
+.ef-cassette.ef-mascot.ef-poke-angry .ef-armR,.ef-cassette.ef-mascot.ef-poke-angry .ef-armL{animation:efc-tremble .2s ease-in-out infinite}
+.ef-cassette.ef-poke-angry .reel polygon{fill:#d99364}
+.ef-cassette.ef-mascot.ef-poke-smile .ef-heart,.ef-cassette.ef-mascot.ef-poke-giggle .ef-heart{display:inline;transform-box:fill-box;transform-origin:center;animation:efc-heart 1.2s ease-out both}
+.ef-cassette.ef-mascot.ef-poke-angry .ef-steam{display:inline;animation:efc-steam .7s ease-in-out infinite}
+@keyframes efc-hover{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes efc-shadow{0%,100%{opacity:.6;transform:scale(1)}50%{opacity:.35;transform:scale(.85)}}
+@keyframes efc-wave{0%,50%,100%{transform:rotate(0)}10%,30%{transform:rotate(-14deg)}20%,40%{transform:rotate(3deg)}}
+@keyframes efc-left{0%,100%{transform:rotate(0)}50%{transform:rotate(9deg)}}
+@keyframes efc-reel{0%,60%,100%{transform:rotate(0)}20%,40%{transform:rotate(35deg)}}
+@keyframes efc-think{to{transform:rotate(360deg)}}
+@keyframes efc-hop{0%,100%{transform:translateY(0)}45%{transform:translateY(-7px)}}
+@keyframes efc-glow{0%,100%{opacity:.75}50%{opacity:1}}
+@keyframes efc-spark{0%,12%,29%,100%{opacity:.12}16%,24%{opacity:.95}19%,27%{opacity:.25}}
+@keyframes efc-jump{0%,100%{transform:translateY(0)}40%{transform:translateY(-9px)}}
+@keyframes efc-giggle{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+@keyframes efc-shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-1.4px)}75%{transform:translateX(1.4px)}}
+@keyframes efc-tap-wave{0%,100%{transform:rotate(0)}50%{transform:rotate(-24deg)}}
+@keyframes efc-tremble{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+@keyframes efc-heart{0%{opacity:0;transform:translateY(10px) scale(.4)}30%{opacity:1}100%{opacity:0;transform:translateY(-20px) scale(1)}}
+@keyframes efc-steam{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:.8;transform:translateY(-3px)}}
+@media(prefers-reduced-motion:reduce){svg.ef-cassette:root:not([data-motion=full]),svg.ef-cassette:root:not([data-motion=full]) *{animation:none!important;transition:none!important}}
+/* Inline SVG inherits the app preference. data-motion on the SVG also works for standalone use. */
+:root[data-motion=off] .ef-cassette *,:root[data-motion=reduced] .ef-cassette *,.ef-cassette[data-motion=off] *,.ef-cassette[data-motion=reduced] *{animation:none!important;transition:none!important}
+:root[data-motion=off] .ef-cassette,:root[data-motion=reduced] .ef-cassette,.ef-cassette[data-motion=off],.ef-cassette[data-motion=reduced]{animation:none!important}
+@media(prefers-reduced-motion:reduce){:root:not([data-motion=full]) .ef-cassette,:root:not([data-motion=full]) .ef-cassette *{animation:none!important;transition:none!important}}

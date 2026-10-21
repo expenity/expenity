@@ -1,0 +1,21 @@
+{
+  "name": "vintage eFriend",
+  "version": "1.0.0",
+  "status": "design asset pack; not enabled in the app",
+  "master": "efriend-cassette.svg",
+  "stylesheet": "efriend-cassette.css",
+  "integration": "install-cassette.js",
+  "preview": "preview.html",
+  "documentation": "README.md",
+  "states": {
+    "happy": "efriend-happy.svg",
+    "cheer": "efriend-cheer.svg",
+    "neutral": "efriend-neutral.svg",
+    "worried": "efriend-worried.svg",
+    "thinking": "efriend-thinking.svg",
+    "smile": "efriend-smile.svg",
+    "giggle": "efriend-giggle.svg",
+    "angry": "efriend-angry.svg"
+  },
+  "icon": "efriend-icon.svg"
+}
