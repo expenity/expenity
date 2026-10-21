@@ -1802,9 +1802,34 @@ fieldset > legend { font-weight: 800; padding: 0 8px; color: var(--ink, #2a1a14)
 /* Boogie's Nixie tube: a really bright orange-red glow */
 .ef-cassette .tube-light { animation: efc-blaze 2.2s ease-in-out infinite; }
 .ef-cassette .tube-blaze { transform-box: fill-box; transform-origin: center; animation: efc-blazebig 2.2s ease-in-out infinite; }
-@keyframes efc-blazebig { 0%, 100% { opacity: .65; transform: scale(.85); } 50% { opacity: 1; transform: scale(1.35); } }
-@keyframes efc-blaze { 0%, 100% { opacity: .75; transform: scale(1); filter: drop-shadow(0 0 5px #ff7a00) drop-shadow(0 0 14px #ff3b00); } 50% { opacity: 1; transform: scale(1.7); filter: drop-shadow(0 0 10px #ffb400) drop-shadow(0 0 30px #ff2a00) drop-shadow(0 0 54px #ff4d00); } }
 
 .ef-cassette .tube-cast { pointer-events: none; mix-blend-mode: screen; animation: efc-cast 2.2s ease-in-out infinite; }
-@keyframes efc-cast { 0%, 100% { opacity: .45; } 50% { opacity: 1; } }
 :root[data-motion=off] .ef-cassette .tube-cast, :root[data-motion=reduced] .ef-cassette .tube-cast { animation: none; opacity: .8; }
+
+/* Boogie's light is adjustable: --ef-glow is the brightness (0.15 to 1), --ef-tm / --ef-te / --ef-tc / --ef-tl the bulb colour (set from the eFriend settings) */
+:root { --ef-glow: .8; --ef-tl: #ffb869; --ef-tm: #ff941f; --ef-te: #bf5712; --ef-tc: #ffe6a6; }
+@keyframes efc-blaze { 0%, 100% { opacity: calc(var(--ef-glow) * .8); transform: scale(1); filter: drop-shadow(0 0 5px var(--ef-te)) drop-shadow(0 0 calc(6px + var(--ef-glow) * 10px) var(--ef-tm)); } 50% { opacity: 1; transform: scale(calc(1 + var(--ef-glow) * 1.1)); filter: drop-shadow(0 0 10px var(--ef-tc)) drop-shadow(0 0 calc(10px + var(--ef-glow) * 26px) var(--ef-te)) drop-shadow(0 0 calc(14px + var(--ef-glow) * 42px) var(--ef-tm)); } }
+@keyframes efc-blazebig { 0%, 100% { opacity: calc(var(--ef-glow) * .7); transform: scale(calc(.5 + var(--ef-glow) * .4)); } 50% { opacity: min(1, calc(var(--ef-glow) * 1.3)); transform: scale(calc(.7 + var(--ef-glow) * .75)); } }
+@keyframes efc-cast { 0%, 100% { opacity: calc(var(--ef-glow) * .5); } 50% { opacity: min(1, calc(var(--ef-glow) * 1.25)); } }
+:root[data-motion=off] .ef-cassette .tube-cast, :root[data-motion=reduced] .ef-cassette .tube-cast { opacity: calc(var(--ef-glow) * .9); }
+:root[data-motion=off] .ef-cassette .tube-blaze, :root[data-motion=reduced] .ef-cassette .tube-blaze { animation: none; opacity: calc(var(--ef-glow) * .9); transform: scale(calc(.7 + var(--ef-glow) * .6)); }
+/* the light controls */
+.ef-light { display: grid; gap: 12px; } .ef-light-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; } .ef-light-row > b { min-width: 96px; }
+.ef-swatches { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; } .ef-sw { width: 34px; height: 34px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 0 0 2px var(--line, #ddd), 0 0 12px -2px var(--c); background: radial-gradient(circle at 35% 30%, #fff8, var(--c) 60%); cursor: pointer; padding: 0; } .ef-sw.on { box-shadow: 0 0 0 3px var(--ink, #222), 0 0 16px 0 var(--c); transform: scale(1.12); }
+.ef-sw-custom { position: relative; overflow: hidden; background: conic-gradient(#f33, #fc0, #3d9, #3bf, #a5f, #f5a, #f33); } .ef-sw-custom input { position: absolute; inset: -6px; width: 60px; height: 60px; opacity: 0; cursor: pointer; }
+.ef-light input[type=range] { flex: 1; min-width: 140px; accent-color: var(--ef-tm, #ff941f); height: 28px; }
+
+/* Boogie's light controls on the picker, shown when he fills the screen */
+.ob-light { position: absolute; z-index: 7; left: 50%; bottom: calc(clamp(84px, 13dvh, 104px) + env(safe-area-inset-bottom)); width: min(92vw, 380px); transform: translate(-50%, 10px); padding: 8px 12px; border-radius: 18px; background: #fff8e8e6; color: #3a2412; box-shadow: 0 10px 26px -10px #0006; opacity: 0; pointer-events: none; transition: opacity .4s ease, transform .4s ease; }
+.ob-light.show { opacity: 1; pointer-events: auto; transform: translate(-50%, 0); }
+.ob-light .ef-light { gap: 6px; } .ob-light .ef-light-row > b { min-width: 74px; font-size: .85rem; } .ob-light .ef-sw { width: 30px; height: 30px; } .ob-light input[type=range] { min-width: 100px; height: 22px; }
+/* the descriptions: bigger, bold and in each friend's own typeface */
+.ob-half-in p { font-weight: 700; font-size: clamp(1rem, 2.5dvh, 1.2rem); line-height: 1.38; max-width: 340px; }
+.ob-boogie .ob-half-in p { font-family: 'JetBrains Mono', ui-monospace, Menlo, monospace; color: #2e1a0a; text-shadow: 0 1px 0 #fff9; letter-spacing: -.01em; }
+.ob-chip .ob-half-in p { font-family: 'Comfortaa', 'Noto Sans', system-ui, sans-serif; color: #fff; text-shadow: 0 2px 10px #00000066; font-weight: 700; }
+.ob-half-in h2 { font-size: clamp(1.8rem, 4.6dvh, 2.3rem); } .ob-chip .ob-half-in h2 { font-family: 'Comfortaa', 'Noto Sans', sans-serif; font-weight: 700; }
+.ob-half { align-items: start; padding-top: clamp(58px, 9.5dvh, 84px); }
+.ob-art svg { height: min(29dvh, 270px); } .ob-boogie .ob-art svg { height: min(29dvh, 270px); width: auto; max-width: 88vw; }
+.ob-art { transform-origin: 50% 30%; }
+@media (max-height: 660px) { .ob-light .ef-light-row > b { display: none; } .ob-light { padding: 6px 10px; bottom: calc(80px + env(safe-area-inset-bottom)); } .ob-art svg, .ob-boogie .ob-art svg { height: min(24dvh, 200px); } .ob-half-in p { font-size: .92rem; line-height: 1.3; } .ob-half-in h2 { margin: 2px 0; } .ob-light .ef-sw { width: 26px; height: 26px; } }
+@media (max-height: 660px) { .ob-pick-title { font-size: 1.45rem; } }

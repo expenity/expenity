@@ -206,6 +206,26 @@
 	F.char = () => ( S().settings.efChar !== 'chip' && window.EXBOOGIE ? 'boogie' : 'chip' ); // Boogie unless the person chose Chip
 	F.charName = () => CHARS[ F.char() ].name;
 	F.setChar = ( c ) => { if ( ! CHARS[ c ] ) return; S().settings.efChar = c; S().settings.u = Date.now(); EX.save(); };
+	/* Boogie's light: how bright the Nixie tube glows and what colour the bulb is. It is kept in the settings and applied as CSS variables, so every Boogie on screen changes at once. */
+	const hex3 = ( h ) => [ 1, 3, 5 ].map( ( k ) => parseInt( h.slice( k, k + 2 ), 16 ) ), toHex3 = ( a ) => '#' + a.map( ( v ) => Math.max( 0, Math.min( 255, Math.round( v ) ) ).toString( 16 ).padStart( 2, '0' ) ).join( '' );
+	const mixc = ( a, b, k ) => { const x = hex3( a ), y = hex3( b ); return toHex3( x.map( ( v, n ) => v + ( y[ n ] - v ) * k ) ); };
+	F.LIGHTS = [ [ 'amber', '#ff941f' ], [ 'red', '#ff3b30' ], [ 'pink', '#ff5fa2' ], [ 'green', '#34d399' ], [ 'blue', '#33b5ff' ], [ 'white', '#ffe9b8' ] ];
+	F.light = () => { const l = S().settings.efLight || {}, i = Number( l.i ); return { i: Number.isFinite( i ) ? Math.max( 15, Math.min( 100, Math.round( i ) ) ) : 80, c: /^#[0-9a-f]{6}$/i.test( l.c || '' ) ? l.c.toLowerCase() : '#ff941f' }; };
+	F.applyLight = () => { const { i, c } = F.light(), st = document.documentElement.style; st.setProperty( '--ef-glow', ( i / 100 ).toFixed( 2 ) ); st.setProperty( '--ef-tm', c ); st.setProperty( '--ef-te', mixc( c, '#000000', .25 ) ); st.setProperty( '--ef-tc', mixc( c, '#ffffff', .78 ) ); st.setProperty( '--ef-tl', mixc( c, '#ffffff', .18 ) ); };
+	/** Changes the light. While a slider is being dragged only the look changes; `final` also saves and syncs. */
+	F.setLight = ( patch, final ) => { const cur = F.light(); S().settings.efLight = Object.assign( {}, cur, patch ); S().settings.u = Date.now(); F.applyLight(); if ( final ) EX.save(); else EX.persist(); };
+	EX.on( 'change', () => F.applyLight() ); F.applyLight();
+	/** The brightness slider and the bulb colours, for the eFriend menu and the onboarding picker. */
+	F.lightControls = () => { const l = F.light(); return `<div class="ef-light"><div class="ef-light-row"><b>${ esc( t( 'efLightBright' ) ) }</b><input type="range" min="15" max="100" step="1" value="${ l.i }" data-ef-lightrange aria-label="${ esc( t( 'efLightBright' ) ) }"></div>
+		<div class="ef-light-row"><b>${ esc( t( 'efLightColor' ) ) }</b><div class="ef-swatches" role="radiogroup" aria-label="${ esc( t( 'efLightColor' ) ) }">${ F.LIGHTS.map( ( [ k, c ] ) => `<button type="button" class="ef-sw${ l.c === c ? ' on' : '' }" style="--c:${ c }" data-ef-lightc="${ c }" role="radio" aria-checked="${ l.c === c }" aria-label="${ esc( t( 'efLight_' + k ) ) }" title="${ esc( t( 'efLight_' + k ) ) }"></button>` ).join( '' ) }<label class="ef-sw ef-sw-custom${ F.LIGHTS.some( ( x ) => x[ 1 ] === l.c ) ? '' : ' on' }" style="--c:${ l.c }" title="${ esc( t( 'efLight_custom' ) ) }"><input type="color" value="${ l.c }" data-ef-lightcolor aria-label="${ esc( t( 'efLight_custom' ) ) }"></label></div></div></div>`; };
+	let lightTimer = 0; const saveLight = () => { clearTimeout( lightTimer ); lightTimer = setTimeout( () => { S().settings.u = Date.now(); EX.save(); }, 500 ); };
+	const markSwatches = ( root, c ) => { root.querySelectorAll( '[data-ef-lightc]' ).forEach( ( b ) => { const on = b.dataset.efLightc === c; b.classList.toggle( 'on', on ); b.setAttribute( 'aria-checked', on ? 'true' : 'false' ); } ); const cu = root.querySelector( '.ef-sw-custom' ); if ( cu ) { const preset = F.LIGHTS.some( ( x ) => x[ 1 ] === c ); cu.classList.toggle( 'on', ! preset ); cu.style.setProperty( '--c', c ); } };
+	document.addEventListener( 'input', ( e ) => {
+		const r = e.target.matches && e.target.matches( '[data-ef-lightrange]' ) ? e.target : null; if ( r ) { F.setLight( { i: Number( r.value ) }, false ); saveLight(); return; }
+		const c = e.target.matches && e.target.matches( '[data-ef-lightcolor]' ) ? e.target : null; if ( c ) { F.setLight( { c: c.value }, false ); markSwatches( c.closest( '.ef-light' ) || document, c.value ); saveLight(); }
+	} );
+	document.addEventListener( 'click', ( e ) => { const b = e.target.closest && e.target.closest( '[data-ef-lightc]' ); if ( ! b ) return; F.setLight( { c: b.dataset.efLightc }, false ); markSwatches( b.closest( '.ef-light' ) || document, b.dataset.efLightc ); const cu = b.closest( '.ef-light' ).querySelector( '[data-ef-lightcolor]' ); if ( cu ) cu.value = b.dataset.efLightc; saveLight(); } );
+
 	const BMOOD = { comfortable: 'cheer', done: 'cheer', ontrack: 'happy', tight: 'meh', atrisk: 'worried', unlikely: 'worried', nodata: 'meh', cheer: 'cheer', happy: 'happy', meh: 'meh', worried: 'worried' };
 	let bserial = 0;
 	F.boogieMascot = ( verdict, size = 72 ) => {
@@ -213,12 +233,14 @@
 		const mood = BMOOD[ verdict ] || 'happy', thinking = verdict === 'thinking' ? ' ef-thinking' : '', h = Number.isFinite( Number( size ) ) ? Math.min( 1024, Math.max( 16, Number( size ) ) ) : 72, prefix = 'efcassette-' + ( ++bserial ) + '-';
 		let svg = B.svg.replace( /<style>[\s\S]*?<\/style>/, '' ).replace( 'ef-cassette ef-happy"', 'ef-cassette ef-' + mood + thinking + '"' ).replace( /width="288" height="260"/, 'width="' + ( h * 154 / 140 ) + '" height="' + h + '"' );
 		for ( const m of [ ...svg.matchAll( /\bid="([^"]+)"/g ) ] ) { const id = m[ 1 ]; svg = svg.replaceAll( 'id="' + id + '"', 'id="' + prefix + id + '"' ).replaceAll( 'url(#' + id + ')', 'url(#' + prefix + id + ')' ); }
-		// a bright orange-red blaze behind the glass of the Nixie tube (it pulses in style.css)
+		// the bulb takes its colour from the light settings (CSS variables), so it can change without redrawing
+		svg = svg.replace( /stop-color="#ffa526"/g, 'style="stop-color:var(--ef-tl)"' ).replace( /stop-color="#ff8220"/g, 'style="stop-color:var(--ef-tm)"' ).replace( /stop-color="#ff7b00"/g, 'style="stop-color:var(--ef-te)"' ).replace( /stroke="#ff7417"/g, 'style="stroke:var(--ef-te)"' ).replace( /stroke="#ff941f"/g, 'style="stroke:var(--ef-tm)"' ).replace( /stroke="#ffe6a6"/g, 'style="stroke:var(--ef-tc)"' );
+		// a bright blaze behind the glass of the Nixie tube (it pulses in style.css)
 		const bid = prefix + 'blaze';
-		svg = svg.replace( '<g class="tube-light">', `<defs><radialGradient id="${ bid }"><stop offset="0" stop-color="#fff2a8" stop-opacity=".95"/><stop offset=".25" stop-color="#ffa51f" stop-opacity=".9"/><stop offset=".6" stop-color="#ff3d00" stop-opacity=".55"/><stop offset="1" stop-color="#ff2a00" stop-opacity="0"/></radialGradient></defs><ellipse class="tube-blaze" cx="45" cy="3" rx="34" ry="38" fill="url(#${ bid })"/><g class="tube-light">` );
+		svg = svg.replace( '<g class="tube-light">', `<defs><radialGradient id="${ bid }"><stop offset="0" style="stop-color:var(--ef-tc)" stop-opacity=".95"/><stop offset=".25" style="stop-color:var(--ef-tm)" stop-opacity=".9"/><stop offset=".6" style="stop-color:var(--ef-te)" stop-opacity=".55"/><stop offset="1" style="stop-color:var(--ef-te)" stop-opacity="0"/></radialGradient></defs><ellipse class="tube-blaze" cx="45" cy="3" rx="34" ry="38" fill="url(#${ bid })"/><g class="tube-light">` );
 		// the light falls on his body too: the upper left of the shell glows from the tube and pulses with it
 		const cid = prefix + 'cast', kid = prefix + 'castclip';
-		svg = svg.replace( '</g><g class="ef-fx">', `<defs><radialGradient id="${ cid }" cx="45" cy="22" r="64" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#ffd56a" stop-opacity=".95"/><stop offset=".3" stop-color="#ff8a1f" stop-opacity=".7"/><stop offset=".65" stop-color="#ff3d00" stop-opacity=".3"/><stop offset="1" stop-color="#ff2a00" stop-opacity="0"/></radialGradient><clipPath id="${ kid }"><rect x="20" y="20" width="104" height="80" rx="12"/></clipPath></defs><rect class="tube-cast" x="20" y="20" width="104" height="80" rx="12" fill="url(#${ cid })" clip-path="url(#${ kid })"/></g><g class="ef-fx">` );
+		svg = svg.replace( '</g><g class="ef-fx">', `<defs><radialGradient id="${ cid }" cx="45" cy="22" r="64" gradientUnits="userSpaceOnUse"><stop offset="0" style="stop-color:var(--ef-tc)" stop-opacity=".95"/><stop offset=".3" style="stop-color:var(--ef-tm)" stop-opacity=".7"/><stop offset=".65" style="stop-color:var(--ef-te)" stop-opacity=".3"/><stop offset="1" style="stop-color:var(--ef-te)" stop-opacity="0"/></radialGradient><clipPath id="${ kid }"><rect x="20" y="20" width="104" height="80" rx="12"/></clipPath></defs><rect class="tube-cast" x="20" y="20" width="104" height="80" rx="12" fill="url(#${ cid })" clip-path="url(#${ kid })"/></g><g class="ef-fx">` );
 		return svg;
 	};
 	F.boogieIcon = ( size = 28 ) => ( window.EXBOOGIE ? window.EXBOOGIE.icon.replace( 'width="40" height="36"', 'class="ef-ico" width="' + size + '" height="' + ( size * 0.9 ) + '"' ) : F.chipIcon( size ) );
@@ -671,7 +693,7 @@
 		if ( sub === 'rules' ) return `${ back( t( 'efHubRules' ) ) }${ askBanner() ? `<section class="card">${ askBanner() }</section>` : '' }${ prioCard }${ riskCard }${ prioCard || riskCard ? '' : `<section class="card"><p class="muted">${ esc( t( 'efHubRulesNone' ) ) }</p></section>` }`;
 		if ( sub === 'moves' ) return `${ back( t( 'efHubMoves' ) ) }${ proposalsHtml() }${ allocCard() }`;
 		if ( sub === 'ideas' ) return `${ back( t( 'efHubIdeas' ) ) }${ budIdeasHtml() || `<section class="card"><p class="muted">${ esc( t( 'efHubIdeasNone' ) ) }</p></section>` }${ sortRows }`;
-		if ( sub === 'look' ) return `${ back( t( 'efHubLook' ) ) }${ charCard }${ naturalCard }${ soundCard }<section class="card ef-page"><div class="ef-top">${ F.mascot( 'happy', 84 ) }<div class="ef-bubble"><b>${ esc( t( 'efMeet' ) ) }</b></div></div>${ para( 'efMeetText' ) }</section>${ tourRow }`;
+		if ( sub === 'look' ) return `${ back( t( 'efHubLook' ) ) }${ charCard }${ ch === 'boogie' ? `<section class="card"><h2>💡 ${ esc( t( 'efLightTitle' ) ) }</h2><p class="muted small">${ esc( t( 'efLightHint' ) ) }</p>${ F.lightControls() }</section>` : '' }${ naturalCard }${ soundCard }<section class="card ef-page"><div class="ef-top">${ F.mascot( 'happy', 84 ) }<div class="ef-bubble"><b>${ esc( t( 'efMeet' ) ) }</b></div></div>${ para( 'efMeetText' ) }</section>${ tourRow }`;
 		// the hub: the way into the chat, then everything else in a few groups
 		const hrow = ( id, ic, color, title, subtitle ) => `<button type="button" class="mrow" data-ef-sub="${ id }">${ UI.ci( ic, color, 40 ) }<span class="mid"><b>${ esc( title ) }</b><small>${ esc( subtitle ) }</small></span>${ UI.icon( 'chevron-right', 18 ) }</button>`;
 		const al = F.alloc(), modeWord = t( { off: 'efModeOff', suggest: 'efModeSuggest', ask: 'efModeAsk', auto: 'efModeAuto' }[ al.mode || 'off' ] || 'efModeOff' ), pend = props().filter( ( p ) => p.status === 'pending' ).length;
@@ -2550,5 +2572,33 @@
 		efc_res_none_c_n: '{name}, έψαξα παντού! 🕵️ Καμία ασφαλής μέρα ακόμα, αλλά έχω ιδέες!',
 		efc_pc_joke: 'Γιατί το κινητό πήγε σχολείο; 📱 Για να γίνει πιο έξυπνο!|Πώς λέγεται ένα ρομπότ που αγαπά τον χορό; 🕺 Μπούγκι-μποτ… στάσου, αυτό είναι του Boogie!|Γιατί κρύωνε ο υπολογιστής; 🥶 Άφησε τα Windows ανοιχτά!|Τι είπε η μπαταρία στον φορτιστή; 🔋 Με συμπληρώνεις!|Γιατί διέσχισε το emoji τον δρόμο; 😂 Για να φτάσει στην άλλη διαφάνεια!|Γιατί το ρομπότ δεν φοβόταν ποτέ; 🤖 Έχει νεύρα από ατσάλι!',
 		efc_q_chip: 'Εδώ τις ερωτήσεις τις κάνω εγώ! 🔎 Είναι το αγαπημένο μου παιχνίδι.|Χε χε, όχι! 😎 Απαντώ μόνο σε μία ερώτηση: μπορείτε να το αντέξετε;|Ωχ, καλή! 🤔 Αλλά ξέρω μόνο για λεφτά.',
+	} );
+	Object.assign( window.EXPENITY_I18N.langs.en, {
+		efLightTitle: 'Boogie’s light',
+		efLightHint: 'Make his Nixie tube glow your way. The light falls on his body too.',
+		efLightBright: 'Brightness',
+		efLightColor: 'Bulb colour',
+		efLight_amber: 'Amber',
+		efLight_red: 'Red',
+		efLight_pink: 'Pink',
+		efLight_green: 'Green',
+		efLight_blue: 'Blue',
+		efLight_white: 'Warm white',
+		efLight_custom: 'Your own colour',
+		efLightShort: 'Light',
+	} );
+	Object.assign( window.EXPENITY_I18N.langs.el, {
+		efLightTitle: 'Το φως του Boogie',
+		efLightHint: 'Κάντε τη λυχνία Nixie να λάμπει όπως θέλετε. Το φως πέφτει και στο σώμα του.',
+		efLightBright: 'Φωτεινότητα',
+		efLightColor: 'Χρώμα λάμπας',
+		efLight_amber: 'Κεχριμπάρι',
+		efLight_red: 'Κόκκινο',
+		efLight_pink: 'Ροζ',
+		efLight_green: 'Πράσινο',
+		efLight_blue: 'Μπλε',
+		efLight_white: 'Ζεστό λευκό',
+		efLight_custom: 'Δικό σας χρώμα',
+		efLightShort: 'Φως',
 	} );
 }() );
