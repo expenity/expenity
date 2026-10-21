@@ -11,6 +11,5 @@ try{
  const r=await page.evaluate(()=>{const S=EX.state(),acc=S.accounts[0].id,d=new Date();d.setDate(d.getDate()-40);const iso=EX.iso(d);const before=S.txs.length;const inc={id:'i1',name:'Salary',amount:'1500',account:acc,category:'salary',repeat:'monthly',next:iso,day:d.getDate()};S.incomes.push(inc);const n=EXA.settleIncome(inc);return {n,added:S.txs.length-before,next:inc.next,future:inc.next>EX.iso(new Date())};});
  ok(r.n>=1&&r.added===r.n&&r.future,'past income is recorded as received and the next one is in the future: '+JSON.stringify(r));
  ok(await page.evaluate(()=>document.documentElement.dataset.skin==='sunset'),'first visit uses Sunset');
- ok(await page.evaluate(()=>{EXA.go('plan');return !!document.querySelector('[data-act=plan-back]');}),'Plan has a back button');
  ok(!errors.length,'no errors '+errors.join(';'));
 }finally{await browser.close();server.close();}

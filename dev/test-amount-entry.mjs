@@ -4,11 +4,11 @@ import {createServer} from 'node:http';
 import {readFileSync,existsSync} from 'node:fs';
 import {join,extname} from 'node:path';
 const server=createServer((req,res)=>{const f=join(process.cwd(),req.url.split('?')[0]==='/'?'index.html':req.url.split('?')[0]);if(!existsSync(f)){res.writeHead(404).end();return;}res.setHeader('Content-Type',({'.html':'text/html','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml'})[extname(f)]||'application/octet-stream');res.end(readFileSync(f));}).listen(0);
-const browser=await chromium.launch({channel:'chrome'}),page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+const browser=await chromium.launch({channel:'chrome'}),page=await browser.newPage({locale:'en-US',viewport:{width:390,height:844},isMobile:true,hasTouch:true});
 const assert=(c,msg)=>{if(!c)throw Error(msg);console.log('ok',msg);};
 try{
- await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.openTx);
- await page.evaluate(()=>{(EXA.skipFlow(),EX.state().device.entryMode='casual');EXA.openTx();});
+ await page.goto(`http://localhost:${server.address().port}/?lang=en`);await page.waitForFunction(()=>!!window.EXA?.openTx);
+ await page.evaluate(()=>{(EX.state().device.langHinted=true,EXA.skipFlow(),EX.state().device.entryMode='casual');});await page.waitForTimeout(1300);await page.evaluate(()=>{EX.setLang('en');EXA.openTx();});
  assert(await page.locator('#txKeypad').isHidden(),'amount keypad starts closed');
  await page.screenshot({path:'/tmp/expenity-expense-pad-closed.png'});
  await page.click('[data-tx=target-amount]');assert(await page.locator('#txKeypad').isVisible(),'tapping amount opens keypad');
@@ -18,11 +18,11 @@ try{
  assert(await page.evaluate(()=>EX.state().txs.length===0&&UI.sheetOpen()),'amount confirmation does not save or close the form');
  await page.fill('#txDesc','Lunch');assert(await page.locator('[data-tx=field-done]').isVisible(),'text editing offers a Done checkmark');
  await page.click('[data-tx=field-done]');assert(await page.evaluate(()=>!['INPUT','TEXTAREA'].includes(document.activeElement.tagName)),'text Done removes input focus');
- await page.locator('[data-tx-cat=food]').click();await page.click('[data-tx=save]');assert(await page.evaluate(()=>EX.state().txs.some(x=>x.name==='Lunch'&&x.amount==='123')),'Save records the confirmed amount and description');
+ await page.click('[data-tx=save]');assert(await page.evaluate(()=>EX.state().txs.some(x=>x.name==='Lunch'&&x.amount==='123')),'Save records the confirmed amount and description');
  await page.evaluate(()=>EXA.go('home'));
  assert(await page.locator('#view .goals-discovery').count()>0,'Home highlights Budgets & goals until discovered');
  await page.evaluate(()=>EXA.go('plan'));
- assert(await page.locator('#appbar').innerText().then(x=>x.includes('Budgets & goals')),'section has its descriptive name');
+assert(await page.locator('#appbar').innerText().then(x=>x.includes('Budgets & goals')),'section has its descriptive name');
  assert(await page.locator('[data-plan=tab]').count()===2,'section contains only budgets and goals');
  await page.evaluate(()=>EXA.go('home'));
  assert(await page.locator('.goals-discovery').count()===0,'discovery dot stops after visiting');
