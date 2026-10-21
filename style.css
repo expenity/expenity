@@ -2085,3 +2085,12 @@ fieldset > legend { font-weight: 800; padding: 0 8px; color: var(--ink, #2a1a14)
 .ef-lightfull.efpg-chip .chip-panel { gap: 8px; padding: 12px; }
 .ef-lightfull.efpg-chip .ef-lightart svg { height: clamp(96px, calc(100dvh - 535px), 250px); }
 .ob-light[data-m=chip] .ob-ctl { background: rgba(7, 52, 70, .72); color: #effffd; border-color: #5ff3e6; font-family: 'Comfortaa', 'Noto Sans', sans-serif; box-shadow: 0 0 16px #5ff3e655; }
+.efb-card-ico { display: grid; place-items: center; width: 48px; height: 48px; flex: none; border-radius: 14px; color: var(--ef-tm, #0f766e); background: rgba(127,127,127,.12); }
+.efb-card-ico svg { width: 34px; height: auto; }
+
+/* the story's conversations: one row per line, a dash and the speaker's icon */
+.efb-say { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 8px; }
+.efb-av { flex: none; width: 30px; height: 30px; display: grid; place-items: center; border-radius: 50%; margin-top: 1px; }
+.efb-av svg { width: 22px; height: auto; }
+.efb-say-b .efb-av { background: #e4cf9d; color: #6b4a22; } .efb-say-c .efb-av { background: #d6e6fb; color: #1d4ed8; }
+.efb-quote { flex: 1; min-width: 0; }
