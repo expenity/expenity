@@ -1,0 +1,22 @@
+import { chromium } from 'playwright-core';
+import http from 'http'; import fs from 'fs'; import path from 'path';
+const root = process.cwd(), types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.svg': 'image/svg+xml' };
+const server = http.createServer( ( q, r ) => { let f = path.join( root, decodeURIComponent( q.url.split( '?' )[ 0 ] ) ); if ( f.endsWith( '/' ) ) f += 'index.html'; fs.readFile( f, ( e, d ) => { if ( e ) { r.writeHead( 404 ); r.end(); } else { r.writeHead( 200, { 'content-type': types[ path.extname( f ) ] || 'application/octet-stream' } ); r.end( d ); } } ); } ).listen( 0 );
+const port = server.address().port; let ok = 0, fail = 0; const chk = ( n, c ) => { if ( c ) { ok++; console.log( 'ok', n ); } else { fail++; console.log( 'FAIL', n ); } };
+const b = await chromium.launch( { channel: 'chrome' } ), pg = await b.newPage( { viewport: { width: 390, height: 800 } } ); const errs = []; pg.on( 'pageerror', ( e ) => errs.push( e.message ) );
+await pg.addInitScript( () => { localStorage.setItem( 'expenity.lang', 'en' ); } );
+await pg.goto( `http://localhost:${ port }/index.html` ); await pg.waitForFunction( () => window.EX && EX.efriend );
+await pg.evaluate( () => { const S = EX.state(); S.device.langHinted = true; S.settings.onboarded = true; S.device.efOnboard = 1; S.settings.efInstant = true; EXA.skipFlow(); } ); await pg.waitForTimeout( 1400 ); await pg.evaluate( () => EX.setLang( 'en' ) );
+const T = ( ch ) => pg.evaluate( async ( c ) => {
+	EX.state().settings.efChar = c; EX.state().settings.efInstant = true; EXA.efriendAskOpen( { text: 'laptop 900 in 3 weeks' } );
+	await new Promise( ( r ) => { const t0 = Date.now(); const i = setInterval( () => { if ( document.querySelector( '.ef-chipq.go' ) || Date.now() - t0 > 15000 ) { clearInterval( i ); r(); } }, 200 ); } );
+	const msgs = [ ...document.querySelectorAll( '.ef-msg.ef' ) ].map( ( e ) => e.textContent ), l = EX.I18N.langs.en;
+	const first = msgs[ 0 ], pickA = ( k ) => l[ k ].split( '|' ).some( ( x ) => first.includes( x.slice( 0, 25 ) ) );
+	const out = { first, fromChip: pickA( 'efc_hi_c' ), fromBoogie: pickA( 'efc_hi' ), n: msgs.length, price: msgs.some( ( m ) => /900/.test( m ) ), when: msgs.some( ( m ) => /3 weeks/.test( m ) ) };
+	document.querySelector( '[data-ef-cpx]' )?.click(); await new Promise( ( r ) => setTimeout( r, 300 ) ); return out;
+}, ch );
+const c = await T( 'chip' ); chk( 'Chip opens with his own greeting (' + c.first.slice( 0, 40 ) + ')', c.fromChip && ! c.fromBoogie );
+const bo = await T( 'boogie' ); chk( 'Boogie opens with his greeting', bo.fromBoogie && ! bo.fromChip );
+chk( 'both recap the same facts (900, 3 weeks)', c.price && c.when && bo.price && bo.when );
+chk( 'no page errors ' + errs.join( ';' ), ! errs.length );
+console.log( ok + ' ok, ' + fail + ' failed' ); await b.close(); server.close(); process.exit( fail ? 1 : 0 );
