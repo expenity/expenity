@@ -26,10 +26,19 @@ chk( 'back returns to the hub', await pg.evaluate( () => document.querySelectorA
 for ( const lang of [ 'el' ] ) { await pg.evaluate( ( l ) => { EX.setLang( l ); EXA.st.efSub = 'look'; EXA.render(); }, lang ); await pg.waitForTimeout( 300 );
 	chk( 'Greek look page has no raw keys', await pg.evaluate( () => ! /\bef[A-Z][A-Za-z]+\b/.test( document.querySelector( '#view' ).textContent ) && /Chip/.test( document.querySelector( '#view' ).textContent ) ) ); }
 await pg.evaluate( () => { EX.state().settings.efChar = 'boogie'; EXA.st.efSub = 'look'; EXA.render(); } ); await pg.waitForTimeout( 300 );
-chk( 'Boogie has light controls in the eFriend menu', await pg.evaluate( () => document.querySelectorAll( '[data-ef-lightlvl]' ).length === 3 && document.querySelectorAll( '[data-ef-lightc]' ).length === 3 && !! document.querySelector( '.ef-toggle[data-pos="1"]' ) ) );
-await pg.evaluate( () => { document.querySelector( '[data-ef-lightlvl="40"]' ).click(); document.querySelector( '[data-ef-lightc="#39ff14"]' ).click(); } ); await pg.waitForTimeout( 700 );
-chk( 'changing the light changes the glow and the bulb colour everywhere', await pg.evaluate( () => getComputedStyle( document.documentElement ).getPropertyValue( '--ef-glow' ).trim() === '0.40' && getComputedStyle( document.documentElement ).getPropertyValue( '--ef-tm' ).trim() === '#39ff14' && EX.state().settings.efLight.c === '#39ff14' && document.querySelector( '.ef-toggle' ).dataset.pos === '0' && EX.state().settings.efLight.i === 40 ) );
-await pg.evaluate( () => { EX.state().settings.efChar = 'chip'; EXA.st.efSub = 'look'; EXA.render(); } ); await pg.waitForTimeout( 300 );
-chk( 'Chip has no light controls', await pg.evaluate( () => ! document.querySelector( '[data-ef-lightlvl]' ) ) );
+chk( 'Boogie has a gear on the picker, and the plate is not on the page', await pg.evaluate( () => !! document.querySelector( '[data-ef-gear]' ) && ! document.querySelector( '#view [data-ef-lightlvl]' ) ) );
+await pg.evaluate( () => { window.stored = () => { for ( const k of Object.keys( localStorage ) ) { try { const j = JSON.parse( localStorage[ k ] ); if ( j && j.settings ) return ( j.settings.efLight || {} ).c || null; } catch ( e ) { /* not ours */ } } return 'none'; }; } );
+await pg.evaluate( () => document.querySelector( '[data-ef-gear]' ).click() ); await pg.waitForTimeout( 300 );
+chk( 'the gear opens a sheet with Boogie and the controls', await pg.evaluate( () => document.querySelectorAll( '#sheet [data-ef-lightlvl]' ).length === 3 && document.querySelectorAll( '#sheet [data-ef-lightc]' ).length === 3 && !! document.querySelector( '#sheet .ef-cassette' ) && !! document.querySelector( '#sheet [data-ef-lightsave]' ) ) );
+await pg.evaluate( () => { document.querySelector( '#sheet [data-ef-lightlvl="40"]' ).click(); document.querySelector( '#sheet [data-ef-lightc="#39ff14"]' ).click(); } ); await pg.waitForTimeout( 700 );
+chk( 'changes show live but are not stored until Save', await pg.evaluate( () => getComputedStyle( document.documentElement ).getPropertyValue( '--ef-glow' ).trim() === '0.40' && getComputedStyle( document.documentElement ).getPropertyValue( '--ef-tm' ).trim() === '#39ff14' && window.stored() !== '#39ff14' ) );
+await pg.evaluate( () => document.querySelector( '#sheet [data-close]' ).click() ); await pg.waitForTimeout( 400 );
+chk( 'the X puts the light back', await pg.evaluate( () => getComputedStyle( document.documentElement ).getPropertyValue( '--ef-tm' ).trim() !== '#39ff14' && ! document.querySelector( '#sheet' ).open ) );
+await pg.evaluate( () => document.querySelector( '[data-ef-gear]' ).click() ); await pg.waitForTimeout( 300 );
+await pg.evaluate( () => { document.querySelector( '#sheet [data-ef-lightlvl="40"]' ).click(); document.querySelector( '#sheet [data-ef-lightc="#39ff14"]' ).click(); } ); await pg.waitForTimeout( 300 );
+await pg.evaluate( () => document.querySelector( '#sheet [data-ef-lightsave]' ).click() ); await pg.waitForTimeout( 500 );
+chk( 'Save keeps the glow and the colour everywhere', await pg.evaluate( () => getComputedStyle( document.documentElement ).getPropertyValue( '--ef-glow' ).trim() === '0.40' && getComputedStyle( document.documentElement ).getPropertyValue( '--ef-tm' ).trim() === '#39ff14' && EX.state().settings.efLight.c === '#39ff14' && EX.state().settings.efLight.i === 40 && ! document.querySelector( '#sheet' ).open ) );
+await pg.evaluate( () => { EX.state().settings.efChar = 'boogie'; EXA.st.efSub = 'look'; EXA.render(); } ); await pg.waitForTimeout( 300 );
+chk( 'the plate is not on the page for Chip either', await pg.evaluate( () => ! document.querySelector( '#view [data-ef-lightlvl]' ) ) );
 chk( 'no page errors ' + errs.join( ';' ), ! errs.length );
 console.log( ok + ' ok, ' + fail + ' failed' ); await b.close(); server.close(); process.exit( fail ? 1 : 0 );
