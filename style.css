@@ -1962,3 +1962,32 @@ fieldset > legend { font-weight: 800; padding: 0 8px; color: var(--ink, #2a1a14)
 @keyframes efc-shade { 0%, 100% { opacity: min(1, calc((1 - var(--ef-glow)) * 3)); } 50% { opacity: min(1, calc((1 - var(--ef-glow)) * 2)); } }
 :root[data-motion=off] .ef-cassette .tube-shade, :root[data-motion=reduced] .ef-cassette .tube-shade { animation: none; }
 @media (prefers-reduced-motion: reduce) { :root:not([data-motion=full]) .ef-cassette .tube-shade { animation: none; } }
+
+/* Chip's glow: eyes, mouth and ears take their colour and strength from --chip-eye / --chip-mouth / --chip-ear / --chip-glow */
+:root { --chip-eye: #9ff3e6; --chip-mouth: #9ff3e6; --chip-ear: #0f766e; --chip-glow: .6; }
+.ef-ce.ef-stk { stroke: var(--chip-eye); } .ef-ce:not(.ef-stk) { fill: var(--chip-eye); }
+.ef-cm.ef-stk { stroke: var(--chip-mouth); } .ef-cm:not(.ef-stk) { fill: var(--chip-mouth); }
+.ef-ce.ef-glow { filter: drop-shadow(0 0 calc(var(--chip-glow) * 5px) var(--chip-eye)); opacity: min(1, calc(var(--chip-glow) * 1.7)); }
+.ef-cm.ef-glow { filter: drop-shadow(0 0 calc(var(--chip-glow) * 5px) var(--chip-mouth)); opacity: min(1, calc(var(--chip-glow) * 1.7)); }
+.ef-ear { stroke: var(--chip-ear); filter: drop-shadow(0 0 max(0px, calc((var(--chip-glow) - .6) * 10px)) var(--chip-ear)); }
+.ef-earf { fill: var(--chip-ear); }
+.ef-spill { pointer-events: none; opacity: max(0, calc((var(--chip-glow) - .6) * 1.8)); }
+.ef-gear.chip { right: auto; left: calc(50% - 39px); }
+.chip-panel { width: 100%; max-width: 420px; display: grid; gap: 12px; padding: 16px; border-radius: 24px; background: rgba(255,255,255,.62); border: 1px solid rgba(255,255,255,.9); box-shadow: 0 10px 30px rgba(31,41,55,.12), inset 0 1px 0 #fff; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+.chip-row { display: grid; gap: 8px; } .chip-lab { font-weight: 800; }
+.chip-sws { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip-sw { width: 38px; height: 38px; border-radius: 50%; border: 3px solid #fff; background: var(--c); box-shadow: 0 0 0 1px rgba(0,0,0,.12), 0 3px 8px rgba(0,0,0,.14); cursor: pointer; padding: 0; position: relative; transition: transform .15s, box-shadow .15s; }
+.chip-sw.on { transform: scale(1.12); box-shadow: 0 0 0 3px var(--c), 0 0 16px var(--c); }
+.chip-own { background: conic-gradient(#ff6b6b, #ffc94d, #b8f23a, #4dd6c1, #6cb4ff, #b79cff, #ff8fc8, #ff6b6b); display: grid; place-items: center; overflow: hidden; }
+.chip-own input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.chip-match { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+.chip-match input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.chip-pill { width: 52px; height: 30px; border-radius: 15px; background: #cfd6e2; position: relative; flex: none; transition: background .2s; }
+.chip-pill::after { content: ""; position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,.25); transition: transform .2s; }
+.chip-match input:checked + .chip-pill { background: var(--chip-eye, #9ff3e6); box-shadow: 0 0 12px var(--chip-eye, #9ff3e6); } .chip-match input:checked + .chip-pill::after { transform: translateX(22px); }
+.chip-match input:focus-visible + .chip-pill, .chip-sw:focus-visible { outline: 3px solid #0f766e; outline-offset: 2px; }
+.chip-range { -webkit-appearance: none; appearance: none; width: 100%; height: 10px; border-radius: 5px; background: linear-gradient(90deg, rgba(127,127,127,.25), var(--chip-eye, #9ff3e6)); outline-offset: 6px; }
+.chip-range::-webkit-slider-thumb { -webkit-appearance: none; width: 30px; height: 30px; border-radius: 50%; background: #fff; border: 3px solid var(--chip-eye, #9ff3e6); box-shadow: 0 0 calc(var(--chip-glow) * 18px) var(--chip-eye, #9ff3e6); cursor: pointer; }
+.chip-range::-moz-range-thumb { width: 24px; height: 24px; border-radius: 50%; background: #fff; border: 3px solid var(--chip-eye, #9ff3e6); box-shadow: 0 0 calc(var(--chip-glow) * 18px) var(--chip-eye, #9ff3e6); cursor: pointer; }
+.ef-chipsheet .ef-lightart svg { max-width: 100%; height: auto; }
+@media (prefers-reduced-motion: reduce) { .chip-sw, .chip-pill, .chip-pill::after { transition: none; } }
