@@ -1719,3 +1719,10 @@ fieldset > legend { font-weight: 800; padding: 0 8px; color: var(--ink, #2a1a14)
 
 .ob-half-in { width: min(88vw, 360px); } .ob-txt { will-change: opacity, transform; } .ob-half { padding: 60px 0 110px; }
 .ob-art { display: grid; place-items: center; } .ob-art svg { width: min(82vw, 330px); height: auto; }
+
+/* the title and the hint exist in both halves, so each is cut by the slider and takes that side's colour */
+.ob-pick-title { position: absolute; z-index: 6; top: calc(18px + env(safe-area-inset-top)); left: 0; right: 0; margin: 0; text-align: center; font-size: clamp(1.9rem, 8vw, 2.5rem); line-height: 1.1; letter-spacing: .01em; font-weight: 800; pointer-events: none; text-shadow: none; padding: 0 12px; }
+.ob-boogie .ob-pick-title { color: #3a2412; font-family: var(--mono, monospace); text-shadow: 0 0 14px #ff9d2e99; } .ob-chip .ob-pick-title { color: #effffd; text-shadow: 0 0 16px #5ff3e6aa; }
+.ob-hint { position: absolute; z-index: 6; left: 0; right: 0; bottom: calc(58px + env(safe-area-inset-bottom)); margin: 0; text-align: center; font-weight: 700; transition: opacity .25s; pointer-events: none; text-shadow: none; }
+.ob-boogie .ob-hint { color: #5a3a1e; } .ob-chip .ob-hint { color: #d9fffb; }
+.ob-half { padding-top: 90px; }
