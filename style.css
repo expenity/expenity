@@ -1798,3 +1798,9 @@ fieldset > legend { font-weight: 800; padding: 0 8px; color: var(--ink, #2a1a14)
 @media (prefers-reduced-motion: reduce) { .ob-choose { transition: opacity .2s; } }
 
 .ob-choose { transition: opacity .18s linear, transform .18s linear; }
+
+/* Boogie's Nixie tube: a really bright orange-red glow */
+.ef-cassette .tube-light { animation: efc-blaze 2.2s ease-in-out infinite; }
+.ef-cassette .tube-blaze { transform-box: fill-box; transform-origin: center; animation: efc-blazebig 2.2s ease-in-out infinite; }
+@keyframes efc-blazebig { 0%, 100% { opacity: .65; transform: scale(.85); } 50% { opacity: 1; transform: scale(1.35); } }
+@keyframes efc-blaze { 0%, 100% { opacity: .75; transform: scale(1); filter: drop-shadow(0 0 5px #ff7a00) drop-shadow(0 0 14px #ff3b00); } 50% { opacity: 1; transform: scale(1.7); filter: drop-shadow(0 0 10px #ffb400) drop-shadow(0 0 30px #ff2a00) drop-shadow(0 0 54px #ff4d00); } }

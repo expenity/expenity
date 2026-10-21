@@ -213,6 +213,9 @@
 		const mood = BMOOD[ verdict ] || 'happy', thinking = verdict === 'thinking' ? ' ef-thinking' : '', h = Number.isFinite( Number( size ) ) ? Math.min( 1024, Math.max( 16, Number( size ) ) ) : 72, prefix = 'efcassette-' + ( ++bserial ) + '-';
 		let svg = B.svg.replace( /<style>[\s\S]*?<\/style>/, '' ).replace( 'ef-cassette ef-happy"', 'ef-cassette ef-' + mood + thinking + '"' ).replace( /width="288" height="260"/, 'width="' + ( h * 154 / 140 ) + '" height="' + h + '"' );
 		for ( const m of [ ...svg.matchAll( /\bid="([^"]+)"/g ) ] ) { const id = m[ 1 ]; svg = svg.replaceAll( 'id="' + id + '"', 'id="' + prefix + id + '"' ).replaceAll( 'url(#' + id + ')', 'url(#' + prefix + id + ')' ); }
+		// a bright orange-red blaze behind the glass of the Nixie tube (it pulses in style.css)
+		const bid = prefix + 'blaze';
+		svg = svg.replace( '<g class="tube-light">', `<defs><radialGradient id="${ bid }"><stop offset="0" stop-color="#fff2a8" stop-opacity=".95"/><stop offset=".25" stop-color="#ffa51f" stop-opacity=".9"/><stop offset=".6" stop-color="#ff3d00" stop-opacity=".55"/><stop offset="1" stop-color="#ff2a00" stop-opacity="0"/></radialGradient></defs><ellipse class="tube-blaze" cx="45" cy="3" rx="34" ry="38" fill="url(#${ bid })"/><g class="tube-light">` );
 		return svg;
 	};
 	F.boogieIcon = ( size = 28 ) => ( window.EXBOOGIE ? window.EXBOOGIE.icon.replace( 'width="40" height="36"', 'class="ef-ico" width="' + size + '" height="' + ( size * 0.9 ) + '"' ) : F.chipIcon( size ) );
