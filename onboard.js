@@ -72,21 +72,21 @@
 	/* ------------------------------------------------------------------ 1. The split-screen picker */
 	function picker() {
 		summaryOn = false;
-		const B = F().mascotOf( 'boogie', 'happy', 150 ), C = F().mascotOf( 'chip', 'happy', 150 );
+		const B = F().mascotOf( 'boogie', 'happy', 250 ), C = F().mascotOf( 'chip', 'happy', 250 );
 		host.innerHTML = `<div class="ob-pick" id="obPick"><h1 class="ob-pick-title">${ esc( L( 'pickTitle' ) ) }</h1>
-			<section class="ob-half ob-boogie" id="obB" aria-label="Boogie"><div class="ob-half-in" id="obBin"><div class="ob-art">${ B }</div><h2>Boogie</h2><p>${ esc( L( 'pickBoogie' ) ) }</p></div></section>
-			<section class="ob-half ob-chip" id="obC" aria-label="Chip"><div class="ob-half-in" id="obCin"><div class="ob-art">${ C }</div><h2>Chip</h2><p>${ esc( L( 'pickChip' ) ) }</p></div></section>
+			<section class="ob-half ob-boogie" id="obB" aria-label="Boogie"><div class="ob-half-in" id="obBin"><div class="ob-art">${ B }</div><div class="ob-txt"><h2>Boogie</h2><p>${ esc( L( 'pickBoogie' ) ) }</p></div></div></section>
+			<section class="ob-half ob-chip" id="obC" aria-label="Chip"><div class="ob-half-in" id="obCin"><div class="ob-art">${ C }</div><div class="ob-txt"><h2>Chip</h2><p>${ esc( L( 'pickChip' ) ) }</p></div></div></section>
 			<div class="ob-handle" id="obH" role="slider" tabindex="0" aria-label="${ esc( L( 'pickTitle' ) ) }" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"><span class="ob-grip"><i>◀</i><i>▶</i></span></div>
 			<p class="ob-hint" id="obHint">${ esc( L( 'pickHint' ) ) }</p>
 			<button type="button" class="btn btn-primary big ob-choose" id="obChoose" hidden>${ esc( L( 'pickChoose' ) ) }</button></div>`;
-		const root = host.querySelector( '#obPick' ), bP = root.querySelector( '#obB' ), cP = root.querySelector( '#obC' ), bI = root.querySelector( '#obBin' ), cI = root.querySelector( '#obCin' ), h = root.querySelector( '#obH' ), btn = root.querySelector( '#obChoose' ), hint = root.querySelector( '#obHint' );
+		const root = host.querySelector( '#obPick' ), bP = root.querySelector( '#obB' ), cP = root.querySelector( '#obC' ), bTx = root.querySelector( '#obB .ob-txt' ), cTx = root.querySelector( '#obC .ob-txt' ), h = root.querySelector( '#obH' ), btn = root.querySelector( '#obChoose' ), hint = root.querySelector( '#obHint' );
 		let X = 50, raf = 0;
 		const apply = () => {
-			const W = root.clientWidth || 360, vb = W * X / 100, vc = W - vb, cl = ( v ) => Math.max( 96, Math.min( 330, v - 28 ) );
+			// both friends are drawn centred on the whole screen and the slider cuts them in half; the words fade in as their side is uncovered
 			root.style.setProperty( '--x', X + '%' );
 			bP.style.clipPath = `inset(0 ${ 100 - X }% 0 0)`; cP.style.clipPath = `inset(0 0 0 ${ X }%)`;
-			bI.style.width = cl( vb ) + 'px'; bI.style.transform = `translateX(${ ( vb - W ) / 2 }px)`; bI.style.opacity = vb < 70 ? 0 : 1;
-			cI.style.width = cl( vc ) + 'px'; cI.style.transform = `translateX(${ vb / 2 }px)`; cI.style.opacity = vc < 70 ? 0 : 1;
+			const pb = Math.max( 0, Math.min( 1, ( X - 52 ) / 40 ) ), pc = Math.max( 0, Math.min( 1, ( 48 - X ) / 40 ) );
+			bTx.style.opacity = pb; bTx.style.transform = `translateY(${ ( 1 - pb ) * 14 }px)`; cTx.style.opacity = pc; cTx.style.transform = `translateY(${ ( 1 - pc ) * 14 }px)`;
 			h.setAttribute( 'aria-valuenow', Math.round( X ) );
 			const edge = X >= 97 ? 'boogie' : X <= 3 ? 'chip' : ''; btn.hidden = ! edge; btn.dataset.pick = edge; btn.setAttribute( 'aria-hidden', edge ? 'false' : 'true' );
 			if ( edge ) { btn.textContent = L( 'pickChoose' ); bP.classList.toggle( 'on', edge === 'boogie' ); cP.classList.toggle( 'on', edge === 'chip' ); } else { bP.classList.remove( 'on' ); cP.classList.remove( 'on' ); }

@@ -1716,3 +1716,6 @@ fieldset > legend { font-weight: 800; padding: 0 8px; color: var(--ink, #2a1a14)
 .ef-chipq.on { background: #0f766e; color: #fff; }
 @media (prefers-reduced-motion: reduce) { .ob-half.on .ob-art svg { animation: none; } }
 :root[data-motion=off] .ob-half.on .ob-art svg, :root[data-motion=reduced] .ob-half.on .ob-art svg { animation: none; }
+
+.ob-half-in { width: min(88vw, 360px); } .ob-txt { will-change: opacity, transform; } .ob-half { padding: 60px 0 110px; }
+.ob-art { display: grid; place-items: center; } .ob-art svg { width: min(82vw, 330px); height: auto; }
