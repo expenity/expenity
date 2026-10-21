@@ -732,7 +732,7 @@
 	/** The eFriend panel on the More page: the robot, what it is doing, and a way in. */
 	EXA.efriendPanel = () => {
 		const c = F.char();
-		return `<button type="button" class="profile ef-more" data-more="efriend" aria-label="eFriend"><span class="ci ${ c === 'boogie' ? 'tint-amber' : 'tint-teal' }" style="--s:44px">${ F.icon( 26 ) }</span><span class="mid"><b>eFriend</b><small>${ esc( t( 'efMoreSub' ) ) }</small></span>${ UI.icon( 'chevron-right', 20 ) }</button>`;
+		return `<button type="button" class="profile ef-more" data-more="efriend" aria-label="eFriend"><span class="ci ${ c === 'boogie' ? 'tint-amber' : 'tint-teal' }" style="--s:44px">${ F.icon( 26 ) }</span><span class="mid"><b>eFriend</b><small>${ esc( t( 'efMoreSub' ) ) }</small></span>${ EXA.efBlogDot ? EXA.efBlogDot() : '' }${ UI.icon( 'chevron-right', 20 ) }</button>`;
 	};
 	document.addEventListener( 'click', ( e ) => {
 		if ( e.target.closest( '[data-ef-new]' ) ) { EXA.openEfPlan(); return; }

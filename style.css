@@ -1944,3 +1944,4 @@ fieldset > legend { font-weight: 800; padding: 0 8px; color: var(--ink, #2a1a14)
 :root[data-motion=off] .tt-blog *,:root[data-motion=reduced] .tt-blog *{animation:none!important;width:85%}
 
 .ef-more{cursor:pointer}.ef-more .ci svg{width:26px;height:auto}.ef-more .mid{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}.ef-more small{color:var(--muted)}
+.efb-dot{flex:none;width:10px;height:10px;border-radius:50%;background:var(--late,#d33);margin-right:2px}
