@@ -2041,3 +2041,23 @@ fieldset > legend { font-weight: 800; padding: 0 8px; color: var(--ink, #2a1a14)
 	clip-path: polygon(2% 0, 100% 0, 97.4% 14%, 99.4% 28%, 96.8% 42%, 99% 56%, 96.6% 70%, 99.2% 84%, 97.4% 100%, 2.4% 100%, 0.7% 88%, 3.3% 73%, 1% 60%, 3.2% 47%, .5% 34%, 2.6% 22%, 0% 10%); }
 .ef-hand { display: block; font: italic 700 1.1rem/1.15 'Bradley Hand', 'Segoe Print', 'Chalkboard SE', 'Marker Felt', 'Comic Sans MS', cursive; letter-spacing: .01em; transform: rotate(-.8deg); text-shadow: 0 0 .5px rgba(0,0,0,.6); }
 .ob-light .ef-rig { margin-bottom: 0; }
+
+/* The full pages behind the gears wear the same colours and type as the choose-your-eFriend screens */
+.sheet.efpg-boogie { background: repeating-linear-gradient(0deg, transparent 0 27px, #a35d0f22 27px 28px), radial-gradient(circle at 50% 22%, #ffe7b8 0, #ffcf8a 38%, #f0a85a 100%); color: #3a2412; }
+.sheet.efpg-chip { background: linear-gradient(#ffffff14 1px, transparent 1px) 0 0 / 28px 28px, linear-gradient(90deg, #ffffff14 1px, transparent 1px) 0 0 / 28px 28px, radial-gradient(circle at 50% 22%, #6be7d8 0, #1aa6a0 40%, #0b4f66 100%); color: #effffd; }
+.efpg-boogie .sheet-head, .efpg-chip .sheet-head { background: transparent; }
+.efpg-boogie .sheet-head h2, .efpg-chip .sheet-head h2 { flex: 1; text-align: center; font-size: clamp(1.5rem, 6.4vw, 2rem); line-height: 1.1; font-weight: 800; padding-left: 40px; white-space: nowrap; }
+.efpg-boogie .sheet-head h2 { color: #3a2412; font-family: var(--mono, 'JetBrains Mono', monospace); text-shadow: 0 0 14px #ff9d2e99; }
+.efpg-chip .sheet-head h2 { color: #effffd; font-family: 'Comfortaa', 'Noto Sans', sans-serif; text-shadow: 0 0 16px #5ff3e6aa; }
+.efpg-boogie .ab-btn, .efpg-chip .ab-btn { color: inherit; }
+.efpg-boogie .muted, .efpg-chip .muted { opacity: 1; font-weight: 700; text-align: center; max-width: 340px; line-height: 1.38; }
+.efpg-boogie .muted { color: #2e1a0a; font-family: 'JetBrains Mono', ui-monospace, Menlo, monospace; text-shadow: 0 1px 0 #fff9; letter-spacing: -.01em; }
+.efpg-chip .muted { color: #fff; font-family: 'Comfortaa', 'Noto Sans', system-ui, sans-serif; text-shadow: 0 2px 10px #00000066; }
+.efpg-boogie .ef-lightart svg, .efpg-chip .ef-lightart svg { filter: drop-shadow(0 10px 16px #0004); animation: obHop 1s ease-in-out infinite; }
+:root[data-motion=off] .efpg-boogie .ef-lightart svg, :root[data-motion=reduced] .efpg-boogie .ef-lightart svg, :root[data-motion=off] .efpg-chip .ef-lightart svg, :root[data-motion=reduced] .efpg-chip .ef-lightart svg { animation: none; }
+@media (prefers-reduced-motion: reduce) { .efpg-boogie .ef-lightart svg, .efpg-chip .ef-lightart svg { animation: none; } }
+.efpg-chip .chip-panel { background: rgba(7, 52, 70, .5); border-color: rgba(95, 243, 230, .45); box-shadow: 0 10px 30px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.2); color: #effffd; }
+.efpg-chip .chip-lab, .efpg-chip .chip-match b { color: #effffd; font-family: 'Comfortaa', 'Noto Sans', sans-serif; }
+.efpg-chip .chip-pill { background: rgba(255,255,255,.28); }
+.efpg-chip .btn-primary { background: linear-gradient(#7ff5ea, #1aa6a0); color: #05303a; box-shadow: 0 0 18px #5ff3e688; }
+.efpg-chip .chip-match input:focus-visible + .chip-pill, .efpg-chip .chip-sw:focus-visible { outline-color: #fff; }
