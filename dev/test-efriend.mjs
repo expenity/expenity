@@ -73,13 +73,13 @@ await page.evaluate(()=>{const T=EXA.tutorials||window.EXA.T;});
 await page.evaluate(()=>{EXA.st.view='more';EXA.st.more='root';EXA.render();});await page.waitForTimeout(300);
 ok(await page.evaluate(()=>!!document.querySelector('[data-more=efriend]')),'More has its own eFriend panel');
 await page.evaluate(()=>document.querySelector('[data-more=efriend]').click());await page.waitForTimeout(300);
-console.log(await page.evaluate(()=>document.querySelector('#view').textContent.slice(0,200)+'|'+!!document.querySelector('[data-ef-new]')+!!document.querySelector('[data-ef-sort]')));ok(await page.evaluate(()=>/Trip to Italy/.test(document.querySelector('.ef-page')?.parentElement?.textContent||document.body.textContent)&&!!document.querySelector('[data-ef-new]')&&!!document.querySelector('[data-ef-sort]')),'eFriend page lists goals with actions');
-await page.evaluate(()=>document.querySelector('[data-ef-intro]').click());await page.waitForSelector('.ef-ob');
+await page.evaluate(()=>document.querySelector('[data-ef-sub=plans]').click());await page.waitForTimeout(300);ok(await page.evaluate(()=>/Trip to Italy/.test(document.querySelector('.ef-page')?.parentElement?.textContent||document.body.textContent)&&!!document.querySelector('[data-ef-new]')),'eFriend page lists goals with actions');await page.evaluate(()=>{EXA.st.efSub='ideas';EXA.render();});ok(await page.evaluate(()=>!!document.querySelector('[data-ef-sort]')),'the ideas page has the sort rows');
+await page.evaluate(()=>{EXA.st.efSub='look';EXA.render();});await page.waitForTimeout(300);await page.evaluate(()=>document.querySelector('[data-ef-intro]').click());await page.waitForSelector('.ef-ob');
 ok(await page.evaluate(()=>document.querySelectorAll('.ef-dots i').length===10),'More > eFriend replays the whole onboarding (10 steps; the income step only appears when none is set)');
 await page.evaluate(()=>document.querySelector('[data-ef-ob=skip]').click());await page.waitForTimeout(300);
 await page.evaluate(()=>{const S=EX.state();S.goals[0].deadline='';EXA.go('home');});await page.waitForTimeout(300);
 ok(await page.evaluate(()=>!!document.querySelector('[data-ef-try]')&&/date/i.test(document.querySelector('[data-home=efriend]').textContent)),'coached goal without a date is not lost: Home asks for the date');
-await page.evaluate(()=>{document.querySelector('#view').innerHTML='<div>'+EX.efriend.mascot('ontrack',100)+'</div>';});
+await page.evaluate(()=>{EX.state().settings.efChar='chip';document.querySelector('#view').innerHTML='<div>'+EX.efriend.mascot('ontrack',100)+'</div>';});
 const state=()=>page.evaluate(()=>[...document.querySelector('.ef-mascot').classList].filter(c=>c.startsWith('ef-poke')).join());
 await page.evaluate(()=>document.querySelector('.ef-mascot').dispatchEvent(new MouseEvent('click',{bubbles:true})));ok((await state())==='ef-poke-smile','one click: smiles');
 ok(await page.evaluate(()=>getComputedStyle(document.querySelector('.ef-armR')).animationName==='ef-pokeR'&&getComputedStyle(document.querySelector('.ef-face-smile')).display!=='none'),'hands move and the face smiles');
@@ -129,7 +129,7 @@ await page.evaluate(()=>EXA.openEfriendAll());await page.waitForSelector('.ef-pl
 ok(await page.evaluate(()=>document.querySelectorAll('.ef-plan-rows li').length===3&&/by date/i.test(document.querySelector('.ef-sheet').textContent)),'the combined analysis lists every plan by date');
 await page.evaluate(()=>{UI.closeSheet();EXA.openEfriendAll('Summer');});await page.waitForSelector('.ef-plan-rows');
 ok(await page.evaluate(()=>document.querySelectorAll('.ef-plan-rows li').length===2),'a group is analysed on its own');
-await page.evaluate(()=>{UI.closeSheet();EXA.st.view='more';EXA.st.more='efriend';EXA.render();});await page.waitForTimeout(300);
+await page.evaluate(()=>{UI.closeSheet();EXA.st.view='more';EXA.st.more='efriend';EXA.st.efSub='plans';EXA.render();});await page.waitForTimeout(300);
 ok(await page.evaluate(()=>!!document.querySelector('.ef-overview')&&[...document.querySelectorAll('.ef-ghead h2')].some(h=>h.textContent==='Summer')),'the eFriend page groups plans and shows the overview');
 await page.evaluate(()=>{EXA.st.view='reports';EXA.st.more='root';});
 await page.evaluate(()=>{const S=EX.state();S.settings.efHistory={m1:[{d:'2026-10-01',v:'atrisk',p:50},{d:'2026-10-10',v:'tight',p:90},{d:EX.today(),v:'ontrack',p:105}]};S.goals.find(g=>g.id==='m1').created=new Date(Date.now()-30*864e5).toISOString().slice(0,10);EX.state().settings.efHistory.m1[0].d=new Date(Date.now()-30*864e5).toISOString().slice(0,10);EX.save();});
@@ -194,7 +194,7 @@ ok(/top priority/i.test(grp)&&/Paris/.test(grp),'the combined analysis names the
 ok(await page.evaluate(()=>{const w=EX.efriend.whatIf(EX.efriend.all());return w===null||!!w.plan;}),'what-if finds a plan that would fit if a lower one were dropped (or none is needed)');
 const vm=await page.evaluate(()=>{const S=EX.state();S.settings.efCushion=6;const a=EX.efriend.all().map(f=>f.verdict);S.settings.efCushion=0;const b=EX.efriend.all().map(f=>f.verdict);delete S.settings.efCushion;return [a.filter(x=>x==='comfortable').length,b.filter(x=>x==='comfortable').length];});
 ok(vm[0]<=vm[1],'the cushion changes what counts as safe (very safe '+vm[0]+' safe, risky '+vm[1]+' safe)');
-await page.evaluate(()=>{UI.closeSheet();EXA.st.view='more';EXA.st.more='efriend';EXA.render();});await page.waitForTimeout(300);
+await page.evaluate(()=>{UI.closeSheet();EXA.st.view='more';EXA.st.more='efriend';EXA.st.efSub='rules';EXA.render();});await page.waitForTimeout(300);
 ok(await page.evaluate(()=>!!document.querySelector('.ef-prio')&&!!document.querySelector('[data-ef-margin]')),'the eFriend page has the priority list and the risk slider');
 // adoption nudges
 await page.evaluate(()=>{const S=EX.state();S.goals=S.goals.filter(g=>g.kind!=='efriend');S.goals.push({id:'g9',name:'Savings pot',target:'1000',deadline:new Date(Date.now()+90*864e5).toISOString().slice(0,10),icon:'target'});EX.save();EXA.st.view='plan';EXA.st.planTab='goals';EXA.render();});await page.waitForTimeout(300);
@@ -220,7 +220,7 @@ ok(car.withInc==='ontrack','with the salary known, the same leftover is fine for
 ok(car.riskyCushion==='comfortable','a risky cushion (0 months) calls it safe');
 ok(car.careful!=='comfortable','a careful cushion (3 months) does not call it safe');
 // the slider blends colours continuously
-await page.evaluate(()=>{UI.closeSheet&&UI.closeSheet();EXA.st.view='more';EXA.st.more='efriend';EXA.render();});await page.waitForTimeout(300);
+await page.evaluate(()=>{UI.closeSheet&&UI.closeSheet();EXA.st.view='more';EXA.st.more='efriend';EXA.st.efSub='rules';EXA.render();});await page.waitForTimeout(300);
 const cols=await page.evaluate(()=>{const r=document.querySelector('[data-ef-margin]'),box=r.closest('.ef-risk'),out=[];for(const v of [0,10,20,30,40,50,60,80,100]){r.value=v;r.dispatchEvent(new Event('input',{bubbles:true}));out.push(box.style.getPropertyValue('--c'));}return out;});
 ok(new Set(cols).size===cols.length&&cols[0]==='rgb(217,45,32)'&&cols[4]==='rgb(22,163,74)'&&cols[8]==='rgb(30,58,138)','the thumb colour blends smoothly from red through green to blue ('+cols.join(' ')+')');
 ok(await page.evaluate(()=>{const r=document.querySelector('[data-ef-margin]'),bg=getComputedStyle(r).backgroundImage;return !/rgb\(217, ?45, ?32\)/.test(bg)&&!/rgb\(22, ?163, ?74\)/.test(bg)&&!!document.querySelector('.ef-risk').style.getPropertyValue('--p');}),'the track is neutral: only the handle carries the colour');
@@ -246,7 +246,7 @@ await page.click('[data-due=drop]');await page.click('[data-due=dropit]');await 
 ok(await page.evaluate(()=>EX.state().goals.find(x=>x.id==='d3').state==='dropped'&&EX.efriend.past().length===1),'"changed my mind" moves it to past plans');
 ok(await page.evaluate(()=>!document.querySelector('.ef-due')),'after the last due plan, the question closes by itself');
 ok(await page.evaluate(()=>EX.efriend.achieved().length===1&&EX.efriend.plans().every(g=>!g.state)),'achieved and dropped plans leave the active list');
-await page.evaluate(()=>{EXA.st.view='more';EXA.st.more='efriend';EXA.render();});await page.waitForTimeout(300);
+await page.evaluate(()=>{EXA.st.view='more';EXA.st.more='efriend';EXA.st.efSub='plans';EXA.render();});await page.waitForTimeout(300);
 ok(await page.evaluate(()=>/What you achieved/.test(document.querySelector('#view').textContent)&&/Italy trip/.test(document.querySelector('.ef-ach').textContent)&&!!document.querySelector('[data-ef-reopen]')),'the eFriend page lists achievements and past plans (with Reopen)');
 await page.evaluate(()=>{EXA.st.view='activity';EXA.render();});await page.waitForTimeout(400);
 ok(await page.evaluate(()=>!!document.querySelector('#view .ef-txbadge')),'the expense shows a small eFriend badge in Activity');
@@ -265,7 +265,7 @@ S.goals=S.goals.filter(g=>g.kind==='efriend'&&false);S.txs=S.txs.filter(x=>false
 for(let i=1;i<=45;i++)S.txs.push({id:'h'+i,type:'expense',amount:'12',category:'food',account:a.id,date:new Date(Date.now()-i*864e5).toISOString().slice(0,10),name:'daily'});
 S.goals.push({id:'pot',name:'Paris pot',target:'1200',deadline:d(60),icon:'plane'},{id:'pot2',name:'Car pot',target:'3000',deadline:d(200),icon:'car'});EX.save();});
 ok(await page.evaluate(()=>EX.efriend.alloc().mode==='off'&&EX.efriend.fundGoals().length===0&&EX.efriend.proposeItems().length===0),'helping is off by default and touches no goals');
-await page.evaluate(()=>{EXA.st.view='more';EXA.st.more='efriend';EXA.render();});await page.waitForTimeout(300);
+await page.evaluate(()=>{EXA.st.view='more';EXA.st.more='efriend';EXA.st.efSub='moves';EXA.render();});await page.waitForTimeout(300);
 ok(await page.evaluate(()=>document.querySelectorAll('.ef-mode').length===4&&/No real money moves/.test(document.querySelector('.ef-alloc').textContent)),'the eFriend page offers Off / Suggest / Ask first / Automatic and says no real money moves');
 await page.click('[data-ef-mode=suggest]');await page.waitForTimeout(300);
 await page.click('[data-ef-fund=pot]');await page.click('[data-ef-fund=pot2]');await page.waitForTimeout(300);

@@ -1,6 +1,20 @@
 {
-  "version": "0.54.18",
+  "version": "0.54.19",
   "releases": [
+    {
+      "version": "0.54.19",
+      "date": "2026-10-21",
+      "en": [
+        "Choose your eFriend: Boogie, a vintage cassette (now the default), or Chip, the robot. Each has their own way of talking and their own story, and they have met.",
+        "Replies can be natural (eFriend pauses and types like a person) or instant. Pick it in the eFriend menu.",
+        "The eFriend menu is tidier: a short list of groups (My plans, Priorities and safety, Helping with goals, Ideas and insights, Your eFriend), each opening its own page."
+      ],
+      "el": [
+        "Διαλέξτε το eFriend σας: τον Boogie, μια vintage κασέτα (πλέον προεπιλογή), ή τον Chip, το ρομπότ. Ο καθένας έχει τον δικό του τρόπο ομιλίας και τη δική του ιστορία, και έχουν γνωριστεί.",
+        "Οι απαντήσεις μπορούν να είναι φυσικές (το eFriend κάνει παύσεις και πληκτρολογεί σαν άνθρωπος) ή άμεσες. Επιλέξτε στο μενού του eFriend.",
+        "Το μενού του eFriend είναι πιο τακτοποιημένο: μια σύντομη λίστα ομάδων (Τα σχέδιά μου, Προτεραιότητες και ασφάλεια, Βοήθεια με τους στόχους, Ιδέες και πληροφορίες, Το eFriend σας), καθεμία με τη δική της σελίδα."
+      ]
+    },
     {
       "version": "0.54.18",
       "date": "2026-10-21",
