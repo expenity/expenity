@@ -461,7 +461,7 @@
 			<div class="ef-meta">${ chip( f.verdict ) }<span>${ esc( t( 'efDaysLeft', { n: Math.max( 0, f.days ) } ) ) }</span></div>
 			<div class="ef-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${ pct }"><i style="width:${ pct }%"></i><span class="ef-suit" style="left:${ pct }%">${ UI.icon( g.icon || 'plane', 18 ) }</span></div>
 			<small>${ esc( f.left < 0 ? t( 'efShortLine', { a: money( -f.left / 100, main() ) } ) : t( 'efLeftLine', { a: money( f.left / 100, main() ), m: monthsText( f.leftMonths == null ? 0 : f.leftMonths ) } ) ) }</small></div>`;
-		const back = `<div class="wk-back ef-back"><span class="wk-ic bob">${ UI.icon( 'sparkles', 30 ) }</span><h3>${ esc( g.name ) }</h3>${ points( F.sentences( f ).concat( F.tips( f ).slice( 0, 1 ).map( ( x ) => x.text ) ) ) }<button type="button" class="btn btn-primary" data-ef-open="${ esc( g.id ) }">${ esc( t( 'efOpen' ) ) }</button><button type="button" class="btn btn-ghost sm" data-ef-bought="${ esc( g.id ) }">🛍️ ${ esc( t( 'efBoughtBtn' ) ) }</button><button type="button" class="btn btn-ghost sm" data-ef-edit="${ esc( g.id ) }">${ UI.icon( 'pencil', 18 ) } ${ esc( t( 'efEdit' ) ) }</button></div>`;
+		const back = `<div class="wk-back ef-back"><span class="wk-ic bob">${ UI.icon( 'sparkles', 30 ) }</span><h3>${ esc( g.name ) }</h3>${ points( F.sentences( f ).concat( F.tips( f ).slice( 0, 1 ).map( ( x ) => x.text ) ) ) }<button type="button" class="btn btn-primary" data-ef-open="${ esc( g.id ) }">${ esc( t( 'efOpen' ) ) }</button><button type="button" class="btn btn-ghost sm" data-ef-bought="${ esc( g.id ) }">${ esc( t( 'efBoughtBtn' ) ) }</button><button type="button" class="btn btn-ghost sm" data-ef-edit="${ esc( g.id ) }">${ UI.icon( 'pencil', 18 ) } ${ esc( t( 'efEdit' ) ) }</button></div>`;
 		return `<section data-home="efriend"><div class="sec-head"><h2>${ esc( g.name ) }</h2><span class="sec-acts"><button type="button" class="link" data-ef-ask>💬 ${ esc( t( 'efAskShort' ) ) }</button>${ EXA.flipBtn( 'efriend' ) }</span></div>${ EXA.flipCard( 'efriend', front, back, 'fc-ef' ) }</section>`;
 	};
 
@@ -514,7 +514,7 @@
 			t( 'efAccuracy', { d: f.history || 1 } ) ].filter( Boolean );
 		const tp = F.tips( f ), helpBody = suggRows ? `<ul class="ef-list">${ suggRows }</ul>${ points( [ t( 'efHelpsNote', { a: m( f.gain ) } ) ] ) }` : '';
 		UI.openSheet( `<div class="sheet-head"><h2>${ esc( g.name ) }</h2><span class="sp"></span><button type="button" class="ab-btn" data-close aria-label="${ esc( t( 'close' ) ) }">${ UI.icon( 'x', 24 ) }</button></div>
-			<div class="sheet-pad ef-sheet"><div class="ef-editrow"><button type="button" class="btn btn-primary sm" data-ef-bought="${ esc( id ) }">🛍️ ${ esc( t( 'efBoughtBtn' ) ) }</button><button type="button" class="btn btn-ghost sm" data-ef-edit="${ esc( id ) }">${ UI.icon( 'pencil', 18 ) } ${ esc( t( 'efEdit' ) ) }</button></div>
+			<div class="sheet-pad ef-sheet"><div class="ef-editrow"><button type="button" class="btn btn-primary sm" data-ef-bought="${ esc( id ) }">${ esc( t( 'efBoughtBtn' ) ) }</button><button type="button" class="btn btn-ghost sm" data-ef-edit="${ esc( id ) }">${ UI.icon( 'pencil', 18 ) } ${ esc( t( 'efEdit' ) ) }</button></div>
 			<div class="ef-top">${ F.mascot( f.verdict, 84 ) }<div class="ef-bubble"><b>${ esc( pickLine( f.verdict ) ) }</b>${ chip( f.verdict ) }</div></div>
 			${ tiles }${ callouts.length ? `<div class="ef-callouts">${ points( callouts ) }${ er ? `<button type="button" class="btn btn-primary sm" data-ef-usedate="${ esc( id ) }" data-d="${ er }">📅 ${ esc( t( 'efUseDate' ) ) }</button>` : '' }${ ! f.hasIncome && ! f.done ? `<button type="button" class="btn btn-ghost sm" data-ef-income>💶 ${ esc( t( 'efAddIncome' ) ) }</button>` : '' }</div>` : '' }
 			${ sec( '💡', t( 'efTipsTitle' ), tipsHtml( tp ) ) }${ sec( '✂️', t( 'efHelps' ), helpBody ) }${ sec( '🔀', t( 'efOtherWays' ), alt.length ? points( alt ) : '' ) }
@@ -750,7 +750,7 @@
 		const row = ( g ) => {
 			const f = byId[ g.id ], ready = !! f;
 			return `<li class="ef-grow"><div class="ef-gtop">${ f ? F.icon( 32 ) : UI.icon( g.icon || 'target', 28 ) }<div><b>${ esc( g.name ) }</b><small>${ esc( g.deadline ? t( 'efDaysLeft', { n: Math.max( 0, diff( g.deadline, today() ) ) } ) : t( 'efNoDate' ) ) }</small></div>${ f ? chip( f.verdict ) : '' }</div>
-				<div class="ef-gacts"><button type="button" class="btn btn-ghost sm" data-ef-bought="${ esc( g.id ) }">🛍️ ${ esc( t( 'efBoughtBtn' ) ) }</button><button type="button" class="btn btn-ghost sm" data-ef-edit="${ esc( g.id ) }">${ UI.icon( 'pencil', 18 ) } ${ esc( t( 'efEdit' ) ) }</button>${ ready ? `<button type="button" class="btn btn-primary sm" data-ef-open="${ esc( g.id ) }">${ esc( t( 'efOpen' ) ) }</button>` : `<button type="button" class="btn btn-primary sm" data-ef-try="${ esc( g.id ) }">${ esc( t( 'efAddDate' ) ) }</button>` }</div></li>`;
+				<div class="ef-gacts"><button type="button" class="btn btn-ghost sm" data-ef-bought="${ esc( g.id ) }">${ esc( t( 'efBoughtBtn' ) ) }</button><button type="button" class="btn btn-ghost sm" data-ef-edit="${ esc( g.id ) }">${ UI.icon( 'pencil', 18 ) } ${ esc( t( 'efEdit' ) ) }</button>${ ready ? `<button type="button" class="btn btn-primary sm" data-ef-open="${ esc( g.id ) }">${ esc( t( 'efOpen' ) ) }</button>` : `<button type="button" class="btn btn-primary sm" data-ef-try="${ esc( g.id ) }">${ esc( t( 'efAddDate' ) ) }</button>` }</div></li>`;
 		};
 		const buckets = F.groups().map( ( n ) => ( { name: n, plans: plans.filter( ( g ) => ( g.group || '' ).trim() === n ) } ) ), rest = plans.filter( ( g ) => ! ( g.group || '' ).trim() );
 		if ( rest.length ) buckets.push( { name: '', plans: rest } );
@@ -2691,7 +2691,7 @@
 		efChipTitle: 'Η λάμψη του Chip', efChipHint: 'Κάντε τα μάτια, το στόμα και τα αυτιά του να λάμπουν όπως θέλετε.', efChipEyes: 'Μάτια', efChipMouth: 'Στόμα', efChipEars: 'Αυτιά', efChipGlow: 'Λάμψη', efChipAll: 'Ίδιο χρώμα για όλα', efChipColor: 'Χρώμα', efChipC_mint: 'Μέντα', efChipC_violet: 'Βιολετί', efChipC_blue: 'Μπλε', efChipC_pink: 'Ροζ', efChipC_lime: 'Λάιμ', efChipC_amber: 'Κεχριμπάρι',
 	} );
 	Object.assign( window.EXPENITY_I18N.langs.en, {
-		efBoughtBtn: 'I bought it',
+		efBoughtBtn: 'Mission Accomplished! 💸',
 		efBought_early_safe: 'Ahead of schedule and the numbers agree. 📼 Well played, the plan still holds.|Early, and your cushion barely blinked. A tidy purchase.',
 		efBought_early_safe_c: 'You bought it EARLY and you are still safe?! 😎 Big brain move!|Ahead of schedule and the numbers say fine. Chef’s kiss. 🤌',
 		efBought_early_tight: 'Bold. 📼 Early, and it will pinch a little. Mind the next few weeks.|You got there before the plan did. The cushion is thinner now, so go gently.',
@@ -2704,7 +2704,7 @@
 		efBought_late_c: 'A bit later than planned, but you got it! 🎉 Patience level: expert. 😎',
 	} );
 	Object.assign( window.EXPENITY_I18N.langs.el, {
-		efBoughtBtn: 'Το αγόρασα',
+		efBoughtBtn: 'Αποστολή εξετελέσθη! 💸',
 		efBought_early_safe: 'Νωρίτερα από το πρόγραμμα και οι αριθμοί συμφωνούν. 📼 Μπράβο, το σχέδιο εξακολουθεί να ισχύει.|Νωρίς, και το μαξιλάρι σας σχεδόν δεν κουνήθηκε. Μια τακτοποιημένη αγορά.',
 		efBought_early_safe_c: 'Το αγοράσατε ΝΩΡΙΣ και είστε ακόμα ασφαλείς;! 😎 Έξυπνη κίνηση!|Νωρίτερα από το πρόγραμμα και οι αριθμοί λένε ότι όλα καλά. Τέλεια! 🤌',
 		efBought_early_tight: 'Τολμηρό. 📼 Νωρίς, και θα το νιώσετε λίγο. Προσέξτε τις επόμενες εβδομάδες.|Φτάσατε πριν από το σχέδιο. Το μαξιλάρι είναι πιο λεπτό τώρα, οπότε με ηρεμία.',
