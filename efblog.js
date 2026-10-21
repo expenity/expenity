@@ -210,7 +210,7 @@
 	/** @param {Array} txs the entries; @param {string} asOf 'YYYY-MM-DD' */
 	B.facts = ( txs, asOf, ctx ) => {
 		ctx = ctx || { bills: S().bills || [], goals: S().goals || [] };
-		const all = ( txs || [] ).filter( ( x ) => ( x.type === 'income' || x.type === 'expense' ) && x.date && x.date <= asOf ).sort( ( a, b ) => ( a.date < b.date ? -1 : a.date > b.date ? 1 : 0 ) );
+		const all = ( txs || [] ).filter( ( x ) => ( x.type === 'income' || x.type === 'expense' ) && ! EX.isAdjust( x ) && x.date && x.date <= asOf ).sort( ( a, b ) => ( a.date < b.date ? -1 : a.date > b.date ? 1 : 0 ) );
 		const f = { n: all.length, asOf };
 		if ( ! all.length ) return f;
 		const ex = all.filter( ( x ) => x.type === 'expense' ), inc = all.filter( ( x ) => x.type === 'income' ), first = all[ 0 ];
@@ -318,7 +318,7 @@
 
 	/* ------------------------------------------------------------------ The record: which chapters are written, when */
 	const rec = () => { const s = S().settings; if ( ! s.efBlog || ! Array.isArray( s.efBlog.c ) ) s.efBlog = { c: [], gentle: 0 }; return s.efBlog; };
-	const entries = () => S().txs.filter( ( x ) => x.type === 'income' || x.type === 'expense' );
+	const entries = () => S().txs.filter( ( x ) => ( x.type === 'income' || x.type === 'expense' ) && ! EX.isAdjust( x ) );
 	/** Write any chapter the data now allows. Facts are taken as of today; the stamp is kept so the text is later rebuilt as of that day. */
 	B.update = () => {
 		const td = EX.today(), r = rec(), f = B.facts( S().txs, td ); let added = false;
