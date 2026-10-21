@@ -63,7 +63,7 @@
 		chip: { icons: [ '🤖', '📱', '🔋', '📶', '😂', '💬', '⚡', '🎮' ], en: [ 'Battery 100% 🔋', '404: joke not found', 'No cap, I am fast', 'Wi-Fi: 5 bars', 'Emoji fluent 😎' ], el: [ 'Μπαταρία 100% 🔋', '404: το ανέκδοτο χάθηκε', 'Χωρίς ψέματα, είμαι γρήγορος', 'Wi-Fi: 5 γραμμές', 'Μιλάω Emoji 😎' ] },
 	};
 	const pickFrom = ( s ) => { const l = String( s ).split( '|' ); return l[ Math.floor( Math.random() * l.length ) ]; };
-	const L = ( k, vars ) => { const r = TX[ k ] || [ k ], el = EX.lang() === 'el', chip = F().char() === 'chip'; let s = r[ el ? 1 : 0 ]; if ( chip && r[ el ? 3 : 2 ] ) s = r[ el ? 3 : 2 ]; if ( s == null ) s = r[ 0 ]; s = pickFrom( s ); if ( vars ) s = s.replace( /\{(\w+)\}/g, ( m, x ) => ( vars[ x ] !== undefined ? vars[ x ] : m ) ); return s; };
+	const L = ( k, vars, lang ) => { const r = TX[ k ] || [ k ], el = ( lang || EX.lang() ) === 'el', chip = F().char() === 'chip'; let s = r[ el ? 1 : 0 ]; if ( chip && r[ el ? 3 : 2 ] ) s = r[ el ? 3 : 2 ]; if ( s == null ) s = r[ 0 ]; s = pickFrom( s ); if ( vars ) s = s.replace( /\{(\w+)\}/g, ( m, x ) => ( vars[ x ] !== undefined ? vars[ x ] : m ) ); return s; };
 	ob.words = TX;
 
 	/* ------------------------------------------------------------------ State */
@@ -78,8 +78,8 @@
 	function picker() {
 		summaryOn = false;
 		const B = F().mascotOf( 'boogie', 'happy', 300 ), C = F().mascotOf( 'chip', 'happy', 250 );
-		host.innerHTML = `<div class="ob-pick" id="obPick">			<section class="ob-half ob-boogie" id="obB" aria-label="Boogie"><div class="ob-fall" aria-hidden="true"></div><h1 class="ob-pick-title">${ esc( L( 'pickTitle' ) ) }</h1><p class="ob-hint">${ esc( L( 'pickHint' ) ) }</p><div class="ob-half-in" id="obBin"><div class="ob-art">${ B }</div><div class="ob-txt"><h2>Boogie</h2><p>${ esc( L( 'pickBoogie' ) ) }</p></div></div></section>
-			<section class="ob-half ob-chip" id="obC" aria-label="Chip"><div class="ob-fall" aria-hidden="true"></div><h1 class="ob-pick-title">${ esc( L( 'pickTitle' ) ) }</h1><p class="ob-hint">${ esc( L( 'pickHint' ) ) }</p><div class="ob-half-in" id="obCin"><div class="ob-art">${ C }</div><div class="ob-txt"><h2>Chip</h2><p>${ esc( L( 'pickChip' ) ) }</p></div></div></section>
+		host.innerHTML = `<div class="ob-pick" id="obPick">			<section class="ob-half ob-boogie" id="obB" aria-label="Boogie"><div class="ob-fall" aria-hidden="true"></div><h1 class="ob-pick-title">${ esc( L( 'pickTitle', null, 'el' ) ) }</h1><p class="ob-hint">${ esc( L( 'pickHint', null, 'el' ) ) }</p><div class="ob-half-in" id="obBin"><div class="ob-art">${ B }</div><div class="ob-txt"><h2>Boogie</h2><p>${ esc( L( 'pickBoogie', null, 'el' ) ) }</p></div></div></section>
+			<section class="ob-half ob-chip" id="obC" aria-label="Chip"><div class="ob-fall" aria-hidden="true"></div><h1 class="ob-pick-title">${ esc( L( 'pickTitle', null, 'en' ) ) }</h1><p class="ob-hint">${ esc( L( 'pickHint', null, 'en' ) ) }</p><div class="ob-half-in" id="obCin"><div class="ob-art">${ C }</div><div class="ob-txt"><h2>Chip</h2><p>${ esc( L( 'pickChip', null, 'en' ) ) }</p></div></div></section>
 			<div class="ob-handle" id="obH" role="slider" tabindex="0" aria-label="${ esc( L( 'pickTitle' ) ) }" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"><span class="ob-grip"><i>◀</i><i>▶</i></span></div>
 			<button type="button" class="btn btn-primary big ob-choose" id="obChoose" hidden>${ esc( L( 'pickChoose' ) ) }</button></div>`;
 		const root = host.querySelector( '#obPick' ), bP = root.querySelector( '#obB' ), cP = root.querySelector( '#obC' ), bA = root.querySelector( '#obB .ob-art' ), cA = root.querySelector( '#obC .ob-art' ), bTx = root.querySelector( '#obB .ob-txt' ), cTx = root.querySelector( '#obC .ob-txt' ), h = root.querySelector( '#obH' ), btn = root.querySelector( '#obChoose' ), hints = root.querySelectorAll( '.ob-hint' );
@@ -94,7 +94,7 @@
 			h.setAttribute( 'aria-valuenow', Math.round( X ) );
 			// the Choose button shows well before the screen edge, where a browser swipe could take over
 			const edge = X >= 84 ? 'boogie' : X <= 16 ? 'chip' : ''; btn.hidden = ! edge; btn.dataset.pick = edge; btn.setAttribute( 'aria-hidden', edge ? 'false' : 'true' );
-			if ( edge ) { btn.textContent = L( 'pickChoose' ); bP.classList.toggle( 'on', edge === 'boogie' ); cP.classList.toggle( 'on', edge === 'chip' ); } else { bP.classList.remove( 'on' ); cP.classList.remove( 'on' ); }
+			if ( edge ) { btn.textContent = L( 'pickChoose', null, edge === 'boogie' ? 'el' : 'en' ); bP.classList.toggle( 'on', edge === 'boogie' ); cP.classList.toggle( 'on', edge === 'chip' ); } else { bP.classList.remove( 'on' ); cP.classList.remove( 'on' ); }
 			hints.forEach( ( x ) => { x.style.opacity = Math.abs( X - 50 ) < 6 ? 1 : 0; } );
 		};
 		const tween = ( to, ms = 260 ) => { cancelAnimationFrame( raf ); if ( reduce() ) { X = to; apply(); return; } const from = X, t0 = performance.now(); const step = ( now ) => { const k = Math.min( 1, ( now - t0 ) / ms ), e = 1 - Math.pow( 1 - k, 3 ); X = from + ( to - from ) * e; apply(); if ( k < 1 ) raf = requestAnimationFrame( step ); }; raf = requestAnimationFrame( step ); };
@@ -112,7 +112,8 @@
 	}
 	/** Jokes and icons drift slowly down behind one half, faded, so they set the mood without getting in the way. */
 	function falling( layer, who, root ) {
-		const cfg = FALL[ who ], el = EX.lang() === 'el', texts = el ? cfg.el : cfg.en, W = () => layer.clientWidth || 360, H = () => layer.clientHeight || 700;
+		const cfg = FALL[ who ], el = who === 'boogie', texts = el ? cfg.el : cfg.en, // left half Greek, right half English
+		 W = () => layer.clientWidth || 360, H = () => layer.clientHeight || 700;
 		let n = 0, timer = 0;
 		const drift = ( still ) => {
 			if ( ! root.isConnected ) { clearTimeout( timer ); return; }
