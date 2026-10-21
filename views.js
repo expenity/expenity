@@ -47,6 +47,7 @@
 	const swBtn = ( action, icon, labelKey, cls ) => `<button type="button" class="sw-act ${ cls }" data-sw="${ action }" tabindex="-1" aria-hidden="true">${ UI.icon( icon, 22 ) }<span>${ esc( t( labelKey ) ) }</span></button>`;
 	/** A short status for a recorded entry: a paid bill, money received, or something dated in the future. */
 	const txPill = ( x ) => {
+		if ( EX.isAdjust( x ) && x.date <= today() ) return `<span class="bm-pill paid">${ UI.icon( 'adjustments', 14 ) } Adjusted</span>`;
 		if ( x.date > today() ) return `<span class="bm-pill later">${ esc( relEn( x.date ) ) }</span>`;
 		if ( x.type === 'income' ) return `<span class="bm-pill paid">${ UI.icon( 'check', 14 ) } Received</span>`;
 		if ( x.type === 'expense' ) return `<span class="bm-pill paid">${ UI.icon( 'check', 14 ) } Paid</span>`; // a recorded expense is a paid one
@@ -402,7 +403,7 @@
 		const cfMax = Math.max( 1, ...months.map( ( x ) => Math.max( x.inc, x.exp ) ) );
 		const from = st.repPeriod === 'month' ? td.slice( 0, 7 ) + '-01' : st.repPeriod === '3m' ? iso( new Date( ref.getFullYear(), ref.getMonth() - 2, 1 ) ) : td.slice( 0, 4 ) + '-01-01';
 		const c = {};
-		S().txs.filter( ( x ) => x.type === 'expense' && EX.txCurrency( x ) === main && x.date >= from ).forEach( ( x ) => { c[ x.category ] = ( c[ x.category ] || 0 ) + EX.cents( x.amount ); } );
+		S().txs.filter( ( x ) => x.type === 'expense' && ! EX.isAdjust( x ) && EX.txCurrency( x ) === main && x.date >= from ).forEach( ( x ) => { c[ x.category ] = ( c[ x.category ] || 0 ) + EX.cents( x.amount ); } );
 		const cats = Object.entries( c ).sort( ( a, b ) => b[ 1 ] - a[ 1 ] );
 		const total = cats.reduce( ( s, x ) => s + x[ 1 ], 0 ) || 1;
 		const weeks = [];
@@ -478,7 +479,7 @@
 	}
 	function walletsView() {
 		return `<ul class="list">${ S().accounts.map( ( a ) => `<li><button type="button" class="item" data-act="edit-wallet" data-id="${ esc( a.id ) }">${ UI.walletCi( a ) }<span class="mid"><b>${ esc( EX.accountName( a ) ) }</b><small>${ esc( a.currency ) }${ a.archived ? ' · ' + esc( t( 'archivedTag' ) ) : '' }${ a.space ? ' · ' + esc( t( 'sharedTag' ) ) + ' · ' + esc( t( 'role' + EX.role( a ).charAt( 0 ).toUpperCase() + EX.role( a ).slice( 1 ) ) ) : '' }</small></span><span class="a">${ esc( money( EX.balance( a ) / 100, a.currency ) ) }</span></button></li>` ).join( '' ) }</ul>
-			<div class="btn-row"><button type="button" class="btn btn-primary" data-act="add-wallet">${ UI.icon( 'plus', 20 ) } ${ esc( t( 'walletAdd' ) ) }</button><button type="button" class="btn btn-ghost" data-act="join-wallet">${ UI.icon( 'users', 20 ) } ${ esc( t( 'joinTitle' ) ) }</button></div>`;
+			${ EXA.adjust ? EXA.adjust.setting() : '' }<div class="btn-row"><button type="button" class="btn btn-primary" data-act="add-wallet">${ UI.icon( 'plus', 20 ) } ${ esc( t( 'walletAdd' ) ) }</button><button type="button" class="btn btn-ghost" data-act="join-wallet">${ UI.icon( 'users', 20 ) } ${ esc( t( 'joinTitle' ) ) }</button></div>`;
 	}
 	function categoriesView() {
 		const custom = S().categories;

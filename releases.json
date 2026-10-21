@@ -2,6 +2,20 @@
   "version": "0.55.6",
   "releases": [
     {
+      "version": "0.56.0",
+      "date": "2026-10-21",
+      "en": [
+        "Adjust balance: type what a wallet really holds and Expenity records the difference as a Wallet adjustment dated today. It fixes the balance without counting as income or spending.",
+        "If the balance went down you can say where it went; the default keeps your reports and budgets clean. Undo is one tap away.",
+        "A gentle card on Home now and then asks whether a wallet still matches your bank. You can turn it off in Features or in More → Wallets."
+      ],
+      "el": [
+        "Προσαρμογή υπολοίπου: γράψτε τι έχει πραγματικά ένα πορτοφόλι και το Expenity καταγράφει τη διαφορά ως Προσαρμογή πορτοφολιού με σημερινή ημερομηνία. Διορθώνει το υπόλοιπο χωρίς να μετράει ως έσοδο ή έξοδο.",
+        "Αν το υπόλοιπο μειώθηκε, μπορείτε να πείτε πού πήγε· η προεπιλογή κρατά καθαρές τις αναφορές και τους προϋπολογισμούς σας. Η αναίρεση είναι ένα πάτημα μακριά.",
+        "Μια διακριτική κάρτα στην Αρχική ρωτά πού και πού αν ένα πορτοφόλι συμφωνεί ακόμα με την τράπεζά σας. Μπορείτε να την απενεργοποιήσετε στις Λειτουργίες ή στο Περισσότερα → Πορτοφόλια."
+      ]
+    },
+    {
       "version": "0.55.6",
       "date": "2026-10-21",
       "en": [
