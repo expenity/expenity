@@ -7,17 +7,22 @@ const b = await chromium.launch( { channel: 'chrome' } ), pg = await b.newPage( 
 await pg.addInitScript( () => { localStorage.setItem( 'expenity.lang', 'en' ); } );
 await pg.goto( `http://localhost:${ port }/index.html` ); await pg.waitForFunction( () => window.EXA && EXA.flow );
 await pg.evaluate( () => { const d = EX.state().device; d.langHinted = true; d.installDismissed = true; EX.state().settings.efInstant = true; d.stage = 'setup'; EXA.flow.show(); } ); await pg.waitForTimeout( 500 );
-chk( 'the picker shows both friends and no Choose button yet', await pg.evaluate( () => !! document.querySelector( '.ob-pick' ) && document.querySelector( '#obChoose' ).hidden ) );
+chk( 'the welcome page shows the logo, the language switch and both bots', await pg.evaluate( () => !! document.querySelector( '.ob-intro' ) && document.querySelectorAll( '[data-ob-lang]' ).length === 2 && document.querySelectorAll( '.ob-bot svg' ).length === 2 ) );
+await pg.click( '[data-ob-lang=el]' ); await pg.waitForTimeout( 150 );
+chk( 'switching to Greek translates the welcome page at once', await pg.evaluate( () => EX.lang() === 'el' && /Καλώς ήρθατε/.test( document.querySelector( '.ob-intro h1' ).textContent ) ) );
+await pg.click( '[data-ob-lang=en]' ); await pg.waitForTimeout( 150 );
+chk( 'and back to English', await pg.evaluate( () => EX.lang() === 'en' && /Welcome/.test( document.querySelector( '.ob-intro h1' ).textContent ) ) );
+await pg.click( '[data-ob-go]' ); await pg.waitForSelector( '.ob-pick' );
+chk( 'the picker follows the chosen language and has no Choose button yet', await pg.evaluate( () => /Choose your eFriend/.test( document.querySelector( '.ob-pick-title' ).textContent ) && document.querySelector( '#obChoose' ).hidden ) );
 await pg.screenshot( { path: '/tmp/ob-pick.png' } );
 await pg.focus( '#obH' ); await pg.keyboard.press( 'End' ); await pg.waitForTimeout( 200 );
 chk( 'at the end the Choose button appears for Boogie', await pg.evaluate( () => ! document.querySelector( '#obChoose' ).hidden && document.querySelector( '#obChoose' ).dataset.pick === 'boogie' ) );
 await pg.keyboard.press( 'Home' ); await pg.waitForTimeout( 200 );
 chk( 'at the other end it offers Chip', await pg.evaluate( () => document.querySelector( '#obChoose' ).dataset.pick === 'chip' ) );
 await pg.click( '#obChoose' ); await pg.waitForSelector( '#obChips [data-ob-chip]' );
-chk( 'Chip was chosen and the chat starts with the language question', await pg.evaluate( () => EX.state().settings.efChar === 'chip' && /Greek or English/.test( document.querySelector( '#obChat' ).textContent ) ) );
+chk( 'Chip was chosen and the chat starts with the name question', await pg.evaluate( () => EX.state().settings.efChar === 'chip' && /call you/.test( document.querySelector( '#obChat' ).textContent ) ) );
 const chip = async ( i ) => { await pg.waitForSelector( '#obChips [data-ob-chip]' ); await pg.click( `#obChips [data-ob-chip="${ i }"]` ); await pg.waitForTimeout( 150 ); };
 const type = async ( v ) => { await pg.waitForSelector( '#obForm:not([hidden]) input' ); await pg.fill( '#obForm input', v ); await pg.press( '#obForm input', 'Enter' ); await pg.waitForTimeout( 150 ); };
-await chip( 1 ); chk( 'English chosen', await pg.evaluate( () => EX.lang() === 'en' ) );
 await type( 'Maria' ); await chip( 1 ); // USD
 await type( '1500.5' ); await chip( 0 ); await chip( 1 ); // monthly, day 5
 await pg.waitForSelector( '#obChips [data-ob-chip]' ); await chip( 0 ); await chip( 1 ); await chip( 8 ); // rent, electricity, done

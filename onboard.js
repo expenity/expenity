@@ -1,9 +1,10 @@
 /**
  * First-run setup as a chat with eFriend. It replaces the classic setup wizard (flow.js) while USE_CHAT is true; set it to
  * false and the old wizard comes back untouched.
- *   1. Pick your eFriend on a split screen (Boogie on the left, Chip on the right, a slider in between).
- *   2. Eight questions: language, name, currency, income, bills, a goal, cushion, how to add expenses.
- *   3. A summary of what was set up, with a pencil to change an answer and a cross to remove the estimated budgets.
+ *   1. A welcome page: the logo, a few words about Expenity, both eFriends as little bots, and a big language switch (its answer is the language of everything after it).
+ *   2. Pick your eFriend on a split screen (Boogie on the left, Chip on the right, a slider in between).
+ *   3. Seven questions: name, currency, income, bills, a goal, cushion, how to add expenses.
+ *   4. A summary of what was set up, with a pencil to change an answer and a cross to remove the estimated budgets.
  * Nothing is saved without being said back, every question can be skipped, and the keyboard never opens by itself on a phone.
  */
 ( function () {
@@ -22,11 +23,12 @@
 		pickChoose: [ 'Choose', 'Επιλογή' ],
 		pickBoogie: [ 'A vintage cassette with a glowing Nixie tube. Warm, a little dry, fond of a good plan and a better pencil.', 'Μια vintage κασέτα με λαμπερή λυχνία Nixie. Ζεστός, λίγο ξερός, αγαπά ένα καλό σχέδιο και ένα ακόμα καλύτερο μολύβι.' ],
 		pickChip: [ 'Young, fast and wireless. Hyped, playful, full of emoji and bad battery jokes.', 'Νέος, γρήγορος και ασύρματος. Ενθουσιώδης, παιχνιδιάρης, γεμάτος emoji και κακά ανέκδοτα με μπαταρίες.' ],
+		introTitle: [ 'Welcome to Expenity', 'Καλώς ήρθατε στο Expenity' ], introSub: [ 'Your money, calm and clear.', 'Τα χρήματά σας, ήρεμα και καθαρά.' ],
+		introL1: [ '🧾 Bills, income and spending in one place', '🧾 Λογαριασμοί, εισοδήματα και έξοδα σε ένα μέρος' ], introL2: [ '🔔 Never miss a payment', '🔔 Ποτέ πια χαμένη πληρωμή' ], introL3: [ '🤖 eFriend checks if you can afford it, and finds the best day', '🤖 Το eFriend ελέγχει αν το αντέχετε και βρίσκει την καλύτερη μέρα' ],
+		introQ: [ 'Can I afford a €49 gift?', 'Μπορώ να αγοράσω ένα δώρο €49;' ], introA: [ 'Yes! Best day: Friday ✅', 'Ναι! Καλύτερη μέρα: Παρασκευή ✅' ], introLang: [ 'Choose your language', 'Επιλέξτε γλώσσα' ], introGo: [ 'Let’s go', 'Πάμε' ], introPoke: [ 'Tap them!', 'Πατήστε τους!' ],
 		skip: [ 'Skip setup', 'Παράλειψη' ], skipQ: [ 'Skip', 'Παράλειψη' ], send: [ 'Send', 'Αποστολή' ], ph: [ 'Type here', 'Γράψτε εδώ' ],
-		hello: [ 'Well hello! 📼 I am Boogie, and I will help you set things up. Eight quick questions, and you can skip any of them.', 'Λοιπόν, γεια σας! 📼 Είμαι ο Boogie και θα σας βοηθήσω με τη ρύθμιση. Οκτώ γρήγορες ερωτήσεις, και μπορείτε να παραλείψετε όποια θέλετε.',
-			'Heyyy! 🎉 I am Chip! Eight super quick questions and we are set. Skip any you want!', 'Γεια σας! 🎉 Είμαι ο Chip! Οκτώ σούπερ γρήγορες ερωτήσεις και είμαστε έτοιμοι. Παραλείψτε όποια θέλετε!' ],
-		lang: [ 'First things first: which language do we speak? 🎙️ I know both, plus a little tape hiss.\nΠρώτα απ’ όλα: ποια γλώσσα μιλάμε; Ξέρω και τις δύο, και λίγο σφύριγμα κασέτας.', null,
-			'Greek or English?? 🌍 I speak both. And Emoji. 😎\nΕλληνικά ή Αγγλικά;; Μιλάω και τα δύο. Και Emoji. 😎', null ],
+		hello: [ 'Well hello! 📼 I am Boogie, and I will help you set things up. Seven quick questions, and you can skip any of them.', 'Λοιπόν, γεια σας! 📼 Είμαι ο Boogie και θα σας βοηθήσω με τη ρύθμιση. Επτά γρήγορες ερωτήσεις, και μπορείτε να παραλείψετε όποια θέλετε.',
+			'Heyyy! 🎉 I am Chip! Seven super quick questions and we are set. Skip any you want!', 'Γεια σας! 🎉 Είμαι ο Chip! Επτά σούπερ γρήγορες ερωτήσεις και είμαστε έτοιμοι. Παραλείψτε όποια θέλετε!' ],
 		name: [ 'Lovely. What should I call you? 😊', 'Υπέροχα. Πώς να σας φωνάζω; 😊', 'Cool! What should I call you? 😄', 'Τέλεια! Πώς να σας φωνάζω; 😄' ],
 		nameHi: [ '{name}… a good name. 📼', '{name}… ωραίο όνομα. 📼', '{name}!! Love it! 🙌', '{name}!! Το λατρεύω! 🙌' ],
 		nameNone: [ 'No name, no problem. A mystery. 🕵️', 'Χωρίς όνομα, κανένα πρόβλημα. Μυστήριο. 🕵️', 'Mystery person! 🕵️ Love it.', 'Άγνωστο πρόσωπο! 🕵️ Μου αρέσει.' ],
@@ -74,12 +76,25 @@
 	const fine = () => { try { return matchMedia( '(pointer: fine)' ).matches; } catch ( e ) { return false; } };
 	const natural = () => S().settings.efInstant !== true;
 
-	/* ------------------------------------------------------------------ 1. The split-screen picker */
+	/* ------------------------------------------------------------------ 1. The welcome page: logo, a few words, both eFriends, and the language switch */
+	function intro() {
+		summaryOn = false; const el = EX.lang() === 'el';
+		host.innerHTML = `<div class="ob-intro"><div class="ob-intro-in">
+			<div id="flowLogo" class="ob-logo" aria-hidden="true"></div><h1>${ esc( L( 'introTitle' ) ) }</h1><p class="ob-sub">${ esc( L( 'introSub' ) ) }</p>
+			<div class="ob-lang" role="radiogroup" aria-label="${ esc( L( 'introLang' ) ) }" data-lang-now="${ el ? 'el' : 'en' }"><span class="ob-lang-thumb"></span><button type="button" role="radio" aria-checked="${ el }" data-ob-lang="el" lang="el">Ελληνικά</button><button type="button" role="radio" aria-checked="${ ! el }" data-ob-lang="en" lang="en">English</button></div>
+			<ul class="ob-points"><li>${ esc( L( 'introL1' ) ) }</li><li>${ esc( L( 'introL2' ) ) }</li><li>${ esc( L( 'introL3' ) ) }</li></ul>
+			<div class="ob-demo" aria-hidden="true"><div class="ob-q">${ esc( L( 'introQ' ) ) }</div><div class="ob-ty"><i></i><i></i><i></i></div><div class="ob-a">${ esc( L( 'introA' ) ) }</div></div>
+			<div class="ob-bots"><span class="ob-bot">${ F().mascotOf( 'boogie', 'happy', 104 ) }</span><span class="ob-bot">${ F().mascotOf( 'chip', 'happy', 104 ) }</span></div><p class="ob-poke">${ esc( L( 'introPoke' ) ) }</p>
+			<button type="button" class="btn btn-primary big ob-go" data-ob-go>${ esc( L( 'introGo' ) ) }</button></div></div>`;
+		const lg = host.querySelector( '#flowLogo' ); if ( lg && EXA.logoSvg ) lg.innerHTML = EXA.logoSvg.replace( 'width="34" height="34"', 'width="64" height="64"' );
+	}
+
+	/* ------------------------------------------------------------------ 2. The split-screen picker */
 	function picker() {
 		summaryOn = false;
 		const B = F().mascotOf( 'boogie', 'happy', 300 ), C = F().mascotOf( 'chip', 'happy', 250 );
-		host.innerHTML = `<div class="ob-pick" id="obPick">			<section class="ob-half ob-boogie" id="obB" aria-label="Boogie"><div class="ob-fall" aria-hidden="true"></div><h1 class="ob-pick-title">${ esc( L( 'pickTitle', null, 'el' ) ) }</h1><p class="ob-hint">${ esc( L( 'pickHint', null, 'el' ) ) }</p><div class="ob-half-in" id="obBin"><div class="ob-art">${ B }</div><div class="ob-txt"><h2>Boogie</h2><p>${ esc( L( 'pickBoogie', null, 'el' ) ) }</p></div></div></section>
-			<section class="ob-half ob-chip" id="obC" aria-label="Chip"><div class="ob-fall" aria-hidden="true"></div><h1 class="ob-pick-title">${ esc( L( 'pickTitle', null, 'en' ) ) }</h1><p class="ob-hint">${ esc( L( 'pickHint', null, 'en' ) ) }</p><div class="ob-half-in" id="obCin"><div class="ob-art">${ C }</div><div class="ob-txt"><h2>Chip</h2><p>${ esc( L( 'pickChip', null, 'en' ) ) }</p></div></div></section>
+		host.innerHTML = `<div class="ob-pick" id="obPick">			<section class="ob-half ob-boogie" id="obB" aria-label="Boogie"><div class="ob-fall" aria-hidden="true"></div><h1 class="ob-pick-title">${ esc( L( 'pickTitle' ) ) }</h1><p class="ob-hint">${ esc( L( 'pickHint' ) ) }</p><div class="ob-half-in" id="obBin"><div class="ob-art">${ B }</div><div class="ob-txt"><h2>Boogie</h2><p>${ esc( L( 'pickBoogie' ) ) }</p></div></div></section>
+			<section class="ob-half ob-chip" id="obC" aria-label="Chip"><div class="ob-fall" aria-hidden="true"></div><h1 class="ob-pick-title">${ esc( L( 'pickTitle' ) ) }</h1><p class="ob-hint">${ esc( L( 'pickHint' ) ) }</p><div class="ob-half-in" id="obCin"><div class="ob-art">${ C }</div><div class="ob-txt"><h2>Chip</h2><p>${ esc( L( 'pickChip' ) ) }</p></div></div></section>
 			<div class="ob-handle" id="obH" role="slider" tabindex="0" aria-label="${ esc( L( 'pickTitle' ) ) }" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"><span class="ob-grip"><i>◀</i><i>▶</i></span></div>
 			<button type="button" class="btn btn-primary big ob-choose" id="obChoose" hidden>${ esc( L( 'pickChoose' ) ) }</button></div>`;
 		const root = host.querySelector( '#obPick' ), bP = root.querySelector( '#obB' ), cP = root.querySelector( '#obC' ), bA = root.querySelector( '#obB .ob-art' ), cA = root.querySelector( '#obC .ob-art' ), bTx = root.querySelector( '#obB .ob-txt' ), cTx = root.querySelector( '#obC .ob-txt' ), h = root.querySelector( '#obH' ), btn = root.querySelector( '#obChoose' ), hints = root.querySelectorAll( '.ob-hint' );
@@ -94,7 +109,7 @@
 			h.setAttribute( 'aria-valuenow', Math.round( X ) );
 			// the Choose button shows well before the screen edge, where a browser swipe could take over
 			const edge = X >= 84 ? 'boogie' : X <= 16 ? 'chip' : ''; btn.hidden = ! edge; btn.dataset.pick = edge; btn.setAttribute( 'aria-hidden', edge ? 'false' : 'true' );
-			if ( edge ) { btn.textContent = L( 'pickChoose', null, edge === 'boogie' ? 'el' : 'en' ); bP.classList.toggle( 'on', edge === 'boogie' ); cP.classList.toggle( 'on', edge === 'chip' ); } else { bP.classList.remove( 'on' ); cP.classList.remove( 'on' ); }
+			if ( edge ) { btn.textContent = L( 'pickChoose' ); bP.classList.toggle( 'on', edge === 'boogie' ); cP.classList.toggle( 'on', edge === 'chip' ); } else { bP.classList.remove( 'on' ); cP.classList.remove( 'on' ); }
 			hints.forEach( ( x ) => { x.style.opacity = Math.abs( X - 50 ) < 6 ? 1 : 0; } );
 		};
 		const tween = ( to, ms = 260 ) => { cancelAnimationFrame( raf ); if ( reduce() ) { X = to; apply(); return; } const from = X, t0 = performance.now(); const step = ( now ) => { const k = Math.min( 1, ( now - t0 ) / ms ), e = 1 - Math.pow( 1 - k, 3 ); X = from + ( to - from ) * e; apply(); if ( k < 1 ) raf = requestAnimationFrame( step ); }; raf = requestAnimationFrame( step ); };
@@ -112,7 +127,7 @@
 	}
 	/** Jokes and icons drift slowly down behind one half, faded, so they set the mood without getting in the way. */
 	function falling( layer, who, root ) {
-		const cfg = FALL[ who ], el = who === 'boogie', texts = el ? cfg.el : cfg.en, // left half Greek, right half English
+		const cfg = FALL[ who ], el = EX.lang() === 'el', texts = el ? cfg.el : cfg.en,
 		 W = () => layer.clientWidth || 360, H = () => layer.clientHeight || 700;
 		let n = 0, timer = 0;
 		const drift = ( still ) => {
@@ -170,10 +185,6 @@
 	const BILL_TPL = [ [ 'tplRent', 'housing', 'monthly', '🏠' ], [ 'tplElectricity', 'utilities', 'monthly', '💡' ], [ 'tplInternet', 'utilities', 'monthly', '🌐' ], [ 'tplPhone', 'utilities', 'monthly', '📱' ], [ 'tplWater', 'utilities', 'quarterly', '💧' ], [ 'tplNetflix', 'subscriptions', 'monthly', '📺' ], [ 'tplCarIns', 'insurance', 'yearly', '🛡️' ], [ 'tplCard', 'loans', 'monthly', '💳' ] ];
 	const GOALS = [ [ 'trip', 'plane', '✈️' ], [ 'car', 'car', '🚗' ], [ 'gift', 'gift', '🎁' ], [ 'home', 'home', '🏠' ], [ 'emergency', 'heart', '❤️' ] ];
 
-	async function qLang() {
-		await say( L( 'lang' ) ); const r = await prompt( { chips: [ { label: 'Ελληνικά' }, { label: 'English' } ] } ); if ( ! r ) return;
-		const k = r.chip === 0 ? 'el' : 'en'; A.lang = k; me( r.chip === 0 ? 'Ελληνικά' : 'English' ); if ( EX.lang() !== k ) EX.setLang( k );
-	}
 	async function qName() {
 		await say( L( 'name' ) ); const r = await prompt( { input: 'text', ph: L( 'ph' ), chips: [ { label: L( 'skipQ' ) } ] } ); if ( ! r ) return;
 		if ( r.chip !== undefined ) { me( L( 'skipQ' ) ); A.name = ''; await say( L( 'nameNone' ) ); } else { A.name = r.text.trim().slice( 0, 40 ); me( A.name ); await say( L( 'nameHi', { name: A.name } ) ); }
@@ -240,8 +251,8 @@
 		await say( L( 'entry' ) ); const r = await prompt( { chips: [ { label: L( 'eSmart' ) }, { label: L( 'eCasual' ) } ] } ); if ( ! r ) return;
 		A.entry = r.chip === 0 ? 'smart' : 'casual'; me( r.chip === 0 ? L( 'eSmart' ) : L( 'eCasual' ) );
 	}
-	const QS = { lang: qLang, name: qName, cur: qCur, income: qIncome, bills: qBills, goal: qGoal, cushion: qCushion, entry: qEntry };
-	const ORDER = [ 'lang', 'name', 'cur', 'income', 'bills', 'goal', 'cushion', 'entry' ];
+	const QS = { name: qName, cur: qCur, income: qIncome, bills: qBills, goal: qGoal, cushion: qCushion, entry: qEntry };
+	const ORDER = [ 'name', 'cur', 'income', 'bills', 'goal', 'cushion', 'entry' ];
 
 	function chat() {
 		const my = ++tok; summaryOn = false; created = null;
@@ -295,7 +306,7 @@
 		const inc = A.income ? esc( fmt( A.income.amount ) + ' · ' + L( { monthly: 'fMonthly', biweekly: 'fBiweekly', weekly: 'fWeekly' }[ A.income.repeat ] ) ) : none;
 		const bills = A.bills.length ? esc( A.bills.map( ( b ) => t( BILL_TPL[ b.tpl ][ 0 ] ) ).join( ', ' ) + ' · ' + fmt( A.bills.reduce( ( x, b ) => x + perMonth( b.amount, BILL_TPL[ b.tpl ][ 2 ] ), 0 ) ) + ' ' + L( 'perMonth' ) ) : none;
 		const bud = created && created.budgets.length ? esc( S().budgets.filter( ( b ) => created.budgets.includes( b.id ) ).map( ( b ) => t( 'cat_' + b.category ) + ' ' + fmt( Number( b.amount ) ) ).join(', ') ) : none;
-		return R( 'lang', '🌍', 'sLang', A.lang === 'el' ? 'Ελληνικά' : 'English', 'lang' ) + R( 'name', '👤', 'sName', esc( A.name ) || none, 'name' ) + R( 'cur', '💶', 'sCur', esc( A.cur || S().settings.currency ), 'cur' ) + R( 'income', '💼', 'sInc', inc, 'income' )
+		return R( 'lang', '🌍', 'sLang', EX.lang() === 'el' ? 'Ελληνικά' : 'English', '' ) + R( 'name', '👤', 'sName', esc( A.name ) || none, 'name' ) + R( 'cur', '💶', 'sCur', esc( A.cur || S().settings.currency ), 'cur' ) + R( 'income', '💼', 'sInc', inc, 'income' )
 			+ R( 'bills', '🧾', 'sBills', bills, 'bills' ) + R( 'goal', '🎯', 'sGoal', A.goal ? esc( A.goal.name + ' · ' + fmt( A.goal.target ) ) : none, 'goal' ) + R( 'cushion', '🛡️', 'sCush', esc( L( cush ) ), 'cushion' )
 			+ R( 'entry', '✨', 'sEntry', esc( L( A.entry === 'smart' ? 'eSmart' : 'eCasual' ) ), 'entry' ) + R( 'bud', '📊', 'sBud', bud, '', created && created.budgets.length ? 'bud' : '' );
 	}
@@ -323,6 +334,8 @@
 			if ( p.multi ) { const c = p.chips[ i ]; if ( c.doneBtn ) { const r = p.res; clearBar(); r( { done: true } ); return; } if ( p.sel.has( c.toggle ) ) p.sel.delete( c.toggle ); else p.sel.add( c.toggle ); p.chips = p.chips.map( ( x, k ) => ( x.doneBtn ? Object.assign( x, { label: p.sel.size ? '✅ ' + L( 'done' ) : L( 'noBills' ) } ) : Object.assign( x, { on: p.sel.has( x.toggle ) } ) ) ); setBar( p ); return; }
 			const r = p.res; clearBar(); r( { chip: i } ); return;
 		}
+		const lg = e.target.closest( '[data-ob-lang]' ); if ( lg ) { const k = lg.dataset.obLang; if ( EX.lang() !== k ) EX.setLang( k ); A.lang = k; const y = host.querySelector( '.ob-intro' ).scrollTop; intro(); host.querySelector( '.ob-intro' ).scrollTop = y; return; }
+		if ( e.target.closest( '[data-ob-go]' ) ) { picker(); return; }
 		if ( e.target.closest( '[data-ob-skip]' ) ) { skipAll(); return; }
 		const ed = e.target.closest( '[data-ob-edit]' ); if ( ed ) { edit( ed.dataset.obEdit ); return; }
 		if ( e.target.closest( '[data-ob-rm]' ) ) { if ( created ) { S().budgets = S().budgets.filter( ( b ) => ! created.budgets.includes( b.id ) ); created.budgets = []; EX.save(); refreshSummary(); } }
@@ -334,7 +347,7 @@
 	/* ------------------------------------------------------------------ Entry point (called by flow.js instead of the classic wizard) */
 	ob.show = () => {
 		host = document.getElementById( 'flow' ); if ( ! host ) return;
-		if ( host.querySelector( '.ob-pick, .ob-chat' ) ) return; // already running: a language change must not restart it
-		A.lang = EX.lang(); A.cur = ''; tok++; chosen = false; picker();
+		if ( host.querySelector( '.ob-intro, .ob-pick, .ob-chat' ) ) return; // already running: a language change must not restart it
+		A.lang = EX.lang(); A.cur = ''; tok++; chosen = false; intro();
 	};
 }() );
