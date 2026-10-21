@@ -370,7 +370,9 @@
 		if ( chip && pending ) {
 			const i = Number( chip.dataset.obChip ), p = pending;
 			if ( p.sumBtn ) { exit(); return; }
-			if ( p.multi ) { const c = p.chips[ i ]; if ( c.doneBtn ) { const r = p.res; clearBar(); r( { done: true } ); return; } if ( p.sel.has( c.toggle ) ) p.sel.delete( c.toggle ); else p.sel.add( c.toggle ); p.chips = p.chips.map( ( x, k ) => ( x.doneBtn ? Object.assign( x, { label: p.sel.size ? '✅ ' + L( 'done' ) : L( 'noBills' ) } ) : Object.assign( x, { on: p.sel.has( x.toggle ) } ) ) ); setBar( p ); return; }
+			if ( p.multi ) { const c = p.chips[ i ]; if ( c.doneBtn ) { const r = p.res; clearBar(); r( { done: true } ); return; } if ( p.sel.has( c.toggle ) ) p.sel.delete( c.toggle ); else p.sel.add( c.toggle ); p.chips = p.chips.map( ( x, k ) => ( x.doneBtn ? Object.assign( x, { label: p.sel.size ? '✅ ' + L( 'done' ) : L( 'noBills' ) } ) : Object.assign( x, { on: p.sel.has( x.toggle ) } ) ) );
+				// update the buttons in place: redrawing them would make every one flash
+				host.querySelectorAll( '#obChips [data-ob-chip]' ).forEach( ( el, k ) => { const x = p.chips[ k ]; if ( ! x ) return; el.classList.toggle( 'on', !! x.on ); el.setAttribute( 'aria-pressed', x.on ? 'true' : 'false' ); if ( x.doneBtn && el.textContent !== x.label ) el.textContent = x.label; } ); return; }
 			const r = p.res; clearBar(); r( { chip: i } ); return;
 		}
 		const lg = e.target.closest( '[data-ob-lang]' ); if ( lg ) { const k = lg.dataset.obLang; if ( EX.lang() !== k ) EX.setLang( k ); A.lang = k; const y = host.querySelector( '.ob-intro' ).scrollTop; intro(); host.querySelector( '.ob-intro' ).scrollTop = y; return; }
