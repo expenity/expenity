@@ -1853,3 +1853,8 @@ fieldset > legend { font-weight: 800; padding: 0 8px; color: var(--ink, #2a1a14)
 @media (prefers-reduced-motion: reduce) { .ef-lever-arm { transition: none; } }
 :root[data-motion=off] .ef-lever-arm, :root[data-motion=reduced] .ef-lever-arm { transition: none; }
 .ob-light .ef-panel { transform: scale(.74); margin-bottom: -14px; } .ob-boogie .ob-art svg { height: min(27dvh, 250px); }
+.ob-light .ef-panel { transform: scale(.58); margin-bottom: -34px; } .ob-light { bottom: calc(clamp(84px, 12dvh, 100px) + env(safe-area-inset-bottom)) !important; }
+@media (max-height: 660px) { .ob-light .ef-panel { transform: scale(.5); margin-bottom: -42px; } }
+.ob-light .ef-panel { margin-bottom: 0 !important; } .ob-light { bottom: calc(clamp(92px, 13dvh, 108px) + env(safe-area-inset-bottom)) !important; }
+@media (max-height: 660px) { .ob-light { bottom: calc(78px + env(safe-area-inset-bottom)) !important; } }
+@media (max-height: 660px) { .ob-light { bottom: calc(96px + env(safe-area-inset-bottom)) !important; } }
