@@ -1,0 +1,16 @@
+import { chromium } from 'playwright-core';
+import http from 'http'; import fs from 'fs'; import path from 'path';
+const root = process.cwd(), types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.svg': 'image/svg+xml' };
+const server = http.createServer( ( q, r ) => { let f = path.join( root, decodeURIComponent( q.url.split( '?' )[ 0 ] ) ); if ( f.endsWith( '/' ) ) f += 'index.html'; fs.readFile( f, ( e, d ) => { if ( e ) { r.writeHead( 404 ); r.end(); } else { r.writeHead( 200, { 'content-type': types[ path.extname( f ) ] || 'application/octet-stream' } ); r.end( d ); } } ); } ).listen( 0 );
+const port = server.address().port; let ok = 0, fail = 0; const chk = ( n, c ) => { if ( c ) { ok++; console.log( 'ok', n ); } else { fail++; console.log( 'FAIL', n ); } };
+const b = await chromium.launch( { channel: 'chrome' } ), pg = await b.newPage( { viewport: { width: 390, height: 800 } } ); const errs = []; pg.on( 'pageerror', ( e ) => errs.push( e.message ) );
+await pg.goto( `http://localhost:${ port }/index.html` ); await pg.waitForFunction( () => window.EX && EX.efriend );
+await pg.evaluate( () => { const S = EX.state(); S.settings.onboarded = true; EX.setLang( 'en' ); S.device.efOnboard = 1; EXA.skipFlow && ( EXA.skipFlow(), EX.state().device.entryMode = 'casual' ); } );
+await pg.evaluate( () => { const S = EX.state(); S.settings.onboarded = true; EX.setLang( 'en' ); S.device.efOnboard = 1; EXA.skipFlow && ( EXA.skipFlow(), EX.state().device.entryMode = 'casual' ); const td = EX.today(); S.txs = [ 1, 2, 3 ].map( ( i ) => ( { id: 'a' + i, type: 'expense', amount: String( 10 * i ), category: 'food', date: td, name: 'Item ' + i } ) ); EXA.st.view = 'activity'; EXA.render(); } ); await pg.waitForTimeout( 300 );
+chk( 'Activity has a Paid fold, open at first, with the count and the total', await pg.evaluate( () => { const d = document.querySelector( 'details[data-fold=paid]' ); return !! d && d.open && /Paid\s*3/.test( d.querySelector( 'summary' ).textContent ) && /60/.test( d.querySelector( '.af-sub' ).textContent ) && d.querySelectorAll( '.bm-list li, .bm-list .bm-row' ).length >= 1; } ) );
+await pg.click( 'details[data-fold=paid] summary' ); await pg.waitForTimeout( 200 );
+chk( 'tapping the title closes it and the title stays', await pg.evaluate( () => ! document.querySelector( 'details[data-fold=paid]' ).open && EXA.st.paidOpen === false ) );
+await pg.evaluate( () => EXA.render() ); await pg.waitForTimeout( 200 );
+chk( 'it stays closed after the screen redraws, and the Greek screen keeps the word Paid', await pg.evaluate( () => { EX.setLang( 'el' ); EXA.render(); const d = document.querySelector( 'details[data-fold=paid]' ); const r = ! d.open && /Paid/.test( d.querySelector( 'summary' ).textContent ); EX.setLang( 'en' ); return r; } ) );
+chk( 'no page errors ' + errs.join( ';' ), ! errs.length );
+console.log( ok + ' ok, ' + fail + ' failed' ); await b.close(); server.close(); process.exit( fail ? 1 : 0 );

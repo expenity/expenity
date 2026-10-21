@@ -251,6 +251,8 @@
 
 	/* ------------------------------------------------------------------ Activity */
 
+	/** The entries of the month in a fold, like the bills that are due: the title and the total stay visible when it is closed. "Paid" stays English, like the other status words. */
+	const paidFold = ( list, f ) => `<details class="act-fold act-paid" data-fold="paid"${ st.paidOpen !== false ? ' open' : '' }><summary><span class="af-main">${ UI.icon( 'circle-check', 18 ) } Paid <b>${ list.length }</b></span><span class="af-sub">${ esc( money( sumMain( f.expense ) / 100, mainCur() ) ) }</span>${ UI.icon( 'chevron-down', 18 ) }</summary><div class="af-body"><ul class="bm-list">${ list.map( txItem ).join( '' ) }</ul></div></details>`;
 	EXA.activity = () => {
 		const schedules = st.txFilter.type === 'income' && st.incomeMode === 'recurring';
 		const incomeNav = st.txFilter.type === 'income' ? `<div class="segm income-modes" role="tablist">${ [ ['recorded','incomeRecorded','arrows-sort'], ['recurring','incomeRecurring','repeat'] ].map(([id,label,ic]) => `<button type="button" role="tab" aria-selected="${ ( st.incomeMode || 'recorded' ) === id }" class="${ ( st.incomeMode || 'recorded' ) === id ? 'on' : '' }" data-income-mode="${ id }">${ UI.icon(ic,18) } ${ esc(t(label)) }</button>`).join('') }</div>` : '';
@@ -281,7 +283,7 @@
 			${ ( st.searchOpen || st.filtersPanel ) && EXA.filterPanel ? EXA.filterPanel() : '' }
 			${ toPayHtml }
 			${ incomeNav }
-			${ schedules ? EXA.incomeSchedules() : groups.length ? `<ul class="bm-list">${ list.map( txItem ).join( '' ) }</ul>` + ( UI.isPhone() ? `<p class="hint">${ esc( t( 'swipeHint' ) ) }</p>` : '' ) : empty( 'arrows-sort', 'teal', t( 'txNone' ), t( 'txNoneHint' ), `<button type="button" class="btn btn-primary" data-act="add">${ esc( t( 'addTx' ) ) }</button>` ) }`;
+			${ schedules ? EXA.incomeSchedules() : groups.length ? paidFold( list, f ) + ( UI.isPhone() && st.paidOpen !== false ? `<p class="hint">${ esc( t( 'swipeHint' ) ) }</p>` : '' ) : empty( 'arrows-sort', 'teal', t( 'txNone' ), t( 'txNoneHint' ), `<button type="button" class="btn btn-primary" data-act="add">${ esc( t( 'addTx' ) ) }</button>` ) }`;
 	};
 
 	/* ------------------------------------------------------------------ Bills */
@@ -546,3 +548,5 @@
 	const EX = window.EX; if ( ! EX ) return;
 	Object.assign( EX.I18N.langs.en, { actSnooze: 'Snooze 1 day' } ); Object.assign( EX.I18N.langs.el, { actSnooze: 'Αναβολή 1 ημέρας' } );
 }() );
+
+document.addEventListener( 'toggle', ( e ) => { const d = e.target; if ( d && d.matches && d.matches( 'details[data-fold=paid]' ) && EXA.st ) EXA.st.paidOpen = d.open; }, true );
