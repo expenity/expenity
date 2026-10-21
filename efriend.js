@@ -211,12 +211,13 @@
 	const mixc = ( a, b, k ) => { const x = hex3( a ), y = hex3( b ); return toHex3( x.map( ( v, n ) => v + ( y[ n ] - v ) * k ) ); };
 	F.LIGHTS = [ [ 'amber', '#ff941f' ], [ 'blue', '#33b5ff' ], [ 'green', '#39ff14' ] ]; // the default, a blue and a fluorescent green
 	F.LEVELS = [ [ 'low', 40 ], [ 'normal', 70 ], [ 'high', 100 ] ]; // High is the brightest it can be
-	F.light = () => { const l = S().settings.efLight || {}, i = Number( l.i ), v = Number.isFinite( i ) ? i : 70, lv = F.LEVELS.reduce( ( best, x ) => ( Math.abs( x[ 1 ] - v ) < Math.abs( best[ 1 ] - v ) ? x : best ), F.LEVELS[ 1 ] ), c = ( l.c || '' ).toLowerCase(); return { i: lv[ 1 ], lvl: lv[ 0 ], c: F.LIGHTS.some( ( x ) => x[ 1 ] === c ) ? c : F.LIGHTS[ 0 ][ 1 ] }; };
-	F.applyLight = () => { const { i, c } = F.light(), st = document.documentElement.style; st.setProperty( '--ef-glow', ( i / 100 ).toFixed( 2 ) ); st.setProperty( '--ef-tm', c ); st.setProperty( '--ef-te', mixc( c, '#000000', .25 ) ); st.setProperty( '--ef-tc', mixc( c, '#ffffff', .78 ) ); st.setProperty( '--ef-tl', mixc( c, '#ffffff', .18 ) ); };
-	F.setLight = ( patch, final ) => { const cur = F.light(); S().settings.efLight = { i: cur.i, c: cur.c, ...patch }; F.applyLight(); if ( F.lightDraft ) return; S().settings.u = Date.now(); if ( final ) EX.save(); else EX.persist(); }; // while the light sheet is open nothing is stored until Save
+	F.SPINS = [ 'still', 'slow', 'normal', 'fast' ]; // how fast the gear in his left eye turns
+	F.light = () => { const l = S().settings.efLight || {}, i = Number( l.i ), sp = Number( l.s ), v = Number.isFinite( i ) ? i : 70, lv = F.LEVELS.reduce( ( best, x ) => ( Math.abs( x[ 1 ] - v ) < Math.abs( best[ 1 ] - v ) ? x : best ), F.LEVELS[ 1 ] ), c = ( l.c || '' ).toLowerCase(); return { i: lv[ 1 ], lvl: lv[ 0 ], c: F.LIGHTS.some( ( x ) => x[ 1 ] === c ) ? c : F.LIGHTS[ 0 ][ 1 ], s: Number.isInteger( sp ) && sp >= 0 && sp <= 3 ? sp : 2 }; };
+	F.applyLight = () => { const { i, c, s: sp } = F.light(), st = document.documentElement.style; document.documentElement.dataset.efSpin = F.SPINS[ sp ]; st.setProperty( '--ef-glow', ( i / 100 ).toFixed( 2 ) ); st.setProperty( '--ef-tm', c ); st.setProperty( '--ef-te', mixc( c, '#000000', .25 ) ); st.setProperty( '--ef-tc', mixc( c, '#ffffff', .78 ) ); st.setProperty( '--ef-tl', mixc( c, '#ffffff', .18 ) ); };
+	F.setLight = ( patch, final ) => { const cur = F.light(); S().settings.efLight = { i: cur.i, c: cur.c, s: cur.s, ...patch }; F.applyLight(); if ( F.lightDraft ) return; S().settings.u = Date.now(); if ( final ) EX.save(); else EX.persist(); }; // while the light sheet is open nothing is stored until Save
 	EX.on( 'change', () => F.applyLight() ); F.applyLight();
 	/** The vintage control plate: a bat-handle toggle for the brightness and three lamp buttons for the bulb colour. Used in the eFriend menu and on the picker. */
-	F.lightControls = () => {
+	F.lightControls = ( withSpeed ) => {
 		const l = F.light(), pos = F.LEVELS.findIndex( ( x ) => x[ 0 ] === l.lvl );
 		return `<div class="ef-panel" role="group" aria-label="${ esc( t( 'efLightTitle' ) ) }"><i class="ef-screw a"></i><i class="ef-screw b"></i><i class="ef-screw c"></i><i class="ef-screw d"></i>
 			<div class="ef-psec"><div class="ef-eng">${ esc( t( 'efLightBright' ) ) }</div>
@@ -226,7 +227,7 @@
 						<g class="ef-lever-arm"><path d="M54 62 L58 14 Q60 8 62 14 L66 62 Z" fill="url(#efArm)" stroke="#555a60" stroke-width=".8"/><circle cx="60" cy="12" r="9" fill="url(#efBall)" stroke="#555a60" stroke-width=".8"/></g>
 						<circle cx="60" cy="64" r="15" fill="url(#efNut)" stroke="#4d5257" stroke-width="1"/><circle cx="60" cy="64" r="7" fill="#3b3f43" stroke="#9aa0a6" stroke-width=".8"/></svg></button>
 					<div class="ef-pos">${ F.LEVELS.map( ( [ k, v ], n ) => `<button type="button" class="ef-lvl${ pos === n ? ' on' : '' }" data-ef-lightlvl="${ v }" role="radio" aria-checked="${ pos === n }" tabindex="${ pos === n ? 0 : -1 }">${ esc( t( 'efLvl_' + k ) ) }</button>` ).join( '' ) }</div></div></div>
-			<div class="ef-psec"><div class="ef-eng">${ esc( t( 'efLightColor' ) ) }</div><div class="ef-lamps" role="radiogroup" aria-label="${ esc( t( 'efLightColor' ) ) }">${ F.LIGHTS.map( ( [ k, c ] ) => `<button type="button" class="ef-lamp${ l.c === c ? ' on' : '' }" style="--c:${ c }" data-ef-lightc="${ c }" role="radio" aria-checked="${ l.c === c }" aria-label="${ esc( t( 'efLight_' + k ) ) }" title="${ esc( t( 'efLight_' + k ) ) }"><i></i></button>` ).join( '' ) }</div></div></div>`;
+			<div class="ef-psec"><div class="ef-eng">${ esc( t( 'efLightColor' ) ) }</div><div class="ef-lamps" role="radiogroup" aria-label="${ esc( t( 'efLightColor' ) ) }">${ F.LIGHTS.map( ( [ k, c ] ) => `<button type="button" class="ef-lamp${ l.c === c ? ' on' : '' }" style="--c:${ c }" data-ef-lightc="${ c }" role="radio" aria-checked="${ l.c === c }" aria-label="${ esc( t( 'efLight_' + k ) ) }" title="${ esc( t( 'efLight_' + k ) ) }"><i></i></button>` ).join( '' ) }</div></div>${ withSpeed ? F.spinSection( l ) : '' }</div>`;
 	};
 	let lightTimer = 0; const saveLight = () => { if ( F.lightDraft ) return; clearTimeout( lightTimer ); lightTimer = setTimeout( () => { S().settings.u = Date.now(); EX.save(); }, 500 ); };
 	/** Moves the lever and the labels in place (no redraw), so the flick animation plays. */
@@ -246,7 +247,7 @@
 	F.setChip = ( patch ) => { S().settings.efChip = { ...F.chipLook(), ...patch }; F.applyChip(); if ( F.chipDraft ) return; S().settings.u = Date.now(); EX.persist(); };
 	EX.on( 'change', () => F.applyChip() ); F.applyChip();
 	F.chipControls = () => {
-		const l = F.chipLook(), row = ( part, label ) => `<div class="chip-row" data-chip-part="${ part }"><span class="chip-lab">${ esc( label ) }</span><div class="chip-sws" role="radiogroup" aria-label="${ esc( label ) }">${ F.CHIP_COLORS.map( ( [ k, c ] ) => `<button type="button" class="chip-sw${ l[ part ] === c ? ' on' : '' }" style="--c:${ c }" data-chip-color="${ c }" role="radio" aria-checked="${ l[ part ] === c }" aria-label="${ esc( t( 'efChipC_' + k ) ) }" title="${ esc( t( 'efChipC_' + k ) ) }"></button>` ).join( '' ) }<label class="chip-sw chip-own${ F.CHIP_COLORS.some( ( x ) => x[ 1 ] === l[ part ] ) ? '' : ' on' }" title="${ esc( t( 'efLight_custom' ) ) }"><input type="color" data-chip-own value="${ l[ part ] === CHIP_DEF.r && part === 'r' ? '#2dd4bf' : l[ part ] }" aria-label="${ esc( t( 'efLight_custom' ) ) }"></label></div></div>`;
+		const l = F.chipLook(), row = ( part, label ) => `<div class="chip-row" data-chip-part="${ part }"><span class="chip-lab">${ esc( label ) }</span><div class="chip-sws" role="radiogroup" aria-label="${ esc( label ) }">${ F.CHIP_COLORS.map( ( [ k, c ] ) => `<button type="button" class="chip-sw${ l[ part ] === c ? ' on' : '' }" style="--c:${ c }" data-chip-color="${ c }" role="radio" aria-checked="${ l[ part ] === c }" aria-label="${ esc( t( 'efChipC_' + k ) ) }" title="${ esc( t( 'efChipC_' + k ) ) }"></button>` ).join( '' ) }</div></div>`;
 		return `<div class="chip-panel" role="group" aria-label="${ esc( t( 'efChipTitle' ) ) }"><label class="chip-match"><input type="checkbox" data-chip-all${ l.all ? ' checked' : '' }><span class="chip-pill" aria-hidden="true"></span><b>${ esc( t( 'efChipAll' ) ) }</b></label>${ l.all ? row( 'e', t( 'efChipColor' ) ) : row( 'e', '👀 ' + t( 'efChipEyes' ) ) + row( 'm', '👄 ' + t( 'efChipMouth' ) ) + row( 'r', '👂 ' + t( 'efChipEars' ) ) }
 			<div class="chip-row"><span class="chip-lab">✨ ${ esc( t( 'efChipGlow' ) ) }</span><input type="range" class="chip-range" data-chip-i min="15" max="100" step="1" value="${ l.i }" aria-label="${ esc( t( 'efChipGlow' ) ) }"></div></div>`;
 	};
@@ -263,15 +264,23 @@
 	} );
 	document.addEventListener( 'input', ( e ) => {
 		const r = e.target.closest && e.target.closest( '[data-chip-i]' ); if ( r ) { F.setChip( { i: Number( r.value ) } ); return; }
-		const o = e.target.closest && e.target.closest( '[data-chip-own]' ); if ( o ) { const row = o.closest( '[data-chip-part]' ), all = F.chipLook().all; F.setChip( all ? { e: o.value, m: o.value, r: o.value } : { [ row.dataset.chipPart ]: o.value } ); }
 	} );
-	document.addEventListener( 'change', ( e ) => { const o = e.target.closest && e.target.closest( '[data-chip-own]' ); if ( o ) { redrawChip(); return; } const a = e.target.closest && e.target.closest( '[data-chip-all]' ); if ( ! a ) return; const l = F.chipLook(); F.setChip( a.checked ? { all: 1, m: l.e, r: l.e } : { all: 0 } ); redrawChip(); } );
+	document.addEventListener( 'change', ( e ) => { const a = e.target.closest && e.target.closest( '[data-chip-all]' ); if ( ! a ) return; const l = F.chipLook(); F.setChip( a.checked ? { all: 1, m: l.e, r: l.e } : { all: 0 } ); redrawChip(); } );
+	/** The third control: a rusty volume knob for the speed of the gear in his left eye. */
+	const teeth = ( () => { let d = ''; for ( let n = 0; n < 28; n++ ) { const a0 = ( n / 28 ) * Math.PI * 2, a1 = ( ( n + .5 ) / 28 ) * Math.PI * 2, r0 = 40, r1 = 45, p = ( a, r ) => ( 50 + Math.cos( a ) * r ).toFixed( 1 ) + ' ' + ( 50 + Math.sin( a ) * r ).toFixed( 1 ); d += ( n ? 'L' : 'M' ) + p( a0, r0 ) + 'L' + p( a0 + .02, r1 ) + 'L' + p( a1 - .02, r1 ) + 'L' + p( a1, r0 ); } return d + 'Z'; } )();
+	F.spinSection = ( l ) => `<div class="ef-psec ef-spd"><div class="ef-eng">${ esc( t( 'efLightSpin' ) ) }</div><div class="ef-knobwrap" data-pos="${ l.s }"><button type="button" class="ef-knob" data-ef-spincycle tabindex="-1" aria-hidden="true"><svg viewBox="0 0 100 100" width="104" height="104"><defs><radialGradient id="efRust" cx=".35" cy=".3" r=".9"><stop offset="0" stop-color="#d98a4a"/><stop offset=".45" stop-color="#9c4f22"/><stop offset="1" stop-color="#4a2210"/></radialGradient><radialGradient id="efRustCap" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#b9855a"/><stop offset=".6" stop-color="#7a4020"/><stop offset="1" stop-color="#3a1b0c"/></radialGradient></defs><path d="${ teeth }" fill="url(#efRust)" stroke="#2e1408" stroke-width="1.2"/><circle cx="50" cy="50" r="37" fill="url(#efRust)" stroke="#3a1b0c" stroke-width="1"/><g opacity=".7"><circle cx="30" cy="34" r="6" fill="#c8662a"/><circle cx="68" cy="30" r="4" fill="#b2561f"/><circle cx="72" cy="64" r="7" fill="#c8662a"/><circle cx="38" cy="70" r="5" fill="#8a3f16"/><circle cx="58" cy="76" r="3" fill="#d27a3a"/><path d="M26 52q6-4 8 2t-4 6z" fill="#d27a3a"/></g><path d="M22 40q10-16 28-17M70 74q-8 8-18 9" fill="none" stroke="#e9c79f" stroke-opacity=".35" stroke-width="1.4" stroke-linecap="round"/><circle cx="50" cy="50" r="21" fill="url(#efRustCap)" stroke="#2e1408" stroke-width="1"/><circle cx="50" cy="50" r="5" fill="#2a1308"/><g class="ef-knob-arm"><path d="M48 52 50 14 52 52Z" fill="#ead9b4" stroke="#6b4a22" stroke-width=".8"/></g></svg></button><div class="ef-spos" role="radiogroup" aria-label="${ esc( t( 'efLightSpin' ) ) }">${ F.SPINS.map( ( k, n ) => `<button type="button" class="ef-lvl${ l.s === n ? ' on' : '' }" data-ef-spin="${ n }" role="radio" aria-checked="${ l.s === n }" tabindex="${ l.s === n ? 0 : -1 }">${ esc( t( 'efSpin_' + k ) ) }</button>` ).join( '' ) }</div></div></div>`;
+	const showSpin = ( panel, n ) => { const w = panel.querySelector( '.ef-knobwrap' ); if ( ! w ) return; w.dataset.pos = n; w.querySelectorAll( '[data-ef-spin]' ).forEach( ( b, i ) => { b.classList.toggle( 'on', i === n ); b.setAttribute( 'aria-checked', i === n ? 'true' : 'false' ); b.tabIndex = i === n ? 0 : -1; } ); };
+	const setSpin = ( el, n ) => { const panel = el.closest( '.ef-panel' ); if ( ! panel || F.light().s === n ) return; F.setLight( { s: n }, false ); showSpin( panel, n ); F.sound( 'click' ); saveLight(); };
+	document.addEventListener( 'click', ( e ) => {
+		const sp = e.target.closest && e.target.closest( '[data-ef-spin]' ); if ( sp ) { setSpin( sp, Number( sp.dataset.efSpin ) ); return; }
+		const cy = e.target.closest && e.target.closest( '[data-ef-spincycle]' ); if ( cy ) setSpin( cy, ( F.light().s + 1 ) % 4 );
+	} );
 	/** The light sheet: Boogie on top, the control plate below. Changes are a draft until Save; closing any other way puts the light back as it was. */
 	let lightDraft = null;
 	F.openLightSheet = () => {
 		lightDraft = { keep: S().settings.efLight ? { ...S().settings.efLight } : null }; F.lightDraft = true;
 		const revert = () => { if ( ! lightDraft ) return; F.lightDraft = false; if ( lightDraft.keep ) S().settings.efLight = lightDraft.keep; else delete S().settings.efLight; lightDraft = null; F.applyLight(); };
-		UI.openSheet( `<div class="sheet-head"><h2>💡 ${ esc( t( 'efLightTitle' ) ) }</h2><span class="sp"></span><button type="button" class="ab-btn" data-close aria-label="${ esc( t( 'close' ) ) }">${ UI.icon( 'x', 24 ) }</button></div><div class="sheet-pad ef-lightsheet"><div class="ef-lightart">${ F.mascotOf( 'boogie', 'happy', 230 ) }</div><p class="muted small">${ esc( t( 'efLightHint' ) ) }</p>${ F.lightControls() }<div class="btn-row"><button type="button" class="btn btn-primary wide" data-ef-lightsave>${ esc( t( 'efLightSave' ) ) }</button></div></div>`, { full: true, cls: 'ef-lightfull', onClose: revert } );
+		UI.openSheet( `<div class="sheet-head"><h2>💡 ${ esc( t( 'efLightTitle' ) ) }</h2><span class="sp"></span><button type="button" class="ab-btn" data-close aria-label="${ esc( t( 'close' ) ) }">${ UI.icon( 'x', 24 ) }</button></div><div class="sheet-pad ef-lightsheet"><div class="ef-lightart">${ F.mascotOf( 'boogie', 'happy', 230 ) }</div><p class="muted small">${ esc( t( 'efLightHint' ) ) }</p>${ F.lightControls( true ) }<div class="btn-row"><button type="button" class="btn btn-primary wide" data-ef-lightsave>${ esc( t( 'efLightSave' ) ) }</button></div></div>`, { full: true, cls: 'ef-lightfull', onClose: revert } );
 	};
 	document.addEventListener( 'click', ( e ) => {
 		const gr = e.target.closest && e.target.closest( '[data-ef-gear]' ); if ( gr ) { if ( gr.dataset.efGear === 'chip' ) F.openChipSheet(); else F.openLightSheet(); return; }
@@ -288,6 +297,8 @@
 		for ( const m of [ ...svg.matchAll( /\bid="([^"]+)"/g ) ] ) { const id = m[ 1 ]; svg = svg.replaceAll( 'id="' + id + '"', 'id="' + prefix + id + '"' ).replaceAll( 'url(#' + id + ')', 'url(#' + prefix + id + ')' ); }
 		// the bulb takes its colour from the light settings (CSS variables), so it can change without redrawing
 		svg = svg.replace( /stop-color="#ffa526"/g, 'style="stop-color:var(--ef-tl)"' ).replace( /stop-color="#ff8220"/g, 'style="stop-color:var(--ef-tm)"' ).replace( /stop-color="#ff7b00"/g, 'style="stop-color:var(--ef-te)"' ).replace( /stroke="#ff7417"/g, 'style="stroke:var(--ef-te)"' ).replace( /stroke="#ff941f"/g, 'style="stroke:var(--ef-tm)"' ).replace( /stroke="#ffe6a6"/g, 'style="stroke:var(--ef-tc)"' );
+		// the Nixie digit keeps flipping between 0 and 1 (binary), steady in brightness; only the halo and the blaze pulse
+		svg = svg.replace( /<g class="tube-light">(<path d="M47-4 40 5H49M47-4V12"[\s\S]*?)<\/g>/, ( m, paths ) => { const tags = paths.match( /<path [^>]*\/>/g ) || [], mk = ( d ) => tags.map( ( p ) => p.replace( /d="[^"]*"/, 'd="' + d + '"' ) ).join( '' ); return '<g class="ef-digit d0">' + mk( 'M45-4C50-4 50 12 45 12C40 12 40-4 45-4Z' ) + '</g><g class="ef-digit d1">' + mk( 'M42.5-1 46-4V12' ) + '</g>'; } );
 		// a bright blaze behind the glass of the Nixie tube (it pulses in style.css)
 		const bid = prefix + 'blaze';
 		svg = svg.replace( '<g class="tube-light">', `<defs><radialGradient id="${ bid }"><stop offset="0" style="stop-color:var(--ef-tc)" stop-opacity=".95"/><stop offset=".25" style="stop-color:var(--ef-tm)" stop-opacity=".9"/><stop offset=".6" style="stop-color:var(--ef-te)" stop-opacity=".55"/><stop offset="1" style="stop-color:var(--ef-te)" stop-opacity="0"/></radialGradient></defs><ellipse class="tube-blaze" cx="45" cy="3" rx="34" ry="38" fill="url(#${ bid })"/><g class="tube-light">` );
@@ -2642,7 +2653,7 @@
 						efLight_green: 'Fluorescent green',
 		efLight_blue: 'Blue',
 				efLight_custom: 'Your own colour',
-		efLightShort: 'Light', efLightSave: 'Save',
+		efLightShort: 'Light', efLightSave: 'Save', efLightSpin: 'Gear', efSpin_still: 'Still', efSpin_slow: 'Slow', efSpin_normal: 'Mid', efSpin_fast: 'Fast',
 		efChipTitle: 'Chip’s glow', efChipHint: 'Make his eyes, mouth and ears glow your way.', efChipEyes: 'Eyes', efChipMouth: 'Mouth', efChipEars: 'Ears', efChipGlow: 'Glow', efChipAll: 'Same colour for all', efChipColor: 'Colour', efChipC_mint: 'Mint', efChipC_violet: 'Violet', efChipC_blue: 'Blue', efChipC_pink: 'Pink', efChipC_lime: 'Lime', efChipC_amber: 'Amber',
 	} );
 	Object.assign( window.EXPENITY_I18N.langs.el, {
@@ -2655,7 +2666,7 @@
 						efLight_green: 'Φθορίζον πράσινο',
 		efLight_blue: 'Μπλε',
 				efLight_custom: 'Δικό σας χρώμα',
-		efLightShort: 'Φως', efLightSave: 'Αποθήκευση',
+		efLightShort: 'Φως', efLightSave: 'Αποθήκευση', efLightSpin: 'Γρανάζι', efSpin_still: 'Στάση', efSpin_slow: 'Αργά', efSpin_normal: 'Μέτρια', efSpin_fast: 'Γρήγορα',
 		efChipTitle: 'Η λάμψη του Chip', efChipHint: 'Κάντε τα μάτια, το στόμα και τα αυτιά του να λάμπουν όπως θέλετε.', efChipEyes: 'Μάτια', efChipMouth: 'Στόμα', efChipEars: 'Αυτιά', efChipGlow: 'Λάμψη', efChipAll: 'Ίδιο χρώμα για όλα', efChipColor: 'Χρώμα', efChipC_mint: 'Μέντα', efChipC_violet: 'Βιολετί', efChipC_blue: 'Μπλε', efChipC_pink: 'Ροζ', efChipC_lime: 'Λάιμ', efChipC_amber: 'Κεχριμπάρι',
 	} );
 }() );

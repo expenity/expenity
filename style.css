@@ -1978,8 +1978,6 @@ fieldset > legend { font-weight: 800; padding: 0 8px; color: var(--ink, #2a1a14)
 .chip-sws { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip-sw { width: 38px; height: 38px; border-radius: 50%; border: 3px solid #fff; background: var(--c); box-shadow: 0 0 0 1px rgba(0,0,0,.12), 0 3px 8px rgba(0,0,0,.14); cursor: pointer; padding: 0; position: relative; transition: transform .15s, box-shadow .15s; }
 .chip-sw.on { transform: scale(1.12); box-shadow: 0 0 0 3px var(--c), 0 0 16px var(--c); }
-.chip-own { background: conic-gradient(#ff6b6b, #ffc94d, #b8f23a, #4dd6c1, #6cb4ff, #b79cff, #ff8fc8, #ff6b6b); display: grid; place-items: center; overflow: hidden; }
-.chip-own input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
 .chip-match { display: flex; align-items: center; gap: 12px; cursor: pointer; }
 .chip-match input { position: absolute; opacity: 0; width: 1px; height: 1px; }
 .chip-pill { width: 52px; height: 30px; border-radius: 15px; background: #cfd6e2; position: relative; flex: none; transition: background .2s; }
@@ -1991,3 +1989,30 @@ fieldset > legend { font-weight: 800; padding: 0 8px; color: var(--ink, #2a1a14)
 .chip-range::-moz-range-thumb { width: 24px; height: 24px; border-radius: 50%; background: #fff; border: 3px solid var(--chip-eye, #9ff3e6); box-shadow: 0 0 calc(var(--chip-glow) * 18px) var(--chip-eye, #9ff3e6); cursor: pointer; }
 .ef-chipsheet .ef-lightart svg { max-width: 100%; height: auto; }
 @media (prefers-reduced-motion: reduce) { .chip-sw, .chip-pill, .chip-pill::after { transition: none; } }
+
+/* Boogie's Nixie digit: it keeps flipping between 0 and 1 (0101001...), steady in brightness (only the halo around it pulses) */
+.ef-cassette .ef-digit { filter: drop-shadow(0 0 calc(2px + var(--ef-glow) * 4px) var(--ef-tm)); animation-duration: 4.9s; animation-iteration-count: infinite; animation-timing-function: steps(1, end); }
+.ef-cassette .ef-digit.d1 { animation-name: efc-d1; opacity: 0; } .ef-cassette .ef-digit.d0 { animation-name: efc-d0; }
+@keyframes efc-d1 { 0% { opacity: 0 } 14.28% { opacity: 1 } 28.57% { opacity: 0 } 42.85% { opacity: 1 } 57.14% { opacity: 0 } 71.42% { opacity: 0 } 85.71% { opacity: 1 } 100% { opacity: 1 } }
+@keyframes efc-d0 { 0% { opacity: 1 } 14.28% { opacity: 0 } 28.57% { opacity: 1 } 42.85% { opacity: 0 } 57.14% { opacity: 1 } 71.42% { opacity: 1 } 85.71% { opacity: 0 } 100% { opacity: 0 } }
+:root[data-motion=off] .ef-cassette .ef-digit, :root[data-motion=reduced] .ef-cassette .ef-digit { animation: none; } :root[data-motion=off] .ef-cassette .ef-digit.d1, :root[data-motion=reduced] .ef-cassette .ef-digit.d1 { opacity: 0; } :root[data-motion=off] .ef-cassette .ef-digit.d0, :root[data-motion=reduced] .ef-cassette .ef-digit.d0 { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { :root:not([data-motion=full]) .ef-cassette .ef-digit { animation: none; } :root:not([data-motion=full]) .ef-cassette .ef-digit.d1 { opacity: 0; } :root:not([data-motion=full]) .ef-cassette .ef-digit.d0 { opacity: 1; } }
+/* The gear in his left eye: speed set by the rusty knob (data-ef-spin on the page) */
+.ef-cassette .reel.ef-reel-left { animation: efc-spin 6s linear infinite; }
+:root[data-ef-spin=still] .ef-cassette .reel.ef-reel-left { animation: none; }
+:root[data-ef-spin=slow] .ef-cassette .reel.ef-reel-left { animation-duration: 14s; }
+:root[data-ef-spin=fast] .ef-cassette .reel.ef-reel-left { animation-duration: 1.4s; }
+@keyframes efc-spin { to { transform: rotate(360deg); } }
+:root[data-motion=off] .ef-cassette .reel.ef-reel-left, :root[data-motion=reduced] .ef-cassette .reel.ef-reel-left { animation: none; }
+@media (prefers-reduced-motion: reduce) { :root:not([data-motion=full]) .ef-cassette .reel.ef-reel-left { animation: none; } }
+/* the rusty knob */
+.ef-spd { flex-basis: 100%; display: grid; justify-items: center; gap: 8px; }
+.ef-knobwrap { display: grid; justify-items: center; gap: 8px; }
+.ef-knob { background: none; border: 0; padding: 0; cursor: pointer; filter: drop-shadow(0 5px 6px rgba(40,18,6,.45)); }
+.ef-knob-arm { transform-box: view-box; transform-origin: 50px 50px; transition: transform .45s cubic-bezier(.3,1.5,.5,1); }
+.ef-knobwrap[data-pos="0"] .ef-knob-arm { transform: rotate(-120deg); } .ef-knobwrap[data-pos="1"] .ef-knob-arm { transform: rotate(-40deg); } .ef-knobwrap[data-pos="2"] .ef-knob-arm { transform: rotate(40deg); } .ef-knobwrap[data-pos="3"] .ef-knob-arm { transform: rotate(120deg); }
+.ef-spos { display: flex; gap: 4px; flex-wrap: wrap; justify-content: center; }
+@media (prefers-reduced-motion: reduce) { .ef-knob-arm { transition: none; } }
+
+.ef-panel:has(.ef-spd) { flex-direction: column; align-items: center; gap: 16px; }
+.ef-panel:has(.ef-spd) .ef-spd { width: 100%; }
