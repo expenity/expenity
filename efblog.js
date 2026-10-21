@@ -199,14 +199,14 @@
 	};
 	/** Home: one card with the progress and a hook. */
 	EXA.efBlogCard = () => {
-		if ( EX.feature( 'efriend' ) === false || ! entries().length ) return '';
+		if ( EX.feature( 'efblog' ) === false || ! entries().length ) return '';
 		B.update(); const st = B.status();
 		const line = st.locked ? T( 'efbLocked', { n: Math.min( st.day + 1, LOCK_DAYS ), max: LOCK_DAYS } ) : st.unread.length ? T( 'efbNewChapter' ) : t( 'efbProgress', { p: st.pct } );
 		return `<button type="button" class="card efb-card" data-more="efblog"><span class="efb-card-art">${ EX.efriend.mascot( 'happy', 52 ) }</span><span class="mid"><b>${ esc( blogTitle() ) }</b><small>${ esc( line ) }</small>${ st.locked ? '' : bar( st.pct ) }</span>${ UI.icon( 'chevron-right', 20 ) }</button>`;
 	};
 	/** More: the menu row, with a badge when a new chapter is waiting. */
 	EXA.efBlogRow = () => {
-		if ( EX.feature( 'efriend' ) === false ) return '';
+		if ( EX.feature( 'efblog' ) === false ) return '';
 		B.update(); const n = B.status().unread.length;
 		return `<div class="list mlist efb-rowwrap"><button type="button" class="mrow" data-more="efblog">${ UI.ci( 'notes', 'purple', 40 ) }<span class="mid"><b>${ esc( t( 'efbMenu' ) ) }</b><small>${ esc( t( 'efbMoreSub' ) ) }</small></span>${ n ? `<i class="efb-badge" aria-label="${ esc( t( 'efbNewChapter' ) ) }">${ n }</i>` : '' }${ UI.icon( 'chevron-right', 18 ) }</button></div>`;
 	};
@@ -229,6 +229,8 @@
 		efbNewChapter: '📼 A new chapter is ready!', efbNewChapter_c: '💿 a new chapter is ready!',
 		efbProgress: 'eFriend has written {p}% of your story', efbMoreSoon: 'More chapters will come as your story grows.', efbFinished: 'The first season is complete. More chapters are on their way.',
 		efbWritten: 'Written on {d}', efbNotYet: 'Not written yet. Unlocks at {u}.', efbTrack: 'Track {n}', efbBurned: 'Burned {w} of {m} chapters · {p}%',
+		fx_efblog: 'eFriend Blog', fxD_efblog: 'A blog eFriend writes about your own entries, chapter by chapter, with jokes. Everything stays on your device.', tut_efblog: 'The eFriend Blog', tutD_efblog: 'Your story, written by eFriend',
+		tut_efblog_1: 'Keep adding your entries. After **10 days** eFriend lets you peek at the first chapters.', tut_efblog_2: 'Open **More → eFriend Blog**, or tap the blog card on Home, and pick a chapter.', tut_efblog_3: 'Too spicy? Turn on **Gentle mode** at the top. The facts stay, the teasing goes.',
 		efbGentle: 'Gentle mode', efbGentleHint: 'The same story, without the teasing.', efbSpicy: 'Too spicy? Turn on gentle mode. 🌶️',
 	} );
 	Object.assign( EX.I18N.langs.el, {
@@ -239,6 +241,8 @@
 		efbNewChapter: '📼 Ένα νέο κεφάλαιο είναι έτοιμο!', efbNewChapter_c: '💿 Ένα νέο κεφάλαιο είναι έτοιμο!',
 		efbProgress: 'Το eFriend έχει γράψει το {p}% της ιστορίας σας', efbMoreSoon: 'Θα έρθουν κι άλλα κεφάλαια όσο μεγαλώνει η ιστορία σας.', efbFinished: 'Η πρώτη σεζόν ολοκληρώθηκε. Έρχονται κι άλλα κεφάλαια.',
 		efbWritten: 'Γράφτηκε στις {d}', efbNotYet: 'Δεν έχει γραφτεί ακόμα. Ξεκλειδώνει με {u}.', efbTrack: 'Κομμάτι {n}', efbBurned: 'Γράφτηκαν {w} από {m} κεφάλαια · {p}%',
+		fx_efblog: 'eFriend Blog', fxD_efblog: 'Ένα ιστολόγιο που γράφει το eFriend για τις δικές σας εγγραφές, κεφάλαιο προς κεφάλαιο, με χιούμορ. Όλα μένουν στη συσκευή σας.', tut_efblog: 'Το eFriend Blog', tutD_efblog: 'Η ιστορία σας, γραμμένη από το eFriend',
+		tut_efblog_1: 'Συνεχίστε να προσθέτετε τις εγγραφές σας. Μετά από **10 ημέρες** το eFriend σάς αφήνει να ρίξετε μια ματιά στα πρώτα κεφάλαια.', tut_efblog_2: 'Ανοίξτε **Περισσότερα → eFriend Blog**, ή πατήστε την κάρτα του blog στην Αρχική, και διαλέξτε ένα κεφάλαιο.', tut_efblog_3: 'Πολύ πικάντικο; Ενεργοποιήστε την **Ήπια λειτουργία** στην κορυφή. Τα στοιχεία μένουν, τα πειράγματα φεύγουν.',
 		efbGentle: 'Ήπια λειτουργία', efbGentleHint: 'Η ίδια ιστορία, χωρίς πειράγματα.', efbSpicy: 'Πολύ πικάντικο; Ενεργοποιήστε την ήπια λειτουργία. 🌶️',
 	} );
 }() );

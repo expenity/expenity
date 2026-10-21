@@ -1938,3 +1938,10 @@ fieldset > legend { font-weight: 800; padding: 0 8px; color: var(--ink, #2a1a14)
 @media (prefers-reduced-motion:reduce){:root:not([data-motion=full]) .efb *{animation:none!important}}
 :root[data-motion=off] .efb *,:root[data-motion=reduced] .efb *{animation:none!important}
 .efb-rowwrap{margin:0 0 12px}
+.tt-blog{display:flex;flex-direction:column;align-items:center;gap:8px;padding:18px 14px 0}
+.tt-blog-reels{display:flex;gap:18px}
+.tt-blog-reels i{width:38px;height:38px;border-radius:50%;border:4px solid #d9b87a;background:radial-gradient(circle,#2b2118 0 26%,transparent 27%),conic-gradient(#e8c98d 0 25%,#5a4128 25% 50%,#e8c98d 50% 75%,#5a4128 75%);animation:efbSpin 5s linear infinite}
+.tt-blog-l{height:8px;border-radius:4px;background:#d8c79c;width:0;animation:ttBlogLine 3s ease-out infinite}
+.tt-blog-l.s{animation-delay:.5s}.tt-blog-l.r{animation-delay:1s}
+@keyframes ttBlogLine{0%{width:0}60%,100%{width:85%}}
+:root[data-motion=off] .tt-blog *,:root[data-motion=reduced] .tt-blog *{animation:none!important;width:85%}
