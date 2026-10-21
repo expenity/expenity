@@ -115,7 +115,8 @@
 			bA.style.transform = `scale(${ ( 1 + .3 * pb - .1 * pc ).toFixed( 3 ) })`; cA.style.transform = `scale(${ ( 1 + .3 * pc - .1 * pb ).toFixed( 3 ) })`; // the one you are choosing grows and comes to the centre
 			h.setAttribute( 'aria-valuenow', Math.round( X ) );
 			// the Choose button shows well before the screen edge, where a browser swipe could take over
-			const edge = X >= 84 ? 'boogie' : X <= 16 ? 'chip' : ''; btn.classList.toggle( 'show', !! edge ); if ( edge ) btn.dataset.pick = edge; btn.setAttribute( 'aria-hidden', edge ? 'false' : 'true' ); btn.tabIndex = edge ? 0 : -1;
+			const edge = X >= 84 ? 'boogie' : X <= 16 ? 'chip' : ''; btn.classList.toggle( 'show', !! edge ); if ( Math.abs( X - 50 ) > 4 ) btn.dataset.pick = X > 50 ? 'boogie' : 'chip';
+			const fade = Math.max( 0, Math.min( 1, ( Math.abs( X - 50 ) - 6 ) / 28 ) ); btn.style.opacity = fade; btn.style.transform = `translate(-50%, ${ ( ( 1 - fade ) * 14 ).toFixed( 1 ) }px)`; // it fades in slowly as the slider moves away from the middle; it can be pressed once the slider is at an end btn.setAttribute( 'aria-hidden', edge ? 'false' : 'true' ); btn.tabIndex = edge ? 0 : -1;
 			if ( edge ) { btn.textContent = L( 'pickChoose' ); bP.classList.toggle( 'on', edge === 'boogie' ); cP.classList.toggle( 'on', edge === 'chip' ); } else { bP.classList.remove( 'on' ); cP.classList.remove( 'on' ); }
 			hints.forEach( ( x ) => { x.style.opacity = Math.abs( X - 50 ) < 6 ? 1 : 0; } );
 		};
