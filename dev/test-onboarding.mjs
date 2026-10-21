@@ -7,6 +7,7 @@ const server=createServer((req,res)=>{const f=join(process.cwd(),req.url.split('
 const browser=await chromium.launch({channel:'chrome'}),ctx=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,serviceWorkers:'block'}),page=await ctx.newPage(),errors=[];page.on('pageerror',e=>errors.push(String(e)));page.setDefaultTimeout(10000);
 const ok=(v,s)=>{assert(v,s);console.log('ok',s);};
 try{
+await page.addInitScript(()=>{window.EXA_CLASSIC_SETUP=true;});
  await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.tutorials&&document.querySelector('.flow-card.welcome'));
  await page.evaluate(()=>{window.__l=[EX.lang()];EX.on('lang',()=>window.__l.push(EX.lang()));});
  await page.waitForTimeout(1500);
