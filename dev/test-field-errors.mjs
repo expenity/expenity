@@ -5,11 +5,11 @@ const server = http.createServer( ( q, r ) => { let f = path.join( root, decodeU
 let ok = 0, fail = 0; const chk = ( n, c ) => { if ( c ) { ok++; console.log( 'ok', n ); } else { fail++; console.log( 'FAIL', n ); } };
 const b = await chromium.launch( { channel: 'chrome' } ), pg = await b.newPage( { viewport: { width: 390, height: 700 } } ); const errs = []; pg.on( 'pageerror', ( e ) => errs.push( e.message ) );
 await pg.goto( `http://localhost:${ server.address().port }/index.html?demo=1` ); await pg.waitForFunction( () => document.documentElement.dataset.demoReady === '1', null, { timeout: 30000 } ); await pg.waitForTimeout( 1200 );
-const flagged = ( name ) => pg.evaluate( ( n ) => { const el = document.querySelector( `#sheet [name="${ n }"]` ); if ( ! el ) return 'missing'; const w = el.closest( '.f-bad' ); if ( ! w ) return 'not flagged'; const r = w.getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight + 2 && w.querySelector( '.f-err' ) && el.getAttribute( 'aria-invalid' ) === 'true' ? 'ok' : 'flagged but ' + JSON.stringify( [ Math.round( r.top ), Math.round( r.bottom ), !! w.querySelector( '.f-err' ) ] ); }, name );
+const flagged = ( name ) => pg.evaluate( ( n ) => { const el = document.querySelector( `#sheet [name="${ n }"]` ); if ( ! el ) return 'missing'; const w = el.closest( '.f-bad' ); if ( ! w ) return 'not flagged'; const r = w.getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight + 2 && el.getAttribute( 'aria-invalid' ) === 'true' ? 'ok' : 'flagged but ' + JSON.stringify( [ Math.round( r.top ), Math.round( r.bottom ), 'pulse' ] ); }, name );
 const submit = async ( sel ) => { await pg.evaluate( ( s ) => document.querySelector( s ).requestSubmit(), sel ); await pg.waitForTimeout( 1600 ); };
 // a goal with no name
 await pg.evaluate( () => EXA.openGoal() ); await pg.waitForSelector( '#goalForm' ); await submit( '#goalForm' );
-chk( 'goal: the empty name is highlighted, in view, with its message under it (' + await flagged( 'gname' ) + ')', await flagged( 'gname' ) === 'ok' );
+chk( 'goal: the empty name is highlighted and in view, without changing the layout (' + await flagged( 'gname' ) + ')', await flagged( 'gname' ) === 'ok' );
 await pg.evaluate( () => UI.closeSheet( true ) );
 // the add-expense form saved empty: the page moves to the amount and marks it
 await pg.evaluate( () => EXA.openTx( null, { type: 'expense' } ) ); await pg.waitForTimeout( 700 );
@@ -21,6 +21,7 @@ await pg.evaluate( () => EXA.openEfPlan( null, { name: 'Trip', target: '250', de
 chk( 'plan: the date in the past is flagged (' + await flagged( 'pdate' ) + ')', await flagged( 'pdate' ) === 'ok' );
 // typing in the field clears the highlight
 await pg.evaluate( () => { const i = document.querySelector( '[name=pdate]' ); i.value = '2030-01-01'; i.dispatchEvent( new Event( 'change', { bubbles: true } ) ); } );
+chk( 'the layout does not change: no extra message is inserted', await pg.evaluate( () => ! document.querySelector( '#sheet .f-err' ) ) );
 chk( 'fixing the field removes the highlight', await pg.evaluate( () => ! document.querySelector( '#sheet .f-bad' ) ) );
 await pg.evaluate( () => UI.closeSheet( true ) );
 // a wallet with no name
