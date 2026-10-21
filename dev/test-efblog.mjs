@@ -78,6 +78,15 @@ const drip = await pg.evaluate( async () => { const S = EX.state(); EX.setLang( 
 chk( 'drip feed: with no bills or goal the story stops after chapter 3 although the twist data is there', drip.w === 'first,where,rhythm' && drip.locked === 4 );
 chk( 'a chapter opens right under its own title, and a second tap closes it', drip.inPlace && drip.closed );
 
+
+// Two-day fallback: a chapter opens when its data is ready or two days after the one before it
+const tm = await pg.evaluate( () => { const S = EX.state(), E = EXA.efblog, td = EX.today(), ago = ( n ) => EX.addDays( td, -n ); S.txs = mk( 25, 12 ); S.bills = []; S.goals = []; const out = {};
+	S.settings.efBlog = { c: [ { id: 'first', wrote: ago( 5 ) }, { id: 'where', wrote: ago( 1 ) } ], gentle: 0 }; E.update(); out.tooSoon = E.status().written.join();
+	S.settings.efBlog = { c: [ { id: 'first', wrote: ago( 5 ) }, { id: 'where', wrote: ago( 2 ) } ], gentle: 0 }; E.update(); out.third = E.status().written.join(); E.update(); out.sameDay = E.status().written.join();
+	S.settings.efBlog.c.forEach( ( x ) => { x.wrote = ago( 20 ); } ); for ( let k = 0; k < 6; k++ ) { E.update(); S.settings.efBlog.c.forEach( ( x ) => { x.wrote = ago( 20 ); } ); } out.all = E.status().written.length;
+	const f = E.facts( S.txs, td ), bad = []; [ 'boogie', 'chip' ].forEach( ( ch ) => [ 'en', 'el' ].forEach( ( lang ) => E.CHAPTERS.forEach( ( c ) => { const l = E.render( c.id, f, { char: ch, lang, gentle: false, kind: false } ); if ( ! l.length || l.some( ( x ) => /[{}]/.test( x.text ) ) ) bad.push( ch + lang + c.id ); } ) ) ); out.bad = bad.join(); return out; } );
+chk( 'two-day fallback: not before two days, one chapter at a time, all seven eventually; thin chapters still read in every voice', tm.tooSoon === 'first,where' && tm.third === 'first,where,rhythm' && tm.sameDay === tm.third && tm.all === 7 && tm.bad === '' );
+
 // 5. Gating (real state, real page)
 const gate = async ( n, days, expect ) => pg.evaluate( ( [ n, days ] ) => { const S = EX.state(); S.txs = mk( n, days ); S.settings.efBlog = { c: [], gentle: 0 }; S.device.efbSeen = []; EXA.efblog.update(); const s = EXA.efblog.status(); return { locked: s.locked, fin: s.finished, w: s.written.length }; }, [ n, days ] );
 let g = await gate( 8, 5 ); chk( 'day 5: locked, chapter 1 already written in the background', g.locked && g.w === 1 );
