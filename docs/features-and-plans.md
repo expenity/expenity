@@ -19,7 +19,7 @@ The first-run setup asks you to pick one, and **Advanced** is selected to start 
 ## All features by plan
 
 <!-- features:start -->
-Basic has **8** features, Pro **23** and Advanced **34**. A tick means the feature is included. In your own mix you can switch any optional feature on or off.
+Basic has **8** features, Pro **24** and Advanced **36**. A tick means the feature is included. In your own mix you can switch any optional feature on or off.
 
 | Feature | Basic | Pro | Advanced |
 |---|:-:|:-:|:-:|
@@ -47,6 +47,7 @@ Basic has **8** features, Pro **23** and Advanced **34**. A tick means the featu
 | Search filters | – | ✓ | ✓ |
 | Recently deleted | – | ✓ | ✓ |
 | Price-change alerts | – | ✓ | ✓ |
+| Auto tags | – | ✓ | ✓ |
 | Right-click menu | – | ✓ | ✓ |
 | **Added in Advanced** | | | |
 | Split expenses | – | – | ✓ |
@@ -59,6 +60,7 @@ Basic has **8** features, Pro **23** and Advanced **34**. A tick means the featu
 | Sounds | – | – | ✓ |
 | Home editing | – | – | ✓ |
 | eFriend | – | – | ✓ |
+| eFriend Blog | – | – | ✓ |
 | Theme editing | – | – | ✓ |
 <!-- features:end -->
 

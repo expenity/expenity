@@ -1,0 +1,18 @@
+import { chromium } from 'playwright-core';
+import http from 'http'; import fs from 'fs'; import path from 'path';
+const root = process.cwd(), types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.svg': 'image/svg+xml' };
+const server = http.createServer( ( q, r ) => { let f = path.join( root, decodeURIComponent( q.url.split( '?' )[ 0 ] ) ); if ( f.endsWith( '/' ) ) f += 'index.html'; fs.readFile( f, ( e, d ) => { if ( e ) { r.writeHead( 404 ); r.end(); return; } r.writeHead( 200, { 'content-type': types[ path.extname( f ) ] || 'application/octet-stream' } ); r.end( d ); } ); } ).listen( 0 );
+const port = server.address().port; let ok = 0, fail = 0; const chk = ( n, c ) => { if ( c ) { ok++; console.log( 'ok', n ); } else { fail++; console.log( 'FAIL', n ); } };
+const b = await chromium.launch( { channel: 'chrome' } ), pg = await b.newPage( { viewport: { width: 390, height: 844 } } ); const errs = []; pg.on( 'pageerror', ( e ) => errs.push( e.message ) );
+await pg.addInitScript( () => { localStorage.setItem( 'expenity.lang', 'en' ); } );
+await pg.goto( `http://localhost:${ port }/index.html` ); await pg.waitForFunction( () => window.EX && EX.efriend ); await pg.waitForTimeout( 800 );
+await pg.evaluate( () => { const S = EX.state(); S.device.langHinted = true; S.device.efOnboard = 1; EXA.skipFlow(); EX.setLang( 'en' ); const a = EX.activeAccounts()[ 0 ].id; S.accounts[ 0 ].opening = '3000'; S.goals.push( { id: 'p1', name: 'Headphones', target: '150', deadline: EX.addDays( EX.today(), 20 ), icon: 'rocket', kind: 'efriend', wallets: [ a ] } ); S.settings.efChar = 'boogie'; EX.save(); EXA.st.view = 'more'; EXA.st.more = 'efriend'; EXA.st.efSub = 'plans'; EXA.render(); } ); await pg.waitForTimeout( 500 );
+chk( 'the plans page has an "I bought it" button', await pg.evaluate( () => !! document.querySelector( '[data-ef-bought="p1"]' ) ) );
+await pg.click( '[data-ef-bought="p1"]' ); await pg.waitForSelector( '#efDueCost' );
+chk( 'it opens the purchase form straight away, before the planned date', await pg.evaluate( () => document.querySelector( '#efDueCost' ).value === '150' && document.querySelector( '#efDueDate' ).value === EX.today() ) );
+await pg.click( '[data-due=add]' ); await pg.waitForSelector( '.ef-bought-msg' );
+const r = await pg.evaluate( () => { const S = EX.state(), g = S.goals.find( ( x ) => x.id === 'p1' ); return { done: g.state, tx: S.txs.some( ( x ) => x.efPlan === 'p1' && x.amount === '150' ), msg: document.querySelector( '.ef-bought-msg' ).textContent } ; } );
+chk( 'the purchase is recorded and the plan is done', r.done === 'done' && r.tx );
+chk( 'eFriend comments on buying early (' + r.msg.slice( 0, 50 ) + ')', /ahead|early|schedule|Bold|Hmm|tape|numbers|cushion/i.test( r.msg ) );
+chk( 'no page errors ' + errs.join( ';' ), ! errs.length );
+console.log( ok + ' ok, ' + fail + ' failed' ); await b.close(); server.close(); process.exit( fail ? 1 : 0 );
