@@ -8,7 +8,7 @@ const server=createServer((req,res)=>{const f=join(process.cwd(),req.url.split('
 const browser=await chromium.launch({channel:'chrome'}),ctx=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,serviceWorkers:'block'}),page=await ctx.newPage(),errors=[];page.on('pageerror',e=>errors.push(String(e)));page.setDefaultTimeout(10000);
 const ok=(v,s)=>{assert(v,s);console.log('ok',s);};
 try{
- await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.help);await page.evaluate(()=>{EXA.skipFlow();});
+ await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.help);await page.evaluate(()=>{(EXA.skipFlow(),EX.state().device.entryMode='casual');});
  await page.evaluate(()=>EXA.openTx(null,{type:'expense'}));await page.waitForSelector('#txDesc');await page.fill('#txDesc','Keep me');
  await page.waitForSelector('#sheet .help-ic');ok(true,'entry form has a help icon');
  await page.click('#sheet .help-ic');await page.waitForSelector('.help-pop[open]');

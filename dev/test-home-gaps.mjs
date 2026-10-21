@@ -7,7 +7,7 @@ const ok=(c,m)=>{console.log((c?'ok ':'FAIL ')+m);if(!c)process.exitCode=1;};
 const browser=await chromium.launch({channel:'chrome'}),ctx=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,serviceWorkers:'block'}),page=await ctx.newPage();
 await page.addInitScript(()=>{localStorage.setItem('expenity.lang','en');localStorage.setItem('expenity.motion','off');});
 await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.weekSummary);
-await page.evaluate(()=>{EXA.skipFlow();EX.setLang('en');const S=EX.state();const d=(n)=>new Date(Date.now()+n*864e5).toISOString().slice(0,10);S.bills.push({id:'b1',name:'Supermarket',amount:'132.5',category:'food',next:d(0),repeat:'once',currency:'EUR'});EX.save();EXA.go('home');});await page.waitForTimeout(1200);
+await page.evaluate(()=>{(EXA.skipFlow(),EX.state().device.entryMode='casual');EX.setLang('en');const S=EX.state();const d=(n)=>new Date(Date.now()+n*864e5).toISOString().slice(0,10);S.bills.push({id:'b1',name:'Supermarket',amount:'132.5',category:'food',next:d(0),repeat:'once',currency:'EUR'});EX.save();EXA.go('home');});await page.waitForTimeout(1200);
 const gap=async()=>page.evaluate(()=>{const a=document.querySelector('[data-home=due]');if(!a)return -1;const r=a.getBoundingClientRect();let n=a.nextElementSibling;while(n&&n.getBoundingClientRect().height<2)n=n.nextElementSibling;return n?Math.round(n.getBoundingClientRect().top-r.bottom):-1;});
 const g1=await gap();ok(g1>=0&&g1<60,'one due bill: no empty gap before the next widget ('+g1+' px)');
 await page.click('[data-flip-btn=due]');await page.waitForTimeout(300);

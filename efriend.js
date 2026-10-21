@@ -443,7 +443,7 @@
 		const conv = ! rec && f.dataset.convert ? S().goals.find( ( g ) => g.id === f.dataset.convert ) : null;
 		if ( conv ) { Object.assign( conv, v, { prio: F.plans().length + 1, created: today() } ); delete conv.coach; rec = conv; }
 		if ( rec ) { before = F.measure(); if ( String( rec.target ) !== v.target ) changes.push( [ 'cost', rec.target, v.target ] ); if ( rec.deadline !== v.deadline ) changes.push( [ 'date', rec.deadline, v.deadline ] ); if ( ( rec.wallets || [] ).join() !== v.wallets.join() ) changes.push( [ 'wallets', ( rec.wallets || [] ).length, v.wallets.length ] ); if ( ( rec.linkedGoal || '' ) !== v.linkedGoal ) changes.push( [ 'link', '', '' ] ); }
-		if ( rec && ! conv ) { delete rec.coach; Object.assign( rec, v ); } else if ( ! rec ) { rec = Object.assign( { id: EX.uid(), prio: F.plans().length + 1 }, v ); S().goals.push( rec ); }
+		if ( rec && ! conv ) { delete rec.coach; Object.assign( rec, v ); } else if ( ! rec ) { rec = Object.assign( { id: EX.uid(), prio: F.plans().length + 1 }, v ); if ( window.EXA && EXA.autoTags ) EXA.autoTags.apply( rec, 'goal' ); S().goals.push( rec ); }
 		if ( before && changes.length ) F.logChange( before, changes, [ rec.id ] );
 		S().settings.u = Date.now(); EX.save(); UI.closeSheet(); EXA.render();
 		setTimeout( () => ( ( S().device || {} ).efOnboard ? EXA.openEfriend( rec.id ) : EXA.efriendOnboard( rec.id ) ), 350 );
@@ -1394,6 +1394,7 @@
 		const X = `<button type="button" class="ab-btn" data-close aria-label="${ esc( t( 'close' ) ) }">${ UI.icon( 'x', 24 ) }</button>`;
 		chat.anim = true; UI.openSheet( `<div class="sheet-head">${ X }<h2 id="sheetTitle">💬 ${ esc( t( 'efAskTitle' ) ) }</h2><span class="sp"></span></div><div class="sheet-pad ef-ask-sheet" id="efRes">${ resultHtml() }</div>`, { tall: true } );
 		const top = () => { const r = document.getElementById( 'efRes' ), sc = r && ( r.closest( '.sheet-scroll' ) || r.parentNode ); if ( sc ) sc.scrollTop = 0; if ( document.activeElement && document.activeElement.blur ) document.activeElement.blur(); }; top(); setTimeout( top, 120 ); setTimeout( top, 450 );
+		if ( embedded() ) { const sh = document.getElementById( 'sheet' ); if ( sh ) sh.addEventListener( 'close', () => { if ( chat.keepEmbed ) { chat.keepEmbed = false; return; } if ( window.EXAEmbedEnd ) EXAEmbedEnd(); }, { once: true } ); }
 		setTimeout( () => { const r = document.getElementById( 'efRes' ); if ( ! r ) return; countUp( r ); if ( chat.rec && chat.rec.kind === 'ok' ) burst( r ); chat.anim = false; }, 250 );
 	};
 	const repaintResult = () => { const r = document.getElementById( 'efRes' ); if ( r ) { chat.anim = false; const y = r.closest( '.sheet-scroll' ) || r.parentNode; const top = y ? y.scrollTop : 0; r.innerHTML = resultHtml(); if ( y ) y.scrollTop = top; } };
@@ -1488,11 +1489,12 @@
 		const f = e.target; if ( f.id !== 'efChatForm' ) return; e.preventDefault();
 		const q = f.elements.q.value.trim(); if ( ! q || chat.busy ) return; f.elements.q.value = ''; onUser( q );
 	} );
-	const openPlan = ( dl ) => { const ic = F.askIcon( chat.item ); closeChat(); UI.closeSheet && UI.closeSheet( true ); setTimeout( () => EXA.openEfPlan( null, Object.assign( { name: ( chat.item || t( 'efAskThing' ) ) + ( chat.who ? ' ' + forWho() : '' ), target: String( chat.cost / 100 ), icon: ic.icon }, dl ? { deadline: dl > today() ? dl : addDays( today(), 1 ) } : {} ) ), 220 ); };
+	const embedded = () => document.documentElement.classList.contains( 'ef-embed' );
+	const openPlan = ( dl ) => { if ( embedded() && window.EXAEmbedEnd ) { closeChat(); UI.closeSheet && UI.closeSheet( true ); EXAEmbedEnd(); return; } const ic = F.askIcon( chat.item ); closeChat(); UI.closeSheet && UI.closeSheet( true ); setTimeout( () => EXA.openEfPlan( null, Object.assign( { name: ( chat.item || t( 'efAskThing' ) ) + ( chat.who ? ' ' + forWho() : '' ), target: String( chat.cost / 100 ), icon: ic.icon }, dl ? { deadline: dl > today() ? dl : addDays( today(), 1 ) } : {} ) ), 220 ); };
 	document.addEventListener( 'click', ( e ) => {
 		const tg = e.target.closest ? e.target : null; if ( ! tg ) return;
 		if ( tg.closest( '[data-ef-ask]' ) ) { e.preventDefault(); EXA.efriendAskOpen(); return; }
-		if ( tg.closest( '[data-ef-cpx]' ) ) { closeChat(); return; }
+		if ( tg.closest( '[data-ef-cpx]' ) ) { closeChat(); if ( embedded() && window.EXAEmbedEnd ) EXAEmbedEnd(); return; }
 		if ( tg.closest( '[data-ef-clear]' ) ) { restartChat(); return; }
 		if ( tg.closest( '[data-ef-skip]' ) ) { showForm( true ); return; }
 		if ( tg.closest( '[data-ef-menu]' ) ) { toggleMenu(); return; }
@@ -1509,7 +1511,7 @@
 		const q = tg.closest( '[data-ef-q]' ); if ( q ) { const c = chat.chips[ Number( q.dataset.efQ ) ]; if ( c && c.k === 'menuclose' ) { toggleMenu(); return; } if ( c && c.k === 'more' ) { chat.more = ! chat.more; startChips(); const bx = document.getElementById( 'efChips' ); if ( bx ) bx.scrollTop = 0; return; } if ( c && c.k === 'wake' ) { EXA.efriendAskOpen(); return; } if ( c && c.k === 'hist' ) { showHist(); return; } if ( c && c.k === 'form' ) { showForm(); return; } if ( c && c.k === 'keep' ) { keepChatting(); return; } if ( c && ! chat.busy ) onUser( c.text || c.label.replace( /^[^\p{L}\p{N}]+/u, '' ), c ); return; }
 		const mo = tg.closest( '[data-ef-mon]' ); if ( mo && chat.ans ) { chat.mi = Math.max( 0, Math.min( monthsOf( chat.ans ).length - 1, chat.mi + Number( mo.dataset.efMon ) ) ); repaintResult(); return; }
 		const d = tg.closest( '[data-ef-askday]' ); if ( d && chat.ans ) { chat.sel = Number( d.dataset.efAskday ); repaintResult(); return; }
-		if ( tg.closest( '[data-ef-again]' ) ) { UI.closeSheet && UI.closeSheet( true ); setTimeout( () => EXA.efriendAskOpen(), 220 ); return; }
+		if ( tg.closest( '[data-ef-again]' ) ) { chat.keepEmbed = true; UI.closeSheet && UI.closeSheet( true ); setTimeout( () => EXA.efriendAskOpen(), 220 ); return; }
 		const pl = tg.closest( '[data-ef-askplan]' ); if ( pl ) openPlan( pl.dataset.efAskplan );
 	} );
 

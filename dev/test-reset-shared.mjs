@@ -9,7 +9,7 @@ const browser=await chromium.launch({channel:'chrome'}),ctx=await browser.newCon
 const ok=(v,s)=>{assert(v,s);console.log('ok',s);};
 try{
  await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.resetAccount);
- await page.evaluate(()=>{EXA.skipFlow();const S=EX.state();S.device.onboarded=true;S.settings.setupDone=true;EX.setLang('en');
+ await page.evaluate(()=>{(EXA.skipFlow(),EX.state().device.entryMode='casual');const S=EX.state();S.device.onboarded=true;S.settings.setupDone=true;EX.setLang('en');
   S.accounts.length||S.accounts.push({id:'a1',name:'Cash',type:'cash',currency:'EUR',opening:'0'});
   S.accounts.push({id:'w2',name:'Family',type:'bank',currency:'EUR',opening:'0',space:'sp1'},{id:'w3',name:'Trip',type:'bank',currency:'EUR',opening:'0',space:'sp2'});
   S.sync.spaces={sp1:{name:'Family',role:'owner',owner:true,members:2,rev:0,base:{}},sp2:{name:'Trip',role:'editor',owner:false,members:2,rev:0,base:{}}};

@@ -8,7 +8,7 @@ const server=createServer((req,res)=>{const f=join(process.cwd(),req.url.split('
 const browser=await chromium.launch({channel:'chrome'}),ctx=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,serviceWorkers:'block'}),page=await ctx.newPage(),errors=[];page.on('pageerror',e=>errors.push(String(e)));
 const ok=(v,s)=>{assert(v,s);console.log('ok',s);};
 try{
- await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.dashboardEditing);await page.evaluate(()=>{EXA.skipFlow();});
+ await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.dashboardEditing);await page.evaluate(()=>{(EXA.skipFlow(),EX.state().device.entryMode='casual');});
  await page.evaluate(()=>{const S=EX.state(),iso=x=>x.toISOString().slice(0,10);S.accounts.length||S.accounts.push({id:'a1',name:'Cash',type:'cash',currency:'EUR',opening:'0'});const acc=S.accounts[0];
   const cats=['food','coffee','shopping','leisure','housing'];
   for(let i=0;i<30;i++)S.txs.push({id:'t'+i,type:'expense',amount:String(5+(i%7)*9),account:acc.id,name:'Item '+i,category:cats[i%5],date:iso(new Date(Date.now()-i*864e5))});

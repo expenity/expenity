@@ -8,7 +8,7 @@ const server=createServer((req,res)=>{const f=join(process.cwd(),req.url.split('
 const browser=await chromium.launch({channel:'chrome'}),ctx=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,serviceWorkers:'block'}),page=await ctx.newPage(),errors=[];page.on('pageerror',e=>errors.push(String(e)));
 const ok=(v,s)=>{assert(v,s);console.log('ok',s);};
 try{
- await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.smart);await page.evaluate(()=>{EXA.skipFlow();});
+ await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.smart);await page.evaluate(()=>{(EXA.skipFlow(),EX.state().device.entryMode='casual');});
  await page.evaluate(()=>{const S=EX.state();S.settings.features={tier:'advanced'};S.settings.setupDone=true;S.device.onboarded=true;EX.save();EX.setLang('en');});await page.waitForTimeout(600);
  // 1. detection itself
  const det=await page.evaluate(()=>{const o={};for(const s of ['Coffee with Anna','Σούπερ μάρκετ Σκλαβενίτης','Taxi to airport','Netflix subscription','Pharmacy','gym membership','Electricity bill','Rent']){const d=EXA.smart.detect(s,{type:'expense',keepType:true});o[s]=[d.category,d.tags.join('+'),d.account?'wallet':''].join(' | ');}return o;});

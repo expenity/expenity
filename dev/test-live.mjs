@@ -25,7 +25,7 @@ const A = await device();
 try {
 await A.page.goto( URL_ );
 await A.page.waitForSelector( '#tabbar button', { state: 'attached' } );
-await A.page.evaluate( () => { window.EXA.skipFlow(); } );
+await A.page.evaluate( () => { window.(EXA.skipFlow(),EX.state().device.entryMode='casual'); } );
 ok( ( await A.page.title() ).startsWith( '[Beta]' ), 'the beta page loads, marked as beta' );
 await A.page.click( '[data-act=auth-create]' );
 await A.page.fill( '#registerForm [name=email]', `livecheck${ Date.now() }@example.com` );
@@ -53,7 +53,7 @@ const creds = ( await A.cdp.send( 'WebAuthn.getCredentials', { authenticatorId: 
 const B = await device();
 for ( const c of creds ) await B.cdp.send( 'WebAuthn.addCredential', { authenticatorId: B.authenticatorId, credential: c } );
 await B.page.goto( URL_ ); await B.page.waitForSelector( '#tabbar button', { state: 'attached' } );
-await B.page.evaluate( () => { window.EXA.skipFlow(); } );
+await B.page.evaluate( () => { window.(EXA.skipFlow(),EX.state().device.entryMode='casual'); } );
 await B.page.click( '.ab-avatar .avatar:visible' ); await B.page.click( '[data-more=account]' ); await B.page.click( '[data-act=auth-signin]' ); await B.page.click( '#authLogin' );
 await B.page.waitForFunction( () => window.EX.auth.isSignedIn() && window.EX.state().txs.some( ( x ) => x.name === 'Live check' ), null, { timeout: 30000 } );
 ok( true, 'a second device signs in with the passkey and sees the expense' );

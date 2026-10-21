@@ -8,7 +8,7 @@ const server=createServer((req,res)=>{const f=join(process.cwd(),req.url.split('
 const browser=await chromium.launch({channel:'chrome'}),ctx=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,serviceWorkers:'block'}),page=await ctx.newPage(),errors=[];page.on('pageerror',e=>errors.push(String(e)));page.setDefaultTimeout(10000);
 const ok=(v,s)=>{assert(v,s);console.log('ok',s);};
 try{
- await page.route('**/api/**',r=>r.abort());await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.editHomeAppearance);await page.evaluate(()=>{EXA.skipFlow();EXA.setSkin('mario');EXA.setMotion('off');});
+ await page.route('**/api/**',r=>r.abort());await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.editHomeAppearance);await page.evaluate(()=>{(EXA.skipFlow(),EX.state().device.entryMode='casual');EXA.setSkin('mario');EXA.setMotion('off');});
  const begin=()=>page.evaluate(()=>{const b=document.createElement('button');b.dataset.homeSettings='';document.body.append(b);b.click();b.remove();});
  await begin();await page.click('[data-dash-appearance]');
  ok(await page.locator('select[name=font] option').count()===13,'13 fonts including ten additions');

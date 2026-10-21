@@ -7,7 +7,7 @@ const ok=(c,m)=>{console.log((c?'ok ':'FAIL ')+m);if(!c)process.exitCode=1;};
 const browser=await chromium.launch({channel:'chrome'}),page=await (await browser.newContext({viewport:{width:1100,height:800},serviceWorkers:'block'})).newPage();
 const errs=[];page.on('pageerror',e=>errs.push(e.message));
 await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EX?.efriend);
-await page.evaluate(()=>{EXA.skipFlow();const S=EX.state();S.accounts.push({id:'w1',name:'Cash',type:'cash',currency:S.settings.currency,opening:'50'},{id:'w2',name:'Bank',type:'bank',currency:S.settings.currency,opening:'80'});S.goals.push({id:'sg',name:'Pot',target:'10'});EX.save();EXA.openEfPlan();});
+await page.evaluate(()=>{(EXA.skipFlow(),EX.state().device.entryMode='casual');const S=EX.state();S.accounts.push({id:'w1',name:'Cash',type:'cash',currency:S.settings.currency,opening:'50'},{id:'w2',name:'Bank',type:'bank',currency:S.settings.currency,opening:'80'});S.goals.push({id:'sg',name:'Pot',target:'10'});EX.save();EXA.openEfPlan();});
 await page.waitForSelector('#efPlanForm select');
 await page.evaluate(()=>{window.__ch=0;document.querySelector('#efPlanForm select').addEventListener('change',()=>window.__ch++);});
 await page.click('#efPlanForm select');

@@ -9,7 +9,7 @@ const sheets={goal:'EXA.openGoal()',budget:'EXA.openBudget()',plan:'EXA.openEfPl
 for(const [name,ctxOpts] of [['phone',{viewport:{width:430,height:932},isMobile:true,hasTouch:true}],['computer',{viewport:{width:1100,height:800}}]]){
  const page=await (await browser.newContext({...ctxOpts,serviceWorkers:'block'})).newPage();
  await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EX?.efriend);
- await page.evaluate(()=>{EXA.skipFlow();const S=EX.state();S.accounts.push({id:'w1',name:'Cash',type:'cash',currency:S.settings.currency,opening:'100'});S.goals.push({id:'sg',name:'Pot',target:'10'});EX.save();});
+ await page.evaluate(()=>{(EXA.skipFlow(),EX.state().device.entryMode='casual');const S=EX.state();S.accounts.push({id:'w1',name:'Cash',type:'cash',currency:S.settings.currency,opening:'100'});S.goals.push({id:'sg',name:'Pot',target:'10'});EX.save();});
  for(const [k,call] of Object.entries(sheets)){
   await page.evaluate(c=>{UI.closeSheet&&UI.closeSheet();eval(c);},call);await page.waitForTimeout(450);
   const bad=await page.evaluate(()=>{const sh=document.getElementById('sheet');if(!sh.open)return ['(sheet not open)'];const els=[...sh.querySelectorAll('input:not([type=hidden]):not([type=checkbox]):not([type=radio]):not([type=file]),select,textarea')].filter(e=>e.offsetParent&&e.getBoundingClientRect().height>0);const out=[];

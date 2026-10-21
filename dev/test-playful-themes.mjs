@@ -7,7 +7,7 @@ const server=createServer((req,res)=>{const f=join(process.cwd(),req.url.split('
 const browser=await chromium.launch({channel:'chrome'}),page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true,serviceWorkers:'block'}),errors=[];page.on('pageerror',e=>errors.push(e.message));
 const ok=(value,label)=>{assert(value,label);console.log('ok',label);};
 try{
- await page.route('**/api/**',r=>r.abort());await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.skipFlow);await page.evaluate(()=>{EXA.skipFlow();EX.setLang('el');EXA.setMotion('full');EX.state().accounts[0].opening='1250';EX.save();EXA.go('home');});
+ await page.route('**/api/**',r=>r.abort());await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.skipFlow);await page.evaluate(()=>{(EXA.skipFlow(),EX.state().device.entryMode='casual');EX.setLang('el');EXA.setMotion('full');EX.state().accounts[0].opening='1250';EX.save();EXA.go('home');});
  for(const skin of ['mario','bricks','minnie']){
   await page.evaluate(s=>EXA.setSkin(s),skin);
   ok(await page.locator('.fun-scene').count()===1,`${skin}: one decorative scene`);

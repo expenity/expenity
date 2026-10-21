@@ -8,7 +8,7 @@ const server=createServer((req,res)=>{const f=join(process.cwd(),req.url.split('
 const browser=await chromium.launch({channel:'chrome'}),ctx=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,serviceWorkers:'block'}),page=await ctx.newPage(),errors=[];page.on('pageerror',e=>errors.push(String(e)));page.setDefaultTimeout(10000);
 const ok=(v,s)=>{assert(v,s);console.log('ok',s);};
 try{
- await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.features);await page.evaluate(()=>{EXA.skipFlow();const S=EX.state();S.txs.push({id:'t1',type:'expense',amount:'12',account:S.accounts[0].id,date:EX.iso(new Date()),name:'Coffee',category:'food'});EXA.go('activity');});
+ await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.features);await page.evaluate(()=>{(EXA.skipFlow(),EX.state().device.entryMode='casual');const S=EX.state();S.txs.push({id:'t1',type:'expense',amount:'12',account:S.accounts[0].id,date:EX.iso(new Date()),name:'Coffee',category:'food'});EXA.go('activity');});
  await page.waitForSelector('.sw[data-id=t1]');const b=await page.locator('.sw[data-id=t1] .sw-front').boundingBox();
  await page.mouse.move(b.x+60,b.y+20);await page.mouse.down();await page.waitForTimeout(700);await page.mouse.up();
  ok(await page.locator('.rm-act').count()===3&&await page.locator('.rm-demo').isVisible(),'hold opens Edit, Duplicate, Delete with the swipe animation');

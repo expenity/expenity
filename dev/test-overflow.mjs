@@ -9,7 +9,7 @@ const browser=await chromium.launch({channel:'chrome'}),ctx=await browser.newCon
 const ok=(v,s)=>{assert(v,s);console.log('ok',s);};
 const bad=[];
 try{
- await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.features);await page.evaluate(()=>{EXA.skipFlow();});
+ await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.features);await page.evaluate(()=>{(EXA.skipFlow(),EX.state().device.entryMode='casual');});
  for(const lang of ['en','el'])for(const skin of ['sunset','mario','synthwave'])for(const w of [320,360,412]){
   await page.setViewportSize({width:w,height:800});await page.evaluate(([l,s])=>{EX.setLang?EX.setLang(l):0;EXA.setSkin(s);},[lang,skin]);
   for(const [v,m] of [['home','root'],['more','root'],['more','features'],['more','appearance'],['more','sounds'],['more','reminders'],['more','data'],['plan','root'],['bills','root'],['reports','root'],['activity','root']]){

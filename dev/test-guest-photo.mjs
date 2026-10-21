@@ -8,7 +8,7 @@ const server=createServer((req,res)=>{const f=join(process.cwd(),req.url.split('
 const browser=await chromium.launch({channel:'chrome'}),ctx=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,serviceWorkers:'block'}),page=await ctx.newPage(),errors=[];page.on('pageerror',e=>errors.push(String(e)));page.setDefaultTimeout(10000);
 const ok=(v,s)=>{assert(v,s);console.log('ok',s);};
 try{
- await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.photos);await page.evaluate(()=>{EXA.skipFlow();});
+ await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.photos);await page.evaluate(()=>{(EXA.skipFlow(),EX.state().device.entryMode='casual');});
  await page.evaluate(()=>EXA.openTx(null,{type:'expense'}));await page.waitForSelector('#txDesc');
  await page.evaluate(()=>{const b=document.querySelector('[data-entry-group=extras] summary');b&&b.click();});await page.waitForTimeout(300);
  ok(await page.locator('.photo-slot.need-account .btn:disabled').count()===1&&await page.locator('.account-note').isVisible(),'guests see Attach photo greyed out with the reason beside it');

@@ -10,7 +10,7 @@ const browser=await chromium.launch({channel:'chrome'}),ctx=await browser.newCon
 const ok=(v,s)=>{assert(v,s);console.log('ok',s);};
 try{
  await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.features);
- await page.evaluate(()=>{window.__xss=0;EXA.skipFlow();const X=EX,S=X.state(),td=X.today();
+ await page.evaluate(()=>{window.__xss=0;(EXA.skipFlow(),EX.state().device.entryMode='casual');const X=EX,S=X.state(),td=X.today();
   const P='"><img src=x onerror=window.__xss=1><svg onload=window.__xss=2>';
   S.settings.name=P;S.accounts.length=0;S.accounts.push({id:'w1',name:P,type:'bank',currency:'EUR',opening:'10',tags:[P],color:'#ef4444'});
   S.categories.push({key:'c1',name:P,type:'expense',icon:'tag',color:'teal',custom:true});

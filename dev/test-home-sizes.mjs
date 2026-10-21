@@ -6,7 +6,7 @@ const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.jso
 const server=createServer((req,res)=>{const f=join(process.cwd(),req.url.split('?')[0]==='/'?'index.html':req.url.split('?')[0]);if(!existsSync(f)){res.writeHead(404).end();return;}res.setHeader('Content-Type',types[extname(f)]||'application/octet-stream');res.end(readFileSync(f));}).listen(0);
 const browser=await chromium.launch({channel:'chrome'}),ctx=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,serviceWorkers:'block'}),page=await ctx.newPage(),errors=[];page.on('pageerror',e=>errors.push(String(e)));
 await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.dashboardEditing);
-await page.evaluate(()=>{EXA.skipFlow();});
+await page.evaluate(()=>{(EXA.skipFlow(),EX.state().device.entryMode='casual');});
 await page.evaluate(()=>{const S=EX.state();const d=new Date();const iso=x=>x.toISOString().slice(0,10);const acc=S.accounts[0]||(S.accounts.push({id:'a1',name:'Cash',type:'cash',currency:'EUR',opening:'0'}),S.accounts[0]);
  for(let i=0;i<12;i++){S.txs.push({id:'t'+i,type:i%5===0?'income':'expense',amount:String(10+i*3),account:acc.id,name:'Item '+i,category:'food',date:iso(new Date(Date.now()-i*864e5))});}
  S.bills.push({id:'b1',name:'Power',amount:'60',day:5,repeat:'monthly',next:iso(new Date(Date.now()-4*864e5)),account:acc.id,category:'utilities'});

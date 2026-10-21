@@ -5,7 +5,7 @@ const server=createServer((req,res)=>{const u=req.url.split('?')[0];const f=join
 const ok=(c,m)=>{console.log((c?'ok ':'FAIL ')+m);if(!c)process.exitCode=1;};
 const browser=await chromium.launch({channel:'chrome'}),ctx=await browser.newContext({viewport:{width:390,height:844},serviceWorkers:'block',locale:'en-US'}),page=await ctx.newPage();const errors=[];page.on('pageerror',e=>errors.push(String(e)));
 await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.push);
-await page.evaluate(()=>{EXA.skipFlow();EX.setLang('en');});await page.waitForTimeout(1500);
+await page.evaluate(()=>{(EXA.skipFlow(),EX.state().device.entryMode='casual');EX.setLang('en');});await page.waitForTimeout(1500);
 await page.evaluate(()=>{document.body.insertAdjacentHTML('beforeend','<input id="a" inputmode="decimal"><input id="b" inputmode="decimal" value="1234.5">');});await page.waitForTimeout(100);
 await page.click('#a');await page.keyboard.type('1234567.5');
 ok(await page.inputValue('#a')==='1,234,567.5','shows 1,234,567.5: '+await page.inputValue('#a'));

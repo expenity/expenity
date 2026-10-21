@@ -5,7 +5,7 @@ const server=createServer((req,res)=>{const u=req.url.split('?')[0];const f=join
 const ok=(c,m)=>{console.log((c?'ok ':'FAIL ')+m);if(!c)process.exitCode=1;};
 const browser=await chromium.launch({channel:'chrome'}),ctx=await browser.newContext({viewport:{width:390,height:844},serviceWorkers:'block'}),page=await ctx.newPage();const errors=[];page.on('pageerror',e=>errors.push(String(e)));
 await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.openUnpay);
-await page.evaluate(()=>{EXA.skipFlow();EX.setLang('el');const S=EX.state();S.txs.push({id:'t1',type:'expense',name:'Lunch',amount:'12',account:S.accounts[0]?.id,category:'food',date:new Date().toISOString().slice(0,10)});EX.save();EXA.go('activity');});await page.waitForTimeout(1200);
+await page.evaluate(()=>{(EXA.skipFlow(),EX.state().device.entryMode='casual');EX.setLang('el');const S=EX.state();S.txs.push({id:'t1',type:'expense',name:'Lunch',amount:'12',account:S.accounts[0]?.id,category:'food',date:new Date().toISOString().slice(0,10)});EX.save();EXA.go('activity');});await page.waitForTimeout(1200);
 ok(await page.evaluate(()=>document.querySelector('.sw[data-id=t1] .bm-pill')?.textContent.trim()==='Paid'),'status labels stay in English in Greek: '+await page.evaluate(()=>document.querySelector('.sw[data-id=t1] .bm-pill')?.textContent.trim()));
 await page.evaluate(()=>document.querySelector('.sw[data-id=t1]').dispatchEvent(new CustomEvent('swipeaction',{bubbles:true,detail:{action:'unpay',id:'t1',kind:'tx'}})));await page.waitForTimeout(500);
 ok(await page.evaluate(()=>!!document.querySelector('#unpayDate')&&EX.state().txs.length===1),'swiping to unpaid asks for a date first and changes nothing yet');

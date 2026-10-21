@@ -8,7 +8,7 @@ const server=createServer((req,res)=>{const f=join(process.cwd(),req.url.split('
 const browser=await chromium.launch({channel:'chrome'}),ctx=await browser.newContext({viewport:{width:390,height:844},acceptDownloads:true,serviceWorkers:'block'}),page=await ctx.newPage(),errors=[];page.on('pageerror',e=>errors.push(String(e)));
 const ok=(v,s)=>{assert(v,s);console.log('ok',s);};
 try{
- await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.resetAccount);await page.evaluate(()=>{EXA.skipFlow();});
+ await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.resetAccount);await page.evaluate(()=>{(EXA.skipFlow(),EX.state().device.entryMode='casual');});
  for(const lang of ['en','el']){
   await page.evaluate((lang)=>{EX.setLang(lang);EX.auth.isSignedIn=()=>true;EX.auth.user=()=>({email:'x@y.z',id:'u'});EX.auth.codesLeft=()=>3;EXA.go('more');},lang);await page.waitForTimeout(300);await page.click('[data-more="account"]');await page.waitForTimeout(500);const html=await page.evaluate(()=>document.body.textContent);
   const want=lang==='en'?['Reset account','Download a backup first','on all your devices']:['Επαναφορά λογαριασμού','Κατεβάστε πρώτα αντίγραφο ασφαλείας','σε όλες τις συσκευές σας'];

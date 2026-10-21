@@ -7,7 +7,7 @@ const ok=(c,m)=>{console.log((c?'ok ':'FAIL ')+m);if(!c)process.exitCode=1;};
 const browser=await chromium.launch({channel:'chrome'}),ctx=await browser.newContext({viewport:{width:390,height:700},isMobile:true,hasTouch:true,serviceWorkers:'block'}),page=await ctx.newPage();
 const cdp=await ctx.newCDPSession(page);
 await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EX?.efriend);
-await page.evaluate(()=>{EXA.skipFlow();const S=EX.state(),a={id:'w1',name:'Cash',type:'cash',currency:S.settings.currency,opening:'3000'};S.accounts.push(a);const d=(n)=>new Date(Date.now()+n*864e5).toISOString().slice(0,10);
+await page.evaluate(()=>{(EXA.skipFlow(),EX.state().device.entryMode='casual');const S=EX.state(),a={id:'w1',name:'Cash',type:'cash',currency:S.settings.currency,opening:'3000'};S.accounts.push(a);const d=(n)=>new Date(Date.now()+n*864e5).toISOString().slice(0,10);
 ['Paris','Shoes','Car','Phone'].forEach((n,i)=>S.goals.push({id:'p'+i,name:n,target:String(200+i*300),deadline:d(60+i*10),icon:'plane',kind:'efriend',wallets:['w1'],prio:i+1}));EX.save();EXA.openEfPriority();});
 await page.waitForSelector('.ef-prio-i');
 const rect=async(id)=>page.evaluate((i)=>{const r=document.querySelector(`.ef-prio-i[data-id="${i}"]`).getBoundingClientRect();return {x:r.left+r.width/2-40,y:r.top+r.height/2};},id);

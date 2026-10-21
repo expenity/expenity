@@ -7,7 +7,7 @@ const server=createServer((req,res)=>{const f=join(process.cwd(),req.url.split('
 const browser=await chromium.launch({channel:'chrome'}),ctx=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,serviceWorkers:'block'}),page=await ctx.newPage(),errors=[];page.on('pageerror',e=>errors.push(String(e)));page.setDefaultTimeout(10000);
 const ok=(v,s)=>{assert(v,s);console.log('ok',s);};
 try{
- await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.settleIncome);await page.evaluate(()=>{EXA.skipFlow();});
+ await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.settleIncome);await page.evaluate(()=>{(EXA.skipFlow(),EX.state().device.entryMode='casual');});
  const r=await page.evaluate(()=>{const S=EX.state(),acc=S.accounts[0].id,d=new Date();d.setDate(d.getDate()-40);const iso=EX.iso(d);const before=S.txs.length;const inc={id:'i1',name:'Salary',amount:'1500',account:acc,category:'salary',repeat:'monthly',next:iso,day:d.getDate()};S.incomes.push(inc);const n=EXA.settleIncome(inc);return {n,added:S.txs.length-before,next:inc.next,future:inc.next>EX.iso(new Date())};});
  ok(r.n>=1&&r.added===r.n&&r.future,'past income is recorded as received and the next one is in the future: '+JSON.stringify(r));
  ok(await page.evaluate(()=>document.documentElement.dataset.skin==='sunset'),'first visit uses Sunset');

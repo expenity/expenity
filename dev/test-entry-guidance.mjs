@@ -8,7 +8,7 @@ const server=createServer((req,res)=>{const f=join(process.cwd(),req.url.split('
 const browser=await chromium.launch({channel:'chrome'}),ctx=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,serviceWorkers:'block'}),page=await ctx.newPage(),errors=[];page.on('pageerror',e=>errors.push(String(e)));
 const ok=(v,s)=>{assert(v,s);console.log('ok',s);};
 try{
- await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.smart);await page.evaluate(()=>{EXA.skipFlow();const S=EX.state();S.settings.setupDone=true;S.device.onboarded=true;EX.save();EX.setLang('en');});await page.waitForTimeout(600);
+ await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.smart);await page.evaluate(()=>{(EXA.skipFlow(),EX.state().device.entryMode='casual');const S=EX.state();S.settings.setupDone=true;S.device.onboarded=true;EX.save();EX.setLang('en');});await page.waitForTimeout(600);
  // --- missing fields: the red stays until each is filled, and the person is guided to the next one
  await page.evaluate(()=>EXA.openTx(null,{type:'expense'}));await page.waitForTimeout(500);
  await page.click('[data-tx=save]');await page.waitForTimeout(400);

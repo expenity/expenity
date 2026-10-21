@@ -5,7 +5,7 @@ const server=createServer((req,res)=>{const u=req.url.split('?')[0];const f=join
 const ok=(c,m)=>{console.log((c?'ok ':'FAIL ')+m);if(!c)process.exitCode=1;};
 const browser=await chromium.launch({channel:'chrome'}),ctx=await browser.newContext({viewport:{width:390,height:844},serviceWorkers:'block'}),page=await ctx.newPage();const errors=[];page.on('pageerror',e=>errors.push(String(e)));
 await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.openTx);
-await page.evaluate(()=>{EXA.skipFlow();EX.setLang('en');EX.state().device.entryMode='smart';EX.ensureWallet();});await page.waitForTimeout(1500);
+await page.evaluate(()=>{(EXA.skipFlow(),EX.state().device.entryMode='casual');EX.setLang('en');EX.state().device.entryMode='smart';EX.ensureWallet();});await page.waitForTimeout(1500);
 await page.evaluate(()=>EXA.openTx(null,{type:'expense'}));await page.waitForTimeout(600);
 ok(await page.evaluate(()=>!!document.querySelector('#txQuick')),'smart mode opens on the sentence box');
 await page.fill('#txQuick','Coffee 3.5 yesterday');await page.waitForTimeout(400);await page.click('[data-tx=quick-prepare]');await page.waitForTimeout(500);

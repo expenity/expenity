@@ -12,7 +12,7 @@ await pg.evaluate( () => EXA.openGoal() ); await pg.waitForSelector( '#goalForm'
 chk( 'goal: the empty name is highlighted and in view, without changing the layout (' + await flagged( 'gname' ) + ')', await flagged( 'gname' ) === 'ok' );
 await pg.evaluate( () => UI.closeSheet( true ) );
 // the add-expense form saved empty: the page moves to the amount and marks it
-await pg.evaluate( () => EXA.openTx( null, { type: 'expense' } ) ); await pg.waitForTimeout( 700 );
+await pg.evaluate( () => { EX.state().device.entryMode = 'casual'; EXA.openTx( null, { type: 'expense' } ); } ); await pg.waitForTimeout( 700 );
 await pg.evaluate( () => document.querySelector( '[data-tx=save]' ).click() ); await pg.waitForTimeout( 900 );
 chk( 'expense: saving empty marks the amount field', await pg.evaluate( () => !! document.querySelector( '#sheet [aria-invalid="true"], #sheet .f-bad' ) ) );
 await pg.evaluate( () => UI.closeSheet( true ) );

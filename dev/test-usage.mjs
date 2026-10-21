@@ -10,7 +10,7 @@ const ok=(v,s)=>{assert(v,s);console.log('ok',s);};
 try{
  const posts=[];
  await page.route('**/api/usage',async r=>{posts.push(1);await r.fulfill({status:200,contentType:'application/json',headers:{'access-control-allow-origin':'*'},body:'{"ok":true}'});});
- await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.usageSend);await page.evaluate(()=>{EXA.skipFlow();window.EXPENITY_USAGE_TEST=true;});
+ await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.usageSend);await page.evaluate(()=>{(EXA.skipFlow(),EX.state().device.entryMode='casual');window.EXPENITY_USAGE_TEST=true;});
  await page.evaluate(()=>EXA.usageSend());await page.waitForTimeout(8000);
  ok(posts.length===0,'the usage ping is fully disabled: nothing is sent');
  await page.evaluate(()=>EXA.go('more','account'));ok(await page.locator('[data-usage-toggle]').count()===0,'no usage switch is shown while it is disabled');

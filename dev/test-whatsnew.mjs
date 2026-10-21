@@ -9,7 +9,7 @@ const browser=await chromium.launch({channel:'chrome'}),ctx=await browser.newCon
 const ok=(v,s)=>{assert(v,s);console.log('ok',s);};
 try{
  await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.dashboardEditing);
- await page.evaluate(()=>{EXA.skipFlow();const S=EX.state();S.device.onboarded=true;EX.save();localStorage.setItem('expenity.releaseSeen','0.28.1');});
+ await page.evaluate(()=>{(EXA.skipFlow(),EX.state().device.entryMode='casual');const S=EX.state();S.device.onboarded=true;EX.save();localStorage.setItem('expenity.releaseSeen','0.28.1');});
  await page.reload();await page.waitForFunction(()=>!!window.EXA?.dashboardEditing);await page.waitForTimeout(2600);
  const info=await page.evaluate(()=>{const d=document.querySelector('dialog.whatsnew');if(!d)return null;const r=d.getBoundingClientRect(),c=d.querySelector('.whatsnew-card').getBoundingClientRect();return {open:d.open,cx:Math.round(r.left+r.width/2),cy:Math.round(r.top+r.height/2),vw:innerWidth,vh:innerHeight,w:Math.round(c.width),h:Math.round(c.height),items:d.querySelectorAll('.wn-list li').length};});
  console.log(info);

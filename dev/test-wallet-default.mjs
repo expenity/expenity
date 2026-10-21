@@ -5,7 +5,7 @@ const server=createServer((req,res)=>{const u=req.url.split('?')[0];const f=join
 const ok=(c,m)=>{console.log((c?'ok ':'FAIL ')+m);if(!c)process.exitCode=1;};
 const browser=await chromium.launch({channel:'chrome'}),ctx=await browser.newContext({viewport:{width:390,height:844},serviceWorkers:'block'}),page=await ctx.newPage();const errors=[];page.on('pageerror',e=>errors.push(String(e)));
 await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.smart);
-await page.evaluate(()=>{EXA.skipFlow();EX.setLang('en');const S=EX.state();S.accounts=[{id:'cash',name:'Cash',type:'cash',currency:'EUR',opening:'0'},{id:'card',name:'Credit card',type:'card',currency:'EUR',opening:'0'},{id:'bank',name:'Bank',type:'bank',currency:'EUR',opening:'0'}];S.settings.defaultAccount='bank';
+await page.evaluate(()=>{(EXA.skipFlow(),EX.state().device.entryMode='casual');EX.setLang('en');const S=EX.state();S.accounts=[{id:'cash',name:'Cash',type:'cash',currency:'EUR',opening:'0'},{id:'card',name:'Credit card',type:'card',currency:'EUR',opening:'0'},{id:'bank',name:'Bank',type:'bank',currency:'EUR',opening:'0'}];S.settings.defaultAccount='bank';
 const d=(n)=>new Date(Date.now()-n*864e5).toISOString().slice(0,10);
 // coffee is usually paid by card, electricity by bank
 for(let i=0;i<3;i++)S.txs.push({id:'c'+i,type:'expense',name:'Flat white '+i,amount:'3',account:'card',category:'coffee',date:d(i+1)});

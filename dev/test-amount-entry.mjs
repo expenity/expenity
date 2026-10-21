@@ -8,7 +8,7 @@ const browser=await chromium.launch({channel:'chrome'}),page=await browser.newPa
 const assert=(c,msg)=>{if(!c)throw Error(msg);console.log('ok',msg);};
 try{
  await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.openTx);
- await page.evaluate(()=>{EXA.skipFlow();EXA.openTx();});
+ await page.evaluate(()=>{(EXA.skipFlow(),EX.state().device.entryMode='casual');EXA.openTx();});
  assert(await page.locator('#txKeypad').isHidden(),'amount keypad starts closed');
  await page.screenshot({path:'/tmp/expenity-expense-pad-closed.png'});
  await page.click('[data-tx=target-amount]');assert(await page.locator('#txKeypad').isVisible(),'tapping amount opens keypad');

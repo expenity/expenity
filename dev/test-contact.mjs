@@ -10,7 +10,7 @@ const ok=(v,s)=>{assert(v,s);console.log('ok',s);};
 try{
  let posted=null;
  await page.route('**/api/contact',async r=>{posted=JSON.parse(r.request().postData());await r.fulfill({status:200,contentType:'application/json',headers:{'access-control-allow-origin':'*'},body:'{"ok":true}'});});
- await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.contact);await page.evaluate(()=>{EXA.skipFlow();EXA.go('more','root');});
+ await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.contact);await page.evaluate(()=>{(EXA.skipFlow(),EX.state().device.entryMode='casual');EXA.go('more','root');});
  await page.click('.more-group:has([data-contact-open]) summary');await page.click('[data-contact-open]');
  ok(await page.locator('#ctEditor[contenteditable=true]').isVisible()&&await page.locator('.rt-btn').count()>=8,'rich text editor with toolbar');
  await page.click('[data-ct-cat=bug]');await page.fill('[name=subject]','Crash on save');

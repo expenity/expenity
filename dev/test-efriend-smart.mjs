@@ -5,7 +5,7 @@ const server = http.createServer( ( q, r ) => { let f = path.join( root, decodeU
 const port = server.address().port; let ok = 0, fail = 0; const chk = ( n, c ) => { if ( c ) { ok++; console.log( 'ok', n ); } else { fail++; console.log( 'FAIL', n ); } };
 const b = await chromium.launch( { channel: 'chrome' } ), pg = await b.newPage( { viewport: { width: 390, height: 800 } } ); const errs = []; pg.on( 'pageerror', ( e ) => errs.push( e.message ) );
 await pg.goto( `http://localhost:${ port }/index.html` ); await pg.waitForFunction( () => window.EX && EX.efriend );
-await pg.evaluate( () => { const S = EX.state(); S.settings.onboarded = true; S.device.efOnboard = 1; EXA.skipFlow && EXA.skipFlow(); S.accounts.push( { id: 'w1', name: 'Bank', type: 'bank', currency: S.settings.currency, opening: '5000' } ); EX.save(); } );
+await pg.evaluate( () => { const S = EX.state(); S.settings.onboarded = true; S.device.efOnboard = 1; EXA.skipFlow && (EXA.skipFlow(),EX.state().device.entryMode='casual'); S.accounts.push( { id: 'w1', name: 'Bank', type: 'bank', currency: S.settings.currency, opening: '5000' } ); EX.save(); } );
 const none = await pg.evaluate( () => ( { l: EX.efriend.suggestLimits(), b: EX.efriend.budgetIdeas(), c: EX.efriend.suggestCushion2(), w: EXA.efLimitWarn( { type: 'expense', amount: '999', date: EX.today(), account: EX.activeAccounts()[ 0 ].id } ) } ) );
 chk( 'no data: no limit suggestion, no budget ideas, no cushion hint, no warning without limits', ! none.l && ! none.b.length && ! none.c && ! none.w );
 // 70 days of history: spending ~40/day across food and fun, income 2000 monthly in 3 blocks of different size

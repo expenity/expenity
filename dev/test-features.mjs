@@ -8,7 +8,7 @@ const server=createServer((req,res)=>{const f=join(process.cwd(),req.url.split('
 const browser=await chromium.launch({channel:'chrome'}),ctx=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,serviceWorkers:'block'}),page=await ctx.newPage(),errors=[];page.on('pageerror',e=>errors.push(String(e)));page.setDefaultTimeout(10000);
 const ok=(v,s)=>{assert(v,s);console.log('ok',s);};
 try{
- await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.features);await page.evaluate(()=>{EXA.skipFlow();});
+ await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.features);await page.evaluate(()=>{(EXA.skipFlow(),EX.state().device.entryMode='casual');});
  ok(await page.evaluate(()=>EXA.features.plan()==='advanced'&&document.documentElement.dataset.off===''),'existing users keep every feature (Advanced)');
  await page.evaluate(()=>EXA.go('more','root'));
  ok(await page.locator('details[open]').count()===0,'nothing is expanded on More');

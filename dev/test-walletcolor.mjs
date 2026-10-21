@@ -8,7 +8,7 @@ const server=createServer((req,res)=>{const f=join(process.cwd(),req.url.split('
 const browser=await chromium.launch({channel:'chrome'}),ctx=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,serviceWorkers:'block'}),page=await ctx.newPage(),errors=[];page.on('pageerror',e=>errors.push(String(e)));page.setDefaultTimeout(10000);
 const ok=(v,s)=>{assert(v,s);console.log('ok',s);};
 try{
- await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.walletColorField);await page.evaluate(()=>{EXA.skipFlow();const S=EX.state();S.accounts.push({id:'w2',name:'Bank',type:'bank',currency:'EUR',opening:'0'},{id:'w3',name:'Card',type:'card',currency:'EUR',opening:'0'});});
+ await page.goto(`http://localhost:${server.address().port}`);await page.waitForFunction(()=>!!window.EXA?.walletColorField);await page.evaluate(()=>{(EXA.skipFlow(),EX.state().device.entryMode='casual');const S=EX.state();S.accounts.push({id:'w2',name:'Bank',type:'bank',currency:'EUR',opening:'0'},{id:'w3',name:'Card',type:'card',currency:'EUR',opening:'0'});});
  const d1=await page.evaluate(()=>EX.state().accounts.map(a=>EX.walletColor(a).fg));
  ok(new Set(d1).size===d1.length,'default colors differ per wallet: '+d1.join(' '));
  await page.evaluate(()=>EXA.setSkin('synthwave'));const d2=await page.evaluate(()=>EX.state().accounts.map(a=>EX.walletColor(a).fg));
