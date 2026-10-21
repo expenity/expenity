@@ -175,7 +175,9 @@
 	};
 	const me = ( text ) => push( 'me', esc( text ) );
 	const setBar = ( o ) => {
-		const chips = host.querySelector( '#obChips' ), form = host.querySelector( '#obForm' ), inp = form.querySelector( 'input' );
+		const chips = host.querySelector( '#obChips' ), form = host.querySelector( '#obForm' );
+		// a fresh input every time: the amount formatting (amountfield.js) sticks to an input once it has been a number field, and would turn an email into 0
+		const wrap = form.querySelector( '.ef-inwrap' ), old = form.querySelector( 'input' ), inp = document.createElement( 'input' ); inp.name = 'q'; inp.autocomplete = 'off'; inp.setAttribute( 'enterkeyhint', 'send' ); inp.setAttribute( 'aria-label', old.getAttribute( 'aria-label' ) || '' ); wrap.replaceChild( inp, old );
 		chips.innerHTML = ( o.chips || [] ).map( ( c, i ) => `<button type="button" class="ef-chipq${ c.go ? ' go' : '' }${ c.on ? ' on' : '' }" style="--i:${ i }" data-ob-chip="${ i }" aria-pressed="${ c.on ? 'true' : 'false' }">${ esc( c.label ) }</button>` ).join( '' );
 		form.hidden = ! o.input; inp.value = ''; inp.setAttribute( 'inputmode', o.input === 'decimal' ? 'decimal' : 'text' ); inp.placeholder = o.ph || L( 'ph' ); inp.maxLength = o.input === 'decimal' ? 14 : 40;
 		pending = o; if ( o.input && fine() ) inp.focus( { preventScroll: true } ); // desktop only: a phone keyboard never opens by itself
