@@ -13,10 +13,10 @@ chk( 'switching to Greek translates the welcome page at once', await pg.evaluate
 await pg.click( '[data-ob-lang=en]' ); await pg.waitForTimeout( 150 );
 chk( 'and back to English', await pg.evaluate( () => EX.lang() === 'en' && /Welcome/.test( document.querySelector( '.ob-intro h1' ).textContent ) ) );
 await pg.click( '[data-ob-go]' ); await pg.waitForSelector( '.ob-pick' );
-chk( 'the picker follows the chosen language and has no Choose button yet', await pg.evaluate( () => /Choose your eFriend/.test( document.querySelector( '.ob-pick-title' ).textContent ) && document.querySelector( '#obChoose' ).hidden ) );
+chk( 'the picker follows the chosen language and has no Choose button yet', await pg.evaluate( () => /Choose your eFriend/.test( document.querySelector( '.ob-pick-title' ).textContent ) && ! document.querySelector( '#obChoose' ).classList.contains( 'show' ) ) );
 await pg.screenshot( { path: '/tmp/ob-pick.png' } );
 await pg.focus( '#obH' ); await pg.keyboard.press( 'End' ); await pg.waitForTimeout( 200 );
-chk( 'at the end the Choose button appears for Boogie', await pg.evaluate( () => ! document.querySelector( '#obChoose' ).hidden && document.querySelector( '#obChoose' ).dataset.pick === 'boogie' ) );
+chk( 'at the end the Choose button appears for Boogie', await pg.evaluate( () => document.querySelector( '#obChoose' ).classList.contains( 'show' ) && document.querySelector( '#obChoose' ).dataset.pick === 'boogie' ) );
 await pg.keyboard.press( 'Home' ); await pg.waitForTimeout( 200 );
 chk( 'at the other end it offers Chip', await pg.evaluate( () => document.querySelector( '#obChoose' ).dataset.pick === 'chip' ) );
 await pg.click( '#obChoose' ); await pg.waitForSelector( '#obChips [data-ob-chip]' );
