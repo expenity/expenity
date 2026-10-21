@@ -266,6 +266,10 @@
 		// the light falls on his body too: the upper left of the shell glows from the tube and pulses with it
 		const cid = prefix + 'cast', kid = prefix + 'castclip';
 		svg = svg.replace( '</g><g class="ef-fx">', `<defs><radialGradient id="${ cid }" cx="45" cy="22" r="64" gradientUnits="userSpaceOnUse"><stop offset="0" style="stop-color:var(--ef-tc)" stop-opacity=".95"/><stop offset=".3" style="stop-color:var(--ef-tm)" stop-opacity=".7"/><stop offset=".65" style="stop-color:var(--ef-te)" stop-opacity=".3"/><stop offset="1" style="stop-color:var(--ef-te)" stop-opacity="0"/></radialGradient><clipPath id="${ kid }"><rect x="20" y="20" width="104" height="80" rx="12"/></clipPath></defs><rect class="tube-cast" x="20" y="20" width="104" height="80" rx="12" fill="url(#${ cid })" clip-path="url(#${ kid })"/></g><g class="ef-fx">` );
+		// the rest of his body darkens the further it is from the bulb, and more as the light fades (shade layer, see style.css)
+		const sid = prefix + 'shade', shade = `<defs><radialGradient id="${ sid }" cx="45" cy="22" r="112" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#0b0604" stop-opacity="0"/><stop offset=".22" stop-color="#0b0604" stop-opacity=".12"/><stop offset=".55" stop-color="#0b0604" stop-opacity=".55"/><stop offset="1" stop-color="#0b0604" stop-opacity=".92"/></radialGradient></defs>`;
+		svg = svg.replace( '<g class="ef-fx">', `${ shade }<rect class="tube-shade" x="20" y="20" width="104" height="80" rx="12" fill="url(#${ sid })" clip-path="url(#${ kid })"/><g class="ef-fx">` );
+		[ 'ef-armL', 'ef-armR' ].forEach( ( g ) => { svg = svg.replace( new RegExp( '(<g class="' + g + '">\\s*)(<path d="[^"]+")([^>]*>)' ), ( m, a1, p, rest ) => m + p + ' class="tube-shade" fill="url(#' + sid + ')" stroke="none"/>' ); } );
 		return svg;
 	};
 	F.boogieIcon = ( size = 28 ) => ( window.EXBOOGIE ? window.EXBOOGIE.icon.replace( 'width="40" height="36"', 'class="ef-ico" width="' + size + '" height="' + ( size * 0.9 ) + '"' ) : F.chipIcon( size ) );
