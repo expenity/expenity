@@ -208,7 +208,7 @@
 	EXA.efBlogRow = () => {
 		if ( EX.feature( 'efblog' ) === false ) return '';
 		B.update(); const n = B.status().unread.length;
-		return `<div class="list mlist efb-rowwrap"><button type="button" class="mrow" data-more="efblog">${ UI.ci( 'notes', 'purple', 40 ) }<span class="mid"><b>${ esc( t( 'efbMenu' ) ) }</b><small>${ esc( t( 'efbMoreSub' ) ) }</small></span>${ n ? `<i class="efb-badge" aria-label="${ esc( t( 'efbNewChapter' ) ) }">${ n }</i>` : '' }${ UI.icon( 'chevron-right', 18 ) }</button></div>`;
+		return `<button type="button" class="mrow" data-more="efblog">${ UI.ci( 'notes', 'purple', 40 ) }<span class="mid"><b>${ esc( t( 'efbMenu' ) ) }</b><small>${ esc( t( 'efbMoreSub' ) ) }</small></span>${ n ? `<i class="efb-badge" aria-label="${ esc( t( 'efbNewChapter' ) ) }">${ n }</i>` : '' }${ UI.icon( 'chevron-right', 18 ) }</button>`;
 	};
 	document.addEventListener( 'click', ( e ) => {
 		const b = e.target.closest && e.target.closest( '[data-efb-ch]' ); if ( ! b ) return;
