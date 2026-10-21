@@ -2073,3 +2073,15 @@ fieldset > legend { font-weight: 800; padding: 0 8px; color: var(--ink, #2a1a14)
 .chip-row { grid-template-columns: 34px 1fr; align-items: center; } .chip-lab { font-size: 1.5rem; line-height: 1; text-align: center; }
 .chip-row .chip-sws { grid-column: 2; }
 .chip-match b { font-size: 1.5rem; line-height: 1; }
+
+/* onboarding: one labelled button, Controls for Boogie and Lights for Chip, that opens the full page */
+.ob-light { bottom: calc(clamp(96px, 14dvh, 112px) + env(safe-area-inset-bottom)) !important; width: auto !important; }
+.ob-ctl { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 20px; border-radius: 24px; border: 2px solid #b08d57; background: #fff8e8; color: #3a2412; box-shadow: 0 4px 12px #0003; font: 800 1rem/1 var(--mono, monospace); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+/* no scrolling on the gear pages: the picture shrinks with the screen height */
+.ef-lightfull .ef-lightart { min-height: 0; }
+.ef-lightfull .ef-lightart svg { height: clamp(104px, calc(100dvh - 500px), 250px); width: auto; max-width: 100%; }
+.ef-lightfull .sheet-pad { gap: 10px; padding-top: 0; padding-bottom: calc(14px + env(safe-area-inset-bottom)); }
+.ef-lightfull .ef-rigwrap { margin-top: 50px; margin-bottom: 4px; }
+.ef-lightfull.efpg-chip .chip-panel { gap: 8px; padding: 12px; }
+.ef-lightfull.efpg-chip .ef-lightart svg { height: clamp(96px, calc(100dvh - 535px), 250px); }
+.ob-light[data-m=chip] .ob-ctl { background: rgba(7, 52, 70, .72); color: #effffd; border-color: #5ff3e6; font-family: 'Comfortaa', 'Noto Sans', sans-serif; box-shadow: 0 0 16px #5ff3e655; }

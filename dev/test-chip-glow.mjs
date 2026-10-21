@@ -29,5 +29,10 @@ chk( 'Save keeps it everywhere', ( await css( '--chip-eye' ) ) === '#ff8fc8' && 
 for ( const [ w, h ] of [ [ 360, 640 ], [ 412, 735 ] ] ) for ( const lang of [ 'en', 'el' ] ) { await pg.setViewportSize( { width: w, height: h } ); await pg.evaluate( ( l ) => { EX.setLang( l ); EXA.render(); document.querySelector( '[data-ef-gear=chip]' ).click(); }, lang ); await pg.waitForTimeout( 250 );
 	chk( `layout ${ w }x${ h } ${ lang }`, await pg.evaluate( () => { const b = document.querySelector( '#sheet .sheet-pad' ); return document.documentElement.scrollWidth <= innerWidth && b.scrollWidth <= b.clientWidth + 1 && ! /\bef[A-Z][A-Za-z]+\b/.test( document.querySelector( '#sheet' ).textContent ); } ) );
 	await pg.evaluate( () => document.querySelector( '#sheet [data-close]' ).click() ); await pg.waitForTimeout( 250 ); }
+// the gear pages fit the screen: no scrolling, for both friends, both languages, small and large phones
+for ( const [ w, h ] of [ [ 360, 640 ], [ 390, 700 ], [ 412, 735 ], [ 390, 844 ] ] ) for ( const lang of [ 'en', 'el' ] ) for ( const who of [ 'chip', 'boogie' ] ) { await pg.setViewportSize( { width: w, height: h } ); await pg.evaluate( ( [ l, g ] ) => { EX.setLang( l ); EXA.render(); document.querySelector( g === 'chip' ? '[data-ef-gear=chip]' : '[data-ef-gear]:not([data-ef-gear=chip])' ).click(); }, [ lang, who ] ); await pg.waitForTimeout( 300 );
+	const fit = await pg.evaluate( () => { const sc = document.querySelector( '#sheet .sheet-scroll' ); const sv = document.querySelector( '#sheet .ef-lightart svg' ).getBoundingClientRect(); return { over: sc.scrollHeight - sc.clientHeight, art: Math.round( sv.height ) }; } );
+	chk( `no scrolling on the ${ who } page at ${ w }x${ h } ${ lang } (overflow ${ fit.over }px, picture ${ fit.art }px)`, fit.over <= 1 );
+	await pg.evaluate( () => document.querySelector( '#sheet [data-close]' ).click() ); await pg.waitForTimeout( 250 ); }
 chk( 'no page errors ' + errs.join( ';' ), ! errs.length );
 console.log( ok + ' ok, ' + fail + ' failed' ); await b.close(); server.close(); process.exit( fail ? 1 : 0 );

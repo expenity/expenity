@@ -17,8 +17,16 @@ chk( 'the picker follows the chosen language and has no Choose button yet', awai
 await pg.screenshot( { path: '/tmp/ob-pick.png' } );
 await pg.focus( '#obH' ); await pg.keyboard.press( 'End' ); await pg.waitForTimeout( 200 );
 chk( 'at the end the Choose button appears for Boogie', await pg.evaluate( () => document.querySelector( '#obChoose' ).classList.contains( 'show' ) && document.querySelector( '#obChoose' ).dataset.pick === 'boogie' ) );
-await pg.keyboard.press( 'Home' ); await pg.waitForTimeout( 200 );
+chk( 'beside Boogie the button says Controls and opens his full page', await pg.evaluate( () => document.querySelector( '#obLight' ).classList.contains( 'show' ) && document.querySelector( '#obCtlTx' ).textContent === 'Controls' ) );
+await pg.click( '[data-ob-ctl]' ); await pg.waitForTimeout( 400 );
+chk( 'his page opens over the picker with the board', await pg.evaluate( () => document.querySelector( '#sheet' ).open && document.querySelector( '#sheet' ).classList.contains( 'efpg-boogie' ) && !! document.querySelector( '#sheet .ef-panel' ) ) );
+await pg.evaluate( () => document.querySelector( '#sheet [data-close]' ).click() ); await pg.waitForTimeout( 300 );
+await pg.focus( '#obH' ); await pg.keyboard.press( 'Home' ); await pg.waitForTimeout( 200 );
 chk( 'at the other end it offers Chip', await pg.evaluate( () => document.querySelector( '#obChoose' ).dataset.pick === 'chip' ) );
+chk( 'beside Chip the button says Lights and opens his page', await pg.evaluate( () => document.querySelector( '#obCtlTx' ).textContent === 'Lights' ) );
+await pg.click( '[data-ob-ctl]' ); await pg.waitForTimeout( 400 );
+chk( 'with the glow controls', await pg.evaluate( () => document.querySelector( '#sheet' ).open && document.querySelector( '#sheet' ).classList.contains( 'efpg-chip' ) && !! document.querySelector( '#sheet [data-chip-i]' ) ) );
+await pg.evaluate( () => document.querySelector( '#sheet [data-close]' ).click() ); await pg.waitForTimeout( 300 );
 await pg.click( '#obChoose' ); await pg.waitForSelector( '#obChips [data-ob-chip]' );
 chk( 'Chip was chosen and the chat starts with the name question', await pg.evaluate( () => EX.state().settings.efChar === 'chip' && /call you/.test( document.querySelector( '#obChat' ).textContent ) ) );
 const chip = async ( i ) => { await pg.waitForSelector( '#obChips [data-ob-chip]' ); await pg.click( `#obChips [data-ob-chip="${ i }"]` ); await pg.waitForTimeout( 150 ); };
