@@ -6,7 +6,7 @@ const port = server.address().port; let ok = 0, fail = 0; const chk = ( n, c ) =
 const b = await chromium.launch( { channel: 'chrome' } ), pg = await b.newPage( { viewport: { width: 390, height: 800 } } ); const errs = []; pg.on( 'pageerror', ( e ) => errs.push( e.message ) );
 await pg.addInitScript( () => { localStorage.setItem( 'expenity.lang', 'en' ); } );
 await pg.goto( `http://localhost:${ port }/index.html` ); await pg.waitForFunction( () => window.EXA && EXA.flow );
-await pg.evaluate( () => { const d = EX.state().device; d.langHinted = true; d.installDismissed = true; EX.state().settings.efInstant = true; d.stage = 'setup'; EXA.flow.show(); } ); await pg.waitForTimeout( 500 );
+await pg.evaluate( () => { const d = EX.state().device; d.langHinted = true; EX.state().settings.efInstant = true; d.stage = 'setup'; EXA.flow.show(); } ); await pg.waitForTimeout( 500 );
 chk( 'the welcome page shows the logo, the language switch and both bots', await pg.evaluate( () => !! document.querySelector( '.ob-intro' ) && document.querySelectorAll( '[data-ob-lang]' ).length === 2 && document.querySelectorAll( '.ob-bot svg' ).length === 2 ) );
 await pg.click( '[data-ob-lang=el]' ); await pg.waitForTimeout( 150 );
 chk( 'switching to Greek translates the welcome page at once', await pg.evaluate( () => EX.lang() === 'el' && /Καλώς ήρθατε/.test( document.querySelector( '.ob-intro h1' ).textContent ) ) );
@@ -34,7 +34,7 @@ const r = await pg.evaluate( () => { const S = EX.state(); return { cur: S.setti
 console.log( JSON.stringify( r ) ); chk( 'everything is created', r.cur === 'USD' && r.name === 'Maria' && r.inc[ 0 ] === '1500.5monthly' && r.bills.length === 2 && /Trip2000/.test( r.goal[ 0 ] ) && r.bud === 4 && r.cush === 2 && r.entry === 'casual' && r.rows === 9 );
 await pg.screenshot( { path: '/tmp/ob-sum.png' } );
 await pg.click( '[data-ob-rm=bud]' ); chk( 'the estimated budgets can be removed', await pg.evaluate( () => EX.state().budgets.length === 0 ) );
-await pg.waitForSelector( '#obChips [data-ob-chip="1"]' ); await pg.click( '#obChips [data-ob-chip="1"]' ); await pg.waitForTimeout( 600 );
-chk( 'Open Expenity finishes setup and shows the app', await pg.evaluate( () => EX.state().device.stage === 'done' && EX.state().settings.setupDone === true && ! document.querySelector( '.ob-chat' ) ) );
+await pg.waitForSelector( '#obChips [data-ob-chip="1"]' ); await pg.click( '#obChips [data-ob-chip="1"]' ); await pg.waitForFunction( () => /20 seconds/.test( document.querySelector( '#obChat' ).textContent ) ); await pg.click( '#obChips [data-ob-chip="0"]' ); await pg.waitForTimeout( 700 );
+chk( 'eFriend pitches the install page, then it shows before the app opens', await pg.evaluate( () => EX.state().device.stage === 'install' && EX.state().settings.setupDone === true && ! document.querySelector( '.ob-chat' ) && !! document.querySelector( '#flow [data-flow^=install]' ) ) );
 chk( 'no page errors ' + errs.join( ';' ), ! errs.length );
 console.log( ok + ' ok, ' + fail + ' failed' ); await b.close(); server.close(); process.exit( fail ? 1 : 0 );

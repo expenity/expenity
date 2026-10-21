@@ -26,6 +26,8 @@
 		introTitle: [ 'Welcome to Expenity', 'Καλώς ήρθατε στο Expenity' ], introSub: [ 'Your money, calm and clear.', 'Τα χρήματά σας, ήρεμα και καθαρά.' ],
 		introL1: [ '🧾 Bills, income and spending in one place', '🧾 Λογαριασμοί, εισοδήματα και έξοδα σε ένα μέρος' ], introL2: [ '🔔 Never miss a payment', '🔔 Ποτέ πια χαμένη πληρωμή' ], introL3: [ '🤖 eFriend checks if you can afford it, and finds the best day', '🤖 Το eFriend ελέγχει αν το αντέχετε και βρίσκει την καλύτερη μέρα' ],
 		introQ: [ 'Can I afford a €49 gift?', 'Μπορώ να αγοράσω ένα δώρο €49;' ], introA: [ 'Yes! Best day: Friday ✅', 'Ναι! Καλύτερη μέρα: Παρασκευή ✅' ], introLang: [ 'Choose your language', 'Επιλέξτε γλώσσα' ], introGo: [ 'Let’s go', 'Πάμε' ], introPoke: [ 'Tap them!', 'Πατήστε τους!' ],
+		instPitch: [ 'Final boss level, my friend. 📼\nIf you add me to your home screen I live in your pocket, one tap away, full screen, and I can nudge you before a bill bites. Skip it and I am just one of 47 open tabs, right next to a banana bread recipe. 🍌\nThe next page takes 20 seconds. Your future self sends thanks.', 'Το τελικό επίπεδο, φίλε μου. 📼\nΑν με προσθέσετε στην αρχική οθόνη, ζω στην τσέπη σας, με ένα πάτημα, σε πλήρη οθόνη, και μπορώ να σας ειδοποιώ πριν δαγκώσει ένας λογαριασμός. Αν το παραλείψετε, είμαι απλώς μία από τις 47 ανοιχτές καρτέλες, δίπλα σε μια συνταγή για μπανανόψωμο. 🍌\nΗ επόμενη σελίδα θέλει 20 δευτερόλεπτα. Το μελλοντικό σας εαυτό θα σας ευχαριστήσει.',
+			'OKAY this is the SUPER DUPER important part!! 🚨\nAdd me to your home screen and I become a real app: one tap, full screen, instant, and I can remind you before bills hit. Skip it and I am stuck in a browser tab between 37 other tabs and a cat video. 🐱\nThe next page takes 20 seconds. Do it for me?? 🥺', 'ΟΚ αυτό είναι το ΣΟΥΠΕΡ ΔΟΥΠΕΡ σημαντικό μέρος!! 🚨\nΠροσθέστε με στην αρχική οθόνη και γίνομαι κανονική εφαρμογή: ένα πάτημα, πλήρης οθόνη, άμεσα, και μπορώ να σας θυμίζω πριν έρθουν οι λογαριασμοί. Αν το παραλείψετε, θα είμαι κολλημένος σε μια καρτέλα ανάμεσα σε 37 άλλες και ένα βίντεο με γάτες. 🐱\nΗ επόμενη σελίδα θέλει 20 δευτερόλεπτα. Θα το κάνετε για μένα?? 🥺' ],
 		accAsk: [ 'One more thing: want to keep your data safe and use it on all your devices? A free account takes a few seconds. 🔐', 'Ένα τελευταίο: θέλετε να κρατήσετε τα δεδομένα σας ασφαλή και να τα χρησιμοποιείτε σε όλες τις συσκευές σας; Ένας δωρεάν λογαριασμός θέλει λίγα δευτερόλεπτα. 🔐',
 			'One more thing!! 🔐 Want your data safe and on all your devices? A free account takes seconds!', 'Ένα τελευταίο!! 🔐 Θέλετε τα δεδομένα σας ασφαλή και σε όλες τις συσκευές σας; Ένας δωρεάν λογαριασμός θέλει δευτερόλεπτα!' ],
 		accCreate: [ '🔐 Create a free account', '🔐 Δημιουργία δωρεάν λογαριασμού' ], accLater: [ 'Maybe later', 'Ίσως αργότερα' ], accEmail: [ 'What is your email address? It is only used to recover your account.', 'Ποια είναι η διεύθυνση email σας; Χρησιμοποιείται μόνο για την ανάκτηση του λογαριασμού σας.' ], accBad: [ 'That does not look like an email. Try again?', 'Αυτό δεν μοιάζει με email. Δοκιμάστε ξανά;' ],
@@ -318,20 +320,28 @@
 		summaryOn = true; const b = box(); if ( ! b ) return;
 		( async () => { await say( L( 'sumIntro' ) ); const bx = box(); if ( ! bx || ! summaryOn ) return; push( 'ef', `<ul class="ob-sum" id="obSum">${ rowsHtml() }</ul><p class="ob-note">${ esc( L( 'sumNote' ) ) }</p>` ); await offerAccount(); } )();
 	}
+	/** The last step: if the app is not installed yet, eFriend explains (with some drama) why the next page matters, then the install guide shows before the app opens. */
+	async function finalStep() {
+		const my = tok, needs = ! UI.isStandalone() && ! D().installDismissed;
+		if ( ! needs ) { exit(); return; }
+		await say( L( 'instPitch' ) ); if ( my !== tok ) return;
+		const r = await prompt( { chips: [ { label: L( 'open' ), go: true } ] } ); if ( ! r || my !== tok ) return;
+		me( L( 'open' ) ); clearBar(); tok++; S().settings.setupDone = true; D().onboarded = true; D().stage = 'install'; EX.save(); EXA.flow.show();
+	}
 	/** After the summary: keep it all safe with a free account, or open the app. */
 	async function offerAccount() {
-		if ( EX.auth.isSignedIn() ) { setBar( { chips: [ { label: L( 'open' ), go: true } ], sumBtn: true } ); return; }
+		if ( EX.auth.isSignedIn() ) { await finalStep(); return; }
 		const my = tok; await say( L( 'accAsk' ) ); if ( my !== tok ) return;
 		const r = await prompt( { chips: [ { label: L( 'accCreate' ), go: true }, { label: L( 'open' ) } ] } ); if ( ! r || my !== tok ) return;
-		if ( r.chip === 1 ) { me( L( 'open' ) ); exit(); return; }
+		if ( r.chip === 1 ) { me( L( 'open' ) ); await finalStep(); return; }
 		me( L( 'accCreate' ) ); await say( L( 'accEmail' ) );
 		for ( ;; ) {
 			const e = await prompt( { input: 'text', ph: 'name@example.com', chips: [ { label: L( 'accLater' ) } ] } ); if ( ! e || my !== tok ) return;
-			if ( e.chip !== undefined ) { me( L( 'accLater' ) ); exit(); return; }
+			if ( e.chip !== undefined ) { me( L( 'accLater' ) ); await finalStep(); return; }
 			const mail = e.text.trim(); me( mail ); if ( ! /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test( mail ) ) { await say( L( 'accBad' ) ); continue; }
 			const res = await EX.auth.register( mail );
 			if ( res.error ) { await say( EXA.errText( res.error ) ); continue; }
-			EXA.showCodes( res.recoveryCodes, () => exit() ); return;
+			EXA.showCodes( res.recoveryCodes, () => { finalStep(); } ); return;
 		}
 	}
 	function refreshSummary() { const u = host.querySelector( '#obSum' ); if ( u ) u.innerHTML = rowsHtml(); }
