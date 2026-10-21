@@ -57,6 +57,11 @@
 		sumNote: [ 'Budgets are estimates from your income and bills. You can change them any time.', 'Οι προϋπολογισμοί είναι εκτιμήσεις από το εισόδημα και τους λογαριασμούς σας. Μπορείτε να τους αλλάξετε οποτεδήποτε.' ],
 		dayN: [ 'on day {n}', 'στις {n}' ],
 	};
+	// what falls behind each friend on the picker: short jokes and icons that pile up at the bottom
+	const FALL = {
+		boogie: { icons: [ '📼', '🎵', '🕺', '✏️', '💡', '📻', '🎧', '💿' ], en: [ 'Rewind is my favourite button', 'Great tracks, no skips', 'Side A or side B?', 'I never lose the plot, just the tape', 'Pencil: the original fix' ], el: [ 'Το rewind είναι το αγαπημένο μου', 'Τέλεια κομμάτια, χωρίς παράλειψη', 'Πλευρά Α ή πλευρά Β;', 'Δεν χάνω την πλοκή, μόνο την ταινία', 'Μολύβι: η αρχική επισκευή' ] },
+		chip: { icons: [ '🤖', '📱', '🔋', '📶', '😂', '💬', '⚡', '🎮' ], en: [ 'Battery 100% 🔋', '404: joke not found', 'No cap, I am fast', 'Wi-Fi: 5 bars', 'Emoji fluent 😎' ], el: [ 'Μπαταρία 100% 🔋', '404: το ανέκδοτο χάθηκε', 'Χωρίς ψέματα, είμαι γρήγορος', 'Wi-Fi: 5 γραμμές', 'Μιλάω Emoji 😎' ] },
+	};
 	const pickFrom = ( s ) => { const l = String( s ).split( '|' ); return l[ Math.floor( Math.random() * l.length ) ]; };
 	const L = ( k, vars ) => { const r = TX[ k ] || [ k ], el = EX.lang() === 'el', chip = F().char() === 'chip'; let s = r[ el ? 1 : 0 ]; if ( chip && r[ el ? 3 : 2 ] ) s = r[ el ? 3 : 2 ]; if ( s == null ) s = r[ 0 ]; s = pickFrom( s ); if ( vars ) s = s.replace( /\{(\w+)\}/g, ( m, x ) => ( vars[ x ] !== undefined ? vars[ x ] : m ) ); return s; };
 	ob.words = TX;
@@ -72,19 +77,20 @@
 	/* ------------------------------------------------------------------ 1. The split-screen picker */
 	function picker() {
 		summaryOn = false;
-		const B = F().mascotOf( 'boogie', 'happy', 250 ), C = F().mascotOf( 'chip', 'happy', 250 );
-		host.innerHTML = `<div class="ob-pick" id="obPick">			<section class="ob-half ob-boogie" id="obB" aria-label="Boogie"><h1 class="ob-pick-title">${ esc( L( 'pickTitle' ) ) }</h1><p class="ob-hint">${ esc( L( 'pickHint' ) ) }</p><div class="ob-half-in" id="obBin"><div class="ob-art">${ B }</div><div class="ob-txt"><h2>Boogie</h2><p>${ esc( L( 'pickBoogie' ) ) }</p></div></div></section>
-			<section class="ob-half ob-chip" id="obC" aria-label="Chip"><h1 class="ob-pick-title">${ esc( L( 'pickTitle' ) ) }</h1><p class="ob-hint">${ esc( L( 'pickHint' ) ) }</p><div class="ob-half-in" id="obCin"><div class="ob-art">${ C }</div><div class="ob-txt"><h2>Chip</h2><p>${ esc( L( 'pickChip' ) ) }</p></div></div></section>
+		const B = F().mascotOf( 'boogie', 'happy', 300 ), C = F().mascotOf( 'chip', 'happy', 250 );
+		host.innerHTML = `<div class="ob-pick" id="obPick">			<section class="ob-half ob-boogie" id="obB" aria-label="Boogie"><div class="ob-fall" aria-hidden="true"></div><h1 class="ob-pick-title">${ esc( L( 'pickTitle' ) ) }</h1><p class="ob-hint">${ esc( L( 'pickHint' ) ) }</p><div class="ob-half-in" id="obBin"><div class="ob-art">${ B }</div><div class="ob-txt"><h2>Boogie</h2><p>${ esc( L( 'pickBoogie' ) ) }</p></div></div></section>
+			<section class="ob-half ob-chip" id="obC" aria-label="Chip"><div class="ob-fall" aria-hidden="true"></div><h1 class="ob-pick-title">${ esc( L( 'pickTitle' ) ) }</h1><p class="ob-hint">${ esc( L( 'pickHint' ) ) }</p><div class="ob-half-in" id="obCin"><div class="ob-art">${ C }</div><div class="ob-txt"><h2>Chip</h2><p>${ esc( L( 'pickChip' ) ) }</p></div></div></section>
 			<div class="ob-handle" id="obH" role="slider" tabindex="0" aria-label="${ esc( L( 'pickTitle' ) ) }" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"><span class="ob-grip"><i>◀</i><i>▶</i></span></div>
 			<button type="button" class="btn btn-primary big ob-choose" id="obChoose" hidden>${ esc( L( 'pickChoose' ) ) }</button></div>`;
-		const root = host.querySelector( '#obPick' ), bP = root.querySelector( '#obB' ), cP = root.querySelector( '#obC' ), bTx = root.querySelector( '#obB .ob-txt' ), cTx = root.querySelector( '#obC .ob-txt' ), h = root.querySelector( '#obH' ), btn = root.querySelector( '#obChoose' ), hints = root.querySelectorAll( '.ob-hint' );
+		const root = host.querySelector( '#obPick' ), bP = root.querySelector( '#obB' ), cP = root.querySelector( '#obC' ), bA = root.querySelector( '#obB .ob-art' ), cA = root.querySelector( '#obC .ob-art' ), bTx = root.querySelector( '#obB .ob-txt' ), cTx = root.querySelector( '#obC .ob-txt' ), h = root.querySelector( '#obH' ), btn = root.querySelector( '#obChoose' ), hints = root.querySelectorAll( '.ob-hint' );
 		let X = 50, raf = 0;
 		const apply = () => {
 			// both friends are drawn centred on the whole screen and the slider cuts them in half; the words fade in as their side is uncovered
 			root.style.setProperty( '--x', X + '%' );
 			bP.style.clipPath = `inset(0 ${ 100 - X }% 0 0)`; cP.style.clipPath = `inset(0 0 0 ${ X }%)`;
 			const pb = Math.max( 0, Math.min( 1, ( X - 52 ) / 40 ) ), pc = Math.max( 0, Math.min( 1, ( 48 - X ) / 40 ) );
-			bTx.style.opacity = pb; bTx.style.transform = `translateY(${ ( 1 - pb ) * 14 }px)`; cTx.style.opacity = pc; cTx.style.transform = `translateY(${ ( 1 - pc ) * 14 }px)`;
+			bTx.style.opacity = pb; bTx.style.transform = `translateY(${ ( 1 - pb ) * 14 + pb * 46 }px)`; cTx.style.opacity = pc; cTx.style.transform = `translateY(${ ( 1 - pc ) * 14 + pc * 46 }px)`;
+			bA.style.transform = `scale(${ ( 1 + .3 * pb - .1 * pc ).toFixed( 3 ) })`; cA.style.transform = `scale(${ ( 1 + .3 * pc - .1 * pb ).toFixed( 3 ) })`; // the one you are choosing grows and comes to the centre
 			h.setAttribute( 'aria-valuenow', Math.round( X ) );
 			const edge = X >= 97 ? 'boogie' : X <= 3 ? 'chip' : ''; btn.hidden = ! edge; btn.dataset.pick = edge; btn.setAttribute( 'aria-hidden', edge ? 'false' : 'true' );
 			if ( edge ) { btn.textContent = L( 'pickChoose' ); bP.classList.toggle( 'on', edge === 'boogie' ); cP.classList.toggle( 'on', edge === 'chip' ); } else { bP.classList.remove( 'on' ); cP.classList.remove( 'on' ); }
@@ -100,7 +106,26 @@
 		h.addEventListener( 'keydown', ( e ) => { const k = e.key; if ( k === 'ArrowLeft' ) X = Math.max( 0, X - 8 ); else if ( k === 'ArrowRight' ) X = Math.min( 100, X + 8 ); else if ( k === 'Home' ) X = 0; else if ( k === 'End' ) X = 100; else return; e.preventDefault(); apply(); } );
 		btn.addEventListener( 'click', () => { const c = btn.dataset.pick; if ( c ) choose( c ); } );
 		apply(); window.addEventListener( 'resize', apply );
+		falling( bP.querySelector( '.ob-fall' ), 'boogie', root ); falling( cP.querySelector( '.ob-fall' ), 'chip', root );
 		if ( ! reduce() ) setTimeout( () => { if ( X === 50 && ! drag ) { tween( 40, 360 ); setTimeout( () => { if ( ! drag && Math.abs( X - 40 ) < 1 ) tween( 60, 560 ); setTimeout( () => { if ( ! drag && Math.abs( X - 60 ) < 1 ) tween( 50, 360 ); }, 640 ); }, 420 ); } }, 900 );
+	}
+	/** Jokes and icons drop from the top of one half and pile up at the bottom; when the pile is high it fades and starts again. */
+	function falling( layer, who, root ) {
+		const cfg = FALL[ who ], el = EX.lang() === 'el', texts = el ? cfg.el : cfg.en, W = () => layer.clientWidth || 360, H = () => layer.clientHeight || 700, cols = 3, heights = new Array( cols ).fill( 0 ), items = [];
+		let n = 0, timer = 0;
+		const drop = () => {
+			if ( ! root.isConnected ) { clearTimeout( timer ); return; }
+			const text = n % 2 === 0, label = text ? texts[ Math.floor( Math.random() * texts.length ) ] : cfg.icons[ Math.floor( Math.random() * cfg.icons.length ) ]; n++;
+			const d = document.createElement( 'span' ); d.className = 'ob-drop' + ( text ? ' ob-drop-t' : '' ); d.textContent = label; layer.appendChild( d );
+			const w = d.offsetWidth, h = d.offsetHeight, colW = W() / cols, order = heights.map( ( v, i ) => i ).sort( ( a, b ) => heights[ a ] - heights[ b ] ), c = order[ Math.floor( Math.random() * 2 ) ];
+			const x = Math.max( 4, Math.min( W() - w - 4, c * colW + Math.random() * Math.max( 0, colW - w ) ) ), y = H() - 96 - heights[ c ] - h; heights[ c ] += h + 3;
+			d.style.left = x + 'px'; d.style.top = y + 'px'; d.style.transform = `rotate(${ ( Math.random() - .5 ) * 14 }deg)`; items.push( d );
+			if ( ! reduce() ) d.animate( [ { transform: `translateY(${ -y - h - 20 }px) rotate(${ ( Math.random() - .5 ) * 60 }deg)`, opacity: 0 }, { opacity: 1, offset: .12 }, { transform: `translateY(0) rotate(0deg)`, opacity: 1 } ], { duration: 1300 + y * 1.1, easing: 'cubic-bezier(.3,.1,.5,1.2)' } );
+			if ( Math.max( ...heights ) > H() * .36 ) { const old = items.splice( 0 ); heights.fill( 0 ); old.forEach( ( o ) => { o.style.transition = 'opacity 1s'; o.style.opacity = 0; setTimeout( () => o.remove(), 1100 ); } ); }
+			if ( ! reduce() ) timer = setTimeout( drop, 850 + Math.random() * 400 );
+		};
+		if ( reduce() ) { for ( let i = 0; i < 6; i++ ) drop(); clearTimeout( timer ); return; }
+		timer = setTimeout( drop, 300 );
 	}
 	function choose( c ) { chosen = true; S().settings.efChar = c; S().settings.u = Date.now(); EX.persist(); chat(); }
 

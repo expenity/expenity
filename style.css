@@ -1726,3 +1726,12 @@ fieldset > legend { font-weight: 800; padding: 0 8px; color: var(--ink, #2a1a14)
 .ob-hint { position: absolute; z-index: 6; left: 0; right: 0; bottom: calc(58px + env(safe-area-inset-bottom)); margin: 0; text-align: center; font-weight: 700; transition: opacity .25s; pointer-events: none; text-shadow: none; }
 .ob-boogie .ob-hint { color: #5a3a1e; } .ob-chip .ob-hint { color: #d9fffb; }
 .ob-half { padding-top: 90px; }
+
+.ob-fall { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+.ob-drop { position: absolute; display: inline-block; font-size: 1.7rem; line-height: 1; will-change: transform, opacity; }
+.ob-drop-t { font-size: .85rem; font-weight: 700; padding: 6px 10px; border-radius: 999px; max-width: 70%; white-space: normal; text-align: center; box-shadow: 0 4px 10px #0003; }
+.ob-boogie .ob-drop-t { background: #fff3d6; color: #5a3a1e; border: 1px solid #e0bd84; font-family: var(--mono, monospace); } .ob-chip .ob-drop-t { background: #0b4f66; color: #d9fffb; border: 1px solid #5ff3e6; }
+.ob-half-in { position: relative; z-index: 2; } .ob-boogie .ob-art svg { width: min(92vw, 390px); }
+@media (prefers-reduced-motion: reduce) { .ob-drop { animation: none; } }
+
+.ob-art { transform-origin: 50% 55%; will-change: transform; }
