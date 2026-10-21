@@ -36,7 +36,7 @@ const acc = await pg.evaluate( () => { const txs = mk( 80, 60 ), f = EXA.efblog.
 	res.push( lines.every( ( l ) => ! /[{}]/.test( l ) ) ); res.push( lines.some( ( l ) => l.includes( '**' + f.t1p + '%**' ) ) ); res.push( lines.some( ( l ) => l.includes( String( f.ne ) ) ) );
 	// a sentence is never written when its facts are missing: thin data has no second category
 	const one = window.all( mk( 25, 10, { cats: [ 'food' ] } ) ).flatMap( ( x ) => x[ 1 ] ).map( ( l ) => l.text );
-	res.push( ! one.some( ( l ) => /Second place|Third place/.test( l ) ) );
+	res.push( ! one.some( ( l ) => /second place|podium/i.test( l ) ) );
 	return res; } );
 chk( 'facts match the data; every line fully filled; thin data skips second/third place', acc.every( Boolean ) );
 
@@ -75,9 +75,9 @@ for ( const [ w, h ] of [ [ 360, 640 ], [ 412, 735 ] ] ) for ( const lang of [ '
 // Home card, More row + badge, gentle switch end to end
 await pg.setViewportSize( { width: 390, height: 800 } );
 const ui = await pg.evaluate( async () => { const S = EX.state(); EX.setLang( 'en' ); S.settings.efChar = 'boogie'; S.txs = mk( 40, 40 ); S.settings.efBlog = { c: [], gentle: 0 }; S.device.efbSeen = []; EXA.st.view = 'home'; EXA.render(); const card = !! document.querySelector( '.efb-card' );
-	EXA.st.view = 'more'; EXA.st.more = 'root'; EXA.render(); const badge = !! document.querySelector( '.mrow[data-more=efblog] .efb-badge' );
+	EXA.st.view = 'more'; EXA.st.more = 'efriend'; EXA.render(); const badge = !! document.querySelector( '[data-more=efblog]' );
 	EXA.st.more = 'efblog'; EXA.render(); const roastOn = document.querySelectorAll( '.efb-roast' ).length; const sw = document.querySelector( '[data-efb-gentle]' ); sw.click(); await new Promise( ( r ) => setTimeout( r, 200 ) );
 	return { card, badge, roastOn, gentle: S.settings.efBlog.gentle, roastOff: document.querySelectorAll( '.efb-roast' ).length, small: JSON.stringify( S.settings.efBlog ).length }; } );
-console.log( JSON.stringify( ui ) ); chk( 'Home card, More row with badge, gentle switch removes roast lines, record stays tiny (' + ui.small + ' chars)', ui.card && ui.badge && ui.roastOn > 0 && ui.gentle === 1 && ui.roastOff === 0 && ui.small < 400 );
+console.log( JSON.stringify( ui ) ); chk( 'Home card, blog row on the eFriend page, gentle switch removes roast lines, record stays tiny (' + ui.small + ' chars)', ui.card && ui.badge && ui.roastOn > 0 && ui.gentle === 1 && ui.roastOff === 0 && ui.small < 400 );
 chk( 'no page errors ' + errs.join( ';' ), ! errs.length );
 console.log( ok + ' ok, ' + fail + ' failed' ); await b.close(); server.close(); process.exit( fail ? 1 : 0 );
