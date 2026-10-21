@@ -2068,3 +2068,8 @@ fieldset > legend { font-weight: 800; padding: 0 8px; color: var(--ink, #2a1a14)
 .ef-flabels { position: relative; width: 42px; height: 144px; }
 .ef-flabels .ef-lvl { position: absolute; left: 0; width: 100%; top: calc((3 - var(--n)) / 3 * 112px); height: 32px; min-width: 0; min-height: 0; display: grid; place-items: center; }
 @media (prefers-reduced-motion: reduce) { .ef-fknob { transition: none; } }
+
+/* the gear pages carry no words: Boogie and his board, Chip and his controls, and Save */
+.chip-row { grid-template-columns: 34px 1fr; align-items: center; } .chip-lab { font-size: 1.5rem; line-height: 1; text-align: center; }
+.chip-row .chip-sws { grid-column: 2; }
+.chip-match b { font-size: 1.5rem; line-height: 1; }
