@@ -34,7 +34,7 @@ const r = await pg.evaluate( () => { const S = EX.state(); return { cur: S.setti
 console.log( JSON.stringify( r ) ); chk( 'everything is created', r.cur === 'USD' && r.name === 'Maria' && r.inc[ 0 ] === '1500.5monthly' && r.bills.length === 2 && /Trip2000/.test( r.goal[ 0 ] ) && r.bud === 4 && r.cush === 2 && r.entry === 'casual' && r.rows === 9 );
 await pg.screenshot( { path: '/tmp/ob-sum.png' } );
 await pg.click( '[data-ob-rm=bud]' ); chk( 'the estimated budgets can be removed', await pg.evaluate( () => EX.state().budgets.length === 0 ) );
-await pg.click( '#obChips [data-ob-chip="0"]' ); await pg.waitForTimeout( 600 );
+await pg.waitForSelector( '#obChips [data-ob-chip="1"]' ); await pg.click( '#obChips [data-ob-chip="1"]' ); await pg.waitForTimeout( 600 );
 chk( 'Open Expenity finishes setup and shows the app', await pg.evaluate( () => EX.state().device.stage === 'done' && EX.state().settings.setupDone === true && ! document.querySelector( '.ob-chat' ) ) );
 chk( 'no page errors ' + errs.join( ';' ), ! errs.length );
 console.log( ok + ' ok, ' + fail + ' failed' ); await b.close(); server.close(); process.exit( fail ? 1 : 0 );

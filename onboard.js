@@ -26,6 +26,9 @@
 		introTitle: [ 'Welcome to Expenity', 'Καλώς ήρθατε στο Expenity' ], introSub: [ 'Your money, calm and clear.', 'Τα χρήματά σας, ήρεμα και καθαρά.' ],
 		introL1: [ '🧾 Bills, income and spending in one place', '🧾 Λογαριασμοί, εισοδήματα και έξοδα σε ένα μέρος' ], introL2: [ '🔔 Never miss a payment', '🔔 Ποτέ πια χαμένη πληρωμή' ], introL3: [ '🤖 eFriend checks if you can afford it, and finds the best day', '🤖 Το eFriend ελέγχει αν το αντέχετε και βρίσκει την καλύτερη μέρα' ],
 		introQ: [ 'Can I afford a €49 gift?', 'Μπορώ να αγοράσω ένα δώρο €49;' ], introA: [ 'Yes! Best day: Friday ✅', 'Ναι! Καλύτερη μέρα: Παρασκευή ✅' ], introLang: [ 'Choose your language', 'Επιλέξτε γλώσσα' ], introGo: [ 'Let’s go', 'Πάμε' ], introPoke: [ 'Tap them!', 'Πατήστε τους!' ],
+		accAsk: [ 'One more thing: want to keep your data safe and use it on all your devices? A free account takes a few seconds. 🔐', 'Ένα τελευταίο: θέλετε να κρατήσετε τα δεδομένα σας ασφαλή και να τα χρησιμοποιείτε σε όλες τις συσκευές σας; Ένας δωρεάν λογαριασμός θέλει λίγα δευτερόλεπτα. 🔐',
+			'One more thing!! 🔐 Want your data safe and on all your devices? A free account takes seconds!', 'Ένα τελευταίο!! 🔐 Θέλετε τα δεδομένα σας ασφαλή και σε όλες τις συσκευές σας; Ένας δωρεάν λογαριασμός θέλει δευτερόλεπτα!' ],
+		accCreate: [ '🔐 Create a free account', '🔐 Δημιουργία δωρεάν λογαριασμού' ], accLater: [ 'Maybe later', 'Ίσως αργότερα' ], accEmail: [ 'What is your email address? It is only used to recover your account.', 'Ποια είναι η διεύθυνση email σας; Χρησιμοποιείται μόνο για την ανάκτηση του λογαριασμού σας.' ], accBad: [ 'That does not look like an email. Try again?', 'Αυτό δεν μοιάζει με email. Δοκιμάστε ξανά;' ],
 		skip: [ 'Skip setup', 'Παράλειψη' ], skipQ: [ 'Skip', 'Παράλειψη' ], send: [ 'Send', 'Αποστολή' ], ph: [ 'Type here', 'Γράψτε εδώ' ],
 		hello: [ 'Well hello! 📼 I am Boogie, and I will help you set things up. Seven quick questions, and you can skip any of them.', 'Λοιπόν, γεια σας! 📼 Είμαι ο Boogie και θα σας βοηθήσω με τη ρύθμιση. Επτά γρήγορες ερωτήσεις, και μπορείτε να παραλείψετε όποια θέλετε.',
 			'Heyyy! 🎉 I am Chip! Seven super quick questions and we are set. Skip any you want!', 'Γεια σας! 🎉 Είμαι ο Chip! Επτά σούπερ γρήγορες ερωτήσεις και είμαστε έτοιμοι. Παραλείψτε όποια θέλετε!' ],
@@ -85,7 +88,8 @@
 			<ul class="ob-points"><li>${ esc( L( 'introL1' ) ) }</li><li>${ esc( L( 'introL2' ) ) }</li><li>${ esc( L( 'introL3' ) ) }</li></ul>
 			<div class="ob-demo" aria-hidden="true"><div class="ob-q">${ esc( L( 'introQ' ) ) }</div><div class="ob-ty"><i></i><i></i><i></i></div><div class="ob-a">${ esc( L( 'introA' ) ) }</div></div>
 			<div class="ob-bots"><span class="ob-bot">${ F().mascotOf( 'boogie', 'happy', 104 ) }</span><span class="ob-bot">${ F().mascotOf( 'chip', 'happy', 104 ) }</span></div><p class="ob-poke">${ esc( L( 'introPoke' ) ) }</p>
-			<button type="button" class="btn btn-primary big ob-go" data-ob-go>${ esc( L( 'introGo' ) ) }</button></div></div>`;
+			<button type="button" class="btn btn-primary big ob-go" data-ob-go>${ esc( L( 'introGo' ) ) }</button>
+			<div class="ob-have"><span>${ esc( t( 'flowHaveAccount' ) ) }</span><button type="button" class="link" data-flow="signin">${ esc( t( 'authSignIn' ) ) }</button><button type="button" class="link" data-flow="restore">${ esc( t( 'restore' ) ) }</button><button type="button" class="link" data-flow="recover">${ esc( t( 'flowLost' ) ) }</button><input type="file" id="impJson" accept="application/json,.json" hidden></div></div></div>`;
 		const lg = host.querySelector( '#flowLogo' ); if ( lg && EXA.logoSvg ) lg.innerHTML = EXA.logoSvg.replace( 'width="34" height="34"', 'width="64" height="64"' );
 	}
 
@@ -312,11 +316,27 @@
 	}
 	function summary() {
 		summaryOn = true; const b = box(); if ( ! b ) return;
-		( async () => { await say( L( 'sumIntro' ) ); const bx = box(); if ( ! bx || ! summaryOn ) return; push( 'ef', `<ul class="ob-sum" id="obSum">${ rowsHtml() }</ul><p class="ob-note">${ esc( L( 'sumNote' ) ) }</p>` ); setBar( { chips: [ { label: L( 'open' ), go: true } ] , sumBtn: true } ); } )();
+		( async () => { await say( L( 'sumIntro' ) ); const bx = box(); if ( ! bx || ! summaryOn ) return; push( 'ef', `<ul class="ob-sum" id="obSum">${ rowsHtml() }</ul><p class="ob-note">${ esc( L( 'sumNote' ) ) }</p>` ); await offerAccount(); } )();
+	}
+	/** After the summary: keep it all safe with a free account, or open the app. */
+	async function offerAccount() {
+		if ( EX.auth.isSignedIn() ) { setBar( { chips: [ { label: L( 'open' ), go: true } ], sumBtn: true } ); return; }
+		const my = tok; await say( L( 'accAsk' ) ); if ( my !== tok ) return;
+		const r = await prompt( { chips: [ { label: L( 'accCreate' ), go: true }, { label: L( 'open' ) } ] } ); if ( ! r || my !== tok ) return;
+		if ( r.chip === 1 ) { me( L( 'open' ) ); exit(); return; }
+		me( L( 'accCreate' ) ); await say( L( 'accEmail' ) );
+		for ( ;; ) {
+			const e = await prompt( { input: 'text', ph: 'name@example.com', chips: [ { label: L( 'accLater' ) } ] } ); if ( ! e || my !== tok ) return;
+			if ( e.chip !== undefined ) { me( L( 'accLater' ) ); exit(); return; }
+			const mail = e.text.trim(); me( mail ); if ( ! /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test( mail ) ) { await say( L( 'accBad' ) ); continue; }
+			const res = await EX.auth.register( mail );
+			if ( res.error ) { await say( EXA.errText( res.error ) ); continue; }
+			EXA.showCodes( res.recoveryCodes, () => exit() ); return;
+		}
 	}
 	function refreshSummary() { const u = host.querySelector( '#obSum' ); if ( u ) u.innerHTML = rowsHtml(); }
 	async function edit( id ) {
-		const my = ++tok; summaryOn = false; clearBar(); await QS[ id ](); if ( my !== tok ) return; clearBar(); build(); const u = host.querySelector( '#obSum' ); if ( u ) { await say( L( 'sumIntro' ) ); if ( my === tok ) { push( 'ef', `<ul class="ob-sum" id="obSum">${ rowsHtml() }</ul>` ); summaryOn = true; setBar( { chips: [ { label: L( 'open' ), go: true } ], sumBtn: true } ); } } else summary();
+		const my = ++tok; summaryOn = false; clearBar(); await QS[ id ](); if ( my !== tok ) return; clearBar(); build(); const u = host.querySelector( '#obSum' ); if ( u ) { await say( L( 'sumIntro' ) ); if ( my === tok ) { push( 'ef', `<ul class="ob-sum" id="obSum">${ rowsHtml() }</ul>` ); summaryOn = true; await offerAccount(); } } else summary();
 	}
 	function exit() {
 		clearBar(); tok++; const fl = EXA.flow; EX.persist();

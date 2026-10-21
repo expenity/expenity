@@ -1767,3 +1767,5 @@ fieldset > legend { font-weight: 800; padding: 0 8px; color: var(--ink, #2a1a14)
 @media (prefers-reduced-motion: reduce) { .ob-demo > * { animation: none; opacity: 1; } .ob-ty { display: none; } }
 :root[data-motion=off] .ob-demo > *, :root[data-motion=reduced] .ob-demo > * { animation: none; opacity: 1; } :root[data-motion=off] .ob-ty, :root[data-motion=reduced] .ob-ty { display: none; }
 .ob-logo svg { width: 72px; height: 72px; }
+
+.ob-have { display: flex; flex-wrap: wrap; gap: 4px 14px; justify-content: center; align-items: center; color: var(--muted, #777); font-size: .92rem; margin-top: 4px; } .ob-have .link { font-weight: 700; }
