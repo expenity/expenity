@@ -92,7 +92,8 @@
 			bTx.style.opacity = pb; bTx.style.transform = `translateY(${ ( 1 - pb ) * 14 + pb * 46 }px)`; cTx.style.opacity = pc; cTx.style.transform = `translateY(${ ( 1 - pc ) * 14 + pc * 46 }px)`;
 			bA.style.transform = `scale(${ ( 1 + .3 * pb - .1 * pc ).toFixed( 3 ) })`; cA.style.transform = `scale(${ ( 1 + .3 * pc - .1 * pb ).toFixed( 3 ) })`; // the one you are choosing grows and comes to the centre
 			h.setAttribute( 'aria-valuenow', Math.round( X ) );
-			const edge = X >= 97 ? 'boogie' : X <= 3 ? 'chip' : ''; btn.hidden = ! edge; btn.dataset.pick = edge; btn.setAttribute( 'aria-hidden', edge ? 'false' : 'true' );
+			// the Choose button shows well before the screen edge, where a browser swipe could take over
+			const edge = X >= 84 ? 'boogie' : X <= 16 ? 'chip' : ''; btn.hidden = ! edge; btn.dataset.pick = edge; btn.setAttribute( 'aria-hidden', edge ? 'false' : 'true' );
 			if ( edge ) { btn.textContent = L( 'pickChoose' ); bP.classList.toggle( 'on', edge === 'boogie' ); cP.classList.toggle( 'on', edge === 'chip' ); } else { bP.classList.remove( 'on' ); cP.classList.remove( 'on' ); }
 			hints.forEach( ( x ) => { x.style.opacity = Math.abs( X - 50 ) < 6 ? 1 : 0; } );
 		};
@@ -101,7 +102,7 @@
 		let drag = false;
 		root.addEventListener( 'pointerdown', ( e ) => { if ( e.target.closest( 'button' ) ) return; drag = true; cancelAnimationFrame( raf ); try { root.setPointerCapture( e.pointerId ); } catch ( x ) { /* ignore */ } fromEvent( e ); } );
 		root.addEventListener( 'pointermove', ( e ) => { if ( drag ) fromEvent( e ); } );
-		const up = () => { if ( ! drag ) return; drag = false; if ( X > 88 ) tween( 100 ); else if ( X < 12 ) tween( 0 ); };
+		const up = () => { if ( ! drag ) return; drag = false; if ( X > 84 ) tween( 100 ); else if ( X < 16 ) tween( 0 ); };
 		root.addEventListener( 'pointerup', up ); root.addEventListener( 'pointercancel', up );
 		h.addEventListener( 'keydown', ( e ) => { const k = e.key; if ( k === 'ArrowLeft' ) X = Math.max( 0, X - 8 ); else if ( k === 'ArrowRight' ) X = Math.min( 100, X + 8 ); else if ( k === 'Home' ) X = 0; else if ( k === 'End' ) X = 100; else return; e.preventDefault(); apply(); } );
 		btn.addEventListener( 'click', () => { const c = btn.dataset.pick; if ( c ) choose( c ); } );
@@ -109,23 +110,23 @@
 		falling( bP.querySelector( '.ob-fall' ), 'boogie', root ); falling( cP.querySelector( '.ob-fall' ), 'chip', root );
 		if ( ! reduce() ) setTimeout( () => { if ( X === 50 && ! drag ) { tween( 40, 360 ); setTimeout( () => { if ( ! drag && Math.abs( X - 40 ) < 1 ) tween( 60, 560 ); setTimeout( () => { if ( ! drag && Math.abs( X - 60 ) < 1 ) tween( 50, 360 ); }, 640 ); }, 420 ); } }, 900 );
 	}
-	/** Jokes and icons drop from the top of one half and pile up at the bottom; when the pile is high it fades and starts again. */
+	/** Jokes and icons drift slowly down behind one half, faded, so they set the mood without getting in the way. */
 	function falling( layer, who, root ) {
-		const cfg = FALL[ who ], el = EX.lang() === 'el', texts = el ? cfg.el : cfg.en, W = () => layer.clientWidth || 360, H = () => layer.clientHeight || 700, cols = 3, heights = new Array( cols ).fill( 0 ), items = [];
+		const cfg = FALL[ who ], el = EX.lang() === 'el', texts = el ? cfg.el : cfg.en, W = () => layer.clientWidth || 360, H = () => layer.clientHeight || 700;
 		let n = 0, timer = 0;
-		const drop = () => {
+		const drift = ( still ) => {
 			if ( ! root.isConnected ) { clearTimeout( timer ); return; }
 			const text = n % 2 === 0, label = text ? texts[ Math.floor( Math.random() * texts.length ) ] : cfg.icons[ Math.floor( Math.random() * cfg.icons.length ) ]; n++;
 			const d = document.createElement( 'span' ); d.className = 'ob-drop' + ( text ? ' ob-drop-t' : '' ); d.textContent = label; layer.appendChild( d );
-			const w = d.offsetWidth, h = d.offsetHeight, colW = W() / cols, order = heights.map( ( v, i ) => i ).sort( ( a, b ) => heights[ a ] - heights[ b ] ), c = order[ Math.floor( Math.random() * 2 ) ];
-			const x = Math.max( 4, Math.min( W() - w - 4, c * colW + Math.random() * Math.max( 0, colW - w ) ) ), y = H() - 96 - heights[ c ] - h; heights[ c ] += h + 3;
-			d.style.left = x + 'px'; d.style.top = y + 'px'; d.style.transform = `rotate(${ ( Math.random() - .5 ) * 14 }deg)`; items.push( d );
-			if ( ! reduce() ) d.animate( [ { transform: `translateY(${ -y - h - 20 }px) rotate(${ ( Math.random() - .5 ) * 60 }deg)`, opacity: 0 }, { opacity: 1, offset: .12 }, { transform: `translateY(0) rotate(0deg)`, opacity: 1 } ], { duration: 1300 + y * 1.1, easing: 'cubic-bezier(.3,.1,.5,1.2)' } );
-			if ( Math.max( ...heights ) > H() * .36 ) { const old = items.splice( 0 ); heights.fill( 0 ); old.forEach( ( o ) => { o.style.transition = 'opacity 1s'; o.style.opacity = 0; setTimeout( () => o.remove(), 1100 ); } ); }
-			if ( ! reduce() ) timer = setTimeout( drop, 850 + Math.random() * 400 );
+			const x = Math.random() * Math.max( 0, W() - d.offsetWidth - 8 ) + 4, op = text ? .2 : .26, rot = ( Math.random() - .5 ) * 16;
+			d.style.left = x + 'px'; d.style.top = '0px'; d.style.opacity = op;
+			if ( still ) { d.style.top = Math.round( 40 + Math.random() * ( H() - 160 ) ) + 'px'; d.style.transform = `rotate(${ rot }deg)`; return; }
+			const dur = 16000 + Math.random() * 8000, sway = ( Math.random() - .5 ) * 50, a = d.animate( [ { transform: `translate(0, -50px) rotate(${ rot }deg)`, opacity: 0 }, { opacity: op, offset: .1 }, { opacity: op, offset: .9 }, { transform: `translate(${ sway }px, ${ H() + 30 }px) rotate(${ -rot }deg)`, opacity: 0 } ], { duration: dur, easing: 'linear' } );
+			a.onfinish = () => d.remove();
+			timer = setTimeout( () => drift( false ), 1500 + Math.random() * 900 );
 		};
-		if ( reduce() ) { for ( let i = 0; i < 6; i++ ) drop(); clearTimeout( timer ); return; }
-		timer = setTimeout( drop, 300 );
+		if ( reduce() ) { for ( let i = 0; i < 6; i++ ) drift( true ); return; }
+		drift( false );
 	}
 	function choose( c ) { chosen = true; S().settings.efChar = c; S().settings.u = Date.now(); EX.persist(); chat(); }
 

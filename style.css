@@ -1740,3 +1740,10 @@ fieldset > legend { font-weight: 800; padding: 0 8px; color: var(--ink, #2a1a14)
 :root[data-status=normal] .bm-row.paid>.bm-front{background:color-mix(in srgb,var(--ok) 9%,var(--surface));box-shadow:inset 4px 0 0 var(--ok)}
 :root[data-status=normal] .bm-row.paid>.bm-front .mid small{color:var(--ink-2)}
 :root[data-status=normal] .bm-row.paid{border-color:var(--line)}
+
+/* a big, easy handle: a wide grab area and a large grip, so nobody misses it near the screen edge */
+.ob-handle { width: 96px; margin-left: -48px; }
+.ob-grip { width: 76px; height: 76px; padding: 0; justify-content: center; gap: 6px; font-size: 1.05rem; box-shadow: 0 8px 26px #0007, 0 0 0 6px #ffffff66; border: 3px solid #ffb34e; }
+.ob-grip i { font-style: normal; font-weight: 800; }
+.ob-handle::before { width: 6px; margin-left: -3px; }
+.ob-drop { opacity: .2; } .ob-drop-t { box-shadow: none; font-size: .8rem; }
