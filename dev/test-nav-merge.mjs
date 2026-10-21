@@ -1,0 +1,22 @@
+import { chromium } from 'playwright-core';
+import http from 'http'; import fs from 'fs'; import path from 'path';
+const root = process.cwd(), types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.svg': 'image/svg+xml' };
+const server = http.createServer( ( q, r ) => { let f = path.join( root, decodeURIComponent( q.url.split( '?' )[ 0 ] ) ); if ( f.endsWith( '/' ) ) f += 'index.html'; fs.readFile( f, ( e, d ) => { if ( e ) { r.writeHead( 404 ); r.end(); } else { r.writeHead( 200, { 'content-type': types[ path.extname( f ) ] || 'application/octet-stream' } ); r.end( d ); } } ); } ).listen( 0 );
+const port = server.address().port; let ok = 0, fail = 0; const chk = ( n, c ) => { if ( c ) { ok++; console.log( 'ok', n ); } else { fail++; console.log( 'FAIL', n ); } };
+const b = await chromium.launch( { channel: 'chrome' } ), pg = await b.newPage( { viewport: { width: 390, height: 800 } } ); const errs = []; pg.on( 'pageerror', ( e ) => errs.push( e.message ) );
+await pg.goto( `http://localhost:${ port }/index.html` ); await pg.waitForFunction( () => window.EX && EX.efriend );
+await pg.evaluate( () => { const S = EX.state(); S.settings.onboarded = true; EX.setLang( 'en' ); S.device.efOnboard = 1; EXA.skipFlow && ( EXA.skipFlow(), EX.state().device.entryMode = 'casual' ); } );
+await pg.evaluate( () => { const S = EX.state(); S.settings.onboarded = true; EX.setLang( 'en' ); S.device.efOnboard = 1; EXA.skipFlow && ( EXA.skipFlow(), EX.state().device.entryMode = 'casual' ); EXA.st.view = 'bills'; EXA.render(); document.querySelector( '[data-act=sample]' ).click(); EXA.st.view = 'home'; EXA.render(); } ); await pg.waitForTimeout( 300 );
+chk( 'the tab bar has no Bills tab; Reports took its place', await pg.evaluate( () => ! document.querySelector( '.tabbar [data-go=bills], nav [data-go=bills].tab' ) && !! document.querySelector( '.tab[data-go=reports]' ) && [ ...document.querySelectorAll( '.tab' ) ].map( ( x ) => x.dataset.go ).join() === 'home,activity,reports,plan' ) );
+chk( 'Home: the small Safe-to-spend card is gone, the big one stays, two key cards share the row', await pg.evaluate( () => document.querySelectorAll( '.key-strip .flipcard' ).length === 2 && !! document.querySelector( '[data-home=safe]' ) ) );
+chk( 'Home: the calendar back and Due soon back say different things', await pg.evaluate( () => { const c = document.querySelector( '[data-home=calendar] .fc-back' ).textContent, d = document.querySelector( '[data-home=due] .fc-back' ).textContent; return /Paid/.test( c ) && /Next 7 days/.test( d ) && ! /Next 7 days/.test( c ); } ) );
+await pg.evaluate( () => { EXA.st.view = 'activity'; EXA.render(); } ); await pg.waitForTimeout( 200 );
+chk( 'Activity has the Activity | Bills switch and the Activity tab is lit', await pg.evaluate( () => !! document.querySelector( '.act-switch [data-go=activity].on' ) && !! document.querySelector( '.act-switch [data-go=bills]' ) && document.querySelector( '.tab.on' ).dataset.go === 'activity' ) );
+await pg.click( '.act-switch [data-go=bills]' ); await pg.waitForTimeout( 300 );
+chk( 'the Bills side shows the bills, with the Activity tab still lit and the switch on Bills', await pg.evaluate( () => EXA.st.view === 'bills' && !! document.querySelector( '.act-switch [data-go=bills].on' ) && document.querySelector( '.tab.on' ).dataset.go === 'activity' && document.querySelectorAll( '#view .bm-list li, #view .bm-row' ).length > 0 ) );
+await pg.evaluate( () => { EXA.st.view = 'home'; EXA.render(); document.querySelector( '[data-home=due] [data-go=bills]' ).click(); } ); await pg.waitForTimeout( 300 );
+chk( 'See all on Home opens the Bills side of Activity', await pg.evaluate( () => EXA.st.view === 'bills' && document.querySelector( '.tab.on' ).dataset.go === 'activity' ) );
+for ( const [ w, h ] of [ [ 360, 640 ], [ 412, 735 ] ] ) for ( const lang of [ 'en', 'el' ] ) { await pg.setViewportSize( { width: w, height: h } ); await pg.evaluate( ( l ) => { EX.setLang( l ); EXA.st.view = 'activity'; EXA.render(); }, lang ); await pg.waitForTimeout( 200 );
+	chk( `layout ${ w }x${ h } ${ lang }`, await pg.evaluate( () => document.documentElement.scrollWidth <= innerWidth && [ ...document.querySelectorAll( '.tab' ) ].every( ( x ) => x.scrollWidth <= x.clientWidth + 1 ) ) ); }
+chk( 'no page errors ' + errs.join( ';' ), ! errs.length );
+console.log( ok + ' ok, ' + fail + ' failed' ); await b.close(); server.close(); process.exit( fail ? 1 : 0 );
