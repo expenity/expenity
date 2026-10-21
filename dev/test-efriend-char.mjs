@@ -26,10 +26,10 @@ chk( 'back returns to the hub', await pg.evaluate( () => document.querySelectorA
 for ( const lang of [ 'el' ] ) { await pg.evaluate( ( l ) => { EX.setLang( l ); EXA.st.efSub = 'look'; EXA.render(); }, lang ); await pg.waitForTimeout( 300 );
 	chk( 'Greek look page has no raw keys', await pg.evaluate( () => ! /\bef[A-Z][A-Za-z]+\b/.test( document.querySelector( '#view' ).textContent ) && /Chip/.test( document.querySelector( '#view' ).textContent ) ) ); }
 await pg.evaluate( () => { EX.state().settings.efChar = 'boogie'; EXA.st.efSub = 'look'; EXA.render(); } ); await pg.waitForTimeout( 300 );
-chk( 'Boogie has light controls in the eFriend menu', await pg.evaluate( () => !! document.querySelector( '[data-ef-lightrange]' ) && document.querySelectorAll( '[data-ef-lightc]' ).length === 6 ) );
-await pg.evaluate( () => { const r = document.querySelector( '[data-ef-lightrange]' ); r.value = 40; r.dispatchEvent( new Event( 'input', { bubbles: true } ) ); document.querySelector( '[data-ef-lightc="#33b5ff"]' ).click(); } ); await pg.waitForTimeout( 700 );
-chk( 'changing the light changes the glow and the bulb colour everywhere', await pg.evaluate( () => getComputedStyle( document.documentElement ).getPropertyValue( '--ef-glow' ).trim() === '0.40' && getComputedStyle( document.documentElement ).getPropertyValue( '--ef-tm' ).trim() === '#33b5ff' && EX.state().settings.efLight.c === '#33b5ff' && EX.state().settings.efLight.i === 40 ) );
+chk( 'Boogie has light controls in the eFriend menu', await pg.evaluate( () => document.querySelectorAll( '[data-ef-lightlvl]' ).length === 3 && document.querySelectorAll( '[data-ef-lightc]' ).length === 3 && !! document.querySelector( '.ef-toggle[data-pos="1"]' ) ) );
+await pg.evaluate( () => { document.querySelector( '[data-ef-lightlvl="40"]' ).click(); document.querySelector( '[data-ef-lightc="#39ff14"]' ).click(); } ); await pg.waitForTimeout( 700 );
+chk( 'changing the light changes the glow and the bulb colour everywhere', await pg.evaluate( () => getComputedStyle( document.documentElement ).getPropertyValue( '--ef-glow' ).trim() === '0.40' && getComputedStyle( document.documentElement ).getPropertyValue( '--ef-tm' ).trim() === '#39ff14' && EX.state().settings.efLight.c === '#39ff14' && document.querySelector( '.ef-toggle' ).dataset.pos === '0' && EX.state().settings.efLight.i === 40 ) );
 await pg.evaluate( () => { EX.state().settings.efChar = 'chip'; EXA.st.efSub = 'look'; EXA.render(); } ); await pg.waitForTimeout( 300 );
-chk( 'Chip has no light controls', await pg.evaluate( () => ! document.querySelector( '[data-ef-lightrange]' ) ) );
+chk( 'Chip has no light controls', await pg.evaluate( () => ! document.querySelector( '[data-ef-lightlvl]' ) ) );
 chk( 'no page errors ' + errs.join( ';' ), ! errs.length );
 console.log( ok + ' ok, ' + fail + ' failed' ); await b.close(); server.close(); process.exit( fail ? 1 : 0 );

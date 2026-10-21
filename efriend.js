@@ -209,22 +209,36 @@
 	/* Boogie's light: how bright the Nixie tube glows and what colour the bulb is. It is kept in the settings and applied as CSS variables, so every Boogie on screen changes at once. */
 	const hex3 = ( h ) => [ 1, 3, 5 ].map( ( k ) => parseInt( h.slice( k, k + 2 ), 16 ) ), toHex3 = ( a ) => '#' + a.map( ( v ) => Math.max( 0, Math.min( 255, Math.round( v ) ) ).toString( 16 ).padStart( 2, '0' ) ).join( '' );
 	const mixc = ( a, b, k ) => { const x = hex3( a ), y = hex3( b ); return toHex3( x.map( ( v, n ) => v + ( y[ n ] - v ) * k ) ); };
-	F.LIGHTS = [ [ 'amber', '#ff941f' ], [ 'red', '#ff3b30' ], [ 'pink', '#ff5fa2' ], [ 'green', '#34d399' ], [ 'blue', '#33b5ff' ], [ 'white', '#ffe9b8' ] ];
-	F.light = () => { const l = S().settings.efLight || {}, i = Number( l.i ); return { i: Number.isFinite( i ) ? Math.max( 15, Math.min( 100, Math.round( i ) ) ) : 80, c: /^#[0-9a-f]{6}$/i.test( l.c || '' ) ? l.c.toLowerCase() : '#ff941f' }; };
+	F.LIGHTS = [ [ 'amber', '#ff941f' ], [ 'blue', '#33b5ff' ], [ 'green', '#39ff14' ] ]; // the default, a blue and a fluorescent green
+	F.LEVELS = [ [ 'low', 40 ], [ 'normal', 70 ], [ 'high', 100 ] ]; // High is the brightest it can be
+	F.light = () => { const l = S().settings.efLight || {}, i = Number( l.i ), v = Number.isFinite( i ) ? i : 70, lv = F.LEVELS.reduce( ( best, x ) => ( Math.abs( x[ 1 ] - v ) < Math.abs( best[ 1 ] - v ) ? x : best ), F.LEVELS[ 1 ] ), c = ( l.c || '' ).toLowerCase(); return { i: lv[ 1 ], lvl: lv[ 0 ], c: F.LIGHTS.some( ( x ) => x[ 1 ] === c ) ? c : F.LIGHTS[ 0 ][ 1 ] }; };
 	F.applyLight = () => { const { i, c } = F.light(), st = document.documentElement.style; st.setProperty( '--ef-glow', ( i / 100 ).toFixed( 2 ) ); st.setProperty( '--ef-tm', c ); st.setProperty( '--ef-te', mixc( c, '#000000', .25 ) ); st.setProperty( '--ef-tc', mixc( c, '#ffffff', .78 ) ); st.setProperty( '--ef-tl', mixc( c, '#ffffff', .18 ) ); };
-	/** Changes the light. While a slider is being dragged only the look changes; `final` also saves and syncs. */
-	F.setLight = ( patch, final ) => { const cur = F.light(); S().settings.efLight = Object.assign( {}, cur, patch ); S().settings.u = Date.now(); F.applyLight(); if ( final ) EX.save(); else EX.persist(); };
+	F.setLight = ( patch, final ) => { const cur = F.light(); S().settings.efLight = { i: cur.i, c: cur.c, ...patch }; S().settings.u = Date.now(); F.applyLight(); if ( final ) EX.save(); else EX.persist(); };
 	EX.on( 'change', () => F.applyLight() ); F.applyLight();
-	/** The brightness slider and the bulb colours, for the eFriend menu and the onboarding picker. */
-	F.lightControls = () => { const l = F.light(); return `<div class="ef-light"><div class="ef-light-row"><b>${ esc( t( 'efLightBright' ) ) }</b><input type="range" min="15" max="100" step="1" value="${ l.i }" data-ef-lightrange aria-label="${ esc( t( 'efLightBright' ) ) }"></div>
-		<div class="ef-light-row"><b>${ esc( t( 'efLightColor' ) ) }</b><div class="ef-swatches" role="radiogroup" aria-label="${ esc( t( 'efLightColor' ) ) }">${ F.LIGHTS.map( ( [ k, c ] ) => `<button type="button" class="ef-sw${ l.c === c ? ' on' : '' }" style="--c:${ c }" data-ef-lightc="${ c }" role="radio" aria-checked="${ l.c === c }" aria-label="${ esc( t( 'efLight_' + k ) ) }" title="${ esc( t( 'efLight_' + k ) ) }"></button>` ).join( '' ) }<label class="ef-sw ef-sw-custom${ F.LIGHTS.some( ( x ) => x[ 1 ] === l.c ) ? '' : ' on' }" style="--c:${ l.c }" title="${ esc( t( 'efLight_custom' ) ) }"><input type="color" value="${ l.c }" data-ef-lightcolor aria-label="${ esc( t( 'efLight_custom' ) ) }"></label></div></div></div>`; };
+	/** The vintage control plate: a bat-handle toggle for the brightness and three lamp buttons for the bulb colour. Used in the eFriend menu and on the picker. */
+	F.lightControls = () => {
+		const l = F.light(), pos = F.LEVELS.findIndex( ( x ) => x[ 0 ] === l.lvl );
+		return `<div class="ef-panel" role="group" aria-label="${ esc( t( 'efLightTitle' ) ) }"><i class="ef-screw a"></i><i class="ef-screw b"></i><i class="ef-screw c"></i><i class="ef-screw d"></i>
+			<div class="ef-psec"><div class="ef-eng">${ esc( t( 'efLightBright' ) ) }</div>
+				<div class="ef-toggle" data-pos="${ pos }" role="radiogroup" aria-label="${ esc( t( 'efLightBright' ) ) }">
+					<button type="button" class="ef-lever" data-ef-lightcycle tabindex="-1" aria-hidden="true"><svg viewBox="0 0 120 84" width="120" height="84"><defs><radialGradient id="efNut" cx=".35" cy=".3" r=".9"><stop offset="0" stop-color="#fdfdfd"/><stop offset=".55" stop-color="#b9bec3"/><stop offset="1" stop-color="#6b7075"/></radialGradient><linearGradient id="efArm" x1="0" x2="1"><stop offset="0" stop-color="#7c8186"/><stop offset=".4" stop-color="#f4f6f8"/><stop offset="1" stop-color="#8b9096"/></linearGradient><radialGradient id="efBall" cx=".35" cy=".3" r=".85"><stop offset="0" stop-color="#fff"/><stop offset=".5" stop-color="#c7ccd1"/><stop offset="1" stop-color="#6f7479"/></radialGradient></defs>
+						<path d="M16 60 A44 44 0 0 1 104 60" fill="none" stroke="#5a3d12" stroke-opacity=".45" stroke-width="1.6" stroke-dasharray="2 5"/>
+						<g class="ef-lever-arm"><path d="M54 62 L58 14 Q60 8 62 14 L66 62 Z" fill="url(#efArm)" stroke="#555a60" stroke-width=".8"/><circle cx="60" cy="12" r="9" fill="url(#efBall)" stroke="#555a60" stroke-width=".8"/></g>
+						<circle cx="60" cy="64" r="15" fill="url(#efNut)" stroke="#4d5257" stroke-width="1"/><circle cx="60" cy="64" r="7" fill="#3b3f43" stroke="#9aa0a6" stroke-width=".8"/></svg></button>
+					<div class="ef-pos">${ F.LEVELS.map( ( [ k, v ], n ) => `<button type="button" class="ef-lvl${ pos === n ? ' on' : '' }" data-ef-lightlvl="${ v }" role="radio" aria-checked="${ pos === n }" tabindex="${ pos === n ? 0 : -1 }">${ esc( t( 'efLvl_' + k ) ) }</button>` ).join( '' ) }</div></div></div>
+			<div class="ef-psec"><div class="ef-eng">${ esc( t( 'efLightColor' ) ) }</div><div class="ef-lamps" role="radiogroup" aria-label="${ esc( t( 'efLightColor' ) ) }">${ F.LIGHTS.map( ( [ k, c ] ) => `<button type="button" class="ef-lamp${ l.c === c ? ' on' : '' }" style="--c:${ c }" data-ef-lightc="${ c }" role="radio" aria-checked="${ l.c === c }" aria-label="${ esc( t( 'efLight_' + k ) ) }" title="${ esc( t( 'efLight_' + k ) ) }"><i></i></button>` ).join( '' ) }</div></div></div>`;
+	};
 	let lightTimer = 0; const saveLight = () => { clearTimeout( lightTimer ); lightTimer = setTimeout( () => { S().settings.u = Date.now(); EX.save(); }, 500 ); };
-	const markSwatches = ( root, c ) => { root.querySelectorAll( '[data-ef-lightc]' ).forEach( ( b ) => { const on = b.dataset.efLightc === c; b.classList.toggle( 'on', on ); b.setAttribute( 'aria-checked', on ? 'true' : 'false' ); } ); const cu = root.querySelector( '.ef-sw-custom' ); if ( cu ) { const preset = F.LIGHTS.some( ( x ) => x[ 1 ] === c ); cu.classList.toggle( 'on', ! preset ); cu.style.setProperty( '--c', c ); } };
-	document.addEventListener( 'input', ( e ) => {
-		const r = e.target.matches && e.target.matches( '[data-ef-lightrange]' ) ? e.target : null; if ( r ) { F.setLight( { i: Number( r.value ) }, false ); saveLight(); return; }
-		const c = e.target.matches && e.target.matches( '[data-ef-lightcolor]' ) ? e.target : null; if ( c ) { F.setLight( { c: c.value }, false ); markSwatches( c.closest( '.ef-light' ) || document, c.value ); saveLight(); }
+	/** Moves the lever and the labels in place (no redraw), so the flick animation plays. */
+	const showLevel = ( panel, v ) => { const pos = F.LEVELS.findIndex( ( x ) => x[ 1 ] === v ), tg = panel.querySelector( '.ef-toggle' ); if ( ! tg ) return; tg.dataset.pos = pos; tg.querySelectorAll( '[data-ef-lightlvl]' ).forEach( ( b, n ) => { b.classList.toggle( 'on', n === pos ); b.setAttribute( 'aria-checked', n === pos ? 'true' : 'false' ); b.tabIndex = n === pos ? 0 : -1; } ); };
+	const setLevel = ( el, v ) => { const panel = el.closest( '.ef-panel' ); if ( ! panel || F.light().i === v ) return; F.setLight( { i: v }, false ); showLevel( panel, v ); F.sound( 'click' ); saveLight(); };
+	document.addEventListener( 'click', ( e ) => {
+		const lv = e.target.closest && e.target.closest( '[data-ef-lightlvl]' ); if ( lv ) { setLevel( lv, Number( lv.dataset.efLightlvl ) ); return; }
+		const cy = e.target.closest && e.target.closest( '[data-ef-lightcycle]' ); if ( cy ) { const i = F.LEVELS.findIndex( ( x ) => x[ 1 ] === F.light().i ); setLevel( cy, F.LEVELS[ ( i + 1 ) % 3 ][ 1 ] ); return; }
+		const b = e.target.closest && e.target.closest( '[data-ef-lightc]' ); if ( ! b ) return;
+		F.setLight( { c: b.dataset.efLightc }, false ); b.closest( '.ef-panel' ).querySelectorAll( '[data-ef-lightc]' ).forEach( ( x ) => { const on = x === b; x.classList.toggle( 'on', on ); x.setAttribute( 'aria-checked', on ? 'true' : 'false' ); } ); F.sound( 'click' ); saveLight();
 	} );
-	document.addEventListener( 'click', ( e ) => { const b = e.target.closest && e.target.closest( '[data-ef-lightc]' ); if ( ! b ) return; F.setLight( { c: b.dataset.efLightc }, false ); markSwatches( b.closest( '.ef-light' ) || document, b.dataset.efLightc ); const cu = b.closest( '.ef-light' ).querySelector( '[data-ef-lightcolor]' ); if ( cu ) cu.value = b.dataset.efLightc; saveLight(); } );
+	document.addEventListener( 'keydown', ( e ) => { const lv = e.target.closest && e.target.closest( '[data-ef-lightlvl]' ); if ( ! lv || ! [ 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown' ].includes( e.key ) ) return; e.preventDefault(); const i = F.LEVELS.findIndex( ( x ) => x[ 1 ] === F.light().i ), n = Math.max( 0, Math.min( 2, i + ( e.key === 'ArrowLeft' || e.key === 'ArrowUp' ? -1 : 1 ) ) ); setLevel( lv, F.LEVELS[ n ][ 1 ] ); lv.closest( '.ef-panel' ).querySelector( '[data-ef-lightlvl].on' ).focus(); } );
 
 	const BMOOD = { comfortable: 'cheer', done: 'cheer', ontrack: 'happy', tight: 'meh', atrisk: 'worried', unlikely: 'worried', nodata: 'meh', cheer: 'cheer', happy: 'happy', meh: 'meh', worried: 'worried' };
 	let bserial = 0;
@@ -287,6 +301,7 @@
 			const c = actx, vol = Math.max( 0.15, Math.min( 1, ( S().settings.sounds || {} ).volume ?? 0.6 ) ) * 0.5, t0 = c.currentTime;
 			const tone = ( type, f1, f2, start, dur, g ) => { const o = c.createOscillator(), a = c.createGain(); o.type = type; o.frequency.setValueAtTime( f1, t0 + start ); if ( f2 ) o.frequency.exponentialRampToValueAtTime( f2, t0 + start + dur ); a.gain.setValueAtTime( 0.0001, t0 + start ); a.gain.exponentialRampToValueAtTime( vol * g, t0 + start + 0.015 ); a.gain.exponentialRampToValueAtTime( 0.0001, t0 + start + dur ); o.connect( a ).connect( c.destination ); o.start( t0 + start ); o.stop( t0 + start + dur + 0.02 ); };
 			if ( kind === 'smile' ) { tone( 'sine', 660, 880, 0, 0.12, 1 ); tone( 'sine', 880, 1175, 0.11, 0.16, 1 ); }
+			else if ( kind === 'click' ) { tone( 'square', 2100, 600, 0, 0.03, 0.7 ); tone( 'triangle', 320, 120, 0.012, 0.06, 0.6 ); }
 			else if ( kind === 'giggle' ) { [ 0, 1, 2, 3, 4 ].forEach( ( i ) => tone( 'triangle', i % 2 ? 1000 : 780, i % 2 ? 900 : 1100, i * 0.075, 0.07, 0.9 ) ); }
 			else {
 				const o = c.createOscillator(), o2 = c.createOscillator(), a = c.createGain(), lfo = c.createOscillator(), lg = c.createGain(), f = c.createBiquadFilter();
@@ -414,7 +429,7 @@
 		const catRows = ( f.cats || [] ).slice( 0, 8 ).map( ( c ) => `<li><div><b>${ esc( EX.catInfo( c.cat ).name ) }</b></div><div class="ef-tri" role="group" aria-label="${ esc( EX.catInfo( c.cat ).name ) }">${ [ 'must', 'need', 'want' ].map( ( l ) => `<button type="button" data-ef-level="${ esc( c.cat ) }" data-ef-to="${ l }" aria-pressed="${ c.level === l }" class="${ c.level === l ? 'on ' : '' }ef-l-${ l }">${ esc( t( 'ef_lvl_' + l ) ) }</button>` ).join( '' ) }</div></li>` ).join( '' );
 		const alt = [];
 		if ( f.gap > 0 ) { if ( f.affordable >= f.target * 0.1 ) alt.push( t( 'efAltSmaller', { a: m( Math.round( f.affordable ) ), p: Math.min( 99, Math.round( ( 1 - f.affordable / f.target ) * 100 ) ) } ) ); if ( f.laterDays ) alt.push( t( 'efAltLater', { d: EX.dayName( addDays( g.deadline, f.laterDays ) ) } ) ); }
-		const sec = ( em, title, body, det ) => ( body ? ( det ? `<details class="ef-sec ef-det"><summary><span class="ef-sec-em">${ em }</span><b>${ esc( title ) }</b></summary>${ body }</details>` : `<section class="ef-sec"><h3 class="ef-h"><span class="ef-sec-em">${ em }</span>${ esc( title ) }</h3>${ body }</section>` ) : '' );
+		const sec = ( em, title, body, det ) => ( body ? ( det ? `<details class="ef-sec ef-det"><summary><span class="ef-sec-em">${ em }</span><b>${ esc( title ) }</b></summary>${ body }</details>` : `<section class="ef-psec"><h3 class="ef-h"><span class="ef-sec-em">${ em }</span>${ esc( title ) }</h3>${ body }</section>` ) : '' );
 		const tile = ( em, label, value, cls = '', sub = '' ) => `<div class="ef-tile ${ cls }"><span class="ef-tile-em" aria-hidden="true">${ em }</span><small>${ esc( label ) }</small><b>${ value }</b>${ sub ? `<small class="ef-tile-sub">${ esc( sub ) }</small>` : '' }</div>`;
 		const free = ( f.projectedFree || 0 ) + f.saved;
 		const tiles = f.verdict === 'done' ? '' : `<div class="ef-tiles">${ tile( '💶', t( 'efTileCost' ), esc( m( f.target ) ) ) }${ tile( '🏦', t( 'efTileFree' ), esc( m( free ) ), free < 0 ? 'bad' : '' ) }${ f.left < 0 ? tile( '⚠️', t( 'efTileShort' ), esc( m( -f.left ) ), 'bad' ) : tile( '🛟', t( 'efTileLeft' ), esc( m( f.left ) ), f.left >= f.cushion ? 'good' : '', f.leftMonths == null ? '' : monthsText( f.leftMonths ) ) }${ tile( '📅', t( 'efTileDays' ), String( Math.max( 0, f.days ) ) ) }</div><p class="ef-conf">🎚️ ${ esc( t( 'efConfidence' ) ) } <b>${ esc( t( 'efConf_' + f.confidence ) ) }</b></p>`;
@@ -632,7 +647,7 @@
 		const rows = list.map( ( f ) => `<li role="button" tabindex="0" data-ef-open="${ esc( f.goal.id ) }"><div class="ef-gtop"><span class="ef-mi">${ UI.icon( f.goal.icon || 'plane', 20 ) }</span><div><b>${ esc( f.goal.name ) }</b><small>${ esc( EX.dayName( f.goal.deadline ) ) } · ${ esc( m( f.remaining ) ) }${ f.reserved > 0 ? ' · ' + esc( t( 'efReservedShort', { a: m( f.reserved ) } ) ) : '' }</small></div></div>${ chip( f.verdict ) }</li>` ).join( '' );
 		const tips = bad && bad.suggestions ? bad.suggestions.map( ( x ) => `<li><div><b>${ esc( x.kind === 'cut' ? t( 'efCutLabel', { name: EX.catInfo( x.cat ).name } ) : t( 'efPauseLabel', { name: x.name } ) ) }</b></div><span class="ef-gain">+${ esc( m( x.gain ) ) }</span></li>` ).join( '' ) : '';
 		const X = `<button type="button" class="ab-btn" data-close aria-label="${ esc( t( 'close' ) ) }">${ UI.icon( 'x', 24 ) }</button>`;
-		const sec = ( em, title, body ) => ( body ? `<section class="ef-sec"><h3 class="ef-h"><span class="ef-sec-em">${ em }</span>${ esc( title ) }</h3>${ body }</section>` : '' );
+		const sec = ( em, title, body ) => ( body ? `<section class="ef-psec"><h3 class="ef-h"><span class="ef-sec-em">${ em }</span>${ esc( title ) }</h3>${ body }</section>` : '' );
 		const tile = ( em, label, value, cls = '' ) => `<div class="ef-tile ${ cls }"><span class="ef-tile-em" aria-hidden="true">${ em }</span><small>${ esc( label ) }</small><b>${ value }</b></div>`;
 		const tiles = `<div class="ef-tiles">${ tile( '🗂️', t( 'efTileHowMany' ), String( sm.n ) ) }${ tile( '💶', t( 'efTileCost' ), esc( m( sm.cost ) ) ) }${ tile( '🏦', t( 'efTileFree' ), esc( m( sm.free ) ), sm.free >= sm.cost ? 'good' : 'bad' ) }${ tile( '📅', t( 'efTileLast' ), esc( EX.dayName( sm.lastDate ) ) ) }</div>`;
 		const tp = F.tips( bad || list[ 0 ] );
@@ -2577,28 +2592,24 @@
 		efLightTitle: 'Boogie’s light',
 		efLightHint: 'Make his Nixie tube glow your way. The light falls on his body too.',
 		efLightBright: 'Brightness',
-		efLightColor: 'Bulb colour',
+		efLvl_low: 'Low', efLvl_normal: 'Normal', efLvl_high: 'High',
+		efLightColor: 'Bulb',
 		efLight_amber: 'Amber',
-		efLight_red: 'Red',
-		efLight_pink: 'Pink',
-		efLight_green: 'Green',
+						efLight_green: 'Fluorescent green',
 		efLight_blue: 'Blue',
-		efLight_white: 'Warm white',
-		efLight_custom: 'Your own colour',
+				efLight_custom: 'Your own colour',
 		efLightShort: 'Light',
 	} );
 	Object.assign( window.EXPENITY_I18N.langs.el, {
 		efLightTitle: 'Το φως του Boogie',
 		efLightHint: 'Κάντε τη λυχνία Nixie να λάμπει όπως θέλετε. Το φως πέφτει και στο σώμα του.',
 		efLightBright: 'Φωτεινότητα',
-		efLightColor: 'Χρώμα λάμπας',
+		efLvl_low: 'Χαμηλή', efLvl_normal: 'Κανονική', efLvl_high: 'Υψηλή',
+		efLightColor: 'Λάμπα',
 		efLight_amber: 'Κεχριμπάρι',
-		efLight_red: 'Κόκκινο',
-		efLight_pink: 'Ροζ',
-		efLight_green: 'Πράσινο',
+						efLight_green: 'Φθορίζον πράσινο',
 		efLight_blue: 'Μπλε',
-		efLight_white: 'Ζεστό λευκό',
-		efLight_custom: 'Δικό σας χρώμα',
+				efLight_custom: 'Δικό σας χρώμα',
 		efLightShort: 'Φως',
 	} );
 }() );
