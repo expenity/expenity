@@ -316,12 +316,12 @@
 	/** Write any chapter the data now allows. Facts are taken as of today; the stamp is kept so the text is later rebuilt as of that day. */
 	B.update = () => {
 		const td = EX.today(), r = rec(), f = B.facts( S().txs, td ); let added = false;
-		if ( f.n ) CHAPTERS.forEach( ( c ) => { if ( ! r.c.some( ( x ) => x.id === c.id ) && c.ready( f ) ) { r.c.push( { id: c.id, wrote: td } ); added = true; } } );
+		if ( f.n ) for ( const c of CHAPTERS ) { if ( r.c.some( ( x ) => x.id === c.id ) ) continue; if ( ! c.ready( f ) ) break; r.c.push( { id: c.id, wrote: td } ); added = true; } // drip feed: a chapter is written only after the one before it
 		if ( added ) { S().settings.u = Date.now(); EX.persist(); }
 		return added;
 	};
 	B.status = () => {
-		const td = EX.today(), f = B.facts( S().txs, td ), r = rec(), written = CHAPTERS.filter( ( c ) => r.c.some( ( x ) => x.id === c.id ) );
+		const td = EX.today(), f = B.facts( S().txs, td ), r = rec(), written = []; for ( const c of CHAPTERS ) { if ( ! r.c.some( ( x ) => x.id === c.id ) ) break; written.push( c ); }
 		const seen = S().device.efbSeen || [], day = f.n ? f.day : 0, locked = ! f.n || ( day < LOCK_DAYS && ! B.finished( f ) );
 		return { f, day, locked, none: ! f.n, finished: B.finished( f ), written: written.map( ( c ) => c.id ), pct: Math.round( written.length / CHAPTERS.length * 100 ), unread: locked ? [] : written.filter( ( c ) => ! seen.includes( c.id ) ).map( ( c ) => c.id ) };
 	};
@@ -351,15 +351,15 @@
 		const st = B.status(), td = EX.today();
 		if ( st.none ) return frame( `<p class="efb-note">${ esc( t( 'efbNone' ) ) }</p>`, st, '00', t( 'efbStatusNone' ) );
 		if ( st.locked ) return frame( `<p class="efb-note">${ esc( T( 'efbLocked', { n: Math.min( st.day + 1, LOCK_DAYS ), max: LOCK_DAYS } ) ) }</p><p class="efb-note efb-sub">${ esc( t( 'efbLockedSub' ) ) }</p>`, st, num2( Math.min( st.day + 1, LOCK_DAYS ) ), T( 'efbStatusLocked', { n: Math.min( st.day + 1, LOCK_DAYS ), max: LOCK_DAYS } ) );
-		const d = S().device, seen = d.efbSeen = d.efbSeen || [], sel = ( EXA.st.efbCh && st.written.includes( EXA.st.efbCh ) ? EXA.st.efbCh : st.written[ st.written.length - 1 ] ) || '';
+		const d = S().device, seen = d.efbSeen = d.efbSeen || [], pick = EXA.st.efbCh, sel = pick === '-' ? '' : ( pick && st.written.includes( pick ) ? pick : st.written[ st.written.length - 1 ] ) || '';
 		if ( sel && ! seen.includes( sel ) ) { seen.push( sel ); EX.persist(); }
+		// Each chapter opens in its own place in the list, right under its title.
 		const items = CHAPTERS.map( ( c ) => {
 			const on = st.written.includes( c.id ), label = chipOn() ? `chapter_${ num2( idx( c.id ) ) }.txt` : t( 'efbTrack', { n: idx( c.id ) } );
-			return on ? `<button type="button" class="efb-trk${ sel === c.id ? ' on' : '' }" data-efb-ch="${ c.id }" aria-pressed="${ sel === c.id }"><b>${ esc( label ) }</b><small>${ esc( c.title[ lang() === 'el' ? 1 : 0 ] ) }</small></button>`
+			return on ? `<button type="button" class="efb-trk${ sel === c.id ? ' on' : '' }" data-efb-ch="${ c.id }" aria-expanded="${ sel === c.id }"><b>${ esc( label ) }</b><small>${ esc( c.title[ lang() === 'el' ? 1 : 0 ] ) }</small></button>${ sel === c.id ? `<article class="efb-paper" data-efb-read="${ c.id }">${ chapterHtml( c, st ) }</article>` : '' }`
 				: `<div class="efb-trk off"><b>${ esc( label ) }</b><small class="efb-red" aria-hidden="true">▓▓▓▓▓ ▓▓▓▓▓▓▓ ▓▓▓</small><small>${ esc( t( 'efbNotYet', { u: c.unlock[ lang() === 'el' ? 1 : 0 ] } ) ) }</small></div>`;
 		} ).join( '' );
-		const c = CHAPTERS.find( ( x ) => x.id === sel );
-		const reader = c ? `<article class="efb-paper" data-efb-read="${ sel }">${ chapterHtml( c, st ) }</article>` : `<p class="efb-note">${ esc( t( 'efbNoneYet' ) ) }</p>`;
+		const reader = st.written.length ? '' : `<p class="efb-note">${ esc( t( 'efbNoneYet' ) ) }</p>`;
 		const tail = st.finished ? t( 'efbFinished' ) : ( st.written.length === CHAPTERS.length ? t( 'efbMoreSoon' ) : t( 'efbProgress', { p: st.pct } ) );
 		const status = chipOn() ? t( 'efbBurned', { w: st.written.length, m: CHAPTERS.length, p: st.pct } ) : tail;
 		return gentleSwitch() + frame( `<nav class="efb-tracks" aria-label="${ esc( blogTitle() ) }">${ items }</nav>${ reader }`, st, num2( sel ? idx( sel ) : 0 ), status ) + ( chipOn() ? `<p class="efb-foot">${ esc( tail ) }</p>` : '' );
@@ -381,7 +381,8 @@
 	};
 	document.addEventListener( 'click', ( e ) => {
 		const b = e.target.closest && e.target.closest( '[data-efb-ch]' ); if ( ! b ) return;
-		EXA.st.efbCh = b.dataset.efbCh; EXA.render();
+		EXA.st.efbCh = b.getAttribute( 'aria-expanded' ) === 'true' ? '-' : b.dataset.efbCh; EXA.render();
+		const on = document.querySelector( '.efb-trk.on' ); if ( on && on.scrollIntoView ) on.scrollIntoView( { block: 'start' } );
 	} );
 	document.addEventListener( 'change', ( e ) => {
 		if ( ! ( e.target.matches && e.target.matches( '[data-efb-gentle]' ) ) ) return;

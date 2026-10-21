@@ -68,6 +68,16 @@ const st = await pg.evaluate( () => { const E = EXA.efblog, td = EX.today(), txs
 	return res; } );
 chk( 'story chapters 4-7: ready on bills+goal data, goal facts exact, no holes, same line count in every voice', st.ready === 'true,true,true,true,true,true,true' && st.goal === 'Lisbon,true,true' && st.ot && ! st.holes && st.lisbon && st.verdict && st.same );
 
+
+// Drip feed and in-place opening
+const drip = await pg.evaluate( async () => { const S = EX.state(); EX.setLang( 'en' ); S.settings.efChar = 'boogie'; S.txs = mk( 100, 80 ); S.bills = []; S.goals = []; S.settings.efBlog = { c: [], gentle: 0 }; S.device.efbSeen = []; EXA.efblog.update();
+	const w = EXA.efblog.status().written.join(); EXA.st.view = 'more'; EXA.st.more = 'efblog'; EXA.st.efbCh = 'first'; EXA.render();
+	const kids = [ ...document.querySelectorAll( '.efb-tracks > *' ) ], i1 = kids.findIndex( ( e ) => e.dataset.efbRead === 'first' ), b1 = kids.findIndex( ( e ) => e.dataset.efbCh === 'first' ), b2 = kids.findIndex( ( e ) => e.dataset.efbCh === 'where' );
+	document.querySelector( '[data-efb-ch=first]' ).click(); await new Promise( ( r ) => setTimeout( r, 150 ) );
+	return { w, inPlace: i1 === b1 + 1 && i1 < b2, closed: ! document.querySelector( '[data-efb-read]' ), locked: document.querySelectorAll( '.efb-trk.off' ).length }; } );
+chk( 'drip feed: with no bills or goal the story stops after chapter 3 although the twist data is there', drip.w === 'first,where,rhythm' && drip.locked === 4 );
+chk( 'a chapter opens right under its own title, and a second tap closes it', drip.inPlace && drip.closed );
+
 // 5. Gating (real state, real page)
 const gate = async ( n, days, expect ) => pg.evaluate( ( [ n, days ] ) => { const S = EX.state(); S.txs = mk( n, days ); S.settings.efBlog = { c: [], gentle: 0 }; S.device.efbSeen = []; EXA.efblog.update(); const s = EXA.efblog.status(); return { locked: s.locked, fin: s.finished, w: s.written.length }; }, [ n, days ] );
 let g = await gate( 8, 5 ); chk( 'day 5: locked, chapter 1 already written in the background', g.locked && g.w === 1 );
