@@ -14,15 +14,15 @@ await pg.evaluate( () => {
 	window.mk = ( n, days, o = {} ) => { const cats = o.cats || [ 'food', 'transport', 'leisure', 'shopping' ], out = []; const td = EX.today();
 		for ( let i = 0; i < n; i++ ) out.push( { id: 't' + i, type: o.type || 'expense', amount: String( 5 + ( i % 7 ) ), category: cats[ i % cats.length ], date: EX.addDays( td, -Math.floor( ( n - 1 - i ) * days / Math.max( 1, n - 1 ) ) ), name: i === 0 ? 'Coffee' : '' } );
 		return out; };
-	window.all = ( txs, o = {} ) => E.CHAPTERS.map( ( c ) => [ c.id, E.render( c.id, E.facts( txs, EX.today() ), { char: 'boogie', lang: 'en', gentle: false, kind: false, ...o } ) ] );
+	window.all = ( txs, o = {} ) => E.CHAPTERS.filter( ( c ) => c.ready( E.facts( txs, EX.today() ) ) ).map( ( c ) => [ c.id, E.render( c.id, E.facts( txs, EX.today() ), { char: 'boogie', lang: 'en', gentle: false, kind: false, ...o } ) ] );
 } );
 const td = await pg.evaluate( () => EX.today() );
 
 // 1. Facts engine
 const thin = await pg.evaluate( () => { const f = EXA.efblog.facts( mk( 5, 4, { cats: [ 'food' ] } ), EX.today() ); return { f, ready: EXA.efblog.CHAPTERS.map( ( c ) => c.ready( f ) ) }; } );
-chk( 'thin data: 5 entries, one category => only chapter 1 ready, no top-3 gaps crash', thin.f.n === 5 && thin.f.cats === 1 && thin.ready.join() === 'true,false,false' );
+chk( 'thin data: 5 entries, one category => only chapter 1 ready, no top-3 gaps crash', thin.f.n === 5 && thin.f.cats === 1 && thin.ready.join() === 'true,false,false,false,false,false,false' );
 const heavy = await pg.evaluate( () => { const f = EXA.efblog.facts( mk( 120, 90 ), EX.today() ); return { f, ready: EXA.efblog.CHAPTERS.map( ( c ) => c.ready( f ) ), fin: EXA.efblog.finished( f ) }; } );
-chk( 'heavy data: all chapters ready, shares present, finished', heavy.ready.every( Boolean ) && heavy.f.t3p != null && heavy.fin && heavy.f.wdi != null );
+chk( 'heavy data: chapters 1-3, twist and ending ready (no bills or goals in this data), shares present, finished', heavy.ready.filter( Boolean ).length === 5 && heavy.f.t3p != null && heavy.fin && heavy.f.wdi != null );
 const inc = await pg.evaluate( () => { const f = EXA.efblog.facts( mk( 12, 20, { type: 'income', cats: [ 'salary' ] } ), EX.today() ); return { f, txt: window.all( mk( 12, 20, { type: 'income', cats: [ 'salary' ] } ) ).flatMap( ( x ) => x[ 1 ] ).map( ( l ) => l.text ).join( ' ' ) }; } );
 chk( 'only income: no expense facts, chapter 1 only, no crash', inc.f.ne === 0 && inc.f.t1k === undefined && ! /\{/.test( inc.txt ) );
 const bills = await pg.evaluate( () => { const f = EXA.efblog.facts( [], EX.today() ); return { f, kind: EXA.efblog.kind( [ { next: '2000-01-01' } ], [], EX.today() ) }; } );
@@ -56,6 +56,17 @@ const gk = await pg.evaluate( () => { const txs = mk( 80, 60 ); const fun = wind
 	const kd = window.all( txs, { kind: true } ); const money = kd.filter( ( x ) => x[ 0 ] !== 'first' ).flatMap( ( x ) => x[ 1 ] ); res.push( ! money.some( ( l ) => l.roast ) && money.some( ( l ) => l.kind ) );
 	return res; } );
 chk( 'gentle drops exactly the roast lines; hard topics never teased; kindness guard triggers and softens', gk.every( Boolean ) );
+
+
+// Story chapters 4-7: bills, goal, twist and ending use the right facts and never leave a hole
+const st = await pg.evaluate( () => { const E = EXA.efblog, td = EX.today(), txs = mk( 100, 80 ); txs.forEach( ( x, i ) => { if ( i % 10 === 0 ) { x.billId = 'b1'; x.due = x.date; x.category = 'utilities'; } if ( i % 7 === 0 ) x.goalId = 'g1'; } );
+	const ctx = { bills: [ { id: 'b1', next: EX.addDays( td, 5 ) }, { id: 'b2', next: EX.addDays( td, 9 ) } ], goals: [ { id: 'g1', name: 'Lisbon', target: '1000', deadline: EX.addDays( td, 30 ) } ] };
+	const f = E.facts( txs, td, ctx ), res = {}; res.ready = E.CHAPTERS.map( ( c ) => c.ready( f ) ).join(); res.goal = [ f.goalName, f.goalPct > 0, f.goalDays === 30 ].join(); res.ot = f.otStreak === 10 && f.paidN === 10;
+	const txt = [ 'boogie', 'chip' ].flatMap( ( ch ) => [ 'en', 'el' ].flatMap( ( lang ) => E.CHAPTERS.slice( 3 ).flatMap( ( c ) => E.render( c.id, f, { char: ch, lang, gentle: false, kind: false } ).map( ( l ) => l.text ) ) ) );
+	res.holes = txt.some( ( l ) => /[{}]/.test( l ) ); res.lisbon = txt.some( ( l ) => l.includes( 'Lisbon' ) ); res.verdict = txt.some( ( l ) => /\*\*(Reliable|Storyteller|Foodie|Explorer)\*\*/.test( l ) );
+	const cnt = [ 'boogie', 'chip' ].flatMap( ( ch ) => [ 'en', 'el' ].map( ( lang ) => E.CHAPTERS.slice( 3 ).map( ( c ) => E.render( c.id, f, { char: ch, lang, gentle: false, kind: false } ).length ).join() ) ); res.same = new Set( cnt ).size === 1;
+	return res; } );
+chk( 'story chapters 4-7: ready on bills+goal data, goal facts exact, no holes, same line count in every voice', st.ready === 'true,true,true,true,true,true,true' && st.goal === 'Lisbon,true,true' && st.ot && ! st.holes && st.lisbon && st.verdict && st.same );
 
 // 5. Gating (real state, real page)
 const gate = async ( n, days, expect ) => pg.evaluate( ( [ n, days ] ) => { const S = EX.state(); S.txs = mk( n, days ); S.settings.efBlog = { c: [], gentle: 0 }; S.device.efbSeen = []; EXA.efblog.update(); const s = EXA.efblog.status(); return { locked: s.locked, fin: s.finished, w: s.written.length }; }, [ n, days ] );
